@@ -1,17 +1,13 @@
 "use client";
 
-import {
-    ContextMenu,
-    ContextMenuIcon,
-    ContextMenuItem,
-    ContextMenuSeperator
-} from "@marraph/daisy/components/contextmenu/ContextMenu";
+import {ContextMenu, ContextMenuIcon, ContextMenuItem, ContextMenuSeperator} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import React from "react";
 import {Briefcase, LogOut, Settings} from "lucide-react";
+import {cn} from "@/utils/cn";
 
 export function ProfileContext() {
     return (
-        <ContextMenu className={"bg-black border border-white border-opacity-20"}>
+        <ContextMenu className={cn("font-normal text-sm")}>
             <ContextMenuItem title={"My organisation"}>
                 <ContextMenuIcon icon={<Briefcase size={18}/>} />
             </ContextMenuItem>
@@ -19,7 +15,7 @@ export function ProfileContext() {
                 <ContextMenuIcon icon={<Settings size={18}/>} />
             </ContextMenuItem>
             <ContextMenuSeperator />
-            <ContextMenuItem title={"Log out"}>
+            <ContextMenuItem title={"Log out"} className={"text-lightred hover:text-lightred"}>
                 <ContextMenuIcon icon={<LogOut size={18}/>} />
             </ContextMenuItem>
         </ContextMenu>

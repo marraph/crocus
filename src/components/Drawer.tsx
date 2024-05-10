@@ -2,7 +2,7 @@
 
 import {NavigationItem} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import React, {useState} from "react";
-import {CalendarDays, ChevronsUpDown, ClipboardList, LayoutDashboard, Timer} from "lucide-react";
+import {CalendarDays, ChevronsUpDown, ClipboardList, LayoutDashboard, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {ProfileContext} from "@/components/contextmenus/ProfileContext";
@@ -19,11 +19,18 @@ export function Drawer() {
     return (
         <div className={cn("w-min h-screen flex flex-col justify-between bg-black p-4")}>
             <div className={"space-y-2"}>
-                <span className={cn("text-placeholder text-xs px-1")}>{"MENU"}</span>
-                <NavigationItem title={"Dashboard"} icon={ <LayoutDashboard size={18} />} />
-                <NavigationItem title={"Tasks"} icon={ <ClipboardList size={18} /> } />
-                <NavigationItem title={"Timetracking"} icon={ <Timer size={18} /> } />
-                <NavigationItem title={"Calendar"} icon={ <CalendarDays size={18} /> } />
+                <div className={""}>
+                    <span className={cn("text-placeholder text-xs px-1")}>{"MENU"}</span>
+                    <NavigationItem title={"Dashboard"} icon={<LayoutDashboard size={18}/>}/>
+                    <NavigationItem title={"Tasks"} icon={<ClipboardList size={18}/>}/>
+                    <NavigationItem title={"Timetracking"} icon={<Timer size={18}/>}/>
+                    <NavigationItem title={"Calendar"} icon={<CalendarDays size={18}/>}/>
+                </div>
+
+                <div className={"py-12"}>
+                    <span className={cn("text-placeholder text-xs px-1")}>{"TEAMS"}</span>
+                    <NavigationItem title={"Join a team"} icon={<SquarePlus size={18}/>}/>
+                </div>
             </div>
 
             <div className={"space-y-2"}>
