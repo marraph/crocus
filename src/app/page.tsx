@@ -19,11 +19,11 @@ export default function Home() {
                 <div className={"w-full flex flex-row pr-8 text-nowrap justify-between"}>
                     <span className={"text-xl ml-8"}>{"Tasks"}</span>
                     <div className={"flex flex-row justify-end space-x-2"}>
-                        <Button text={"Create Task"} theme={"white"} className={"w-min"}>
+                        <Button text={"Create Task"} theme={"white"} className={"w-min h-8"}>
                             <ButtonIcon icon={<SquarePen size={20}/>}/>
                         </Button>
                         <SwitchButton firstTitle={"Table"} secondTitle={"Card"}/>
-                        <Button text={"Filter"} className={"w-min"}>
+                        <Button text={"Filter"} className={"w-min h-8"}>
                             <ButtonIcon icon={<ListFilter size={20}/>}/>
                         </Button>
                     </div>

@@ -18,6 +18,7 @@ const config: Config = {
       "blue": "#2622F6",
       "lightblue": "#3633FD",
       "lightred": "#F55050",
+      "selectwhite": "#CCCBCB",
 
       "success": "#1AA60E",
       "warning": "#F2CF19",

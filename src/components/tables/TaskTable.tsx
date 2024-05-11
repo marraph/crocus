@@ -1,5 +1,6 @@
 import React from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
+import {Badge} from "@marraph/daisy/components/badge/Badge";
 
 export function TaskTable() {
     const tasks = [
@@ -43,7 +44,7 @@ export function TaskTable() {
                         <TableHead>Creator</TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className={"text-sm"}>
                     {tasks.map((task) => (
                         <TableRow key={task.id}>
                             <TableCell>{task.id}</TableCell>
