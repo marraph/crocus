@@ -28,8 +28,8 @@ export function TaskTable() {
     ]
 
     return (
-        <div className={"w-full items-stretch py-2 px-8"}>
-            <Table className={"bg-black w-full items-stretch"}>
+        <div className={"w-full flex items-stretch py-2 px-8"}>
+            <Table className={"bg-black w-full"}>
                 <TableHeader>
                     <TableRow className={"border-none hover:bg-black"}>
                         <TableHead>ID</TableHead>
