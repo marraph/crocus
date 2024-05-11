@@ -17,7 +17,7 @@ export function Drawer() {
     }
 
     return (
-        <div className={cn("w-min h-screen flex flex-col justify-between bg-black p-4")}>
+        <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")}>
             <div className={"space-y-2"}>
                 <div className={""}>
                     <span className={cn("text-placeholder text-xs px-1")}>{"MENU"}</span>
@@ -33,7 +33,7 @@ export function Drawer() {
                 </div>
             </div>
 
-            <div className={"space-y-2"}>
+            <div className={"space-y-2 pb-8"}>
                 {showProfile && <ProfileContext></ProfileContext>}
                 <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-dark rounded-lg border border-white border-opacity-20")} onClick={toggleProfile}>
                     <div className={cn("flex flex-row items-center space-x-2")}>
