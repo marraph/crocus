@@ -32,22 +32,22 @@ export const TaskCreateDialog: React.FC<React.HTMLAttributes<HTMLDialogElement>>
                         <div className={"flex flex-row justify-end space-x-2"}>
                             <Combobox buttonTitle={"Team"} className={"h-8"}>
                                 {team.map((team) => (
-                                    <ComboboxItem title={team} key={team}>{team}</ComboboxItem>
+                                    <ComboboxItem key={team} title={""}>{team}</ComboboxItem>
                                 ))}
                             </Combobox>
                             <Combobox buttonTitle={"Project"} className={"h-8"}>
                                 {project.map((project) => (
-                                    <ComboboxItem title={project} key={project}>{project}</ComboboxItem>
+                                    <ComboboxItem title={""} key={project}>{project}</ComboboxItem>
                                 ))}
                             </Combobox>
                             <Combobox buttonTitle={"Topic"} className={"h-8"}>
                                 {topic.map((topic) => (
-                                    <ComboboxItem title={topic} key={topic}>{topic}</ComboboxItem>
+                                    <ComboboxItem title={""} key={topic}>{topic}</ComboboxItem>
                                 ))}
                             </Combobox>
                             <Combobox buttonTitle={"Status"} className={"h-8"}>
                                 {status.map((status) => (
-                                    <ComboboxItem title={status} key={status}>{status}</ComboboxItem>
+                                    <ComboboxItem title={""} key={status}>{status}</ComboboxItem>
                                 ))}
                             </Combobox>
                             <Button text={"Create"} theme={"white"} className={"w-min h-8"}></Button>
