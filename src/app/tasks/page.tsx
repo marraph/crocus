@@ -5,6 +5,7 @@ import {ListFilter, SquarePen} from "lucide-react";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 
+
 export default function Home() {
   return (
     <div className={"h-full flex flex-col"}>
