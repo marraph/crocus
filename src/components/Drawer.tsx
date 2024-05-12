@@ -35,7 +35,7 @@ export function Drawer() {
 
             <div className={"space-y-2 pb-8"}>
                 {showProfile && <ProfileContext></ProfileContext>}
-                <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-dark rounded-lg border border-white border-opacity-20")} onClick={toggleProfile}>
+                <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20")} onClick={toggleProfile}>
                     <div className={cn("flex flex-row items-center space-x-2")}>
                         <Avatar className={cn("p-2")} img_url={path} width={60} height={60} shape={"box"}></Avatar>
                         <div className={cn("flex flex-col items-start")}>

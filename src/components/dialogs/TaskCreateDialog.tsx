@@ -16,7 +16,7 @@ export function TaskCreateDialog() {
                 <ButtonIcon icon={<SquarePen size={20}/>}/>
             </Button>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-                <DialogContent>
+                <DialogContent className={"flex items-center align-middle bg-black"}>
                     <div>
                         <Input placeholder={"Title"}></Input>
                         <Textarea placeholder={"Description"}></Textarea>
