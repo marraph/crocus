@@ -19,7 +19,7 @@ export function Drawer() {
     return (
         <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")}>
             <div className={"space-y-2"}>
-                <div className={""}>
+                <div className={"space-y-1"}>
                     <span className={cn("text-placeholder text-xs px-1")}>{"MENU"}</span>
                     <NavigationItem title={"Dashboard"} icon={<LayoutDashboard size={18}/>}/>
                     <NavigationItem title={"Tasks"} icon={<ClipboardList size={18}/>}/>
