@@ -26,35 +26,47 @@ export const TaskCreateDialog: React.FC<React.HTMLAttributes<HTMLDialogElement>>
                     open={isOpen} onClose={() => setIsOpen(false)}>
                 <DialogContent className={cn("flex flex-row justify-between space-x-4 px-4 pt-4 pb-2", className)}>
                     <div className={cn("flex flex-col flex-grow space-y-2", className)}>
+
                         <span className={cn("text-lg text-white", className)}>{"New Task"}</span>
                         <input placeholder={"Task Title"} className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}/>
-                        <Textarea placeholder={"Add Description..."} className={cn("h-20 bg-black placeholder-placeholder resize-none overflow-hidden", className)}></Textarea>
+                        <Textarea placeholder={"Add Description..."} className={cn("h-20 bg-black placeholder-placeholder", className)}></Textarea>
+
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Team"} className={cn("h-8", className)}>
-                                {team.map((team) => (
-                                    <ComboboxItem key={team} title={""}>{team}</ComboboxItem>
-                                ))}
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                    {team.map((team) => (
+                                        <ComboboxItem title={team} key={team}/>
+                                    ))}
+                                </div>
                             </Combobox>
                             <Combobox buttonTitle={"Project"} className={cn("h-8", className)}>
-                                {project.map((project) => (
-                                    <ComboboxItem title={""} key={project}>{project}</ComboboxItem>
-                                ))}
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                    {project.map((project) => (
+                                        <ComboboxItem title={project} key={project}/>
+                                    ))}
+                                </div>
                             </Combobox>
                             <Combobox buttonTitle={"Topic"} className={cn("h-8", className)}>
-                                {topic.map((topic) => (
-                                    <ComboboxItem title={""} key={topic}>{topic}</ComboboxItem>
-                                ))}
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                    {topic.map((topic) => (
+                                        <ComboboxItem title={topic} key={topic}/>
+                                    ))}
+                                </div>
                             </Combobox>
                             <Combobox buttonTitle={"Status"} className={cn("h-8", className)}>
-                                {status.map((status) => (
-                                    <ComboboxItem title={""} key={status}>{status}</ComboboxItem>
-                                ))}
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                    {status.map((status) => (
+                                        <ComboboxItem title={status} key={status} />
+                                    ))}
+                                </div>
                             </Combobox>
                         </div>
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} text={""} onClick={() => setIsOpen(false)}></CloseButton>
                 </DialogContent>
+
                 <DialogSeperator/>
+
                 <DialogContent className={cn("flex flex-row justify-end px-4 py-0.5", className)}>
                     <Button text={"Create"} theme={"white"} className={cn("w-min h-8", className)}></Button>
                 </DialogContent>
