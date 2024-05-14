@@ -33,28 +33,28 @@ export const TaskCreateDialog: React.FC<React.HTMLAttributes<HTMLDialogElement>>
 
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Team"} className={cn("h-8", className)}>
-                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
-                                    {team.map((team) => (
-                                        <ComboboxItem title={team} key={team}/>
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
+                                    {team.map((team, index) => (
+                                        <ComboboxItem title={team} key={index}/>
                                     ))}
                                 </div>
                             </Combobox>
                             <Combobox buttonTitle={"Project"} className={cn("h-8", className)}>
-                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
                                     {project.map((project) => (
                                         <ComboboxItem title={project} key={project}/>
                                     ))}
                                 </div>
                             </Combobox>
                             <Combobox buttonTitle={"Topic"} className={cn("h-8", className)}>
-                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
                                     {topic.map((topic) => (
                                         <ComboboxItem title={topic} key={topic}/>
                                     ))}
                                 </div>
                             </Combobox>
                             <Combobox buttonTitle={"Status"} className={cn("h-8", className)}>
-                                <div className={"bg-black rounded-lg border border-white border-opacity-20 p-2"}>
+                                <div className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
                                     {status.map((status) => (
                                         <ComboboxItem title={status} key={status} />
                                     ))}
