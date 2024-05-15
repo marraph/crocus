@@ -10,7 +10,6 @@ import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 
 export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
-
     const team = ["None", "Frontend", "Backend"];
     const project = ["None", "ServerAPI", "ClientAPI"];
     const topic = ["None", "Bug", "Feature"];
@@ -51,36 +50,24 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
 
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Team"} className={cn("h-8", className)}>
-                                <div
-                                    className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
-                                    {team.map((team, index) => (
-                                        <ComboboxItem title={team} key={index}/>
-                                    ))}
-                                </div>
+                                {team.map((team, index) => (
+                                    <ComboboxItem title={team} key={index}/>
+                                ))}
                             </Combobox>
                             <Combobox buttonTitle={"Project"} className={cn("h-8", className)}>
-                                <div
-                                    className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
-                                    {project.map((project) => (
-                                        <ComboboxItem title={project} key={project}/>
-                                    ))}
-                                </div>
+                                {project.map((project) => (
+                                    <ComboboxItem title={project} key={project}/>
+                                ))}
                             </Combobox>
                             <Combobox buttonTitle={"Topic"} className={cn("h-8", className)}>
-                                <div
-                                    className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
-                                    {topic.map((topic) => (
-                                        <ComboboxItem title={topic} key={topic}/>
-                                    ))}
-                                </div>
+                                {topic.map((topic) => (
+                                    <ComboboxItem title={topic} key={topic}/>
+                                ))}
                             </Combobox>
                             <Combobox buttonTitle={"Status"} className={cn("h-8", className)}>
-                                <div
-                                    className={"bg-black rounded-lg border border-white border-opacity-20 mt-1 p-2"}>
-                                    {status.map((status) => (
-                                        <ComboboxItem title={status} key={status}/>
-                                    ))}
-                                </div>
+                                {status.map((status) => (
+                                    <ComboboxItem title={status} key={status}/>
+                                ))}
                             </Combobox>
                         </div>
                     </div>

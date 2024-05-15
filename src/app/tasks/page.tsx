@@ -4,6 +4,7 @@ import {Button, ButtonIcon} from "@marraph/daisy/components/button/Button";
 import {ListFilter, SquarePen} from "lucide-react";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
+import {TaskCard} from "@/components/cards/TaskCard";
 
 
 export default function Home() {
@@ -19,7 +20,7 @@ export default function Home() {
                 </Button>
             </div>
         </div>
-        <TaskTable></TaskTable>
+        <TaskCard></TaskCard>
     </div>
   );
 }
