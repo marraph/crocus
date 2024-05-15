@@ -33,7 +33,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
 
     return (
         <>
-            <Button text={"Create Task"} theme={"white"} className={"w-min h-8"} onClick={() => dialogRef.current?.showModal()}>
+            <Button text={"Create Task"} theme={"white"} size={"small"} className={"w-min h-8"} onClick={() => dialogRef.current?.showModal()}>
                 <ButtonIcon icon={<SquarePen size={20}/>}/>
             </Button>
 
