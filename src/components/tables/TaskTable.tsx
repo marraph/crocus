@@ -1,5 +1,9 @@
 import React from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
+import {Badge} from "@marraph/daisy/components/badge/Badge";
+import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
+
+const path = "/image.png";
 
 export function TaskTable() {
     const tasks = [
@@ -28,7 +32,7 @@ export function TaskTable() {
     ]
 
     return (
-        <div className={"w-full h-full flex items-stretch pt-4 pb-8 px-8"}>
+        <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>
             <Table className={"bg-black w-full"}>
                 <TableHeader>
                     <TableRow className={"border-none hover:bg-black"}>
@@ -49,12 +53,17 @@ export function TaskTable() {
                             <TableCell>{task.id}</TableCell>
                             <TableCell>{task.team}</TableCell>
                             <TableCell>{task.project}</TableCell>
-                            <TableCell>{task.topic}</TableCell>
-                            <TableCell>{task.title}</TableCell>
+                            <TableCell>
+                                <Badge text={task.topic} className={"w-max bg-error text-error px-2 py-0.5"}></Badge>
+                            </TableCell>
+                            <TableCell className={"text-white"}>{task.title}</TableCell>
                             <TableCell>{task.status}</TableCell>
                             <TableCell>{task.changedAt}</TableCell>
                             <TableCell>{task.createdAt}</TableCell>
-                            <TableCell>{task.creator}</TableCell>
+                            <TableCell className={"flex flex-row space-x-2 items-center"}>
+                                <span>{task.creator}</span>
+                                <Avatar img_url={path} height={25} width={25} className={"p-0"}/>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
