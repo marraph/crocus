@@ -2,6 +2,7 @@ import React from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
+import {useRouter} from "next/navigation";
 
 const path = "/image.png";
 
@@ -33,6 +34,8 @@ export function TaskTable() {
         },
     ]
 
+    const router = useRouter();
+
     return (
         <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>
             <Table className={"bg-black w-full"}>
@@ -52,7 +55,7 @@ export function TaskTable() {
                 </TableHeader>
                 <TableBody className={"text-sm"}>
                     {tasks.map((task) => (
-                        <TableRow key={task.id}>
+                        <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)}>
                             <TableCell>{task.id}</TableCell>
                             <TableCell>{task.team}</TableCell>
                             <TableCell>{task.project}</TableCell>
