@@ -9,26 +9,37 @@ import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 
+const team = ["None", "Frontend", "Backend"];
+const project = ["None", "ServerAPI", "ClientAPI"];
+const topic = ["None", "Bug", "Feature"];
+const status = ["None", "Todo", "In Progress", "Done"];
+
 export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
-    const team = ["None", "Frontend", "Backend"];
-    const project = ["None", "ServerAPI", "ClientAPI"];
-    const topic = ["None", "Bug", "Feature"];
-    const status = ["None", "Todo", "In Progress", "Done"];
 
     let dialogRef = React.useRef<HTMLDialogElement>(null);
     const [titleValue, setTitleValue] = useState("");
+    const [descriptionValue, setDescriptionValue] = useState("");
+
+    const resetFields = () => {
+        setTitleValue("");
+        setDescriptionValue("");
+    }
 
     const handleCreateClick = () => {
-        if (titleValue.trim() !== "") {
-            dialogRef.current?.close();
-        }
-        else {
-            alert("Title is empty");
-        }
+        handleCloseClick();
     }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitleValue(e.target.value);
+    }
+
+    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setDescriptionValue(e.target.value);
+    }
+
+    const handleCloseClick = () => {
+        dialogRef.current?.close();
+        resetFields();
     }
 
     return (
@@ -44,9 +55,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                         <span className={cn("text-lg text-white", className)}>{"New Task"}</span>
                         <input placeholder={"Task Title"} id={"title"} value={titleValue} onChange={handleTitleChange}
                                className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}/>
-                        <Textarea placeholder={"Add Description..."}
-                                  className={cn("h-20 bg-black placeholder-placeholder", className)}>
-                        </Textarea>
+                        <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder", className)} value={descriptionValue} />
 
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Team"} className={cn("h-8", className)}>
@@ -71,12 +80,13 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                             </Combobox>
                         </div>
                     </div>
-                    <CloseButton className={cn("h-min w-min", className)} text={""}
-                                 onClick={() => dialogRef.current?.close()}></CloseButton>
+                    <CloseButton className={cn("h-min w-min", className)} text={""} onClick={handleCloseClick} />
                 </div>
                 <DialogSeperator/>
                 <div className={cn("flex flex-row justify-end px-4 py-2", className)}>
-                    <Button text={"Create"} theme={"white"} onClick={handleCreateClick} className={cn("w-min h-8", className)}></Button>
+                    <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={titleValue.trim() === ""}
+                            className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>
+                    </Button>
                 </div>
             </Dialog>
         </>

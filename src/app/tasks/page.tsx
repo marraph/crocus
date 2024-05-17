@@ -6,6 +6,7 @@ import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton"
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 import {TaskCardView} from "@/components/tables/TaskCardView";
 import {FilterContext} from "@/components/contextmenus/FilterContext";
+import {OctagonAlert} from "lucide-react";
 
 export default function Home() {
     const [viewMode, setViewMode] = useState(true);
@@ -13,10 +14,16 @@ export default function Home() {
     return (
         <div className={"h-full flex flex-col"}>
             <div className={"w-full flex flex-row pr-8 text-nowrap justify-between"}>
-                <span className={"text-xl ml-8"}>{"Tasks"}</span>
+                <div className={"flex flex-row items-center space-x-4"}>
+                    <span className={"text-xl ml-8"}>{"Tasks"}</span>
+                    <div className={"flex flex-row space-x-1"}>
+                        <OctagonAlert size={15} className={"text-placeholder"}/>
+                        <span className={"text-xs text-placeholder"}>{"2 OPEN"}</span>
+                    </div>
+                </div>
                 <div className={"flex flex-row justify-end space-x-2 h-8 z-10"}>
-                    <TaskCreateDialog />
-                    <SwitchButton firstTitle={"Table"} secondTitle={"Card"} onClick={() => setViewMode(!viewMode)} />
+                    <TaskCreateDialog/>
+                    <SwitchButton firstTitle={"Table"} secondTitle={"Card"} onClick={() => setViewMode(!viewMode)}/>
                     <FilterContext />
                 </div>
             </div>

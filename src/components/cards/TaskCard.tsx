@@ -10,6 +10,7 @@ interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
     id: string;
     title: string;
     topic: string;
+    priority: string;
     team: string;
     project: string;
     status: string;
@@ -17,7 +18,7 @@ interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
     createdBy: string;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ id, title, topic, team, project, status, className, createdAt, createdBy, ...props }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ id, title, topic, team, project, status, priority, className, createdAt, createdBy, ...props }) => {
     return (
         <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-72 cursor-pointer hover:bg-dark", className)}>
 
@@ -34,10 +35,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ id, title, topic, team, proj
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
                 <span className={cn("text-sm text-gray", className)}>{team}</span>
                 <span className={cn("text-sm text-gray", className)}>{project}</span>
+                <span className={cn("text-sm text-gray", className)}>{priority}</span>
                 <span className={cn("text-sm text-gray", className)}>{status}</span>
             </div>
 
-            <Seperator />
+            <Seperator/>
 
             <div className={cn("flex flex-col p-2", className)}>
                 <span className={cn("text-placeholder text-xs", className)}>{"CREATED"}</span>

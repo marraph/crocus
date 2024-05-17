@@ -13,6 +13,7 @@ export function TaskTable() {
             project: "ServerAPI",
             topic: "bug",
             title: "Response doesnt work",
+            priority: "High",
             status: "todo",
             changedAt: "April 20, 2024",
             createdAt: "April 18, 2024",
@@ -24,6 +25,7 @@ export function TaskTable() {
             project: "ServerAPI",
             topic: "bug",
             title: "Response doesnt work v2",
+            priority: "High",
             status: "todo",
             changedAt: "April 21, 2024",
             createdAt: "April 19, 2024",
@@ -39,6 +41,7 @@ export function TaskTable() {
                         <TableHead>ID</TableHead>
                         <TableHead>Team</TableHead>
                         <TableHead>Project</TableHead>
+                        <TableHead>Priority</TableHead>
                         <TableHead>Topic</TableHead>
                         <TableHead>Title</TableHead>
                         <TableHead>Status</TableHead>
@@ -53,6 +56,7 @@ export function TaskTable() {
                             <TableCell>{task.id}</TableCell>
                             <TableCell>{task.team}</TableCell>
                             <TableCell>{task.project}</TableCell>
+                            <TableCell>{task.priority}</TableCell>
                             <TableCell>
                                 <Badge text={task.topic} className={"w-max bg-error text-error px-2 py-0.5"}></Badge>
                             </TableCell>
