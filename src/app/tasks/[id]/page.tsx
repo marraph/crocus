@@ -5,6 +5,7 @@ import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {useRouter} from "next/navigation";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {CheckCheck, MessageSquare, Trash2, Wrench} from "lucide-react";
+import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 
 const task = {
     title: "Title",
@@ -40,10 +41,7 @@ export default function TaskIdPage() {
                     <Button text={"Close"} className={"h-8"}>
                         <CheckCheck size={20} className={"mr-3"}/>
                     </Button>
-                    <Button text={""} className={"h-8 text-lightred " +
-                        "hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}>
-                        <Trash2 size={20}/>
-                    </Button>
+                    <DeleteTaskDialog/>
                 </div>
 
             </div>

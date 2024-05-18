@@ -37,24 +37,22 @@ export function TaskTable() {
 
     const router = useRouter();
 
-    const [contextMenu, setContextMenu] = useState({ x: 0, y: 0});
-    const [showMenu, setShowMenu] = useState(false);
+    const [contextMenu, setContextMenu] = useState({ x: 0, y: 0, visible: false });
 
     useEffect(() => {
-        const handleClick = () => setContextMenu({ ...contextMenu });
+        const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
         document.addEventListener('click', handleClick);
             return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
-    const handleContextMenu = (event: MouseEvent) => {
-        event.preventDefault();
-        setShowMenu(true);
-        setContextMenu({ x: event.pageX, y: event.pageY });
+    const handleContextMenu = (e: MouseEvent) => {
+        e.preventDefault();
+        setContextMenu({ x: e.pageX, y: e.pageY, visible: true });
     };
 
     return (
         <>
-            {showMenu &&
+            {contextMenu.visible &&
                 <TaskContext x={contextMenu.x} y={contextMenu.y}></TaskContext>
             }
             <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>

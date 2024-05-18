@@ -15,8 +15,7 @@ const topic = ["None", "Bug", "Feature"];
 const status = ["None", "Todo", "In Progress", "Done"];
 
 export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
-
-    let dialogRef = React.useRef<HTMLDialogElement>(null);
+    const dialogRef = React.useRef<HTMLDialogElement>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
 
@@ -48,7 +47,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                 <SquarePen size={20} className={"mr-3"}/>
             </Button>
 
-            <Dialog className={cn("border border-white border-opacity-20 left-1/3 w-4/12 drop-shadow-2xl overflow-visible", className)} {...props} ref={dialogRef}>
+            <Dialog className={cn("border border-white border-opacity-20 left-1/3 w-1/3 drop-shadow-2xl overflow-visible", className)} {...props} ref={dialogRef}>
                 <div className={cn("flex flex-row justify-between space-x-4 px-4 pt-4 pb-2", className)}>
                     <div className={cn("flex flex-col flex-grow space-y-2", className)}>
 

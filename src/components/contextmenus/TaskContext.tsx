@@ -9,7 +9,7 @@ interface TaskContextProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const TaskContext: React.FC<TaskContextProps> = ({ x, y, className, ...props }, ref) => {
     return (
-        <ContextMenu className={"top-${y} left-{x}"} ref={ref} {...props}>
+        <ContextMenu className={`top-${y} left-${x}`} ref={ref} {...props}>
             <ContextMenuItem title={"Edit"}>
                 <ContextMenuIcon icon={<Pencil size={16}/>}/>
             </ContextMenuItem>
