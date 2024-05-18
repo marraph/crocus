@@ -31,7 +31,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
                     <span className={cn("text-lg", className)}>{title}</span>
                     <Badge text={_id.toString()} className={"text-xs w-max bg-placeholder text-gray px-2 py-0.5 rounded-md"}></Badge>
                 </div>
-                <Badge text={topic} className={cn("bg-success text-success w-max px-2 py-0.5 text-xs", className)}></Badge>
+                <Badge text={topic} className={cn("bg-success bg-opacity-20 text-success rounded-lg w-max px-2 py-0.5 text-xs", className)}></Badge>
             </div>
 
             <Seperator/>

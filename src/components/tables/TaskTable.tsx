@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {useRouter} from "next/navigation";
+import {TaskContext} from "@/components/contextmenus/TaskContext";
 
 const path = "/image.png";
 
@@ -36,45 +37,66 @@ export function TaskTable() {
 
     const router = useRouter();
 
+    const [contextMenu, setContextMenu] = useState({ x: 0, y: 0});
+    const [showMenu, setShowMenu] = useState(false);
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu({ ...contextMenu });
+        document.addEventListener('click', handleClick);
+            return () => document.removeEventListener('click', handleClick);
+    }, [contextMenu]);
+
+    const handleContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        setShowMenu(true);
+        setContextMenu({ x: event.pageX, y: event.pageY });
+    };
+
     return (
-        <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>
-            <Table className={"bg-black w-full"}>
-                <TableHeader>
-                    <TableRow className={"border-none hover:bg-black"}>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Team</TableHead>
-                        <TableHead>Project</TableHead>
-                        <TableHead>Priority</TableHead>
-                        <TableHead>Topic</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>ChangedAt</TableHead>
-                        <TableHead>CreatedAt</TableHead>
-                        <TableHead>Creator</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody className={"text-sm"}>
-                    {tasks.map((task) => (
-                        <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)}>
-                            <TableCell>{task.id}</TableCell>
-                            <TableCell>{task.team}</TableCell>
-                            <TableCell>{task.project}</TableCell>
-                            <TableCell>{task.priority}</TableCell>
-                            <TableCell>
-                                <Badge text={task.topic} className={"w-max bg-error text-error px-2 py-0.5"}></Badge>
-                            </TableCell>
-                            <TableCell className={"text-white"}>{task.title}</TableCell>
-                            <TableCell>{task.status}</TableCell>
-                            <TableCell>{task.changedAt}</TableCell>
-                            <TableCell>{task.createdAt}</TableCell>
-                            <TableCell className={"flex flex-row space-x-2 items-center"}>
-                                <span>{task.creator}</span>
-                                <Avatar img_url={path} height={25} width={25} className={"p-0"}/>
-                            </TableCell>
+        <>
+            {showMenu &&
+                <TaskContext x={contextMenu.x} y={contextMenu.y}></TaskContext>
+            }
+            <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>
+                <Table className={"bg-black w-full"}>
+                    <TableHeader>
+                        <TableRow className={"border-none hover:bg-black"}>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Team</TableHead>
+                            <TableHead>Project</TableHead>
+                            <TableHead>Priority</TableHead>
+                            <TableHead>Topic</TableHead>
+                            <TableHead>Title</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>ChangedAt</TableHead>
+                            <TableHead>CreatedAt</TableHead>
+                            <TableHead>Creator</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+                    </TableHeader>
+                    <TableBody className={"text-sm"}>
+                        {tasks.map((task) => (
+                            <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)}
+                            onContextMenu={() => handleContextMenu}>
+                                <TableCell>{task.id}</TableCell>
+                                <TableCell>{task.team}</TableCell>
+                                <TableCell>{task.project}</TableCell>
+                                <TableCell>{task.priority}</TableCell>
+                                <TableCell>
+                                    <Badge text={task.topic} className={"w-max bg-error text-error px-2 py-0.5 bg-opacity-20 rounded-md"}></Badge>
+                                </TableCell>
+                                <TableCell className={"text-white"}>{task.title}</TableCell>
+                                <TableCell>{task.status}</TableCell>
+                                <TableCell>{task.changedAt}</TableCell>
+                                <TableCell>{task.createdAt}</TableCell>
+                                <TableCell className={"flex flex-row space-x-2 items-center"}>
+                                    <span>{task.creator}</span>
+                                    <Avatar img_url={path} height={25} width={25} className={"p-0"}/>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </>
     )
 }

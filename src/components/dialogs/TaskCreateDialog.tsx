@@ -3,7 +3,7 @@
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import React, {useState} from "react";
-import {Button, ButtonIcon} from "@marraph/daisy/components/button/Button";
+import {Button} from "@marraph/daisy/components/button/Button";
 import {SquarePen} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
@@ -45,7 +45,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     return (
         <>
             <Button text={"Create Task"} theme={"white"} size={"small"} className={"w-min h-8"} onClick={() => dialogRef.current?.showModal()}>
-                <ButtonIcon icon={<SquarePen size={20}/>}/>
+                <SquarePen size={20} className={"mr-3"}/>
             </Button>
 
             <Dialog className={cn("border border-white border-opacity-20 left-1/3 w-4/12 drop-shadow-2xl overflow-visible", className)} {...props} ref={dialogRef}>

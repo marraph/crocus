@@ -6,7 +6,7 @@ import {
     ContextMenuItem,
 } from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {BarChart, Flame, Folder, ListFilter, Radio, User, Users} from "lucide-react";
-import {Button, ButtonIcon} from "@marraph/daisy/components/button/Button";
+import {Button} from "@marraph/daisy/components/button/Button";
 
 const teams = ["Frontend", "Backend", "Design", "Management", "Marketing", "Support"];
 const projects = ["ServerAPI", "ClientAPI", "Website", "App", "Database"];
@@ -43,7 +43,7 @@ export function FilterContext() {
     return (
         <div className={"relative space-y-2 pb-8"} ref={menuRef}>
             <Button text={"Filter"} className={"w-min h-8"} size={"small"} onClick={() => {setShowFilter(!showFilter); closeMenus()}}>
-                <ButtonIcon icon={<ListFilter size={20}/>}/>
+                <ListFilter size={20} className={"mr-3"}/>
             </Button>
             <div className={"absolute top-full right-0"}>
                 {showFilter &&
