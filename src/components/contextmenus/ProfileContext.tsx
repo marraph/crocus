@@ -27,7 +27,8 @@ export function ProfileContext() {
                         <ContextMenuIcon icon={<Settings size={18}/>}/>
                     </ContextMenuItem>
                     <ContextMenuSeperator/>
-                    <ContextMenuItem title={"Log out"} className={"text-lightred hover:text-lightred mx-2 mt-2"}>
+                    <ContextMenuItem title={"Log out"} className={"text-lightred hover:text-lightred " +
+                        "hover:bg-lightred hover:bg-opacity-10 mx-2 mt-2"}>
                         <ContextMenuIcon icon={<LogOut size={18}/>}/>
                     </ContextMenuItem>
                 </ContextMenu>
