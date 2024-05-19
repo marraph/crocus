@@ -31,14 +31,14 @@ export default function TaskIdPage() {
             <div className={"w-full flex flex-row justify-between"}>
                 <Breadcrump pastText={"Tasks"} nowText={"Api not working"} className={"h-8"}
                             onClick={() => router.push("/tasks/")}/>
-                <div className={"flex flex-row space-x-2"}>
-                    <Button text={"Message"} theme={"white"} className={"h-8"}>
+                <div className={"flex flex-row justify-end"}>
+                    <Button text={"Message"} theme={"white"} className={"h-8 mr-2"}>
                         <MessageSquare size={20} className={"mr-3"}/>
                     </Button>
-                    <Button text={"Edit"} className={"h-8"}>
+                    <Button text={"Edit"} className={"h-8 mr-2"}>
                         <Wrench size={20} className={"mr-3"}/>
                     </Button>
-                    <Button text={"Close"} className={"h-8"}>
+                    <Button text={"Close"} className={"h-8 mr-2"}>
                         <CheckCheck size={20} className={"mr-3"}/>
                     </Button>
                     <DeleteTaskDialog/>
