@@ -20,6 +20,7 @@ export function TaskTable() {
             changedAt: "April 20, 2024",
             createdAt: "April 18, 2024",
             creator: "mvriu5",
+            dueDate: "dueDate"
         },
         {
             id: "13",
@@ -32,6 +33,7 @@ export function TaskTable() {
             changedAt: "April 21, 2024",
             createdAt: "April 19, 2024",
             creator: "mvriu5",
+            dueDate: "dueDate"
         },
     ]
 
@@ -66,6 +68,7 @@ export function TaskTable() {
                             <TableHead>Topic</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead>Status</TableHead>
+                            <TableHead>DueDate</TableHead>
                             <TableHead>ChangedAt</TableHead>
                             <TableHead>CreatedAt</TableHead>
                             <TableHead>Creator</TableHead>
@@ -84,6 +87,7 @@ export function TaskTable() {
                                 </TableCell>
                                 <TableCell className={"text-white"}>{task.title}</TableCell>
                                 <TableCell>{task.status}</TableCell>
+                                <TableCell>{task.dueDate}</TableCell>
                                 <TableCell>{task.changedAt}</TableCell>
                                 <TableCell>{task.createdAt}</TableCell>
                                 <TableCell className={"flex flex-row space-x-2 items-center"}>

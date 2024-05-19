@@ -8,6 +8,7 @@ import {CheckCheck, MessageSquare, Trash2, Wrench} from "lucide-react";
 import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
+import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
 
 const task = {
     title: "Title",
@@ -35,9 +36,7 @@ export default function TaskIdPage() {
                             onClick={() => router.push("/tasks/")}/>
                 <div className={"flex flex-row justify-end"}>
                     <MessageTaskDialog/>
-                    <Button text={"Edit"} className={"h-8 mr-2"}>
-                        <Wrench size={20} className={"mr-3"}/>
-                    </Button>
+                    <EditTaskDialog/>
                     <CloseTaskDialog/>
                     <DeleteTaskDialog/>
                 </div>
