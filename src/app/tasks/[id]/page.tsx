@@ -6,6 +6,8 @@ import {useRouter} from "next/navigation";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {CheckCheck, MessageSquare, Trash2, Wrench} from "lucide-react";
 import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
+import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
+import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
 
 const task = {
     title: "Title",
@@ -32,15 +34,11 @@ export default function TaskIdPage() {
                 <Breadcrump pastText={"Tasks"} nowText={"Api not working"} className={"h-8"}
                             onClick={() => router.push("/tasks/")}/>
                 <div className={"flex flex-row justify-end"}>
-                    <Button text={"Message"} theme={"white"} className={"h-8 mr-2"}>
-                        <MessageSquare size={20} className={"mr-3"}/>
-                    </Button>
+                    <MessageTaskDialog/>
                     <Button text={"Edit"} className={"h-8 mr-2"}>
                         <Wrench size={20} className={"mr-3"}/>
                     </Button>
-                    <Button text={"Close"} className={"h-8 mr-2"}>
-                        <CheckCheck size={20} className={"mr-3"}/>
-                    </Button>
+                    <CloseTaskDialog/>
                     <DeleteTaskDialog/>
                 </div>
 
