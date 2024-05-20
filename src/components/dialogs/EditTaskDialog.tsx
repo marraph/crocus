@@ -7,7 +7,6 @@ import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
-import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 
 const title = "Server api doesnt work"
 

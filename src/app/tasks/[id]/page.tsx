@@ -3,8 +3,6 @@
 import {Breadcrump} from "@marraph/daisy/components/breadcrump/Breadcrump";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {useRouter} from "next/navigation";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {CheckCheck, MessageSquare, Trash2, Wrench} from "lucide-react";
 import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {forwardRef} from "react";
 import {MessageSquare, Send} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
@@ -9,7 +9,7 @@ import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 
 const title = "Server api doesnt work"
 
-export const MessageTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
+export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
 
     const sendMessage = () => {
@@ -47,3 +47,4 @@ export const MessageTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialo
 
     )
 })
+MessageTaskDialog.displayName = "MessageTaskDialog";
