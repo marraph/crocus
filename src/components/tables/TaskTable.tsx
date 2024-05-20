@@ -5,13 +5,14 @@ import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {useRouter} from "next/navigation";
 import {TaskContext} from "@/components/contextmenus/TaskContext";
 import {SignalHigh, SignalLow, SignalMedium} from "lucide-react";
+import {event} from "next/dist/build/output/log";
 
 const path = "/image.png";
 
 export function TaskTable() {
     const tasks = [
         {
-            id: "12",
+            id: 12,
             team: "Frontend",
             project: "ServerAPI",
             topic: "bug",
@@ -23,7 +24,7 @@ export function TaskTable() {
             dueDate: "May 15"
         },
         {
-            id: "13",
+            id: 13,
             team: "Frontend",
             project: "ServerAPI",
             topic: "bug",
@@ -35,7 +36,7 @@ export function TaskTable() {
             dueDate: "May 15"
         },
         {
-            id: "2",
+            id: 2,
             team: "Frontend",
             project: "ServerAPI",
             topic: "bug",
@@ -50,7 +51,7 @@ export function TaskTable() {
 
     const router = useRouter();
 
-    const [contextMenu, setContextMenu] = useState({ x: 0, y: 0, visible: false });
+    const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
 
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
@@ -58,15 +59,15 @@ export function TaskTable() {
             return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
-    const handleContextMenu = (e: MouseEvent) => {
+    const handleContextMenu = (e: React.MouseEvent<HTMLTableRowElement>, id: number) => {
         e.preventDefault();
-        setContextMenu({ x: e.pageX, y: e.pageY, visible: true });
+        setContextMenu({ id, x: e.clientX, y: e.clientY, visible: true });
     };
 
     return (
         <>
             {contextMenu.visible &&
-                <TaskContext x={contextMenu.x} y={contextMenu.y}></TaskContext>
+                <TaskContext taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
             }
             <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>
                 <Table className={"bg-black w-full"}>
@@ -86,7 +87,7 @@ export function TaskTable() {
                     </TableHeader>
                     <TableBody className={"text-sm"}>
                         {tasks.map((task) => (
-                            <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)} onContextMenu={() => handleContextMenu}>
+                            <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)} onContextMenu={(event) => handleContextMenu(event, task.id)}>
                                 <TableCell>{task.id}</TableCell>
                                 <TableCell>{task.team}</TableCell>
                                 <TableCell>{task.project}</TableCell>
