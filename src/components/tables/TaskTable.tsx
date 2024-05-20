@@ -9,48 +9,47 @@ import {event} from "next/dist/build/output/log";
 
 const path = "/image.png";
 
+const tasks = [
+    {
+        id: 12,
+        team: "Frontend",
+        project: "ServerAPI",
+        topic: "bug",
+        title: "Response doesnt work",
+        priority: "high",
+        status: "todo",
+        createdAt: "April 18",
+        creator: "mvriu5",
+        dueDate: "May 15"
+    },
+    {
+        id: 13,
+        team: "Frontend",
+        project: "ServerAPI",
+        topic: "bug",
+        title: "Response doesnt work v2",
+        priority: "medium",
+        status: "todo",
+        createdAt: "April 19",
+        creator: "mvriu5",
+        dueDate: "May 15"
+    },
+    {
+        id: 2,
+        team: "Frontend",
+        project: "ServerAPI",
+        topic: "bug",
+        title: "Response doesnt work v3",
+        priority: "low",
+        status: "todo",
+        createdAt: "April 19",
+        creator: "mvriu5",
+        dueDate: "May 15"
+    },
+]
+
 export function TaskTable() {
-    const tasks = [
-        {
-            id: 12,
-            team: "Frontend",
-            project: "ServerAPI",
-            topic: "bug",
-            title: "Response doesnt work",
-            priority: "high",
-            status: "todo",
-            createdAt: "April 18",
-            creator: "mvriu5",
-            dueDate: "May 15"
-        },
-        {
-            id: 13,
-            team: "Frontend",
-            project: "ServerAPI",
-            topic: "bug",
-            title: "Response doesnt work v2",
-            priority: "medium",
-            status: "todo",
-            createdAt: "April 19",
-            creator: "mvriu5",
-            dueDate: "May 15"
-        },
-        {
-            id: 2,
-            team: "Frontend",
-            project: "ServerAPI",
-            topic: "bug",
-            title: "Response doesnt work v3",
-            priority: "low",
-            status: "todo",
-            createdAt: "April 19",
-            creator: "mvriu5",
-            dueDate: "May 15"
-        },
-    ]
-
     const router = useRouter();
-
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
 
     useEffect(() => {

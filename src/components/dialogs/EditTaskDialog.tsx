@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import {Wrench} from "lucide-react";
+import {Pencil} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
@@ -20,7 +20,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
     return (
         <>
             <Button text={"Edit"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.showModal()}>
-                <Wrench size={20} className={"mr-3"}/>
+                <Pencil size={20} className={"mr-3"}/>
             </Button>
 
             <div className={"flex items-center justify-center"}>
