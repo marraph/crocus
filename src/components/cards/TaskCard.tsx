@@ -4,6 +4,7 @@ import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import React from "react";
 import {cn} from "@/utils/cn";
 import {useRouter} from "next/navigation";
+import {SignalHigh, SignalLow, SignalMedium} from "lucide-react";
 
 const path = "/image.png";
 
@@ -32,7 +33,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
                     <span className={cn("text-lg", className)}>{title}</span>
                     <Badge text={_id.toString()} className={"text-xs w-max bg-dark border border-white border-opacity-20 text-gray px-2 py-0.5 rounded-md"}></Badge>
                 </div>
-                <Badge text={topic} className={cn("bg-success bg-opacity-20 text-success rounded-lg w-max px-2 py-0.5 text-xs", className)}></Badge>
+                <div className={"flex flex-row justify-between"}>
+                    <div className={"flex flex-row space-x-2"}>
+                        <Badge text={topic} className={cn("bg-success bg-opacity-20 text-success font-normal rounded-lg w-max px-2 py-0.5 text-xs", className)}></Badge>
+                        <Badge text={status} className={cn("bg-warning bg-opacity-20 text-warning font-normal rounded-md w-max px-2 py-0.5 text-xs", className)}></Badge>
+                    </div>
+                    {priority === 'low' && <SignalLow strokeWidth={3} className={"text-gray"}/>}
+                    {priority === 'medium' && <SignalMedium strokeWidth={3} className={"text-gray"}/>}
+                    {priority === 'high' && <SignalHigh strokeWidth={3} className={"text-gray"}/>}
+                </div>
             </div>
 
             <Seperator/>
@@ -40,8 +49,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
                 <span className={cn("text-sm text-gray", className)}>{team}</span>
                 <span className={cn("text-sm text-gray", className)}>{project}</span>
-                <span className={cn("text-sm text-gray", className)}>{priority}</span>
-                <span className={cn("text-sm text-gray", className)}>{status}</span>
                 <span className={cn("text-sm text-gray", className)}>{dueDate}</span>
             </div>
 
