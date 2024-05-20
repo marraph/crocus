@@ -17,7 +17,7 @@ export const Message: React.FC<MessageProps> = ({ writer, message, date, classNa
             <div className={"flex flex-row space-x-2"}>
                 <div className={"max-w-96 flex flex-col bg-black rounded-xl space-y-2 p-2"} {...props}>
                     <div className={"flex flex-row items-center space-x-2"}>
-                        <Avatar img_url={path} height={15} width={15}/>
+                        <Avatar img_url={path} size={15}/>
                         <span className={"text-placeholder text-xs"}>{writer}</span>
                     </div>
                     <span className={"text-sm text-gray"}>{message}</span>
@@ -28,7 +28,7 @@ export const Message: React.FC<MessageProps> = ({ writer, message, date, classNa
             <div className={"flex flex-row space-x-2"}>
                 <div className={"max-w-96 flex flex-col bg-black rounded-xl space-y-2 p-2"} {...props}>
                     <div className={"flex flex-row items-center space-x-2"}>
-                        <Avatar img_url={path} height={15} width={15}/>
+                        <Avatar img_url={path} size={15}/>
                         <span className={"text-placeholder text-xs"}>{writer}</span>
                     </div>
                     <span className={"text-sm text-gray"}>{message}</span>

@@ -43,7 +43,7 @@ export function FilterContext() {
     return (
         <div className={"relative space-y-2 pb-8"} ref={menuRef}>
             <Button text={"Filter"} className={"w-min h-8"} size={"small"} onClick={() => {setShowFilter(!showFilter); closeMenus()}}>
-                <ListFilter size={20} className={"mr-3"}/>
+                <ListFilter size={20} className={"mr-2"}/>
             </Button>
             <div className={"absolute top-full right-0"}>
                 {showFilter &&

@@ -75,16 +75,16 @@ export function TaskTable() {
                 <Table className={"bg-black w-full"}>
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Team</TableHead>
-                            <TableHead>Project</TableHead>
-                            <TableHead>Priority</TableHead>
-                            <TableHead>Topic</TableHead>
-                            <TableHead>Title</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>DueDate</TableHead>
-                            <TableHead>CreatedAt</TableHead>
-                            <TableHead>Creator</TableHead>
+                            <TableHead className={"text-placeholder"}>ID</TableHead>
+                            <TableHead className={"text-placeholder"}>Team</TableHead>
+                            <TableHead className={"text-placeholder"}>Project</TableHead>
+                            <TableHead className={"text-placeholder"}>Priority</TableHead>
+                            <TableHead className={"text-placeholder"}>Topic</TableHead>
+                            <TableHead className={"text-placeholder"}>Title</TableHead>
+                            <TableHead className={"text-placeholder"}>Status</TableHead>
+                            <TableHead className={"text-placeholder"}>DueDate</TableHead>
+                            <TableHead className={"text-placeholder"}>CreatedAt</TableHead>
+                            <TableHead className={"text-placeholder"}>Creator</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className={"text-sm"}>
@@ -107,7 +107,7 @@ export function TaskTable() {
                                 <TableCell>{task.createdAt}</TableCell>
                                 <TableCell className={"flex flex-row space-x-2 items-center"}>
                                     <span>{task.creator}</span>
-                                    <Avatar img_url={path} height={20} width={20} className={"p-0"}/>
+                                    <Avatar img_url={path} size={20} className={"p-0"}/>
                                 </TableCell>
                             </TableRow>
                         ))}

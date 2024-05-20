@@ -19,7 +19,7 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
     return (
         <>
             <Button text={"Message"} theme={"white"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.showModal()}>
-                <MessageSquare size={20} className={"mr-3"}/>
+                <MessageSquare size={20} className={"mr-2"}/>
             </Button>
 
             <div className={cn("flex items-center justify-center")}>

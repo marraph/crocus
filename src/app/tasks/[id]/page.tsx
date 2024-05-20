@@ -39,9 +39,7 @@ export default function TaskIdPage() {
                     <CloseTaskDialog/>
                     <DeleteTaskDialog/>
                 </div>
-
             </div>
-
             <div className={"flex flex-row grow border border-white border-opacity-20 bg-black rounded-lg"}>
                 <div className={"w-full min-h-full bg-dark rounded-l-lg"}>
                     <Message

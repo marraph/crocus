@@ -61,7 +61,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
                     <span className={cn("text-gray text-sm", className)}>{createdAt}</span>
                     <div className={cn("flex flex-row items-center space-x-2", className)}>
                         <span className={cn("text-gray text-sm", className)}>{createdBy}</span>
-                        <Avatar img_url={path} height={30} width={30}/>
+                        <Avatar img_url={path} size={30}/>
                     </div>
                 </div>
             </div>

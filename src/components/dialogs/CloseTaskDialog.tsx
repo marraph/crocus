@@ -20,7 +20,7 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogH
     return (
         <>
             <Button text={"Close"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.showModal()}>
-                <CheckCheck size={20} className={"mr-3"}/>
+                <CheckCheck size={20} className={"mr-2"}/>
             </Button>
 
             <div className={"flex items-center justify-center"}>

@@ -37,7 +37,7 @@ export function ProfileContext() {
                 className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20")}
                 onClick={() => setShowProfile(!showProfile)}>
                 <div className={cn("flex flex-row items-center space-x-2")}>
-                    <Avatar className={cn("p-2")} img_url={path} width={60} height={60} shape={"box"}></Avatar>
+                    <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
                     <div className={cn("flex flex-col items-start")}>
                         <span className={""}>{"mvriu5"}</span>
                         <span className={cn("text-gray text-xs")}>{"marraph"}</span>

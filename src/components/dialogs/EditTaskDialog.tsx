@@ -20,7 +20,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
     return (
         <>
             <Button text={"Edit"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.showModal()}>
-                <Pencil size={20} className={"mr-3"}/>
+                <Pencil size={16} className={"mr-2"}/>
             </Button>
 
             <div className={"flex items-center justify-center"}>
