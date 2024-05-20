@@ -6,6 +6,9 @@ import {useRouter} from "next/navigation";
 import {TaskContext} from "@/components/contextmenus/TaskContext";
 import {SignalHigh, SignalLow, SignalMedium} from "lucide-react";
 import {event} from "next/dist/build/output/log";
+import {TopicBadge} from "@/components/badges/TopicBadge";
+import {StatusBadge} from "@/components/badges/StatusBadge";
+import {PriorityBadge} from "@/components/badges/PriorityBadge";
 
 const path = "/image.png";
 
@@ -91,16 +94,14 @@ export function TaskTable() {
                                 <TableCell>{task.team}</TableCell>
                                 <TableCell>{task.project}</TableCell>
                                 <TableCell>
-                                    {task.priority === 'low' && <SignalLow strokeWidth={3} />}
-                                    {task.priority === 'medium' && <SignalMedium strokeWidth={3} />}
-                                    {task.priority === 'high' && <SignalHigh strokeWidth={3} />}
+                                    <PriorityBadge priority={task.priority}/>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge text={task.topic} className={"w-max bg-error text-error font-normal  px-2 py-0.5 bg-opacity-20 rounded-lg"}></Badge>
+                                    <TopicBadge title={task.topic} color={""}/>
                                 </TableCell>
                                 <TableCell className={"text-white"}>{task.title}</TableCell>
                                 <TableCell>
-                                    <Badge text={task.status} className={"w-max bg-warning font-normal text-warning px-2 py-0.5 bg-opacity-20 rounded-md"}></Badge>
+                                    <StatusBadge title={task.status} color={""}/>
                                 </TableCell>
                                 <TableCell>{task.dueDate}</TableCell>
                                 <TableCell>{task.createdAt}</TableCell>

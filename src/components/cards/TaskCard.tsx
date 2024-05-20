@@ -5,6 +5,9 @@ import React from "react";
 import {cn} from "@/utils/cn";
 import {useRouter} from "next/navigation";
 import {SignalHigh, SignalLow, SignalMedium} from "lucide-react";
+import {TopicBadge} from "@/components/badges/TopicBadge";
+import {StatusBadge} from "@/components/badges/StatusBadge";
+import {PriorityBadge} from "@/components/badges/PriorityBadge";
 
 const path = "/image.png";
 
@@ -35,12 +38,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
                 </div>
                 <div className={"flex flex-row justify-between"}>
                     <div className={"flex flex-row space-x-2"}>
-                        <Badge text={topic} className={cn("bg-success bg-opacity-20 text-success font-normal rounded-lg w-max px-2 py-0.5 text-xs", className)}></Badge>
-                        <Badge text={status} className={cn("bg-warning bg-opacity-20 text-warning font-normal rounded-md w-max px-2 py-0.5 text-xs", className)}></Badge>
+                        <TopicBadge title={topic} color={""}/>
+                        <StatusBadge title={status} color={""}/>
                     </div>
-                    {priority === 'low' && <SignalLow strokeWidth={3} className={"text-gray"}/>}
-                    {priority === 'medium' && <SignalMedium strokeWidth={3} className={"text-gray"}/>}
-                    {priority === 'high' && <SignalHigh strokeWidth={3} className={"text-gray"}/>}
+                    <PriorityBadge priority={priority}/>
                 </div>
             </div>
 
