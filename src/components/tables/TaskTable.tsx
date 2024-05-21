@@ -9,6 +9,7 @@ import {event} from "next/dist/build/output/log";
 import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
+import {Caret} from "@/components/badges/Caret";
 
 const path = "/image.png";
 
@@ -51,9 +52,39 @@ const tasks = [
     },
 ]
 
+type Task = {
+    id: number;
+    team: string;
+    project: string;
+    priority: string;
+    topic: string;
+    title: string;
+    status: string;
+    dueDate: string;
+    createdAt: string;
+    creator: string;
+};
+
+const header = [
+    { key: "id", label: "Id" },
+    { key: "team", label: "Team" },
+    { key: "project", label: "Project" },
+    { key: "priority", label: "Priority" },
+    { key: "topic", label: "Topic" },
+    { key: "title", label: "Title" },
+    { key: "status", label: "Status" },
+    { key: "dueDate", label: "DueDate" },
+    { key: "createdAt", label: "CreatedAt" },
+    { key: "creator", label: "Creator" },
+];
+
 export function TaskTable() {
+    type SortOrder = "asc" | "desc";
+    type SortState = { key: string; order: SortOrder; };
+
     const router = useRouter();
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
+    const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
 
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
@@ -66,6 +97,24 @@ export function TaskTable() {
         setContextMenu({ id, x: e.clientX, y: e.clientY, visible: true });
     };
 
+    function handleHeaderClick(headerKey: string) {
+        setSort({
+            key: headerKey,
+            order: sort.key === headerKey ? (sort.order === "asc" ? "desc" : "asc") : "desc"
+        })
+    }
+
+    function getSortedArray(array: Task[]) {
+        return array.sort((a: Task, b: Task) => {
+            const aValue = a[sort.key as keyof Task];
+            const bValue = b[sort.key as keyof Task];
+
+            if (aValue < bValue) return sort.order === "asc" ? -1 : 1;
+            if (aValue > bValue) return sort.order === "asc" ? 1 : -1;
+            return 0;
+        });
+    }
+
     return (
         <>
             {contextMenu.visible &&
@@ -75,20 +124,20 @@ export function TaskTable() {
                 <Table className={"bg-black w-full"}>
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>
-                            <TableHead className={"text-placeholder"}>ID</TableHead>
-                            <TableHead className={"text-placeholder"}>Team</TableHead>
-                            <TableHead className={"text-placeholder"}>Project</TableHead>
-                            <TableHead className={"text-placeholder"}>Priority</TableHead>
-                            <TableHead className={"text-placeholder"}>Topic</TableHead>
-                            <TableHead className={"text-placeholder"}>Title</TableHead>
-                            <TableHead className={"text-placeholder"}>Status</TableHead>
-                            <TableHead className={"text-placeholder"}>DueDate</TableHead>
-                            <TableHead className={"text-placeholder"}>CreatedAt</TableHead>
-                            <TableHead className={"text-placeholder"}>Creator</TableHead>
+                            {header.map((header) => (
+                                <TableHead className={"text-placeholder"} key={header.key} onClick={() => handleHeaderClick(header.key)}>
+                                    {header.label}
+                                    <span>
+                                        {header.key === sort.key && (
+                                            <Caret direction={sort.key === header.key ? sort.order : "asc"}/>
+                                        )}
+                                    </span>
+                                </TableHead>
+                            ))}
                         </TableRow>
                     </TableHeader>
                     <TableBody className={"text-sm"}>
-                        {tasks.map((task) => (
+                        {getSortedArray(tasks).map((task) => (
                             <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)} onContextMenu={(event) => handleContextMenu(event, task.id)}>
                                 <TableCell>{task.id}</TableCell>
                                 <TableCell>{task.team}</TableCell>
