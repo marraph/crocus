@@ -125,9 +125,9 @@ export function TaskTable() {
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>
                             {header.map((header) => (
-                                <TableHead className={"text-placeholder"} key={header.key} onClick={() => handleHeaderClick(header.key)}>
-                                    {header.label}
-                                    <span>
+                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key} onClick={() => handleHeaderClick(header.key)}>
+                                    <span className={"flex flex-row items-center"}>
+                                        {header.label}
                                         {header.key === sort.key && (
                                             <Caret direction={sort.key === header.key ? sort.order : "asc"}/>
                                         )}
