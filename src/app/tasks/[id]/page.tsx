@@ -29,7 +29,7 @@ export default function TaskIdPage() {
     const router = useRouter();
 
     return (
-        <div className={"h-full flex flex-col space-y-4 px-8 pb-8"}>
+        <div className={"h-full flex flex-col space-y-4"}>
             <div className={"w-full flex flex-row justify-between"}>
                 <Breadcrump pastText={"Tasks"} nowText={"Api not working"} className={"h-8"}
                             onClick={() => router.push("/tasks/")}/>

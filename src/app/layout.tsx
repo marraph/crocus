@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import {Drawer} from "@/components/Drawer";
-import {SearchField} from "@/components/SearchField";
 import React from "react";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {Bell} from "lucide-react";
 
 const roboto = Roboto({subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
@@ -20,13 +17,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
             <body className={roboto.className}>
                 <div className={"flex flex-row"}>
                     <Drawer></Drawer>
-                    <div className={"w-full flex flex-col space-y-4"}>
-                        <div className={"w-full py-2 px-8 flex flex-row justify-end space-x-2 border-b border-white border-opacity-20"}>
-                            <Button text={""} className={"h-8 py-1 px-2"}>
-                                <Bell size={20}/>
-                            </Button>
-                            <SearchField></SearchField>
-                        </div>
+                    <div className={"w-full flex flex-col space-y-4 p-8"}>
                         {children}
                     </div>
                 </div>

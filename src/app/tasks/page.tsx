@@ -13,9 +13,9 @@ export default function Home() {
 
     return (
         <div className={"h-full flex flex-col"}>
-            <div className={"w-full flex flex-row pr-8 text-nowrap justify-between"}>
+            <div className={"w-full flex flex-row text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-4"}>
-                    <span className={"text-xl ml-8"}>{"Tasks"}</span>
+                    <span className={"text-xl"}>{"Tasks"}</span>
                     <div className={"flex flex-row space-x-1"}>
                         <OctagonAlert size={15} className={"text-placeholder"}/>
                         <span className={"text-xs text-placeholder"}>{"2 OPEN"}</span>

@@ -120,7 +120,7 @@ export function TaskTable() {
             {contextMenu.visible &&
                 <TaskContext taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
             }
-            <div className={"w-full h-full text-xs flex items-stretch pt-4 pb-8 px-8"}>
+            <div className={"w-full h-full text-xs flex items-stretch pt-4"}>
                 <Table className={"bg-black w-full"}>
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>

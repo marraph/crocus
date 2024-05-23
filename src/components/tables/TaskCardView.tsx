@@ -126,7 +126,7 @@ const tasks = [
 export function TaskCardView() {
 
     return (
-        <div className={"grid grid-cols-5 gap-9 pt-4 pb-8 px-8"}>
+        <div className={"grid grid-cols-5 gap-9 pt-4"}>
             {tasks.map((task, index) => (
                 <TaskCard key={index} _id={task.id} title={task.title} topic={task.topic} priority={task.priority} team={task.team} project={task.project}
                           status={task.status} createdAt={task.createdAt} createdBy={task.createdBy} dueDate={task.dueDate}/>
