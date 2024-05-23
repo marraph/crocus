@@ -13,7 +13,7 @@ export default function Home() {
 
     return (
         <div className={"h-full flex flex-col"}>
-            <div className={"w-full flex flex-row text-nowrap justify-between"}>
+            <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-4"}>
                     <span className={"text-xl"}>{"Tasks"}</span>
                     <div className={"flex flex-row space-x-1"}>
