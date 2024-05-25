@@ -1,10 +1,10 @@
 "use client";
 
 import React, {useState} from "react";
-import {TaskTable} from "@/components/tables/TaskTable";
+import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
-import {TaskCardView} from "@/components/tables/TaskCardView";
+import {TaskCardView} from "@/components/views/TaskCardView";
 import {FilterContext} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert, Projector} from "lucide-react";
 import {FilterBadge} from "@/components/badges/FilterBadge";
@@ -23,9 +23,6 @@ export default function Home() {
                     </div>
                 </div>
                 <div className={"flex flex-row justify-end space-x-2 h-8 z-10"}>
-                    <FilterBadge value={"Project"}>
-                        <Projector size={16}/>
-                    </FilterBadge>
                     <TaskCreateDialog/>
                     <SwitchButton firstTitle={"Table"} secondTitle={"Card"} onClick={() => setViewMode(!viewMode)}/>
                     <FilterContext />

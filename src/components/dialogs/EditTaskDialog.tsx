@@ -33,6 +33,9 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
                                 <span className={"text-md text-white"}>Edit Task:</span>
                                 <Badge text={title} className={"flex justify-end font-normal bg-dark text-white rounded-lg"}></Badge>
                             </div>
+
+
+
                             <span className={"text-white"}>Properties</span>
                         </div>
                         <CloseButton text={""} className={"h-min w-min mt-4"}

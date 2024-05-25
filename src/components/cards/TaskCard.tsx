@@ -4,7 +4,6 @@ import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import React from "react";
 import {cn} from "@/utils/cn";
 import {useRouter} from "next/navigation";
-import {SignalHigh, SignalLow, SignalMedium} from "lucide-react";
 import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
@@ -28,7 +27,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
     const router = useRouter();
 
     return (
-        <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-72 cursor-pointer hover:bg-dark", className)}
+        <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-72 cursor-pointer hover:bg-dark overflow-hidden", className)}
              onClick={() => router.push(`/tasks/${_id}`)}>
 
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
@@ -38,8 +37,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
                 </div>
                 <div className={"flex flex-row justify-between"}>
                     <div className={"flex flex-row space-x-2"}>
-                        <TopicBadge title={topic} color={""}/>
-                        <StatusBadge title={status} color={""}/>
+                        <TopicBadge title={topic} color={"error"}/>
+                        <StatusBadge title={status} color={"warning"}/>
                     </div>
                     <PriorityBadge priority={priority}/>
                 </div>

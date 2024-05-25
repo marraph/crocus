@@ -41,13 +41,8 @@ export default function TaskIdPage() {
                 </div>
             </div>
             <div className={"flex flex-row grow border border-white border-opacity-20 bg-black rounded-lg"}>
-                <div className={"w-full min-h-full bg-dark rounded-l-lg"}>
-                    <Message
-                        message={"I am a message. I completed blaniw gwig. wnginigniw nig wg nig wnininigw!"}
-                        writer={"mvriu5"}
-                        date={"2021-10-10 14:29"}
-                        type={"change"}
-                    ></Message>
+                <div className={"w-full min-h-full bg-dark rounded-l-lg space-y-4 "}>
+
                 </div>
                 <div className={"w-max min-h-full bg-black rounded-lg h-min flex flex-col text-sm"}>
                     <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>

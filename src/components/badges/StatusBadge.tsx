@@ -13,7 +13,7 @@ export const StatusBadge: React.FC<Props> = ({ title, color, className, ...props
     return (
         <Badge
             text={title}
-            className={cn("bg-warning bg-opacity-20 text-warning font-normal rounded-md w-max px-2 py-0.5", className)}
+            className={cn(`bg-${color} bg-opacity-20 text-${color} font-normal rounded-md w-max px-2 py-0.5`, className)}
             {...props}>
         </Badge>
     )

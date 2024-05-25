@@ -10,9 +10,9 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 export const PriorityBadge: React.FC<Props> = ({ priority }) => {
     return (
         <>
-            {priority === "low" && <SignalLow strokeWidth={3} />}
-            {priority === 'medium' && <SignalMedium strokeWidth={3} />}
-            {priority === 'high' && <SignalHigh strokeWidth={3} />}
+            {priority === "a_low" && <SignalLow strokeWidth={3} />}
+            {priority === 'b_medium' && <SignalMedium strokeWidth={3} />}
+            {priority === 'c_high' && <SignalHigh strokeWidth={3} />}
         </>
     )
 }
