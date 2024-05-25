@@ -57,24 +57,24 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                         <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder", className)} value={descriptionValue} />
 
                         <div className={cn("flex flex-row space-x-2", className)}>
-                            <Combobox buttonTitle={"Team"} className={cn("h-8", className)}>
+                            <Combobox buttonTitle={"Team"} size={"small"}>
                                 {team.map((team, index) => (
-                                    <ComboboxItem title={team} key={index}/>
+                                    <ComboboxItem title={team} key={index} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Project"} className={cn("h-8", className)}>
+                            <Combobox buttonTitle={"Project"} size={"small"}>
                                 {project.map((project) => (
-                                    <ComboboxItem title={project} key={project}/>
+                                    <ComboboxItem title={project} key={project} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Topic"} className={cn("h-8", className)}>
+                            <Combobox buttonTitle={"Topic"} size={"small"}>
                                 {topic.map((topic) => (
-                                    <ComboboxItem title={topic} key={topic}/>
+                                    <ComboboxItem title={topic} key={topic} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Status"} className={cn("h-8", className)}>
+                            <Combobox buttonTitle={"Status"} size={"small"}>
                                 {status.map((status) => (
-                                    <ComboboxItem title={status} key={status}/>
+                                    <ComboboxItem title={status} key={status} size={"small"}/>
                                 ))}
                             </Combobox>
                         </div>
