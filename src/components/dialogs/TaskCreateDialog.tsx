@@ -91,7 +91,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <DatePicker text={"Due Date"} iconSize={12} className={"h-8 text-xs"}/>
+                            <DatePicker text={"Due Date"} iconSize={12} className={"h-8"}/>
                         </div>
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} text={""} onClick={handleCloseClick} />

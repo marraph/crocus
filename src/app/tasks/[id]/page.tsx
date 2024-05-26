@@ -7,7 +7,6 @@ import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
-import { Message } from "@/components/Message";
 
 const task = {
     title: "Title",
