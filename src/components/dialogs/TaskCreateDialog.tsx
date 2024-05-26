@@ -2,27 +2,30 @@
 
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {SquarePen} from "lucide-react";
+import {CalendarDays, SquarePen} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 
 const team = ["None", "Frontend", "Backend"];
 const project = ["None", "ServerAPI", "ClientAPI"];
 const topic = ["None", "Bug", "Feature"];
 const status = ["None", "Todo", "In Progress", "Done"];
+const priority = ["None", "Low", "Medium", "High"];
+
 
 export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
-    const dialogRef = React.useRef<HTMLDialogElement>(null);
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const teamRef = useRef<ComboboxRef>(null);
+    const projectRef = useRef<ComboboxRef>(null);
+    const topicRef = useRef<ComboboxRef>(null);
+    const statusRef = useRef<ComboboxRef>(null);
+    const priorityRef = useRef<ComboboxRef>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
-
-    const resetFields = () => {
-        setTitleValue("");
-        setDescriptionValue("");
-    }
 
     const handleCreateClick = () => {
         handleCloseClick();
@@ -38,7 +41,13 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
 
     const handleCloseClick = () => {
         dialogRef.current?.close();
-        resetFields();
+        teamRef.current?.reset();
+        projectRef.current?.reset();
+        topicRef.current?.reset();
+        statusRef.current?.reset();
+        priorityRef.current?.reset();
+        setTitleValue("");
+        setDescriptionValue("");
     }
 
     return (
@@ -57,26 +66,32 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                         <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder", className)} value={descriptionValue} />
 
                         <div className={cn("flex flex-row space-x-2", className)}>
-                            <Combobox buttonTitle={"Team"} size={"small"}>
+                            <Combobox buttonTitle={"Team"} size={"small"} ref={teamRef}>
                                 {team.map((team, index) => (
                                     <ComboboxItem title={team} key={index} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Project"} size={"small"}>
+                            <Combobox buttonTitle={"Project"} size={"small"} ref={projectRef}>
                                 {project.map((project) => (
                                     <ComboboxItem title={project} key={project} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Topic"} size={"small"}>
+                            <Combobox buttonTitle={"Topic"} size={"small"} ref={topicRef}>
                                 {topic.map((topic) => (
                                     <ComboboxItem title={topic} key={topic} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Status"} size={"small"}>
+                            <Combobox buttonTitle={"Status"} size={"small"} ref={statusRef}>
                                 {status.map((status) => (
                                     <ComboboxItem title={status} key={status} size={"small"}/>
                                 ))}
                             </Combobox>
+                            <Combobox buttonTitle={"Priority"} size={"small"} ref={priorityRef}>
+                                {priority.map((priority) => (
+                                    <ComboboxItem title={priority} key={priority} size={"small"}/>
+                                ))}
+                            </Combobox>
+                            <DatePicker text={"Due Date"} iconSize={12} className={"h-8 text-xs"}/>
                         </div>
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} text={""} onClick={handleCloseClick} />
