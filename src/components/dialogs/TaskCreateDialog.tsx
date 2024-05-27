@@ -94,7 +94,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                             <DatePicker text={"Due Date"} iconSize={12} className={"h-8"}/>
                         </div>
                     </div>
-                    <CloseButton className={cn("h-min w-min", className)} text={""} onClick={handleCloseClick} />
+                    <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick} />
                 </div>
                 <DialogSeperator/>
                 <div className={cn("flex flex-row justify-end px-4 py-2", className)}>
