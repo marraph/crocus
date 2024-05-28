@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import {Pencil} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
@@ -8,6 +8,7 @@ import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {SavedTaskChangesAlert} from "@/components/alerts/SavedTaskChangesAlert";
 
 const title = "Server api doesnt work"
 
@@ -19,9 +20,19 @@ const status = ["Open", "In Progress", "Done"];
 
 export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
+    const [showAlert, setShowAlert] = useState(false);
+
+    const handleAlert = () => {
+        setShowAlert(true);
+
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 3000);
+    };
 
     const editTask = () => {
         dialogRef.current?.close();
+        handleAlert();
     }
 
     return (
@@ -42,8 +53,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
                                        className={"flex justify-end font-normal bg-dark text-white rounded-lg"}></Badge>
                             </div>
                         </div>
-                        <CloseButton text={""} className={"h-min w-min mt-4"}
-                                     onClick={() => dialogRef.current?.close()}/>
+                        <CloseButton className={"h-min w-min mt-4"} onClick={() => dialogRef.current?.close()}/>
                     </div>
                     <DialogSeperator/>
                     <div className={"flex flex-row space-x-2 px-4 py-2"}>
@@ -84,6 +94,10 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
                         </div>
                 </Dialog>
             </div>
+
+            {showAlert && (
+                <SavedTaskChangesAlert/>
+            )}
         </>
 )
 })

@@ -1,4 +1,4 @@
-import React, {forwardRef} from "react";
+import React, {forwardRef, useState} from "react";
 import {MessageSquare, Send} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
@@ -6,14 +6,25 @@ import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
+import {AddedTaskMessageAlert} from "@/components/alerts/AddedTaskMessageAlert";
 
 const title = "Server api doesnt work"
 
 export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
+    const [showAlert, setShowAlert] = useState(false);
+
+    const handleAlert = () => {
+        setShowAlert(true);
+
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 3000);
+    };
 
     const sendMessage = () => {
         dialogRef.current?.close();
+        handleAlert();
     }
 
     return (
@@ -32,7 +43,7 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                             <Textarea placeholder={"Write your message..."} className={"h-20 w-full bg-black placeholder-placeholder"}/>
                         </div>
-                        <CloseButton text={""} className={"h-min w-min mt-4"} onClick={() => dialogRef.current?.close()}/>
+                        <CloseButton className={"h-min w-min mt-4"} onClick={() => dialogRef.current?.close()}/>
                     </div>
                     <DialogSeperator/>
                     <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
@@ -43,6 +54,10 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
                     </div>
                 </Dialog>
             </div>
+
+            {showAlert && (
+                <AddedTaskMessageAlert/>
+            )}
         </>
 
     )

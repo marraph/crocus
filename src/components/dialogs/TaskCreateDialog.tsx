@@ -9,6 +9,7 @@ import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
+import {TaskCreatedAlert} from "@/components/alerts/TaskCreatedAlert";
 
 const team = ["None", "Frontend", "Backend"];
 const project = ["None", "ServerAPI", "ClientAPI"];
@@ -26,9 +27,19 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const priorityRef = useRef<ComboboxRef>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
+
+    const handleAlert = () => {
+        setShowAlert(true);
+
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 3000);
+    };
 
     const handleCreateClick = () => {
         handleCloseClick();
+        handleAlert();
     }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +114,10 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                     </Button>
                 </div>
             </Dialog>
+
+            {showAlert && (
+            <TaskCreatedAlert/>
+            )}
         </>
     )
 })

@@ -4,14 +4,25 @@ import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Trash2} from "lucide-react";
 import {cn} from "@/utils/cn";
-import React from "react";
+import React, {useState} from "react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
+import {TaskDeletedAlert} from "@/components/alerts/TaskDeletedAlert";
 
 export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
+    const [showAlert, setShowAlert] = useState(false);
+
+    const handleAlert = () => {
+        setShowAlert(true);
+
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 3000);
+    };
 
     const deleteTask = () => {
         dialogRef.current?.close();
+        handleAlert();
     }
 
     return (
@@ -36,6 +47,10 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                         </div>
                 </Dialog>
             </div>
+
+            {showAlert && (
+                <TaskDeletedAlert/>
+            )}
         </>
     )
 })
