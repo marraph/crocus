@@ -4,11 +4,11 @@ import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import React, {useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {CalendarDays, SquarePen} from "lucide-react";
+import {SquarePen} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
-import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
+import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {TaskCreatedAlert} from "@/components/alerts/TaskCreatedAlert";
 
 const team = ["None", "Frontend", "Backend"];
@@ -25,6 +25,8 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const topicRef = useRef<ComboboxRef>(null);
     const statusRef = useRef<ComboboxRef>(null);
     const priorityRef = useRef<ComboboxRef>(null);
+    const datePickerRef = useRef<DatepickerRef>(null);
+
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
     const [showAlert, setShowAlert] = useState(false);
@@ -57,6 +59,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         topicRef.current?.reset();
         statusRef.current?.reset();
         priorityRef.current?.reset();
+        datePickerRef.current?.reset();
         setTitleValue("");
         setDescriptionValue("");
     }
@@ -102,7 +105,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <DatePicker text={"Due Date"} iconSize={12} className={"h-8"}/>
+                            <DatePicker text={"Due Date"} iconSize={12} className={"h-8"} ref={datePickerRef}/>
                         </div>
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick} />

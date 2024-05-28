@@ -147,7 +147,7 @@ export function TaskTable() {
                                 </TableCell>
                                 <TableCell className={"text-white"}>{task.title}</TableCell>
                                 <TableCell>
-                                    <StatusBadge title={task.status} color={""}/>
+                                    <StatusBadge title={task.status} color={"warning"}/>
                                 </TableCell>
                                 <TableCell>{task.dueDate}</TableCell>
                                 <TableCell>{task.createdAt}</TableCell>
