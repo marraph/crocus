@@ -6,7 +6,6 @@ import {
     ContextMenuItem,
 } from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {BarChart, Flame, Folder, ListFilter, Radio, User, Users} from "lucide-react";
-import {Button} from "@marraph/daisy/components/button/Button";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 
 const teams = ["Frontend", "Backend", "Design", "Management", "Marketing", "Support"];
@@ -73,7 +72,7 @@ export function FilterContext() {
             </button>
             <div className={"absolute top-full right-0"}>
                 {showFilter &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={false} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         <ContextMenuItem title={"Team"} onClick={() => {setShowTeam(!showTeam); setShowFilter(!showFilter);}}>
                             <ContextMenuIcon icon={<Users size={18}/>}/>
                         </ContextMenuItem>
@@ -95,42 +94,42 @@ export function FilterContext() {
                     </ContextMenu>
                 }
                 {showTeam &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={true} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         {teams.map((team) => (
                             <ContextMenuItem key={team} title={team} onClick={() => {closeMenus(); addFilterToList("Team"); setSelectedTeam(true);}}/>
                         ))}
                     </ContextMenu>
                 }
                 {showProject &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={true} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         {projects.map((project) => (
                             <ContextMenuItem key={project} title={project} onClick={() => {closeMenus(); addFilterToList("Project"); setSelectedProject(true);}}/>
                         ))}
                     </ContextMenu>
                 }
                 {showTopic &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={true} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         {topics.map((topic) => (
                             <ContextMenuItem key={topic} title={topic} onClick={() => {closeMenus(); addFilterToList("Topic"); setSelectedTopic(true);}}/>
                         ))}
                     </ContextMenu>
                 }
                 {showStatus &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={true} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         {statuses.map((status) => (
                             <ContextMenuItem key={status} title={status} onClick={() => {closeMenus(); addFilterToList("Status"); setSelectedStatus(true);}}/>
                         ))}
                     </ContextMenu>
                 }
                 {showPriority &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={true} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         {priorities.map((priority) => (
                             <ContextMenuItem key={priority} title={priority} onClick={() => {closeMenus(); addFilterToList("Priority"); setSelectedPriority(true);}}/>
                         ))}
                     </ContextMenu>
                 }
                 {showCreator &&
-                    <ContextMenu className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
+                    <ContextMenu checkmarkOn={true} className={"w-max font-normal text-sm p-2 shadow-black shadow-2xl"}>
                         {creators.map((creator) => (
                             <ContextMenuItem key={creator} title={creator} onClick={() => {closeMenus(); addFilterToList("Creator"); setSelectedCreator(true);}}/>
                         ))}
