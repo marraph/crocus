@@ -1,14 +1,15 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {Pencil} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
-import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import {SavedTaskChangesAlert} from "@/components/alerts/SavedTaskChangesAlert";
+import {DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 
 const title = "Server api doesnt work"
 
@@ -21,6 +22,14 @@ const status = ["Open", "In Progress", "Done"];
 export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
+
+    const teamRef = useRef<ComboboxRef>(null);
+    const projectRef = useRef<ComboboxRef>(null);
+    const topicRef = useRef<ComboboxRef>(null);
+    const statusRef = useRef<ComboboxRef>(null);
+    const priorityRef = useRef<ComboboxRef>(null);
+    const datePickerRef = useRef<DatepickerRef>(null);
+
 
     const handleAlert = () => {
         setShowAlert(true);
@@ -56,42 +65,62 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
                         <CloseButton className={"h-min w-min mt-4"} onClick={() => dialogRef.current?.close()}/>
                     </div>
                     <DialogSeperator/>
-                    <div className={"flex flex-row space-x-2 px-4 py-2"}>
-                        <Combobox buttonTitle={"Team"}>
-                            {team.map((team) => (
-                                <ComboboxItem key={team} title={team}/>
-                            ))}
-                        </Combobox>
-                        <Combobox buttonTitle={"Project"}>
-                            {project.map((project) => (
-                                <ComboboxItem key={project} title={project}/>
-                            ))}
-                        </Combobox>
-                    </div>
-                    <div className={"flex flex-row space-x-2 px-4 py-2"}>
-                        <Combobox buttonTitle={"Topic"}>
-                            {topic.map((topic) => (
-                                <ComboboxItem key={topic} title={topic}/>
-                            ))}
-                        </Combobox>
-                        <Combobox buttonTitle={"Status"}>
-                            {status.map((status) => (
-                                <ComboboxItem key={status} title={status}/>
-                            ))}
-                        </Combobox>
-                        <Combobox buttonTitle={"Priority"}>
-                            {priority.map((priority) => (
-                                <ComboboxItem key={priority} title={priority}/>
-                            ))}
-                        </Combobox>
-                    </div>
-                        <DialogSeperator/>
-                        <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
-                            <Button text={"Cancel"} className={cn("h-8")}
-                                    onClick={() => dialogRef.current?.close()}/>
-                            <Button text={"Save changes"} theme={"white"} onClick={editTask}
-                                    className={"h-8"}/>
+                    <div className={"flex flex-row space-x-2 px-4 pt-4"}>
+
+                        <div className={"flex flex-col space-y-1 z-50"}>
+                            <span className={"text-gray text-xs"}>Team</span>
+                            <Combobox buttonTitle={"Team"}>
+                                {team.map((team) => (
+                                    <ComboboxItem key={team} title={team}/>
+                                ))}
+                            </Combobox>
                         </div>
+
+                        <div className={"flex flex-col space-y-1 z-50"}>
+                            <span className={"text-gray text-xs"}>Project</span>
+                            <Combobox buttonTitle={"Project"}>
+                                {project.map((project) => (
+                                    <ComboboxItem key={project} title={project}/>
+                                ))}
+                            </Combobox>
+                        </div>
+                    </div>
+                    <div className={"flex flex-row space-x-2 px-4 py-4"}>
+
+                        <div className={"flex flex-col space-y-1 z-40"}>
+                            <span className={"text-gray text-xs"}>Topic</span>
+                            <Combobox buttonTitle={"Topic"}>
+                                {topic.map((topic) => (
+                                    <ComboboxItem key={topic} title={topic}/>
+                                ))}
+                            </Combobox>
+                        </div>
+
+                        <div className={"flex flex-col space-y-1 z-40"}>
+                            <span className={"text-gray text-xs"}>Status</span>
+                            <Combobox buttonTitle={"Status"}>
+                                {status.map((status) => (
+                                    <ComboboxItem key={status} title={status}/>
+                                ))}
+                            </Combobox>
+                        </div>
+
+                        <div className={"flex flex-col space-y-1 z-40"}>
+                            <span className={"text-gray text-xs"}>Priority</span>
+                            <Combobox buttonTitle={"Priority"}>
+                                {priority.map((priority) => (
+                                    <ComboboxItem key={priority} title={priority}/>
+                                ))}
+                            </Combobox>
+                        </div>
+                    </div>
+                    <DialogSeperator/>
+                    <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
+                        <Button text={"Cancel"} className={cn("h-8")}
+                                onClick={() => dialogRef.current?.close()}/>
+                        <Button text={"Save changes"} theme={"white"} onClick={editTask}
+                                className={"h-8"}/>
+                    </div>
                 </Dialog>
             </div>
 
