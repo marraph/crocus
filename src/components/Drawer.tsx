@@ -2,7 +2,7 @@
 
 import {NavigationItem} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import React, {useState} from "react";
-import {Bell, CalendarDays, ClipboardList, Flower, LayoutDashboard, SquarePlus, Timer} from "lucide-react";
+import {Bell, CalendarDays, ClipboardList, Flower, LayoutDashboard, Moon, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContext} from "@/components/contextmenus/ProfileContext";
 import {useRouter} from "next/navigation";
@@ -22,8 +22,8 @@ export function Drawer() {
         <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")}>
             <div className={"space-y-2"}>
                 <div className={"flex flex-row space-x-4 items-center mb-7"}>
-                    <Flower size={30}/>
-                    <span className={"text-3xl"}>Blossom</span>
+                    <Moon size={30}/>
+                    <span className={"text-3xl"}>Luna</span>
                 </div>
                 <SearchField/>
                 <div className={"space-y-1 pt-4"}>

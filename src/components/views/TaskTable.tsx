@@ -17,7 +17,7 @@ const tasks = [
         project: "ServerAPI",
         topic: "bug",
         title: "Response doesnt work",
-        priority: "high",
+        priority: "c_high",
         status: "todo",
         createdAt: "April 18",
         creator: "mvriu5",
@@ -29,7 +29,7 @@ const tasks = [
         project: "ServerAPI",
         topic: "bug",
         title: "Response doesnt work v2",
-        priority: "medium",
+        priority: "b_medium",
         status: "todo",
         createdAt: "April 19",
         creator: "mvriu5",
@@ -41,7 +41,7 @@ const tasks = [
         project: "ServerAPI",
         topic: "bug",
         title: "Response doesnt work v3",
-        priority: "low",
+        priority: "a_low",
         status: "todo",
         createdAt: "April 19",
         creator: "mvriu5",
@@ -86,7 +86,7 @@ export function TaskTable() {
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
         document.addEventListener('click', handleClick);
-        return () => document.removeEventListener('click', handleClick);
+            return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
     const handleContextMenu = (e: React.MouseEvent<HTMLTableRowElement>, id: number) => {
@@ -143,7 +143,7 @@ export function TaskTable() {
                                     <PriorityBadge priority={task.priority}/>
                                 </TableCell>
                                 <TableCell>
-                                    <TopicBadge title={task.topic} color={""}/>
+                                    <TopicBadge title={task.topic} color={"error"}/>
                                 </TableCell>
                                 <TableCell className={"text-white"}>{task.title}</TableCell>
                                 <TableCell>

@@ -14,18 +14,15 @@ export default function Home() {
     return (
         <div className={"h-full flex flex-col"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
-                <div className={"flex flex-row items-center space-x-4"}>
-                    <span className={"text-xl"}>{"Tasks"}</span>
+                <div className={"flex flex-row items-center space-x-2 z-10"}>
+                    <TaskCreateDialog/>
+                    <FilterContext/>
                     <div className={"flex flex-row space-x-1"}>
                         <OctagonAlert size={15} className={"text-placeholder"}/>
                         <span className={"text-xs text-placeholder"}>{"2 OPEN"}</span>
                     </div>
                 </div>
-                <div className={"flex flex-row justify-end space-x-2 h-8 z-10"}>
-                    <TaskCreateDialog/>
-                    <SwitchButton firstTitle={"Table"} secondTitle={"Card"} onClick={() => setViewMode(!viewMode)}/>
-                    <FilterContext />
-                </div>
+                <SwitchButton firstTitle={"Table"} secondTitle={"Card"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>
             </div>
             {viewMode ? (
                 <TaskTable></TaskTable>
