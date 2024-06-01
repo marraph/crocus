@@ -52,7 +52,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
 
             <div className={"flex items-center justify-center"}>
                 <Dialog
-                    className={"border border-white border-opacity-20 w-1/3 drop-shadow-2xl overflow-visible"} {...props}
+                    className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props}
                     ref={dialogRef}>
                     <div className={"flex flex-row justify-between px-4 pb-2"}>
                         <div className={"flex flex-col space-y-2"}>

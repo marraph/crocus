@@ -34,7 +34,7 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             </Button>
 
             <div className={cn("flex items-center justify-center")}>
-                <Dialog className={cn("border border-white border-opacity-20 w-3/8 drop-shadow-2xl " +
+                <Dialog className={cn("border border-white border-opacity-20 w-3/8 drop-shadow-lg " +
                     "overflow-visible p-4 space-y-4")}
                         {...props} ref={dialogRef}>
                         <div className={cn("flex flex-col space-y-4")}>

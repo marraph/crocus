@@ -70,7 +70,7 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                 <SquarePen size={20} className={"mr-2"}/>
             </Button>
 
-            <Dialog className={cn("border border-white border-opacity-20 left-1/3 w-1/3 drop-shadow-2xl overflow-visible", className)} {...props} ref={dialogRef}>
+            <Dialog className={cn("border border-white border-opacity-20 left-1/3 w-1/3 drop-shadow-lg overflow-visible", className)} {...props} ref={dialogRef}>
                 <div className={cn("flex flex-row justify-between space-x-4 px-4 pt-4 pb-2", className)}>
                     <div className={cn("flex flex-col flex-grow space-y-2", className)}>
 

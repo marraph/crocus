@@ -35,7 +35,7 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogH
             </Button>
 
             <div className={"flex items-center justify-center"}>
-                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-2xl overflow-visible"} {...props} ref={dialogRef}>
+                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={dialogRef}>
                     <div className={"flex flex-row justify-between px-4"}>
                         <div className={"flex flex-col space-y-2"}>
                             <div className={"flex flex-row space-x-2 items-center pt-4"}>

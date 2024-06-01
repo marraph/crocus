@@ -34,7 +34,7 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
             </Button>
 
             <div className={cn("flex items-center justify-center")}>
-                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-2xl overflow-visible"} {...props} ref={dialogRef}>
+                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={dialogRef}>
                     <div className={"flex flex-row justify-between space-x-2 px-4"}>
                         <div className={"flex flex-col w-full space-y-2 "}>
                             <div className={"flex flex-row space-x-2 items-center pt-4"}>
