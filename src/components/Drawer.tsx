@@ -4,7 +4,7 @@ import {NavigationItem} from "@marraph/daisy/components/navigationitem/Navigatio
 import React, {useState} from "react";
 import {CalendarDays, ClipboardList, LayoutDashboard, Moon, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
-import {ProfileContext} from "@/components/contextmenus/ProfileContext";
+import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {useRouter} from "next/navigation";
 import {SearchField} from "@/components/SearchField";
 
@@ -45,7 +45,7 @@ export function Drawer() {
                     <NavigationItem selected={false} title={"Join a team"} icon={<SquarePlus size={18}/>}/>
                 </div>
             </div>
-            <ProfileContext/>
+            <ProfileContextMenu/>
         </div>
   );
 }

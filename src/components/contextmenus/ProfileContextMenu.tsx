@@ -12,7 +12,7 @@ import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/componen
 
 const path = "/image.png";
 
-export function ProfileContext() {
+export function ProfileContextMenu() {
     const [showProfile, setShowProfile] = useState(false);
 
     const { data:User, isLoading:userLoading, error:userError } = useUser();
@@ -22,11 +22,9 @@ export function ProfileContext() {
         setShowProfile(false);
     });
 
-    if (userError)
-        return <div>Fehler: {userError}</div>;
+    if (userError || organisationError)
+        return <div>Error: {userError && organisationError}</div>;
 
-    if (organisationError)
-        return <div>Fehler: {userError}</div>;
 
     return (
         <div className={"space-y-2 pb-8"} ref={menuRef}>
@@ -47,26 +45,25 @@ export function ProfileContext() {
             }
             <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20 hover:bg-dark")}
                 onClick={() => setShowProfile(!showProfile)}>
-                <div className={cn("flex flex-row items-center space-x-2")}>
 
-                    {userLoading || organisationLoading ?
-                    <Skeleton className={"bg-dark"}>
-                        <SkeletonElement className={"p-2"} width={60} height={60}/>
-                        <SkeletonColumn className={"items-start"}>
-                            <SkeletonElement width={100} height={20}/>
-                            <SkeletonElement width={100} height={20}/>
-                        </SkeletonColumn>
-                    </Skeleton>
-                        :
-                    <>
-                        <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
-                        <div className={cn("flex flex-col items-start")}>
-                            <span className={"text-sm"}>{User?.name}</span>
-                            <span className={cn("text-gray text-xs")}>{Organisation?.name}</span>
-                        </div>
-                    </>
-                    }
+                {userLoading || organisationLoading ?
+                <Skeleton className={"w-max"}>
+                    <SkeletonElement className={"m-2"} width={43} height={43}/>
+                    <SkeletonColumn className={"items-start space-y-2 mr-0"}>
+                        <SkeletonElement width={110} height={10}/>
+                        <SkeletonElement width={80} height={10}/>
+                    </SkeletonColumn>
+                </Skeleton>
+                    :
+                <div className={cn("flex flex-row items-center space-x-2")}>
+                    <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
+                    <div className={cn("flex flex-col items-start")}>
+                        <span className={"text-sm"}>{User?.name}</span>
+                        <span className={cn("text-gray text-xs")}>{Organisation?.name}</span>
+                    </div>
                 </div>
+                }
+
                 <ChevronsUpDown className={cn("m-4 text-gray group-hover:text-white")}></ChevronsUpDown>
             </div>
         </div>
