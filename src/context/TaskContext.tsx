@@ -22,10 +22,11 @@ export const useTask = (): TaskContextType => {
 
 interface TaskProviderProps {
     children: ReactNode;
+    userId: number;
 }
 
-export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
-    const { data, isLoading, error } = getTask();
+export const TaskProvider: React.FC<TaskProviderProps> = ({ children, userId }) => {
+    const { data, isLoading, error } = getTask(userId);
 
     return (
         <TaskContext.Provider value={{data, isLoading, error}}>
