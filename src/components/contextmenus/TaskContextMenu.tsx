@@ -19,7 +19,7 @@ interface TaskContextProps extends React.DialogHTMLAttributes<HTMLDialogElement>
     y: number;
 }
 
-export const TaskContext = forwardRef<HTMLDialogElement, TaskContextProps>(({ taskId, x, y, className, ...props }) => {
+export const TaskContextMenu = forwardRef<HTMLDialogElement, TaskContextProps>(({ taskId, x, y, className, ...props }) => {
     const router = useRouter();
 
     const dialogRef = React.useRef<HTMLDialogElement>(null);
@@ -64,4 +64,4 @@ export const TaskContext = forwardRef<HTMLDialogElement, TaskContextProps>(({ ta
 
     );
 });
-TaskContext.displayName = "TaskContext";
+TaskContextMenu.displayName = "TaskContextMenu";

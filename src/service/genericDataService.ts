@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {fetch} from "undici-types";
 import {Acceptable} from "@/types/types";
 
 const useDelete = (url: string, id: number) => {
@@ -13,7 +12,7 @@ const useDelete = (url: string, id: number) => {
 
         try {
 
-            const response = await fetch(`${url}/${id}`, {
+            const response = await fetch(`${url}/delete/${id}`, {
                 method: 'DELETE',
             });
 
@@ -46,7 +45,7 @@ const useGet = <T extends Acceptable>(url: string, id: number) => {
         setLoading(true)
 
         try {
-            const response = await fetch(`${url}/${id}`)
+            const response = await fetch(`${url}/get/${id}`)
             const body = await response.json() as T
             setData(body)
 
@@ -73,7 +72,7 @@ const usePost = <T extends Acceptable>(url: string, initialData: T) => {
         setLoading(true);
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`${url}/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,7 +105,7 @@ const useUpdate = <T extends Acceptable>(url: string, id: number, newData: T) =>
         setLoading(true);
 
         try {
-            const response = await fetch(`${url}/${id}`, {
+            const response = await fetch(`${url}/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

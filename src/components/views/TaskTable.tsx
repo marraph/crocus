@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {useRouter} from "next/navigation";
-import {TaskContext} from "@/components/contextmenus/TaskContext";
+import {TaskContext} from "@/components/contextmenus/TaskContextMenu";
 import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";

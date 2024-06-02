@@ -2,13 +2,11 @@
 
 import {NavigationItem} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import React, {useState} from "react";
-import {Bell, CalendarDays, ClipboardList, Flower, LayoutDashboard, Moon, SquarePlus, Timer} from "lucide-react";
+import {CalendarDays, ClipboardList, LayoutDashboard, Moon, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContext} from "@/components/contextmenus/ProfileContext";
 import {useRouter} from "next/navigation";
 import {SearchField} from "@/components/SearchField";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
 export function Drawer() {
     const router = useRouter();

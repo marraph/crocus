@@ -7,9 +7,12 @@ import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 import {TaskCardView} from "@/components/views/TaskCardView";
 import {FilterContext} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert} from "lucide-react";
+import {useUser} from "@/context/UserContext";
 
 export default function Home() {
     const [viewMode, setViewMode] = useState(true);
+
+    const { data:User, isLoading:userLoading, error:userError } = useUser();
 
     return (
         <div className={"h-full flex flex-col"}>
