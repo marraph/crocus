@@ -28,7 +28,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
 
     return (
         <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-72 cursor-pointer hover:bg-dark overflow-hidden", className)}
-             onClick={() => router.push(`/tasks/${_id}`)}>
+             onClick={() => router.push(`/tasks/${_id}`)} {...props}>
 
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
                 <div className={"flex flex-row justify-between space-x-2"}>

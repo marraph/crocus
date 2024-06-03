@@ -1,4 +1,6 @@
 import {TaskCard} from "@/components/cards/TaskCard";
+import React, {useEffect, useState} from "react";
+import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
 
 const tasks = [
     {
@@ -124,13 +126,32 @@ const tasks = [
 ];
 
 export function TaskCardView() {
+    const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
+        document.addEventListener('click', handleClick);
+        return () => document.removeEventListener('click', handleClick);
+    }, [contextMenu]);
+
+    const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>, id: number) => {
+        e.preventDefault();
+        setContextMenu({ id, x: e.clientX, y: e.clientY, visible: true });
+    };
 
     return (
-        <div className={"grid grid-cols-5 gap-9 pt-4"}>
-            {tasks.map((task, index) => (
-                <TaskCard key={index} _id={task.id} title={task.title} topic={task.topic} priority={task.priority} team={task.team} project={task.project}
-                          status={task.status} createdAt={task.createdAt} createdBy={task.createdBy} dueDate={task.dueDate}/>
-            ))}
-        </div>
+        <>
+            {contextMenu.visible &&
+                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
+            }
+            <div className={"grid grid-cols-5 gap-9 pt-4"}>
+                {tasks.map((task, index) => (
+                    <TaskCard key={index} _id={task.id} title={task.title} topic={task.topic} priority={task.priority} team={task.team} project={task.project}
+                              status={task.status} createdAt={task.createdAt} createdBy={task.createdBy} dueDate={task.dueDate}
+                              onContextMenu={(event) => handleContextMenu(event, task.id)}/>
+                ))}
+            </div>
+        </>
+
     );
 }

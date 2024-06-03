@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {useRouter} from "next/navigation";
-import {TaskContext} from "@/components/contextmenus/TaskContextMenu";
+import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
 import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
@@ -115,7 +115,7 @@ export function TaskTable() {
     return (
         <>
             {contextMenu.visible &&
-                <TaskContext taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
+                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
             }
             <div className={"w-full h-full text-xs flex items-stretch pt-4"}>
                 <Table className={"bg-black w-full"}>
