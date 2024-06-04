@@ -1,6 +1,6 @@
 "use client";
 
-import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import React, {useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
@@ -10,6 +10,7 @@ import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {TaskCreatedAlert} from "@/components/alerts/TaskCreatedAlert";
+import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
 const team = ["None", "Frontend", "Backend"];
 const project = ["None", "ServerAPI", "ClientAPI"];
@@ -110,7 +111,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick} />
                 </div>
-                <DialogSeperator/>
+                <Seperator/>
                 <div className={cn("flex flex-row justify-end px-4 py-2", className)}>
                     <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={titleValue.trim() === ""}
                             className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>

@@ -7,9 +7,6 @@ import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
-import {cn} from "@/utils/cn";
-import {Trash2} from "lucide-react";
-import {Button} from "@marraph/daisy/components/button/Button";
 import React from "react";
 
 const task = {
@@ -38,8 +35,8 @@ export default function TaskIdPage() {
                             onClick={() => router.push("/tasks/")}/>
                 <div className={"flex flex-row justify-end"}>
                     <MessageTaskDialog/>
-                    <EditTaskDialog/>
-                    <CloseTaskDialog/>
+                    <EditTaskDialog buttonTrigger={true}/>
+                    <CloseTaskDialog buttonTrigger={true}/>
                     <DeleteTaskDialog buttonTrigger={true}/>
                 </div>
             </div>

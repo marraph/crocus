@@ -7,6 +7,15 @@ import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
 import {Caret} from "@/components/badges/Caret";
+import {cn} from "@/utils/cn";
+import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
+import {Button} from "@marraph/daisy/components/button/Button";
+import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
+import {Badge} from "@marraph/daisy/components/badge/Badge";
+import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
+import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
+import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
 
 const path = "/image.png";
 
@@ -83,6 +92,10 @@ export function TaskTable() {
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
 
+    const deleteRef = React.useRef<HTMLDialogElement>(null);
+    const editRef = React.useRef<HTMLDialogElement>(null);
+    const closeRef = React.useRef<HTMLDialogElement>(null);
+
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
         document.addEventListener('click', handleClick);
@@ -114,15 +127,21 @@ export function TaskTable() {
 
     return (
         <>
+            <DeleteTaskDialog ref={deleteRef} buttonTrigger={false}/>
+            <CloseTaskDialog ref={closeRef} buttonTrigger={false}/>
+            <EditTaskDialog ref={editRef} buttonTrigger={false}/>
+
             {contextMenu.visible &&
-                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
+                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} closeRef={closeRef} editRef={editRef}/>
             }
+
             <div className={"w-full h-full text-xs flex items-stretch pt-4"}>
                 <Table className={"bg-black w-full"}>
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>
                             {header.map((header) => (
-                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key} onClick={() => handleHeaderClick(header.key)}>
+                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key}
+                                           onClick={() => handleHeaderClick(header.key)}>
                                     <span className={"flex flex-row items-center"}>
                                         {header.label}
                                         {header.key === sort.key && (
@@ -135,7 +154,8 @@ export function TaskTable() {
                     </TableHeader>
                     <TableBody className={"text-sm"}>
                         {getSortedArray(tasks).map((task) => (
-                            <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)} onContextMenu={(event) => handleContextMenu(event, task.id)}>
+                            <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)}
+                                      onContextMenu={(event) => handleContextMenu(event, task.id)}>
                                 <TableCell>{task.id}</TableCell>
                                 <TableCell>{task.team}</TableCell>
                                 <TableCell>{task.project}</TableCell>

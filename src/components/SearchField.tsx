@@ -13,10 +13,10 @@ import {
     SquarePen,
     Timer
 } from "lucide-react";
-import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
-import {cn} from "@/utils/cn";
+import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
 export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
@@ -46,7 +46,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             <Input placeholder={"Search"} border={"none"}
                                    className={"w-full text-md m-0 mr-2 p-0 h-12 bg-black"}></Input>
                         </div>
-                        <DialogSeperator/>
+                        <Seperator/>
                         <div className={"text-placeholder text-sm px-4 pt-4"}>
                             <span>{"Quick Actions"}</span>
                         </div>
@@ -91,7 +91,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                                 </div>
                             </div>
                         </div>
-                        <DialogSeperator/>
+                        <Seperator/>
                         <div className={"text-placeholder text-sm px-4 pt-4"}>
                             <span>{"Recent"}</span>
                         </div>
@@ -123,7 +123,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                         </div>
 
-                        <DialogSeperator/>
+                        <Seperator/>
 
                         <div className={"flex flex-row items-center space-x-8 px-4 h-12 text-gray text-sm"}>
                             <div className={"flex flex-row items-center space-x-2"}>
