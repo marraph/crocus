@@ -7,6 +7,10 @@ import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
+import {cn} from "@/utils/cn";
+import {Trash2} from "lucide-react";
+import {Button} from "@marraph/daisy/components/button/Button";
+import React from "react";
 
 const task = {
     title: "Title",
@@ -36,7 +40,7 @@ export default function TaskIdPage() {
                     <MessageTaskDialog/>
                     <EditTaskDialog/>
                     <CloseTaskDialog/>
-                    <DeleteTaskDialog/>
+                    <DeleteTaskDialog buttonTrigger={true}/>
                 </div>
             </div>
             <div className={"flex flex-row grow border border-white border-opacity-20 bg-black rounded-lg"}>

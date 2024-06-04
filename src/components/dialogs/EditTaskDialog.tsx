@@ -30,7 +30,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
 
-
     const handleAlert = () => {
         setShowAlert(true);
 
@@ -69,7 +68,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
 
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Team</span>
-                            <Combobox buttonTitle={"Team"}>
+                            <Combobox buttonTitle={"Team"} preSelectedValue={team.at(0)}>
                                 {team.map((team) => (
                                     <ComboboxItem key={team} title={team}/>
                                 ))}
@@ -78,7 +77,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
 
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Project</span>
-                            <Combobox buttonTitle={"Project"}>
+                            <Combobox buttonTitle={"Project"} preSelectedValue={project.at(0)}>
                                 {project.map((project) => (
                                     <ComboboxItem key={project} title={project}/>
                                 ))}
@@ -89,7 +88,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Topic</span>
-                            <Combobox buttonTitle={"Topic"}>
+                            <Combobox buttonTitle={"Topic"} preSelectedValue={topic.at(0)}>
                                 {topic.map((topic) => (
                                     <ComboboxItem key={topic} title={topic}/>
                                 ))}
@@ -98,7 +97,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Status</span>
-                            <Combobox buttonTitle={"Status"}>
+                            <Combobox buttonTitle={"Status"} preSelectedValue={status.at(0)}>
                                 {status.map((status) => (
                                     <ComboboxItem key={status} title={status}/>
                                 ))}
@@ -107,7 +106,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHT
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Priority</span>
-                            <Combobox buttonTitle={"Priority"}>
+                            <Combobox buttonTitle={"Priority"} preSelectedValue={priority.at(0)}>
                                 {priority.map((priority) => (
                                     <ComboboxItem key={priority} title={priority}/>
                                 ))}

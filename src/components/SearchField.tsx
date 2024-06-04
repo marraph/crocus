@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import {Dialog, DialogSeperator} from "@marraph/daisy/components/dialog/Dialog";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
+import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
+import {cn} from "@/utils/cn";
 
 export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
@@ -31,9 +33,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                  onClick={() => dialogRef.current?.showModal()}>
                 <Search size={18} className={"group-focus:text-white text-placeholder ml-2 mr-2"}/>
                 <Input placeholder={"Search"} border={"none"} className={"w-max text-sm m-0 p-0 h-8 bg-black"}></Input>
-                <div className={"bg-dark rounded-md w-8 py-0.5 px-1 mr-1.5"}>
-                    <span className={"flex items-center text-xs text-placeholder"}>{"⌘ K"}</span>
-                </div>
+                <Shortcut text={"⌘ K"}/>
             </div>
 
             <div className={"flex items-center justify-center"}>
@@ -59,10 +59,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                                 </div>
                                 <div className={"flex flex-row space-x-2 items-center text-xs text-gray mr-2"}>
                                     <span>{"Command"}</span>
-                                    <div
-                                        className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
-                                        <span>{"⌘ T"}</span>
-                                    </div>
+                                    <Shortcut text={"⌘ T"}/>
                                 </div>
                             </div>
                         </div>
@@ -76,10 +73,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                                 </div>
                                 <div className={"flex flex-row space-x-2 items-center text-xs text-gray mr-2"}>
                                     <span>{"Command"}</span>
-                                    <div
-                                        className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
-                                        <span>{"⌘ P"}</span>
-                                    </div>
+                                    <Shortcut text={"⌘ P"}/>
                                 </div>
                             </div>
                         </div>
@@ -93,10 +87,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                                 </div>
                                 <div className={"flex flex-row space-x-2 items-center text-xs text-gray mr-2"}>
                                     <span>{"Command"}</span>
-                                    <div
-                                        className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
-                                        <span>{"⌘ F"}</span>
-                                    </div>
+                                    <Shortcut text={"⌘ F"}/>
                                 </div>
                             </div>
                         </div>
@@ -113,10 +104,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                                 </div>
                                 <div className={"flex flex-row space-x-2 items-center text-xs text-gray mr-2"}>
                                     <span>{"Command"}</span>
-                                    <div
-                                        className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
-                                        <span>{"⌘ E"}</span>
-                                    </div>
+                                    <Shortcut text={"⌘ E"}/>
                                 </div>
                             </div>
                         </div>
@@ -130,10 +118,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                                 </div>
                                 <div className={"flex flex-row space-x-2 items-center text-xs text-gray mr-2"}>
                                     <span>{"Command"}</span>
-                                    <div
-                                        className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
-                                        <span>{"⌘ S"}</span>
-                                    </div>
+                                    <Shortcut text={"⌘ S"}/>
                                 </div>
                             </div>
                         </div>
@@ -143,28 +128,22 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                         <div className={"flex flex-row items-center space-x-8 px-4 h-12 text-gray text-sm"}>
                             <div className={"flex flex-row items-center space-x-2"}>
                                 <span>{"Close"}</span>
-                                <div
-                                    className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
-                                    <span>{"ESC"}</span>
-                                </div>
+                                <Shortcut text={"ESC"}/>
                             </div>
                             <div className={"flex flex-row items-center space-x-2"}>
                                 <span>{"Select"}</span>
-                                <div
-                                    className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
+                                <Shortcut>
                                     <CornerDownLeft size={16}/>
-                                </div>
+                                </Shortcut>
                             </div>
                             <div className={"flex flex-row items-center space-x-1"}>
                                 <span className={"mr-1"}>{"Navigate"}</span>
-                                <div
-                                    className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
+                                <Shortcut>
                                     <MoveUp size={16}/>
-                                </div>
-                                <div
-                                    className={"flex items-center px-1 py-0.5 h-min rounded-md bg-dark text-placeholder text-xs"}>
+                                </Shortcut>
+                                <Shortcut>
                                     <MoveDown size={16}/>
-                                </div>
+                                </Shortcut>
                             </div>
                         </div>
                     </div>

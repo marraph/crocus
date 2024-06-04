@@ -3,7 +3,7 @@
 import React, {useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
-import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
+import {CreateTaskDialog} from "@/components/dialogs/CreateTaskDialog";
 import {TaskCardView} from "@/components/views/TaskCardView";
 import {FilterContext} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert} from "lucide-react";
@@ -18,7 +18,7 @@ export default function Home() {
         <div className={"h-full flex flex-col"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
-                    <TaskCreateDialog/>
+                    <CreateTaskDialog/>
                     <FilterContext/>
                     <div className={"flex flex-row space-x-1"}>
                         <OctagonAlert size={15} className={"text-placeholder"}/>

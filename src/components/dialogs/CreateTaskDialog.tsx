@@ -18,7 +18,7 @@ const status = ["None", "Todo", "In Progress", "Done"];
 const priority = ["None", "Low", "Medium", "High"];
 
 
-export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
+export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const teamRef = useRef<ComboboxRef>(null);
     const projectRef = useRef<ComboboxRef>(null);
@@ -124,4 +124,4 @@ export const TaskCreateDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         </>
     )
 })
-TaskCreateDialog.displayName = "TaskCreateDialog";
+CreateTaskDialog.displayName = "CreateTaskDialog";
