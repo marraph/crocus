@@ -10,6 +10,7 @@ import {cn} from "@/utils/cn";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {SavedTaskChangesAlert} from "@/components/alerts/SavedTaskChangesAlert";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 
 const title = "Server api doesnt work"
 
@@ -56,7 +57,9 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             }
 
             <div className={"flex items-center justify-center"}>
-                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={getDialogRef()}>
+                <Dialog
+                    className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props}
+                    ref={getDialogRef()}>
                     <div className={"flex flex-row justify-between px-4 pb-2"}>
                         <div className={"flex flex-col space-y-2"}>
                             <div className={"flex flex-row justify-between space-x-2 items-center pt-4"}>
@@ -69,7 +72,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                     </div>
                     <Seperator/>
                     <div className={"flex flex-row space-x-2 px-4 pt-4"}>
-
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Team</span>
                             <Combobox buttonTitle={"Team"} preSelectedValue={team.at(0)}>
@@ -78,7 +80,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                                 ))}
                             </Combobox>
                         </div>
-
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Project</span>
                             <Combobox buttonTitle={"Project"} preSelectedValue={project.at(0)}>
@@ -89,7 +90,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                         </div>
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 py-4"}>
-
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Topic</span>
                             <Combobox buttonTitle={"Topic"} preSelectedValue={topic.at(0)}>
@@ -98,7 +98,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                                 ))}
                             </Combobox>
                         </div>
-
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Status</span>
                             <Combobox buttonTitle={"Status"} preSelectedValue={status.at(0)}>
@@ -107,7 +106,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                                 ))}
                             </Combobox>
                         </div>
-
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Priority</span>
                             <Combobox buttonTitle={"Priority"} preSelectedValue={priority.at(0)}>
@@ -117,12 +115,16 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                             </Combobox>
                         </div>
                     </div>
+                    <div className={"flex flex-row space-x-2 px-4 pb-4"}>
+                        <div className={"flex flex-col space-y-1 z-30"}>
+                            <span className={"text-gray text-xs"}>Due Date</span>
+                            <DatePicker iconSize={16} text={"Due Date"}/>
+                        </div>
+                    </div>
                     <Seperator/>
                     <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
-                        <Button text={"Cancel"} className={cn("h-8")}
-                                onClick={() => getDialogRef().current?.close()}/>
-                        <Button text={"Save changes"} theme={"white"} onClick={editTask}
-                                className={"h-8"}/>
+                        <Button text={"Cancel"} className={cn("h-8")} onClick={() => getDialogRef().current?.close()}/>
+                        <Button text={"Save changes"} theme={"white"} onClick={editTask} className={"h-8"}/>
                     </div>
                 </Dialog>
             </div>
@@ -131,7 +133,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                 <SavedTaskChangesAlert/>
             )}
         </>
-)
+    )
 })
 EditTaskDialog.displayName = "EditTaskDialog";
 
