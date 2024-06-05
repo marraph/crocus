@@ -1,7 +1,7 @@
 "use client";
 
-import {NavigationItem} from "@marraph/daisy/components/navigationitem/NavigationItem";
-import React, {useState} from "react";
+import {NavigationItem, useNavigation} from "@marraph/daisy/components/navigationitem/NavigationItem";
+import React from "react";
 import {CalendarDays, ClipboardList, LayoutDashboard, Moon, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
@@ -11,10 +11,12 @@ import {SearchField} from "@/components/SearchField";
 export function Drawer() {
     const router = useRouter();
 
-    const [selectDashbaord, setSelectDashboard] = useState(false);
-    const [selectTasks, setSelectTasks] = useState(false);
-    const [selectTime, setSelectTime] = useState(false);
-    const [selectCalendar, setSelectCalendar] = useState(false);
+    const { selectedItem, setSelectedItem } = useNavigation();
+
+    const handleNavigation = (path: string, item: string) => {
+        router.push(path);
+        setSelectedItem(item);
+    };
 
     return (
         <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")}>
@@ -26,17 +28,24 @@ export function Drawer() {
                 <SearchField/>
                 <div className={"space-y-1 pt-4"}>
                     <span className={cn("text-placeholder text-xs px-1")}>{"MENU"}</span>
-                    <NavigationItem selected={selectDashbaord} title={"Dashboard"}
-                                    onClick={() => {router.push("/dashboard"); setSelectDashboard(true)}}
+                    <NavigationItem selected={selectedItem === "Dashboard"}
+                                    title={"Dashboard"}
+                                    onClick={() =>  handleNavigation("/dashboard", 'Dashboard')}
                                     icon={<LayoutDashboard size={18}/>}/>
-                    <NavigationItem selected={selectTasks} title={"Tasks"}
-                                    onClick={() => {router.push("/tasks"); setSelectTasks(true)}}
+
+                    <NavigationItem selected={selectedItem === "Tasks"}
+                                    title={"Tasks"}
+                                    onClick={() =>  handleNavigation("/tasks", 'Tasks')}
                                     icon={<ClipboardList size={18}/>}/>
-                    <NavigationItem selected={selectTime} title={"Timetracking"}
-                                    onClick={() => {router.push("/timetracking"); setSelectTime(true)}}
+
+                    <NavigationItem selected={selectedItem === "Timetracking"}
+                                    title={"Timetracking"}
+                                    onClick={() =>  handleNavigation("/timetracking", 'Timetracking')}
                                     icon={<Timer size={18}/>}/>
-                    <NavigationItem selected={selectCalendar} title={"Calendar"}
-                                    onClick={() => {router.push("/calendar"); setSelectCalendar(true)}}
+
+                    <NavigationItem selected={selectedItem === "Calendar"}
+                                    title={"Calendar"}
+                                    onClick={() =>  handleNavigation("/calendar", 'Calendar')}
                                     icon={<CalendarDays size={18}/>}/>
                 </div>
 

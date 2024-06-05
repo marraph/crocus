@@ -25,7 +25,7 @@ const task = {
     creator: "Creator",
 }
 
-export default function TaskIdPage() {
+export default function TasksID() {
     const router = useRouter();
 
     return (

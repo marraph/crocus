@@ -9,7 +9,7 @@ import {FilterContext} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert} from "lucide-react";
 import {useTask} from "@/context/TaskContext";
 
-export default function Home() {
+export default function Tasks() {
     const [viewMode, setViewMode] = useState(true);
 
     const { data:User, isLoading:userLoading, error:userError } = useTask();
