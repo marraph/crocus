@@ -7,69 +7,14 @@ import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
 import {Caret} from "@/components/badges/Caret";
-import {cn} from "@/utils/cn";
-import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
-import {Button} from "@marraph/daisy/components/button/Button";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
-import {Badge} from "@marraph/daisy/components/badge/Badge";
-import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
+import {Project, Team} from "@/types/types";
+import {TaskElement} from "@/app/tasks/page";
+import {formatDate} from "@/utils/format";
 
 const path = "/image.png";
-
-const tasks = [
-    {
-        id: 12,
-        team: "Frontend",
-        project: "ServerAPI",
-        topic: "bug",
-        title: "Response doesnt work",
-        priority: "c_high",
-        status: "todo",
-        createdAt: "April 18",
-        creator: "mvriu5",
-        dueDate: "May 15"
-    },
-    {
-        id: 13,
-        team: "Frontend",
-        project: "ServerAPI",
-        topic: "bug",
-        title: "Response doesnt work v2",
-        priority: "b_medium",
-        status: "todo",
-        createdAt: "April 19",
-        creator: "mvriu5",
-        dueDate: "May 15"
-    },
-    {
-        id: 2,
-        team: "Frontend",
-        project: "ServerAPI",
-        topic: "bug",
-        title: "Response doesnt work v3",
-        priority: "a_low",
-        status: "todo",
-        createdAt: "April 19",
-        creator: "mvriu5",
-        dueDate: "May 15"
-    },
-]
-
-type Task = {
-    id: number;
-    team: string;
-    project: string;
-    priority: string;
-    topic: string;
-    title: string;
-    status: string;
-    dueDate: string;
-    createdAt: string;
-    creator: string;
-};
 
 const header = [
     { key: "id", label: "Id" },
@@ -84,7 +29,11 @@ const header = [
     { key: "creator", label: "Creator" },
 ];
 
-export function TaskTable() {
+interface TaskProps {
+    taskElements: TaskElement[];
+}
+
+export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     type SortOrder = "asc" | "desc";
     type SortState = { key: string; order: SortOrder; };
 
@@ -114,10 +63,10 @@ export function TaskTable() {
         })
     }
 
-    function getSortedArray(array: Task[]) {
-        return array.sort((a: Task, b: Task) => {
-            const aValue = a[sort.key as keyof Task];
-            const bValue = b[sort.key as keyof Task];
+    function getSortedArray(array: TaskElement[]) {
+        return array.sort((a: TaskElement, b: TaskElement) => {
+            const aValue = a[sort.key as keyof TaskElement];
+            const bValue = b[sort.key as keyof TaskElement];
 
             if (aValue < bValue) return sort.order === "asc" ? -1 : 1;
             if (aValue > bValue) return sort.order === "asc" ? 1 : -1;
@@ -153,26 +102,26 @@ export function TaskTable() {
                         </TableRow>
                     </TableHeader>
                     <TableBody className={"text-sm"}>
-                        {getSortedArray(tasks).map((task) => (
-                            <TableRow key={task.id} onClick={() => router.push(`/tasks/${task.id}`)}
-                                      onContextMenu={(event) => handleContextMenu(event, task.id)}>
-                                <TableCell>{task.id}</TableCell>
-                                <TableCell>{task.team}</TableCell>
-                                <TableCell>{task.project}</TableCell>
+                        {getSortedArray(taskElements).map((taskElement) => (
+                            <TableRow key={taskElement.task.id} onClick={() => router.push(`/tasks/${taskElement.task.id}`)}
+                                      onContextMenu={(event) => handleContextMenu(event, taskElement.task.id)}>
+                                <TableCell>{taskElement.task.id}</TableCell>
+                                <TableCell>{taskElement.team.name}</TableCell>
+                                <TableCell>{taskElement.project.name}</TableCell>
                                 <TableCell>
-                                    <PriorityBadge priority={task.priority}/>
+                                    <PriorityBadge priority={taskElement.task.priority}/>
                                 </TableCell>
                                 <TableCell>
-                                    <TopicBadge title={task.topic} color={"error"}/>
+                                    <TopicBadge title={taskElement.task.topic.title} color={"error"}/>
                                 </TableCell>
-                                <TableCell className={"text-white"}>{task.title}</TableCell>
+                                <TableCell className={"text-white"}>{taskElement.task.name}</TableCell>
                                 <TableCell>
-                                    <StatusBadge title={task.status} color={"warning"}/>
+                                    <StatusBadge title={taskElement.task.status} color={"warning"}/>
                                 </TableCell>
-                                <TableCell>{task.dueDate}</TableCell>
-                                <TableCell>{task.createdAt}</TableCell>
+                                <TableCell>{formatDate(taskElement.task.deadline.toString())}</TableCell>
+                                <TableCell>{formatDate(taskElement.task.createdDate.toString())}</TableCell>
                                 <TableCell className={"flex flex-row space-x-2 items-center"}>
-                                    <span>{task.creator}</span>
+                                    <span>{taskElement.task.createdBy.name}</span>
                                     <Avatar img_url={path} size={20} className={"p-0"}/>
                                 </TableCell>
                             </TableRow>

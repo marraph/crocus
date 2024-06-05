@@ -1,13 +1,13 @@
-import React, {forwardRef, useState} from "react";
-import {MessageSquare, Send} from "lucide-react";
+import React, {forwardRef, useEffect, useState} from "react";
+import {MessageSquare, MessageSquarePlus, Send} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import {AddedTaskMessageAlert} from "@/components/alerts/AddedTaskMessageAlert";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 
 const title = "Server api doesnt work"
 
@@ -15,17 +15,16 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
     const dialogRef = React.useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
 
-    const handleAlert = () => {
-        setShowAlert(true);
-
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 3000);
-    };
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => setShowAlert(false), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert]);
 
     const sendMessage = () => {
         dialogRef.current?.close();
-        handleAlert();
+        setShowAlert(true);
     }
 
     return (
@@ -57,7 +56,13 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
             </div>
 
             {showAlert && (
-                <AddedTaskMessageAlert/>
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                    <AlertIcon icon={<MessageSquarePlus />}/>
+                    <AlertContent>
+                        <AlertTitle title={"Added Message"}></AlertTitle>
+                        <AlertDescription description={"You successfully added your message to the auditlog."}></AlertDescription>
+                    </AlertContent>
+                </Alert>
             )}
         </>
 

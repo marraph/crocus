@@ -4,8 +4,6 @@ import "./globals.css";
 import {Drawer} from "@/components/Drawer";
 import React from "react";
 import {UserProvider} from "@/context/UserContext";
-import {OrganisationProvider} from "@/context/OrganisationContext";
-import {TaskProvider} from "@/context/TaskContext";
 import {NavigationProvider} from "@marraph/daisy/components/navigationitem/NavigationItem";
 
 const roboto = Roboto({subsets: ["latin"], weight: ["400", "500", "700", "900"] });
@@ -21,17 +19,13 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <html lang="en">
             <body className={roboto.className}>
                 <NavigationProvider>
-                    <UserProvider id={1}>
-                        <OrganisationProvider id={1}>
-                            <TaskProvider userId={1}>
-                                <div className={"flex flex-row"}>
-                                    <Drawer></Drawer>
-                                    <div className={"w-full flex flex-col space-y-4 p-8"}>
-                                        {children}
-                                    </div>
-                                </div>
-                            </TaskProvider>
-                        </OrganisationProvider>
+                    <UserProvider id={2}>
+                        <div className={"flex flex-row"}>
+                            <Drawer></Drawer>
+                            <div className={"w-full flex flex-col space-y-4 p-8"}>
+                                {children}
+                            </div>
+                        </div>
                     </UserProvider>
                 </NavigationProvider>
             </body>

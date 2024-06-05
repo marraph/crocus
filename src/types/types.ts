@@ -1,19 +1,26 @@
 type Priority = "LOW" | "MEDIUM" | "HIGH"
 type Status = "Pending" | "Planing" | "Started" | "Tested" | "Finished" | "Archived"
 
+type PreviewUser = {
+    id: number
+    name: string
+    email: string
+}
+
 type User = {
     id: number
     name: string
     password: string
     email: string
+    teams: Team[]
 }
 
 type Organisation = {
     id: number
     name: string
-    createdBy: User
+    createdBy: PreviewUser
     createdDate: Date
-    lastModifiedBy: User
+    lastModifiedBy: PreviewUser
     lastModifiedDate: Date
 }
 
@@ -21,22 +28,23 @@ type Team = {
     id: number
     name: string
     organisation: Organisation
-    createdBy: User
+    projects: Project[]
+    createdBy: PreviewUser
     createdDate: Date
     lastModifiedBy: User
-    lastModifiedDate: Date
+    lastModifiedDate: PreviewUser
 }
 
 type Project = {
     id: number
     name: string
     description: string
-    team: Team
     priority: Priority
     isArchived: boolean
-    createdBy: User
+    tasks: Task[]
+    createdBy: PreviewUser
     createdDate: Date
-    lastModifiedBy: User
+    lastModifiedBy: PreviewUser
     lastModifiedDate: Date
 }
 
@@ -44,9 +52,9 @@ type Topic = {
     id: number
     title: string
     hexCode: string
-    createdBy: User
+    createdBy: PreviewUser
     createdDate: Date
-    lastModifiedBy: User
+    lastModifiedBy: PreviewUser
     lastModifiedDate: Date
 }
 
@@ -54,16 +62,15 @@ type Task = {
     id: number
     name: string
     description: string
-    project: Project
     topic: Topic
     isArchived: boolean
     duration: Date
     deadline: Date
     status: Status
-    priory: Priority
-    createdBy: User
+    priority: Priority
+    createdBy: PreviewUser
     createdDate: Date
-    lastModifiedBy: User
+    lastModifiedBy: PreviewUser
     lastModifiedDate: Date
 }
 

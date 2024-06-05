@@ -1,14 +1,20 @@
 "use client";
 
-import React, {MutableRefObject, useState} from "react";
+import React, {MutableRefObject, useEffect, useState} from "react";
 import {CheckCheck} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
 import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
-import {TaskClosedAlert} from "@/components/alerts/TaskClosedAlert";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {
+    Alert,
+    AlertContent,
+    AlertDescription,
+    AlertIcon,
+    AlertTitle
+} from "@marraph/daisy/components/alert/Alert";
 
 const title = "Server api doesnt working"
 
@@ -20,14 +26,6 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     const dialogRef = React.useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
 
-    const handleAlert = () => {
-        setShowAlert(true);
-
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 3000);
-    };
-
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
         if (ref && typeof ref === 'object') {
             return ref as MutableRefObject<HTMLDialogElement | null>;
@@ -35,15 +33,24 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(
         return dialogRef;
     };
 
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => setShowAlert(false), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert]);
+
     const closeTask = () => {
         getDialogRef().current?.close();
-        handleAlert();
+        setShowAlert(true);
     }
 
     return (
         <>
             {buttonTrigger &&
-                <Button text={"Close"} className={"h-8 mr-2"} onClick={() => getDialogRef().current?.showModal()}>
+                <Button text={"Close"} className={"h-8 mr-2"} onClick={() => {
+                    getDialogRef().current?.showModal();
+                }}>
                     <CheckCheck size={20} className={"mr-2"}/>
                 </Button>
             }
@@ -71,7 +78,13 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(
             </div>
 
             {showAlert && (
-                <TaskClosedAlert/>
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                    <AlertIcon icon={<CheckCheck />}/>
+                    <AlertContent>
+                        <AlertTitle title={"Task closed successfully!"}></AlertTitle>
+                        <AlertDescription description={"You can no longer interact with this task."}></AlertDescription>
+                    </AlertContent>
+                </Alert>
             )}
         </>
     );

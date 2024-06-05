@@ -4,9 +4,8 @@ import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Trash2} from "lucide-react";
 import {cn} from "@/utils/cn";
-import React, {MutableRefObject, useRef, useState} from "react";
-import {TaskDeletedAlert} from "@/components/alerts/TaskDeletedAlert";
-import {getTask} from "@/service/hooks/taskHook";
+import React, {MutableRefObject, useEffect, useRef, useState} from "react";
+import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
@@ -16,14 +15,6 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
 
-    const handleAlert = () => {
-        setShowAlert(true);
-
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 3000);
-    };
-
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
         if (ref && typeof ref === 'object') {
             return ref as MutableRefObject<HTMLDialogElement | null>;
@@ -31,11 +22,17 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>
         return dialogRef;
     };
 
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => setShowAlert(false), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert]);
+
     const deleteTask = () => {
         getDialogRef().current?.close();
-        handleAlert();
+        setShowAlert(true);
     }
-
 
     return (
         <>
@@ -60,7 +57,13 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>
             </div>
 
             {showAlert && (
-                <TaskDeletedAlert/>
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                    <AlertIcon icon={<Trash2 color="#F55050" />}/>
+                    <AlertContent>
+                        <AlertTitle title={"Task deleted successfully!"}></AlertTitle>
+                        <AlertDescription description={"You can no longer interact with this task."}></AlertDescription>
+                    </AlertContent>
+                </Alert>
             )}
         </>
     )

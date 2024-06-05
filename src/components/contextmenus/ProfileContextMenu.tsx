@@ -7,7 +7,6 @@ import {cn} from "@/utils/cn";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {useUser} from "@/context/UserContext";
-import {useOrganisation} from "@/context/OrganisationContext";
 import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
 
 const path = "/image.png";
@@ -16,14 +15,13 @@ export function ProfileContextMenu() {
     const [showProfile, setShowProfile] = useState(false);
 
     const { data:User, isLoading:userLoading, error:userError } = useUser();
-    const { data:Organisation, isLoading:organisationLoading, error:organisationError } = useOrganisation();
 
     const menuRef = useOutsideClick(() => {
         setShowProfile(false);
     });
 
-    if (userError || organisationError)
-        return <div>Error: {userError && organisationError}</div>;
+    if (userError)
+        return <div>Error: {userError}</div>;
 
 
     return (
@@ -46,7 +44,7 @@ export function ProfileContextMenu() {
             <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20 hover:bg-dark")}
                 onClick={() => setShowProfile(!showProfile)}>
 
-                {userLoading || organisationLoading ?
+                {userLoading ?
                 <Skeleton className={"w-max"}>
                     <SkeletonElement className={"m-2"} width={43} height={43}/>
                     <SkeletonColumn className={"items-start space-y-2 mr-0"}>
@@ -59,7 +57,7 @@ export function ProfileContextMenu() {
                     <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
                     <div className={cn("flex flex-col items-start")}>
                         <span className={"text-sm"}>{User?.name}</span>
-                        <span className={cn("text-gray text-xs")}>{Organisation?.name}</span>
+                        <span className={cn("text-gray text-xs")}>{User?.teams[0].organisation.name}</span>
                     </div>
                 </div>
                 }

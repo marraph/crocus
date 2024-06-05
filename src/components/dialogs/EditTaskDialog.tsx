@@ -1,16 +1,16 @@
 "use client";
 
-import React, {MutableRefObject, useState} from "react";
-import {Pencil} from "lucide-react";
+import React, {MutableRefObject, useEffect, useState} from "react";
+import {Pencil, Save} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
-import {SavedTaskChangesAlert} from "@/components/alerts/SavedTaskChangesAlert";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
+import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 
 const title = "Server api doesnt work"
 
@@ -28,14 +28,6 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
     const dialogRef = React.useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
 
-    const handleAlert = () => {
-        setShowAlert(true);
-
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 3000);
-    };
-
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
         if (ref && typeof ref === 'object') {
             return ref as MutableRefObject<HTMLDialogElement | null>;
@@ -43,9 +35,16 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
         return dialogRef;
     };
 
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => setShowAlert(false), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert]);
+
     const editTask = () => {
         getDialogRef().current?.close();
-        handleAlert();
+        setShowAlert(true);
     }
 
     return (
@@ -130,7 +129,13 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             </div>
 
             {showAlert && (
-                <SavedTaskChangesAlert/>
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                    <AlertIcon icon={<Save />}/>
+                    <AlertContent>
+                        <AlertTitle title={"Saved changes"}></AlertTitle>
+                        <AlertDescription description={"You successfully saved your task changes."}></AlertDescription>
+                    </AlertContent>
+                </Alert>
             )}
         </>
     )

@@ -7,12 +7,31 @@ import {CreateTaskDialog} from "@/components/dialogs/CreateTaskDialog";
 import {TaskCardView} from "@/components/views/TaskCardView";
 import {FilterContext} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert} from "lucide-react";
-import {useTask} from "@/context/TaskContext";
+import {useUser} from "@/context/UserContext";
+import {Project, Task, Team} from "@/types/types";
 
+export type TaskElement = {
+    task: Task;
+    project: Project;
+    team: Team;
+}
 export default function Tasks() {
     const [viewMode, setViewMode] = useState(true);
 
-    const { data:User, isLoading:userLoading, error:userError } = useTask();
+    const { data:User, isLoading:userLoading, error:userError } = useUser();
+    const taskElements: TaskElement[] = [];
+
+    User?.teams?.forEach((team: Team) => {
+        team.projects?.forEach((project: Project) => {
+            project.tasks?.forEach((task: Task) => {
+                taskElements.push({
+                    task,
+                    project,
+                    team
+                });
+            });
+        });
+    });
 
     return (
         <div className={"h-full flex flex-col"}>
@@ -28,9 +47,9 @@ export default function Tasks() {
                 <SwitchButton firstTitle={"Table"} secondTitle={"Card"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>
             </div>
             {viewMode ? (
-                <TaskTable></TaskTable>
+                <TaskTable taskElements={taskElements}></TaskTable>
             ) : (
-                <TaskCardView></TaskCardView>
+                <TaskCardView taskElements={taskElements}></TaskCardView>
             )}
         </div>
     );

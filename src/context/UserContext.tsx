@@ -28,6 +28,8 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children, id }) => {
     const { data, isLoading, error } = getUser(id);
 
+    console.log(data);
+
     return (
         <UserContext.Provider value={{data, isLoading, error}}>
             {children}

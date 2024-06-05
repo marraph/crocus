@@ -2,15 +2,16 @@
 
 import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {SquarePen} from "lucide-react";
+import {SquareCheckBig, SquarePen} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
-import {TaskCreatedAlert} from "@/components/alerts/TaskCreatedAlert";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
+import {createTask} from "@/service/hooks/taskHook";
 
 const team = ["None", "Frontend", "Backend"];
 const project = ["None", "ServerAPI", "ClientAPI"];
@@ -32,17 +33,16 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const [descriptionValue, setDescriptionValue] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
-    const handleAlert = () => {
-        setShowAlert(true);
-
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 3000);
-    };
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => setShowAlert(false), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert]);
 
     const handleCreateClick = () => {
         handleCloseClick();
-        handleAlert();
+        setShowAlert(true);
     }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +120,13 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             </Dialog>
 
             {showAlert && (
-            <TaskCreatedAlert/>
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                    <AlertIcon icon={<SquareCheckBig />}/>
+                    <AlertContent>
+                        <AlertTitle title={"Task created successfully!"}></AlertTitle>
+                        <AlertDescription description={"You can now work with the task in your task-overview."}></AlertDescription>
+                    </AlertContent>
+                </Alert>
             )}
         </>
     )
