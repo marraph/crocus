@@ -5,11 +5,13 @@ import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {cn} from "@/utils/cn";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-    title: string;
+    title?: string;
     color: string;
 }
 
 export const StatusBadge: React.FC<Props> = ({ title, color, className, ...props }) => {
+    if (!title) return null;
+
     return (
         <Badge
             text={title}

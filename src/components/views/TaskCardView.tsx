@@ -1,8 +1,8 @@
 import {TaskCard} from "@/components/cards/TaskCard";
 import React, {useEffect, useState} from "react";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
-import {TaskElement} from "@/app/tasks/page";
 import {formatDate} from "@/utils/format";
+import {TaskElement} from "@/types/types";
 
 
 interface TaskProps {
@@ -33,14 +33,14 @@ export const TaskCardView: React.FC<TaskProps> = ({ taskElements }) => {
                     <TaskCard key={index}
                               _id={taskElement.task.id}
                               title={taskElement.task.name}
-                              topic={taskElement.task.topic.title}
-                              priority={taskElement.task.priority}
-                              team={taskElement.team.name}
-                              project={taskElement.project.name}
-                              status={taskElement.task.status}
+                              topic={taskElement.task.topic?.title}
+                              priority={taskElement.task.priority?.toString()}
+                              team={taskElement.team?.name}
+                              project={taskElement.project?.name}
+                              status={taskElement.task.status?.toString()}
                               createdAt={formatDate(taskElement.task.createdDate.toString())}
                               createdBy={taskElement.task.createdBy.name}
-                              dueDate={formatDate(taskElement.task.deadline.toString())}
+                              dueDate={formatDate(taskElement.task.deadline?.toString())}
                               onContextMenu={(event) => handleContextMenu(event, taskElement.task.id)}/>
                 ))}
             </div>

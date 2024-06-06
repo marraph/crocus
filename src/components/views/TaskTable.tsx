@@ -10,8 +10,7 @@ import {Caret} from "@/components/badges/Caret";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
-import {Project, Team} from "@/types/types";
-import {TaskElement} from "@/app/tasks/page";
+import {TaskElement} from "@/types/types";
 import {formatDate} from "@/utils/format";
 
 const path = "/image.png";
@@ -106,19 +105,19 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                             <TableRow key={taskElement.task.id} onClick={() => router.push(`/tasks/${taskElement.task.id}`)}
                                       onContextMenu={(event) => handleContextMenu(event, taskElement.task.id)}>
                                 <TableCell>{taskElement.task.id}</TableCell>
-                                <TableCell>{taskElement.team.name}</TableCell>
-                                <TableCell>{taskElement.project.name}</TableCell>
+                                <TableCell>{taskElement.team?.name}</TableCell>
+                                <TableCell>{taskElement.project?.name}</TableCell>
                                 <TableCell>
-                                    <PriorityBadge priority={taskElement.task.priority}/>
+                                    <PriorityBadge priority={taskElement.task.priority?.toString()}/>
                                 </TableCell>
                                 <TableCell>
-                                    <TopicBadge title={taskElement.task.topic.title} color={"error"}/>
+                                    <TopicBadge title={taskElement.task.topic?.title} color={"error"}/>
                                 </TableCell>
                                 <TableCell className={"text-white"}>{taskElement.task.name}</TableCell>
                                 <TableCell>
-                                    <StatusBadge title={taskElement.task.status} color={"warning"}/>
+                                    <StatusBadge title={taskElement.task.status?.toString()} color={"warning"}/>
                                 </TableCell>
-                                <TableCell>{formatDate(taskElement.task.deadline.toString())}</TableCell>
+                                <TableCell>{formatDate(taskElement.task.deadline?.toString())}</TableCell>
                                 <TableCell>{formatDate(taskElement.task.createdDate.toString())}</TableCell>
                                 <TableCell className={"flex flex-row space-x-2 items-center"}>
                                     <span>{taskElement.task.createdBy.name}</span>

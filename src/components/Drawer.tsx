@@ -7,8 +7,10 @@ import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {useRouter} from "next/navigation";
 import {SearchField} from "@/components/SearchField";
+import {User} from "@/types/types";
+import {useUser} from "@/context/UserContext";
 
-export function Drawer() {
+export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}) => {
     const router = useRouter();
 
     const { selectedItem, setSelectedItem } = useNavigation();
@@ -57,4 +59,5 @@ export function Drawer() {
             <ProfileContextMenu/>
         </div>
   );
-}
+});
+Drawer.displayName = "Drawer";

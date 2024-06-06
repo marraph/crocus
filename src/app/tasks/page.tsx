@@ -8,13 +8,9 @@ import {TaskCardView} from "@/components/views/TaskCardView";
 import {FilterContext} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert} from "lucide-react";
 import {useUser} from "@/context/UserContext";
-import {Project, Task, Team} from "@/types/types";
+import {Project, Task, TaskElement, Team} from "@/types/types";
 
-export type TaskElement = {
-    task: Task;
-    project: Project;
-    team: Team;
-}
+
 export default function Tasks() {
     const [viewMode, setViewMode] = useState(true);
 
@@ -33,6 +29,8 @@ export default function Tasks() {
         });
     });
 
+    if (User === undefined) return null;
+
     return (
         <div className={"h-full flex flex-col"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
@@ -41,7 +39,7 @@ export default function Tasks() {
                     <FilterContext/>
                     <div className={"flex flex-row space-x-1"}>
                         <OctagonAlert size={15} className={"text-placeholder"}/>
-                        <span className={"text-xs text-placeholder"}>{"2 OPEN"}</span>
+                        <span className={"text-xs text-placeholder"}>{`${taskElements.length} OPEN`}</span>
                     </div>
                 </div>
                 <SwitchButton firstTitle={"Table"} secondTitle={"Card"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>

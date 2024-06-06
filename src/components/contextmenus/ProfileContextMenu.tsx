@@ -6,22 +6,21 @@ import {Briefcase, ChevronsUpDown, LogOut, Settings} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
-import {useUser} from "@/context/UserContext";
 import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
+import {User} from "@/types/types";
+import {useUser} from "@/context/UserContext";
 
 const path = "/image.png";
 
-export function ProfileContextMenu() {
+export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}) => {
     const [showProfile, setShowProfile] = useState(false);
-
-    const { data:User, isLoading:userLoading, error:userError } = useUser();
+    const {data, isLoading, error} = useUser();
 
     const menuRef = useOutsideClick(() => {
         setShowProfile(false);
     });
 
-    if (userError)
-        return <div>Error: {userError}</div>;
+    if (error) return <div>Error: {error}</div>;
 
 
     return (
@@ -44,7 +43,7 @@ export function ProfileContextMenu() {
             <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20 hover:bg-dark")}
                 onClick={() => setShowProfile(!showProfile)}>
 
-                {userLoading ?
+                {isLoading ?
                 <Skeleton className={"w-max"}>
                     <SkeletonElement className={"m-2"} width={43} height={43}/>
                     <SkeletonColumn className={"items-start space-y-2 mr-0"}>
@@ -56,8 +55,8 @@ export function ProfileContextMenu() {
                 <div className={cn("flex flex-row items-center space-x-2")}>
                     <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
                     <div className={cn("flex flex-col items-start")}>
-                        <span className={"text-sm"}>{User?.name}</span>
-                        <span className={cn("text-gray text-xs")}>{User?.teams[0].organisation.name}</span>
+                        <span className={"text-sm"}>{data?.name}</span>
+                        <span className={cn("text-gray text-xs")}>{data?.teams[0].organisation.name}</span>
                     </div>
                 </div>
                 }
@@ -66,4 +65,5 @@ export function ProfileContextMenu() {
             </div>
         </div>
     );
-}
+});
+ProfileContextMenu.displayName = "ProfileContextMenu";

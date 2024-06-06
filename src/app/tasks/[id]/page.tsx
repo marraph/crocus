@@ -2,20 +2,21 @@
 
 import {Breadcrump} from "@marraph/daisy/components/breadcrump/Breadcrump";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {useParams, usePathname, useRouter} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
 import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
 import React from "react";
-import {getTask} from "@/service/hooks/taskHook";
 import {formatDate} from "@/utils/format";
+import {useUser} from "@/context/UserContext";
+import {findTaskProps} from "@/utils/findTaskProps";
 
 export default function TasksID() {
     const router = useRouter();
-    const pathname = usePathname();
-    const id = Number(pathname.split('/').pop());
-    const {data:Task, isLoading:taskLoading, error:taskError} = getTask(id);
+    const id = Number(useParams().id);
+    const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const {task, team, project} = findTaskProps(user, id)
 
     return (
         <div className={"h-full flex flex-col space-y-4"}>
@@ -36,61 +37,61 @@ export default function TasksID() {
                 <div className={"w-max min-h-full bg-black rounded-lg h-min flex flex-col text-sm"}>
                     <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                         <div className={"w-16 text-gray"}>Title</div>
-                        <span>{Task?.name}</span>
+                        <span>{task?.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2 h-32"}>
                         <div className={"w-16 text-gray"}>Description</div>
-                        <span className={"flex-1 break-words"}>{Task?.description}</span>
+                        <span className={"flex-1 break-words"}>{task?.description}</span>
                     </div>
                     <Seperator className={"w-full"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Team</div>
-                        <span>{"team fetch"}</span>
+                        <span>{team?.name}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Project</div>
-                        <span>{"project fetch"}</span>
+                        <span>{project?.name}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Priority</div>
-                        <span>{Task?.priority}</span>
+                        <span>{task?.priority}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Topic</div>
-                        <span>{Task?.topic.title}</span>
+                        <span>{task?.topic?.title}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Status</div>
-                        <span>{Task?.status}</span>
+                        <span>{task?.status}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Due Date</div>
-                        <span>{formatDate(Task?.deadline.toString())}</span>
+                        <span>{formatDate(task?.deadline?.toString())}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Change</div>
-                        <span>{"change fehlt"}</span>
+                        <span>{"//CHANGE FEHLT"}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Changed</div>
-                        <span>{formatDate(Task?.lastModifiedDate.toString())}</span>
+                        <span>{formatDate(task?.lastModifiedDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Changer</div>
-                        <span>{Task?.lastModifiedBy.name}</span>
+                        <span>{task?.lastModifiedBy.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>CREATION</span>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Created</div>
-                        <span>{formatDate(Task?.createdDate.toString())}</span>
+                        <span>{formatDate(task?.createdDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                         <div className={"w-24 text-gray"}>Creator</div>
-                        <span>{Task?.createdBy.name}</span>
+                        <span>{task?.createdBy.name}</span>
                     </div>
                 </div>
             </div>

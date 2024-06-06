@@ -13,14 +13,14 @@ const path = "/image.png";
 interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
     _id: number;
     title: string;
-    topic: string;
-    priority: string;
-    team: string;
-    project: string;
-    status: string;
+    topic?: string;
+    priority?: string;
+    team?: string;
+    project?: string;
+    status?: string;
     createdAt: string;
     createdBy: string;
-    dueDate: string;
+    dueDate?: string;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, project, status, priority, className, createdAt, createdBy, dueDate, ...props }) => {

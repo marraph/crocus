@@ -4,10 +4,12 @@ import React from "react";
 import {SignalHigh, SignalLow, SignalMedium} from "lucide-react";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-    priority: string;
+    priority?: string;
 }
 
 export const PriorityBadge: React.FC<Props> = ({ priority }) => {
+    if (!priority) return null;
+
     return (
         <>
             {priority === "LOW" && <SignalLow strokeWidth={3} />}

@@ -43,7 +43,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                     <div ref={outsideClickRef}>
                         <div className={"flex flex-row items-center"}>
                             <Search size={18} className={"text-placeholder ml-4 mr-2"}/>
-                            <Input placeholder={"Search"} border={"none"}
+                            <Input placeholder={"Search or type a command"} border={"none"}
                                    className={"w-full text-md m-0 mr-2 p-0 h-12 bg-black"}></Input>
                         </div>
                         <Seperator/>

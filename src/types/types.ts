@@ -61,22 +61,30 @@ type Topic = {
 type Task = {
     id: number
     name: string
-    description: string
-    topic: Topic
+    description: string | null
+    topic: Topic | null
     isArchived: boolean
-    duration: Date
-    deadline: Date
-    status: Status
-    priority: Priority
+    duration: Date | null
+    deadline: Date | null
+    status: Status | null
+    priority: Priority | null
     createdBy: PreviewUser
     createdDate: Date
     lastModifiedBy: PreviewUser
     lastModifiedDate: Date
 }
 
+type TaskElement = {
+    task: Task
+    team: Team | null
+    project: Project | null
+}
+
+
 type Acceptable = User | Organisation | Team | Project | Topic | Task
 
 export type {
+    PreviewUser,
     Priority,
     Status,
     User,
@@ -85,5 +93,6 @@ export type {
     Project,
     Topic,
     Task,
+    TaskElement,
     Acceptable
 }
