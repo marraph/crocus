@@ -7,7 +7,6 @@ import {cn} from "@/utils/cn";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
-import {User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 
 const path = "/image.png";

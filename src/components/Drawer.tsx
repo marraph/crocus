@@ -21,7 +21,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
     };
 
     return (
-        <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")}>
+        <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")} {...props}>
             <div className={"space-y-2"}>
                 <div className={"flex flex-row space-x-4 items-center mb-7"}>
                     <Moon size={30}/>

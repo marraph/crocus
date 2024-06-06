@@ -50,7 +50,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                         <div className={"text-placeholder text-sm px-4 pt-4"}>
                             <span>{"Quick Actions"}</span>
                         </div>
-                        <div className={"flex flex-col items-center px-2 py-1 font-normal"}>
+                        <div className={"flex flex-col items-center px-2 py-1 font-normal cursor-pointer"}>
                             <div
                                 className={"flex flex-row items-center justify-between w-full rounded-lg text-gray hover:text-white hover:bg-dark"}>
                                 <div className={"flex flex-row items-center space-x-2 ml-2 my-2"}>
@@ -64,7 +64,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                         </div>
 
-                        <div className={"flex flex-col items-center px-2 py-1 font-normal"}>
+                        <div className={"flex flex-col items-center px-2 py-1 font-normal cursor-pointer"}>
                             <div
                                 className={"flex flex-row items-center justify-between w-full rounded-lg text-gray hover:text-white hover:bg-dark"}>
                                 <div className={"flex flex-row items-center space-x-2 ml-2 my-2"}>
@@ -78,7 +78,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                         </div>
 
-                        <div className={"flex flex-col items-center px-2 pt-1 pb-2 font-normal"}>
+                        <div className={"flex flex-col items-center px-2 pt-1 pb-2 font-normal cursor-pointer"}>
                             <div
                                 className={"flex flex-row items-center justify-between w-full rounded-lg text-gray hover:text-white hover:bg-dark"}>
                                 <div className={"flex flex-row items-center space-x-2 ml-2 my-2"}>
@@ -95,7 +95,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                         <div className={"text-placeholder text-sm px-4 pt-4"}>
                             <span>{"Recent"}</span>
                         </div>
-                        <div className={"flex flex-col items-center px-2 py-1 font-normal"}>
+                        <div className={"flex flex-col items-center px-2 py-1 font-normal cursor-pointer"}>
                             <div
                                 className={"flex flex-row items-center justify-between w-full rounded-lg text-gray hover:text-white hover:bg-dark"}>
                                 <div className={"flex flex-row items-center space-x-2 ml-2 my-2"}>
@@ -109,7 +109,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                         </div>
 
-                        <div className={"flex flex-col items-center px-2 pt-1 pb-2 font-normal"}>
+                        <div className={"flex flex-col items-center px-2 pt-1 pb-2 font-normal cursor-pointer"}>
                             <div
                                 className={"flex flex-row items-center justify-between w-full rounded-lg text-gray hover:text-white hover:bg-dark"}>
                                 <div className={"flex flex-row items-center space-x-2 ml-2 my-2"}>
@@ -126,17 +126,17 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                         <Seperator/>
 
                         <div className={"flex flex-row items-center space-x-8 px-4 h-12 text-gray text-sm"}>
-                            <div className={"flex flex-row items-center space-x-2"}>
+                            <div className={"flex flex-row items-center space-x-2 cursor-pointer"}>
                                 <span>{"Close"}</span>
                                 <Shortcut text={"ESC"}/>
                             </div>
-                            <div className={"flex flex-row items-center space-x-2"}>
+                            <div className={"flex flex-row items-center space-x-2 cursor-pointer"}>
                                 <span>{"Select"}</span>
                                 <Shortcut>
                                     <CornerDownLeft size={16}/>
                                 </Shortcut>
                             </div>
-                            <div className={"flex flex-row items-center space-x-1"}>
+                            <div className={"flex flex-row items-center space-x-1 cursor-pointer"}>
                                 <span className={"mr-1"}>{"Navigate"}</span>
                                 <Shortcut>
                                     <MoveUp size={16}/>

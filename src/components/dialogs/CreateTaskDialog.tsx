@@ -12,7 +12,7 @@ import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/Da
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Priority, Project, Status, Task, Team, Topic, User} from "@/types/types";
+import {PreviewUser, Priority, Project, Status, Task, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 
 
@@ -98,6 +98,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             email: data.email,
         }
         const task: Task = {
+            id: 0,
             name: titleValue,
             description: descriptionValue,
             topic: getTopicItem(topicRef.current?.getSelectedValue() as string) ?? null,
