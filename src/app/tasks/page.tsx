@@ -21,9 +21,21 @@ export default function Tasks() {
         team.projects?.forEach((project: Project) => {
             project.tasks?.forEach((task: Task) => {
                 taskElements.push({
-                    task,
-                    project,
-                    team
+                    id: task.id,
+                    name: task.name,
+                    description: task.description,
+                    topic: task.topic,
+                    isArchived: task.isArchived,
+                    duration: task.duration,
+                    deadline: task.deadline,
+                    status: task.status,
+                    priority: task.priority,
+                    createdBy: task.createdBy,
+                    createdDate: task.createdDate,
+                    lastModifiedBy: task.lastModifiedBy,
+                    lastModifiedDate: task.lastModifiedDate,
+                    team: team,
+                    project: project
                 });
             });
         });

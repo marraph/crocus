@@ -75,7 +75,19 @@ type Task = {
 }
 
 type TaskElement = {
-    task: Task
+    id: number
+    name: string
+    description: string | null
+    topic: Topic | null
+    isArchived: boolean
+    duration: Date | null
+    deadline: Date | null
+    status: Status | null
+    priority: Priority | null
+    createdBy: PreviewUser
+    createdDate: Date
+    lastModifiedBy: PreviewUser
+    lastModifiedDate: Date
     team: Team | null
     project: Project | null
 }

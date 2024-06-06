@@ -67,8 +67,21 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
             const aValue = a[sort.key as keyof TaskElement];
             const bValue = b[sort.key as keyof TaskElement];
 
-            if (aValue < bValue) return sort.order === "asc" ? -1 : 1;
-            if (aValue > bValue) return sort.order === "asc" ? 1 : -1;
+            if (sort.key === 'priority') {
+                const priorityOrder = { LOW: 1, MEDIUM: 2, HIGH: 3 };
+                const aPriority = priorityOrder[aValue as keyof typeof priorityOrder];
+                const bPriority = priorityOrder[bValue as keyof typeof priorityOrder];
+
+                if (aPriority && bPriority) {
+                    if (aPriority < bPriority) return sort.order === "asc" ? -1 : 1;
+                    if (aPriority > bPriority) return sort.order === "asc" ? 1 : -1;
+                }
+            } else {
+                if (aValue && bValue) {
+                    if (aValue < bValue) return sort.order === "asc" ? -1 : 1;
+                    if (aValue > bValue) return sort.order === "asc" ? 1 : -1;
+                }
+            }
             return 0;
         });
     }
@@ -102,25 +115,25 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                     </TableHeader>
                     <TableBody className={"text-sm"}>
                         {getSortedArray(taskElements).map((taskElement) => (
-                            <TableRow key={taskElement.task.id} onClick={() => router.push(`/tasks/${taskElement.task.id}`)}
-                                      onContextMenu={(event) => handleContextMenu(event, taskElement.task.id)}>
-                                <TableCell>{taskElement.task.id}</TableCell>
+                            <TableRow key={taskElement.id} onClick={() => router.push(`/tasks/${taskElement.id}`)}
+                                      onContextMenu={(event) => handleContextMenu(event, taskElement.id)}>
+                                <TableCell>{taskElement.id}</TableCell>
                                 <TableCell>{taskElement.team?.name}</TableCell>
                                 <TableCell>{taskElement.project?.name}</TableCell>
                                 <TableCell>
-                                    <PriorityBadge priority={taskElement.task.priority?.toString()}/>
+                                    <PriorityBadge priority={taskElement.priority?.toString()}/>
                                 </TableCell>
                                 <TableCell>
-                                    <TopicBadge title={taskElement.task.topic?.title} color={"error"}/>
+                                    <TopicBadge title={taskElement.topic?.title} color={"error"}/>
                                 </TableCell>
-                                <TableCell className={"text-white"}>{taskElement.task.name}</TableCell>
+                                <TableCell className={"text-white"}>{taskElement.name}</TableCell>
                                 <TableCell>
-                                    <StatusBadge title={taskElement.task.status?.toString()} color={"warning"}/>
+                                    <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                                 </TableCell>
-                                <TableCell>{formatDate(taskElement.task.deadline?.toString())}</TableCell>
-                                <TableCell>{formatDate(taskElement.task.createdDate.toString())}</TableCell>
+                                <TableCell>{formatDate(taskElement.deadline?.toString())}</TableCell>
+                                <TableCell>{formatDate(taskElement.createdDate?.toString())}</TableCell>
                                 <TableCell className={"flex flex-row space-x-2 items-center"}>
-                                    <span>{taskElement.task.createdBy.name}</span>
+                                    <span>{taskElement.createdBy?.name}</span>
                                     <Avatar img_url={path} size={20} className={"p-0"}/>
                                 </TableCell>
                             </TableRow>

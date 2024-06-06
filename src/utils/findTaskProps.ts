@@ -12,7 +12,25 @@ export const findTaskProps = (user: User | undefined, taskId: number): PropsCont
         for (const project of team.projects) {
             const task = project.tasks.find(t => t.id === taskId);
             if (task) {
-                return { taskElement: { task, team, project }};
+                return { taskElement:
+                    {
+                        id: task.id,
+                        name: task.name,
+                        description: task.description,
+                        topic: task.topic,
+                        isArchived: task.isArchived,
+                        duration: task.duration,
+                        deadline: task.deadline,
+                        status: task.status,
+                        priority: task.priority,
+                        createdBy: task.createdBy,
+                        createdDate: task.createdDate,
+                        lastModifiedBy: task.lastModifiedBy,
+                        lastModifiedDate: task.lastModifiedDate,
+                        team: team,
+                        project: project
+                    }
+                };
             }
         }
     }

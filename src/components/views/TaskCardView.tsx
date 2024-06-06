@@ -31,17 +31,17 @@ export const TaskCardView: React.FC<TaskProps> = ({ taskElements }) => {
             <div className={"grid grid-cols-5 gap-9 pt-4"}>
                 {taskElements.map((taskElement, index) => (
                     <TaskCard key={index}
-                              _id={taskElement.task.id}
-                              title={taskElement.task.name}
-                              topic={taskElement.task.topic?.title}
-                              priority={taskElement.task.priority?.toString()}
+                              _id={taskElement.id}
+                              title={taskElement.name}
+                              topic={taskElement.topic?.title}
+                              priority={taskElement.priority?.toString()}
                               team={taskElement.team?.name}
                               project={taskElement.project?.name}
-                              status={taskElement.task.status?.toString()}
-                              createdAt={formatDate(taskElement.task.createdDate.toString())}
-                              createdBy={taskElement.task.createdBy.name}
-                              dueDate={formatDate(taskElement.task.deadline?.toString())}
-                              onContextMenu={(event) => handleContextMenu(event, taskElement.task.id)}/>
+                              status={taskElement.status?.toString()}
+                              createdAt={formatDate(taskElement.createdDate.toString())}
+                              createdBy={taskElement.createdBy.name}
+                              dueDate={formatDate(taskElement.deadline?.toString())}
+                              onContextMenu={(event) => handleContextMenu(event, taskElement.id)}/>
                 ))}
             </div>
         </>

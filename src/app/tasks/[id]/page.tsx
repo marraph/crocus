@@ -37,12 +37,12 @@ export default function TasksID() {
                 <div className={"w-max min-h-full bg-black rounded-lg h-min flex flex-col text-sm"}>
                     <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                         <div className={"w-16 text-gray"}>Title</div>
-                        <span>{taskElement.task.name}</span>
+                        <span>{taskElement.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2 h-32"}>
                         <div className={"w-16 text-gray"}>Description</div>
-                        <span className={"flex-1 break-words"}>{taskElement.task.description}</span>
+                        <span className={"flex-1 break-words"}>{taskElement.description}</span>
                     </div>
                     <Seperator className={"w-full"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
@@ -55,19 +55,19 @@ export default function TasksID() {
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Priority</div>
-                        <span>{taskElement.task?.priority}</span>
+                        <span>{taskElement.priority}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Topic</div>
-                        <span>{taskElement.task?.topic?.title}</span>
+                        <span>{taskElement.topic?.title}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Status</div>
-                        <span>{taskElement.task?.status}</span>
+                        <span>{taskElement.status}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Due Date</div>
-                        <span>{formatDate(taskElement.task?.deadline?.toString())}</span>
+                        <span>{formatDate(taskElement.deadline?.toString())}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>
@@ -77,21 +77,21 @@ export default function TasksID() {
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Changed</div>
-                        <span>{formatDate(taskElement.task?.lastModifiedDate.toString())}</span>
+                        <span>{formatDate(taskElement.lastModifiedDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Changer</div>
-                        <span>{taskElement.task?.lastModifiedBy.name}</span>
+                        <span>{taskElement.lastModifiedBy.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>CREATION</span>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Created</div>
-                        <span>{formatDate(taskElement.task?.createdDate.toString())}</span>
+                        <span>{formatDate(taskElement.createdDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                         <div className={"w-24 text-gray"}>Creator</div>
-                        <span>{taskElement.task?.createdBy.name}</span>
+                        <span>{taskElement.createdBy.name}</span>
                     </div>
                 </div>
             </div>

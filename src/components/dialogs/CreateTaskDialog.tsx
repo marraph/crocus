@@ -12,7 +12,7 @@ import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/Da
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Project, Status, Task, Team, Topic, User} from "@/types/types";
+import {PreviewUser, Priority, Project, Status, Task, Team, Topic, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 
 
@@ -64,6 +64,19 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         return topics;
     }
 
+    const getTopicItem = (topic: string) => {
+        for (const team of data?.teams ?? []) {
+            for (const project of team.projects) {
+                for (const task of project.tasks) {
+                    if (task.topic?.title === topic) {
+                        return task.topic;
+                    }
+                }
+            }
+        }
+        return undefined;
+    }
+
     const status = ["Pending", "Planing", "Started", "Tested", "Finished", "Archived"];
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
@@ -76,7 +89,6 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     }, [showAlert]);
 
     if (data === undefined) return null;
-    console.log(data)
 
     const handleCreateClick = () => {
         handleCloseClick();
@@ -88,9 +100,9 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         const task: Task = {
             name: titleValue,
             description: descriptionValue,
-            //topic:,
-            //status:,
-            //priority:,
+            topic: getTopicItem(topicRef.current?.getSelectedValue() as string) ?? null,
+            status: statusRef.current?.getSelectedValue() as Status ?? null,
+            priority: priorityRef.current?.getSelectedValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
             duration: null,
@@ -168,7 +180,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <DatePicker text={"Due Date"} iconSize={12} size={"small"} className={"h-8"} ref={datePickerRef}/>
+                            <DatePicker text={"Due Date"} iconSize={12} size={"small"} ref={datePickerRef}/>
                         </div>
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick} />
