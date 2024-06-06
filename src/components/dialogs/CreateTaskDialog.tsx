@@ -12,14 +12,8 @@ import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/Da
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Task, User} from "@/types/types";
+import {PreviewUser, Project, Status, Task, Team, Topic, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {findTaskProps} from "@/utils/findTaskProps";
-
-const project = ["None", "ServerAPI", "ClientAPI"];
-const topic = ["None", "Bug", "Feature"];
-const status = ["None", "Todo", "In Progress", "Done"];
-const priority = ["None", "Low", "Medium", "High"];
 
 
 export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
@@ -35,11 +29,44 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const [descriptionValue, setDescriptionValue] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
-    const [teamSelected, setTeamSelected] = useState(false);
+    const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
 
     const {data, isLoading, error} = useUser();
-    const {task, team, project} = findTaskProps(data, 1);
 
+    const getTeams = () => {
+        const teams: string[] = [];
+        data?.teams.forEach((team: Team) => {
+            teams.push(team.name);
+        });
+        return teams;
+    }
+
+    const getProjects = (teamToFind: string) => {
+        const specificTeam = data?.teams.find((team: Team) => team.name === teamToFind);
+        const projects: string[] = [];
+        specificTeam?.projects.forEach((project: Project) => {
+            projects.push(project.name);
+        });
+        return projects;
+    }
+
+    const getTopics = () => {
+        const topics: string[] = [];
+        data?.teams.forEach(team => {
+            team.projects.forEach(project => {
+                project.tasks.forEach(task => {
+                    if (task.topic) {
+                        topics.push(task.topic.title);
+                    }
+                });
+            });
+        });
+        return topics;
+    }
+
+    const status = ["Pending", "Planing", "Started", "Tested", "Finished", "Archived"];
+
+    const priorities = ["LOW", "MEDIUM", "HIGH"];
 
     useEffect(() => {
         if (showAlert) {
@@ -49,7 +76,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     }, [showAlert]);
 
     if (data === undefined) return null;
-
+    console.log(data)
 
     const handleCreateClick = () => {
         handleCloseClick();
@@ -95,6 +122,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         datePickerRef.current?.reset();
         setTitleValue("");
         setDescriptionValue("");
+        setTeamSelected({isSelected: false, team: ""})
     }
 
     return (
@@ -114,19 +142,19 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
 
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Team"} size={"small"} ref={teamRef}>
-                                {data.teams.map((team) => (
-                                    <ComboboxItem title={team.name} key={team.name} size={"small"} onClick={() => setTeamSelected(true)}/>
+                                {getTeams().map((team) => (
+                                    <ComboboxItem title={team} key={team} size={"small"} onClick={() => setTeamSelected({isSelected: true, team: team})}/>
                                 ))}
                             </Combobox>
-                            {teamSelected &&
+                            {teamSelected.isSelected &&
                                 <Combobox buttonTitle={"Project"} size={"small"} ref={projectRef}>
-                                    {data.teams.map((project) => (
-                                        <ComboboxItem title={project.name} key={project} size={"small"}/>
+                                    {getProjects(teamSelected.team).map((project) => (
+                                        <ComboboxItem title={project} key={project} size={"small"}/>
                                     ))}
                                 </Combobox>
                             }
                             <Combobox buttonTitle={"Topic"} size={"small"} ref={topicRef}>
-                                {topic.map((topic) => (
+                                {getTopics().map((topic) => (
                                     <ComboboxItem title={topic} key={topic} size={"small"}/>
                                 ))}
                             </Combobox>
@@ -136,7 +164,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                 ))}
                             </Combobox>
                             <Combobox buttonTitle={"Priority"} size={"small"} ref={priorityRef}>
-                                {priority.map((priority) => (
+                                {priorities.map((priority) => (
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>

@@ -16,7 +16,7 @@ export default function TasksID() {
     const router = useRouter();
     const id = Number(useParams().id);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const {task, team, project} = findTaskProps(user, id)
+    const {taskElement} = findTaskProps(user, id);
 
     return (
         <div className={"h-full flex flex-col space-y-4"}>
@@ -37,37 +37,37 @@ export default function TasksID() {
                 <div className={"w-max min-h-full bg-black rounded-lg h-min flex flex-col text-sm"}>
                     <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                         <div className={"w-16 text-gray"}>Title</div>
-                        <span>{task?.name}</span>
+                        <span>{taskElement.task.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2 h-32"}>
                         <div className={"w-16 text-gray"}>Description</div>
-                        <span className={"flex-1 break-words"}>{task?.description}</span>
+                        <span className={"flex-1 break-words"}>{taskElement.task.description}</span>
                     </div>
                     <Seperator className={"w-full"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Team</div>
-                        <span>{team?.name}</span>
+                        <span>{taskElement.team?.name}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Project</div>
-                        <span>{project?.name}</span>
+                        <span>{taskElement.project?.name}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Priority</div>
-                        <span>{task?.priority}</span>
+                        <span>{taskElement.task?.priority}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Topic</div>
-                        <span>{task?.topic?.title}</span>
+                        <span>{taskElement.task?.topic?.title}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Status</div>
-                        <span>{task?.status}</span>
+                        <span>{taskElement.task?.status}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-16 text-gray"}>Due Date</div>
-                        <span>{formatDate(task?.deadline?.toString())}</span>
+                        <span>{formatDate(taskElement.task?.deadline?.toString())}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>
@@ -77,21 +77,21 @@ export default function TasksID() {
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Changed</div>
-                        <span>{formatDate(task?.lastModifiedDate.toString())}</span>
+                        <span>{formatDate(taskElement.task?.lastModifiedDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Changer</div>
-                        <span>{task?.lastModifiedBy.name}</span>
+                        <span>{taskElement.task?.lastModifiedBy.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>CREATION</span>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Created</div>
-                        <span>{formatDate(task?.createdDate.toString())}</span>
+                        <span>{formatDate(taskElement.task?.createdDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                         <div className={"w-24 text-gray"}>Creator</div>
-                        <span>{task?.createdBy.name}</span>
+                        <span>{taskElement.task?.createdBy.name}</span>
                     </div>
                 </div>
             </div>
