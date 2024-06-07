@@ -15,16 +15,21 @@ import {
     AlertIcon,
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
+import {updateTask} from "@/service/hooks/taskHook";
+import {PreviewUser, Priority, Status, Task, TaskElement, Topic} from "@/types/types";
+import {useUser} from "@/context/UserContext";
 
 const title = "Server api doesnt working"
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
+    taskElement: TaskElement;
 }
 
-export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(({ buttonTrigger, className, ...props}, ref) => {
+export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
+    const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
         if (ref && typeof ref === 'object') {
@@ -40,7 +45,25 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(
         }
     }, [showAlert]);
 
+    if (!user) return null;
+
     const closeTask = () => {
+        const task: Task = {
+            id: taskElement.id,
+            name: taskElement.name,
+            description: taskElement.description,
+            topic: taskElement.topic,
+            isArchived: true,
+            duration: taskElement.duration,
+            deadline: taskElement.deadline,
+            status: taskElement.status,
+            priority: taskElement.priority,
+            createdBy: taskElement.createdBy,
+            createdDate: taskElement.createdDate,
+            lastModifiedBy: {id: user.id, name: user.name, email: user.email },
+            lastModifiedDate: new Date()
+        }
+        const {data, isLoading, error} = updateTask(task.id, task);
         getDialogRef().current?.close();
         setShowAlert(true);
     }

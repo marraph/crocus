@@ -6,14 +6,19 @@ import {Trash2} from "lucide-react";
 import {cn} from "@/utils/cn";
 import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
+import {Task, TaskElement} from "@/types/types";
+import {useUser} from "@/context/UserContext";
+import {deleteTask, updateTask} from "@/service/hooks/taskHook";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
+    taskElement: TaskElement;
 }
 
-export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(({ buttonTrigger, className, ...props}, ref) => {
+export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
+    const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
         if (ref && typeof ref === 'object') {
@@ -29,7 +34,10 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>
         }
     }, [showAlert]);
 
-    const deleteTask = () => {
+    if (!user) return null;
+
+    const deleteTheTask = () => {
+        const {isLoading, error} = deleteTask(taskElement.id);
         getDialogRef().current?.close();
         setShowAlert(true);
     }
@@ -50,7 +58,7 @@ export const DeleteTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>
                         <p className={cn("text-white")}>Are you sure you want to delete this task?</p>
                         <div className={cn("flex flex-row space-x-2 justify-end")}>
                             <Button text={"Cancel"} className={cn("h-8")} onClick={() => getDialogRef().current?.close()}/>
-                            <Button text={"Delete"} onClick={deleteTask} className={cn("h-8 text-lightred hover:bg-lightred hover:bg-opacity-10 hover:text-lightred")}/>
+                            <Button text={"Delete"} onClick={deleteTheTask} className={cn("h-8 text-lightred hover:bg-lightred hover:bg-opacity-10 hover:text-lightred")}/>
                         </div>
                     </div>
                 </Dialog>

@@ -24,13 +24,10 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const statusRef = useRef<ComboboxRef>(null);
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
-
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
     const [showAlert, setShowAlert] = useState(false);
-
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
-
     const {data, isLoading, error} = useUser();
 
     const getTeams = () => {
@@ -91,12 +88,6 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     if (data === undefined) return null;
 
     const handleCreateClick = () => {
-        handleCloseClick();
-        const user: PreviewUser = {
-            id: data.id,
-            name: data.name,
-            email: data.email,
-        }
         const task: Task = {
             id: 0,
             name: titleValue,
@@ -107,13 +98,14 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
             duration: null,
-            createdBy: user,
+            createdBy: {id: data.id, name: data.name, email: data.email},
             createdDate: new Date(),
-            lastModifiedBy: user,
+            lastModifiedBy: {id: data.id, name: data.name, email: data.email},
             lastModifiedDate: new Date(),
         }
         //add to team & project
         const {data:Task, isLoading:taskLoading, error:taskError} = createTask(task);
+        handleCloseClick();
         setShowAlert(true);
     }
 

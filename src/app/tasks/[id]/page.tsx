@@ -25,9 +25,9 @@ export default function TasksID() {
                             onClick={() => router.push("/tasks/")}/>
                 <div className={"flex flex-row justify-end"}>
                     <MessageTaskDialog/>
-                    <EditTaskDialog buttonTrigger={true}/>
-                    <CloseTaskDialog buttonTrigger={true}/>
-                    <DeleteTaskDialog buttonTrigger={true}/>
+                    <EditTaskDialog taskElement={taskElement} buttonTrigger={true}/>
+                    <CloseTaskDialog taskElement={taskElement} buttonTrigger={true}/>
+                    <DeleteTaskDialog taskElement={taskElement} buttonTrigger={true}/>
                 </div>
             </div>
             <div className={"flex flex-row grow border border-white border-opacity-20 bg-black rounded-lg"}>
