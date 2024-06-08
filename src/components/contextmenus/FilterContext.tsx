@@ -1,10 +1,10 @@
 import {Filter, FilterItem, FilterRef} from "@marraph/daisy/components/filter/Filter";
 import {BookCopy, LineChart, SmartphoneCharging, Tag, User, Users} from "lucide-react";
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {Project, Team} from "@/types/types";
 
-export function FilterContext() {
+export const FilterContext = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const filterRef = useRef<FilterRef>(null);
 
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
@@ -85,4 +85,5 @@ export function FilterContext() {
             <FilterItem title={"Creator"} data={getCreators()} icon={<User size={16}/>}></FilterItem>
         </Filter>
     );
-}
+});
+FilterContext.displayName = "FilterContext";
