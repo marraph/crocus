@@ -47,7 +47,7 @@ export function FilterContext() {
         data?.teams.forEach(team => {
             team.projects.forEach(project => {
                 project.tasks.forEach(task => {
-                    if (task.topic) {
+                    if (task.topic && !topics.includes(task.topic.title)) {
                         topics.push(task.topic.title);
                     }
                 });
@@ -61,7 +61,8 @@ export function FilterContext() {
         data?.teams.forEach(team => {
             team.projects.forEach(project => {
                 project.tasks.forEach(task => {
-                    creators.push(task.createdBy.name);
+                    if (!creators.includes(task.createdBy.name))
+                        creators.push(task.createdBy.name);
                 });
             });
         });

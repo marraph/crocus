@@ -7,6 +7,7 @@ import {useRouter} from "next/navigation";
 import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
+import {BookCopy, CalendarDays, Users} from "lucide-react";
 
 const path = "/image.png";
 
@@ -47,9 +48,18 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
             <Seperator/>
 
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
-                <span className={cn("text-sm text-gray", className)}>{team}</span>
-                <span className={cn("text-sm text-gray", className)}>{project}</span>
-                <span className={cn("text-sm text-gray", className)}>{dueDate}</span>
+                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                    <Users size={16}/>
+                    <span className={cn("text-sm", className)}>{team}</span>
+                </div>
+                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                    <BookCopy size={16}/>
+                    <span className={cn("text-sm", className)}>{project}</span>
+                </div>
+                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                    <CalendarDays size={16}/>
+                    <span className={cn("text-sm", className)}>{dueDate}</span>
+                </div>
             </div>
 
             <Seperator/>

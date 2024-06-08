@@ -17,6 +17,8 @@ export default function Tasks() {
     const { data:User, isLoading:userLoading, error:userError } = useUser();
     const taskElements: TaskElement[] = [];
 
+    console.log(User);
+
     User?.teams?.forEach((team: Team) => {
         team.projects?.forEach((project: Project) => {
             project.tasks?.forEach((task: Task) => {

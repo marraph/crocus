@@ -13,8 +13,7 @@ import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/Da
 import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {Priority, Project, Status, Task, TaskElement, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-
-const title = "Server api doesnt work"
+import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
@@ -29,8 +28,10 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
     const statusRef = useRef<ComboboxRef>(null);
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
+    const [titleValue, setTitleValue] = useState(taskElement.name);
+    const [descriptionValue, setDescriptionValue] = useState(taskElement.description ?? undefined);
     const [showAlert, setShowAlert] = useState(false);
-    const [teamSelected, setTeamSelected] = useState("");
+    const [teamSelected, setTeamSelected] = useState(taskElement.team?.name ?? "");
     const {data, isLoading, error} = useUser();
 
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
@@ -92,7 +93,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
         data?.teams.forEach(team => {
             team.projects.forEach(project => {
                 project.tasks.forEach(task => {
-                    if (task.topic) {
+                    if (task.topic && !topics.includes(task.topic.title)) {
                         topics.push(task.topic.title);
                     }
                 });
@@ -118,6 +119,26 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitleValue(e.target.value);
+    }
+
+    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setDescriptionValue(e.target.value);
+    }
+
+    const handleCloseClick = () => {
+        getDialogRef().current?.close();
+        teamRef.current?.setValue(taskElement.team?.name);
+        projectRef.current?.setValue(taskElement.project?.name);
+        topicRef.current?.setValue(taskElement.topic?.title);
+        statusRef.current?.setValue(taskElement.status);
+        priorityRef.current?.setValue(taskElement.priority);
+        datePickerRef.current?.setValue(taskElement.deadline);
+        setTitleValue(taskElement.name);
+        setDescriptionValue(taskElement.description ?? "");
+    }
+
     return (
         <>
             {buttonTrigger &&
@@ -134,37 +155,54 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                         <div className={"flex flex-col space-y-2"}>
                             <div className={"flex flex-row justify-between space-x-2 items-center pt-4"}>
                                 <span className={"text-md text-white"}>Edit Task:</span>
-                                <Badge text={title}
+                                <Badge text={taskElement.id.toString()}
                                        className={"flex justify-end font-normal bg-dark text-white rounded-lg"}></Badge>
                             </div>
                         </div>
-                        <CloseButton className={"h-min w-min mt-4"} onClick={() => getDialogRef().current?.close()}/>
+                        <CloseButton className={"h-min w-min mt-4"} onClick={() => handleCloseClick()}/>
                     </div>
                     <Seperator/>
-                    <div className={"flex flex-row space-x-2 px-4 pt-4"}>
+                    <div className={"flex flex-col space-y-4 p-4"}>
+                        <div className={"flex flex-col space-y-1"}>
+                            <span className={"text-gray text-xs"}>Title</span>
+                            <input placeholder={"Task Title"} id={"title"} value={titleValue}
+                                   onChange={handleTitleChange}
+                                   className={cn("mb-2 text-sm rounded-lg bg-black py-2 px-2 border border-white border-opacity-20 text-white placeholder-placeholder focus-visible:ring-0 focus-visible:outline-none", className)}/>
+                        </div>
+                        <div className={"flex flex-col space-y-1"}>
+                            <span className={"text-gray text-xs"}>Description</span>
+                            <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} spellCheck={false}
+                                      className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20"}
+                                      value={descriptionValue}/>
+                        </div>
+                    </div>
+
+                    <div className={"flex flex-row space-x-2 px-4"}>
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Team</span>
-                            <Combobox buttonTitle={"Team"} preSelectedValue={teamRef.current?.getSelectedValue()}>
+                            <Combobox buttonTitle={"Team"} ref={teamRef} preSelectedValue={taskElement.team?.name}>
                                 {getTeams().map((team) => (
                                     <ComboboxItem key={team} title={team} onClick={() => setTeamSelected(team)}/>
                                 ))}
                             </Combobox>
                         </div>
                         <div className={"flex flex-col space-y-1 z-50"}>
-                            <span className={"text-gray text-xs"}>Project</span>
                             {teamRef.current?.getSelectedValue() &&
-                                <Combobox buttonTitle={"Project"} preSelectedValue={projectRef.current?.getSelectedValue()}>
-                                    {getProjects(teamRef.current.getSelectedValue()).map((project) => (
-                                        <ComboboxItem key={project} title={project}/>
-                                    ))}
-                                </Combobox>
+                                <>
+                                    <span className={"text-gray text-xs"}>Project</span>
+                                    <Combobox buttonTitle={"Project"} ref={projectRef} preSelectedValue={taskElement.project?.name}>
+                                        {getProjects(teamRef.current.getSelectedValue()).map((project) => (
+                                            <ComboboxItem key={project} title={project}/>
+                                        ))}
+                                    </Combobox>
+                                </>
                             }
                         </div>
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 py-4"}>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Topic</span>
-                            <Combobox buttonTitle={"Topic"} preSelectedValue={topicRef.current?.getSelectedValue()}>
+                            <Combobox buttonTitle={"Topic"} ref={topicRef} preSelectedValue={taskElement.topic?.title}>
                                 {getTopics().map((topic) => (
                                     <ComboboxItem key={topic} title={topic}/>
                                 ))}
@@ -172,7 +210,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Status</span>
-                            <Combobox buttonTitle={"Status"} preSelectedValue={statusRef.current?.getSelectedValue()}>
+                            <Combobox buttonTitle={"Status"} ref={statusRef} preSelectedValue={taskElement.status}>
                                 {status.map((status) => (
                                     <ComboboxItem key={status} title={status}/>
                                 ))}
@@ -180,22 +218,20 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Priority</span>
-                            <Combobox buttonTitle={"Priority"} preSelectedValue={priorityRef.current?.getSelectedValue()}>
+                            <Combobox buttonTitle={"Priority"} ref={priorityRef} preSelectedValue={taskElement.priority}>
                                 {priorities.map((priority) => (
                                     <ComboboxItem key={priority} title={priority}/>
                                 ))}
                             </Combobox>
                         </div>
-                    </div>
-                    <div className={"flex flex-row space-x-2 px-4 pb-4"}>
                         <div className={"flex flex-col space-y-1 z-30"}>
                             <span className={"text-gray text-xs"}>Due Date</span>
-                            <DatePicker iconSize={16} text={"Due Date"} preSelectedValue={datePickerRef.current?.getSelectedValue()}/>
+                            <DatePicker iconSize={16} text={"Due Date"} ref={datePickerRef} preSelectedValue={taskElement.deadline}/>
                         </div>
                     </div>
                     <Seperator/>
                     <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
-                        <Button text={"Cancel"} className={cn("h-8")} onClick={() => getDialogRef().current?.close()}/>
+                        <Button text={"Cancel"} className={cn("h-8")} onClick={() => handleCloseClick()}/>
                         <Button text={"Save changes"} theme={"white"} onClick={editTask} className={"h-8"}/>
                     </div>
                 </Dialog>

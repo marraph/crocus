@@ -52,7 +52,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         data?.teams.forEach(team => {
             team.projects.forEach(project => {
                 project.tasks.forEach(task => {
-                    if (task.topic) {
+                    if (task.topic && !topics.includes(task.topic.title)) {
                         topics.push(task.topic.title);
                     }
                 });
