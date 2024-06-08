@@ -11,6 +11,7 @@ import React from "react";
 import {formatDate} from "@/utils/format";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
+import {BookCopy, CalendarDays, LineChart, SmartphoneCharging, Tag, Users} from "lucide-react";
 
 export default function TasksID() {
     const router = useRouter();
@@ -46,27 +47,45 @@ export default function TasksID() {
                     </div>
                     <Seperator className={"w-full"}/>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-16 text-gray"}>Team</div>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <Users size={16}/>
+                            <span className={"w-16"}>Team</span>
+                        </div>
                         <span>{taskElement.team?.name}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-16 text-gray"}>Project</div>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <BookCopy size={16}/>
+                            <span className={"w-16"}>Project</span>
+                        </div>
                         <span>{taskElement.project?.name}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-16 text-gray"}>Priority</div>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <LineChart size={16}/>
+                            <span className={"w-16"}>Priority</span>
+                        </div>
                         <span>{taskElement.priority}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-16 text-gray"}>Topic</div>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <Tag size={16}/>
+                            <span className={"w-16"}>Topic</span>
+                        </div>
                         <span>{taskElement.topic?.title}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-16 text-gray"}>Status</div>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <SmartphoneCharging size={16}/>
+                            <span className={"w-16"}>Status</span>
+                        </div>
                         <span>{taskElement.status}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-16 text-gray"}>Due Date</div>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <CalendarDays size={16}/>
+                            <span className={"w-16"}>Due Date</span>
+                        </div>
                         <span>{formatDate(taskElement.deadline?.toString())}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
@@ -80,7 +99,7 @@ export default function TasksID() {
                         <span>{formatDate(taskElement.lastModifiedDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                        <div className={"w-24 text-gray"}>Changer</div>
+                        <div className={"w-24 text-gray"}>Changed By</div>
                         <span>{taskElement.lastModifiedBy.name}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
@@ -90,7 +109,7 @@ export default function TasksID() {
                         <span>{formatDate(taskElement.createdDate.toString())}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
-                        <div className={"w-24 text-gray"}>Creator</div>
+                        <div className={"w-24 text-gray"}>Created By</div>
                         <span>{taskElement.createdBy.name}</span>
                     </div>
                 </div>

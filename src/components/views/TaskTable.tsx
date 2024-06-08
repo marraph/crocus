@@ -102,8 +102,8 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} closeRef={closeRef} editRef={editRef}/>
             }
 
-            <div className={"w-full h-full text-xs flex items-stretch pt-4"}>
-                <Table className={"bg-black w-full"}>
+            <div className={"w-full h-[826px] text-xs flex items-stretch pt-4"}>
+                <Table className={"bg-black w-full no-scrollbar"}>
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>
                             {header.map((header) => (
