@@ -16,7 +16,7 @@ import {PreviewUser, Priority, Project, Status, Task, Team} from "@/types/types"
 import {useUser} from "@/context/UserContext";
 
 
-export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
+export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const teamRef = useRef<ComboboxRef>(null);
     const projectRef = useRef<ComboboxRef>(null);

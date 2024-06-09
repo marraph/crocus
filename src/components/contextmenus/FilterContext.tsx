@@ -1,16 +1,21 @@
 import {Filter, FilterItem, FilterRef} from "@marraph/daisy/components/filter/Filter";
 import {BookCopy, LineChart, SmartphoneCharging, Tag, User, Users} from "lucide-react";
-import React, {useRef, useState} from "react";
+import React, {useImperativeHandle, useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {Project, Team} from "@/types/types";
 
-export const FilterContext = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
-    const filterRef = useRef<FilterRef>(null);
+interface FilterContextProps extends React.HTMLAttributes<HTMLDivElement> {
+    onClick?: () => void;
+    onChange?: () => void;
+}
 
+export const FilterContext = React.forwardRef<FilterRef, FilterContextProps>(({onClick, onChange, className, ...props}, ref) => {
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
 
     const handleFilterChange = (filters: { [key: string]: string | null }) => {
+        if (onChange) onChange();
+
         setSelectedFilters(filters);
         if (filters["Team"] !== null) {
             setTeamSelected({isSelected: true, team: filters["Team"] ?? ""});
@@ -73,9 +78,14 @@ export const FilterContext = React.forwardRef<HTMLDivElement, React.HTMLAttribut
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
+    useImperativeHandle(ref, () => ({
+        getSelectedItems: () => selectedFilters,
+        reset: () => setSelectedFilters({}),
+    }));
+
     return (
-        <Filter ref={filterRef} onFilterChange={handleFilterChange} onResetTeamSelected={resetTeamSelected}>
-            <FilterItem title={"Team"} data={getTeams()} icon={<Users size={16}/>}></FilterItem>
+        <Filter onFilterChange={handleFilterChange} onResetTeamSelected={resetTeamSelected}>
+            <FilterItem title={"Team"} data={getTeams()} onClick={onClick} icon={<Users size={16}/>}></FilterItem>
             {teamSelected.isSelected &&
                 <FilterItem title={"Project"} data={getProjects(teamSelected.team)} icon={<BookCopy size={16}/>}></FilterItem>
             }

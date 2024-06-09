@@ -18,7 +18,7 @@ import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
-export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
+export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
     const dialogRef = React.useRef<HTMLDialogElement>(null);
 
     const closeDialog = () => {

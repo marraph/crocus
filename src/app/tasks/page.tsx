@@ -15,15 +15,20 @@ import {FilterRef} from "@marraph/daisy/components/filter/Filter";
 
 export default function Tasks() {
     const [viewMode, setViewMode] = useState(true);
-    const [filterUpdate, setFilterUpdate] = useState(0);
     const filterRef = useRef<FilterRef>(null);
+    const [update, setUpdate] = useState(0);
+    const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
+    const { data: User, isLoading: userLoading, error: userError } = useUser();
 
-    const { data:User, isLoading:userLoading, error:userError } = useUser();
-
-    console.log(User);
+    useEffect(() => {
+        if (User) {
+            const elements = getTaskElements();
+            setTaskElements(elements);
+        }
+    }, [User, update]);
 
     const getTaskElements = useCallback((): TaskElement[] => {
-        const taskElements: TaskElement[] = [];
+        let taskElements: TaskElement[] = [];
         User?.teams?.forEach((team: Team) => {
             team.projects?.forEach((project: Project) => {
                 project.tasks?.forEach((task: Task) => {
@@ -47,26 +52,30 @@ export default function Tasks() {
                 });
             });
         });
-        if (filterRef.current?.getSelectedItems() != null) {
-            const filters: { [key: string]: string | null } = filterRef.current.getSelectedItems();
 
-            taskElements.forEach((task, index) => {
-                if (task.team == filters["Team"])
-                    taskElements.splice(index, 1);
-                if (task.team == filters["Project"])
-                    taskElements.splice(index, 1);
-                if (task.team == filters["Topic"])
-                    taskElements.splice(index, 1);
-                if (task.team == filters["Status"])
-                    taskElements.splice(index, 1);
-                if (task.team == filters["Priority"])
-                    taskElements.splice(index, 1);
-                if (task.team == filters["Creator"])
-                    taskElements.splice(index, 1);
-            })
+        console.log('Initial taskElements:', taskElements);
+
+        const filters = filterRef.current?.getSelectedItems() ?? {};
+        const hasFilters = Object.values(filters).some(value => value !== null && value !== '');
+
+        if (hasFilters) {
+            console.log('Filters:', filters);
+
+            taskElements = taskElements.filter((task) => {
+                if (filters["Team"] && task.team?.name !== filters["Team"]) return false;
+                if (filters["Project"] && task.project?.name !== filters["Project"]) return false;
+                if (filters["Topic"] && task.topic?.title !== filters["Topic"]) return false;
+                if (filters["Status"] && task.status !== filters["Status"]) return false;
+                if (filters["Priority"] && task.priority !== filters["Priority"]) return false;
+                if (filters["Creator"] && task.createdBy.name !== filters["Creator"]) return false;
+                return true;
+            });
+            console.log('Filtered taskElements:', taskElements);
         }
-        return taskElements
-    } , [User, filterUpdate]);
+
+        return taskElements;
+    }, [User]);
+
 
     if (User === undefined) return null;
 
@@ -75,7 +84,7 @@ export default function Tasks() {
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
                     <CreateTaskDialog/>
-                    <FilterContext ref={filterRef}/>
+                    <FilterContext ref={filterRef} onChange={() => setUpdate(update+1)}/>
                     <div className={"flex flex-row space-x-1"}>
                         <OctagonAlert size={15} className={"text-placeholder"}/>
                         <span className={"text-xs text-placeholder"}>{`${getTaskElements().length} OPEN`}</span>

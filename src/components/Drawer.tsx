@@ -10,7 +10,7 @@ import {SearchField} from "@/components/SearchField";
 import {User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 
-export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}) => {
+export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const router = useRouter();
 
     const { selectedItem, setSelectedItem } = useNavigation();

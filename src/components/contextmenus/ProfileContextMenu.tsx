@@ -11,7 +11,7 @@ import {useUser} from "@/context/UserContext";
 
 const path = "/image.png";
 
-export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}) => {
+export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const [showProfile, setShowProfile] = useState(false);
     const {data, isLoading, error} = useUser();
 
