@@ -25,6 +25,12 @@ const config: Config = {
       "warning": "#F2CF19",
       "error": "#C51919",
 
+      "topicBlue": "#5752eb",
+      "topicRed": "#ed4c4c",
+      "topicOrange": "#db772a",
+      "topicYellow": "#ede240",
+      "topicPurple": "#8a4da1",
+
       "calBlue": "#4D76DF",
       "calGreen": "#5FCF56",
       "calPurple": "#A151D2",
@@ -32,6 +38,10 @@ const config: Config = {
       "calYellow": "#DDDF4D",
     },
     extend: {
+      fontFamily: {
+        "sans": ["Inter", "sans-serif"],
+        "mono": ["Inconsolata", "monospace"],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

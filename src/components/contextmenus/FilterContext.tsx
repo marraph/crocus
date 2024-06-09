@@ -4,12 +4,12 @@ import React, {useImperativeHandle, useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {Project, Team} from "@/types/types";
 
-interface FilterContextProps extends React.HTMLAttributes<HTMLDivElement> {
+interface FilterContextMenuProps extends React.HTMLAttributes<HTMLDivElement> {
     onClick?: () => void;
     onChange?: () => void;
 }
 
-export const FilterContext = React.forwardRef<FilterRef, FilterContextProps>(({onClick, onChange, className, ...props}, ref) => {
+export const FilterContextMenu = React.forwardRef<FilterRef, FilterContextMenuProps>(({onClick, onChange, className, ...props}, ref) => {
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
 
@@ -96,4 +96,4 @@ export const FilterContext = React.forwardRef<FilterRef, FilterContextProps>(({o
         </Filter>
     );
 });
-FilterContext.displayName = "FilterContext";
+FilterContextMenu.displayName = "FilterContextMenu";

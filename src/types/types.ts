@@ -1,5 +1,5 @@
 type Priority = "LOW" | "MEDIUM" | "HIGH"
-type Status = "Pending" | "Planing" | "Started" | "Tested" | "Finished" | "Archived"
+type Status = "PENDING" | "PLANING" | "STARTED" | "TESTED" | "FINISHED" | "ARCHIVED"
 
 type PreviewUser = {
     id: number

@@ -21,11 +21,11 @@ const header = [
     { key: "project", label: "Project" },
     { key: "priority", label: "Priority" },
     { key: "topic", label: "Topic" },
-    { key: "title", label: "Title" },
+    { key: "name", label: "Title" },
     { key: "status", label: "Status" },
-    { key: "dueDate", label: "DueDate" },
-    { key: "createdAt", label: "CreatedAt" },
-    { key: "creator", label: "Creator" },
+    { key: "deadline", label: "DueDate" },
+    { key: "createdDate", label: "Created At" },
+    { key: "createdBy", label: "Creator" },
 ];
 
 type SortOrder = "asc" | "desc";
@@ -48,7 +48,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
         document.addEventListener('click', handleClick);
-            return () => document.removeEventListener('click', handleClick);
+        return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
     const handleContextMenu = (e: React.MouseEvent<HTMLTableRowElement>, taskElement: TaskElement) => {
@@ -78,8 +78,8 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
             }
 
             if (sort.key === 'createdDate' || sort.key === 'deadline') {
-                aComparable = aValue ? new Date(aValue as Date).getTime() : 0;
-                bComparable = bValue ? new Date(bValue as Date).getTime() : 0;
+                aComparable = aValue ? new Date(aValue as Date).getDate() : 0;
+                bComparable = bValue ? new Date(bValue as Date).getDate() : 0;
             }
 
             if (sort.key === 'topic') {
@@ -132,7 +132,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} closeRef={closeRef} editRef={editRef}/>
             }
 
-            <div className={"w-full h-[826px] text-xs flex items-stretch pt-4"}>
+            <div className={"w-full h-[852px] text-xs flex items-stretch pt-4"}>
                 <Table className={"bg-black w-full no-scrollbar"}>
                     <TableHeader>
                         <TableRow className={"border-none hover:bg-black"}>

@@ -41,10 +41,10 @@ export const TaskCardView: React.FC<TaskProps> = ({ taskElements }) => {
             }
 
             {contextMenu.visible &&
-                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y}/>
+                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} editRef={editRef} closeRef={closeRef}/>
             }
 
-            <div className={"grid grid-cols-3 gap-9 pt-4"}>
+            <div className={"grid grid-cols-5 gap-9 pt-4"}>
                 {taskElements.map((taskElement, index) => (
                     <TaskCard key={index}
                               _id={taskElement.id}

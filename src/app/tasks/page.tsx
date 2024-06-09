@@ -5,11 +5,10 @@ import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {CreateTaskDialog} from "@/components/dialogs/CreateTaskDialog";
 import {TaskCardView} from "@/components/views/TaskCardView";
-import {FilterContext} from "@/components/contextmenus/FilterContext";
+import {FilterContextMenu} from "@/components/contextmenus/FilterContext";
 import {OctagonAlert} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
-import {getTask} from "@/service/hooks/taskHook";
 import {FilterRef} from "@marraph/daisy/components/filter/Filter";
 
 
@@ -84,7 +83,7 @@ export default function Tasks() {
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
                     <CreateTaskDialog/>
-                    <FilterContext ref={filterRef} onChange={() => setUpdate(update+1)}/>
+                    <FilterContextMenu ref={filterRef} onChange={() => setUpdate(update+1)}/>
                     <div className={"flex flex-row space-x-1"}>
                         <OctagonAlert size={15} className={"text-placeholder"}/>
                         <span className={"text-xs text-placeholder"}>{`${getTaskElements().length} OPEN`}</span>
