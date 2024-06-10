@@ -3,6 +3,7 @@
 import React from "react";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {cn} from "@/utils/cn";
+import { Status } from "@/types/types";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
     title?: string;
@@ -12,40 +13,21 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 export const StatusBadge: React.FC<Props> = ({ title, className, ...props }) => {
     if (!title) return null;
 
-    const getColor = (title: string): string => {
-        let color;
-        switch (title) {
-            case "PENDING":
-                color = "topicBlue";
-                break;
-            case "PLANING":
-                color = "topicRed";
-                break;
-            case "STARTED":
-                color = "topicOrange";
-                break;
-            case "TESTED":
-                color = "topicYellow";
-                break;
-            case "FINISHED":
-                color = "topicPurple";
-                break;
-            default:
-                color = "Unknown color";
-                break;
-        }
-        return color;
-    }
+    const additionalClasses = cn({
+        'bg-topicblue text-topicblue': title === "PENDING",
+        'bg-topicred text-topicred': title === "PLANING",
+        'bg-topicgreen text-topicgreen': title === "STARTED",
+        'bg-topicyellow text-topicyellow': title === "TESTED",
+        'bg-topicpurple text-topicpurple': title === "FINISHED",
 
-    console.log(getColor(title), title);
-    const color = getColor(title);
-
+    });
 
     return (
         <Badge
             text={title}
-            className={cn(`bg-${color} bg-opacity-20 text-${color} font-mono font-normal rounded-md w-max px-2 py-0.5`, className)}
-            {...props}>
-        </Badge>
-    )
+            className={cn(`bg-opacity-20  font-mono font-normal rounded-md w-max px-2 py-0.5`, additionalClasses, className)}
+
+            {...props}
+        />
+    );
 }

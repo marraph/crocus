@@ -20,16 +20,15 @@ const config: Config = {
       "lightred": "#F55050",
       "selectwhite": "#CCCBCB",
       "purple": "#ac65bf",
-
       "success": "#439C3B",
       "warning": "#F2CF19",
       "error": "#C51919",
 
-      "topicBlue": "#5752eb",
-      "topicRed": "#ed4c4c",
-      "topicOrange": "#db772a",
-      "topicYellow": "#ede240",
-      "topicPurple": "#8a4da1",
+      "topicblue": "#5752EB",
+      "topicred": "#ED4C4C",
+      "topicgreen": "#119c21",
+      "topicyellow": "#EDE240",
+      "topicpurple": "#ab14b3",
 
       "calBlue": "#4D76DF",
       "calGreen": "#5FCF56",

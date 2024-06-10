@@ -98,7 +98,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 }
             }
             if (sort.key === 'status') {
-                const statusOrder = {Pending: 1, Planing: 2, Started: 3, Tested: 4, Finished: 5, Archived: 6};
+                const statusOrder = {PENDING: 1, PLANING: 2, STARTED: 3, TESTED: 4, FINISHED: 5, ARCHIVED: 6};
                 const aStatus = aComparable ? statusOrder[aComparable as keyof typeof statusOrder] : 0;
                 const bStatus = bComparable ? statusOrder[bComparable as keyof typeof statusOrder] : 0;
 

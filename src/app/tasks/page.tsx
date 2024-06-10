@@ -31,6 +31,7 @@ export default function Tasks() {
         User?.teams?.forEach((team: Team) => {
             team.projects?.forEach((project: Project) => {
                 project.tasks?.forEach((task: Task) => {
+                    if (task.isArchived) return;
                     taskElements.push({
                         id: task.id,
                         name: task.name,
