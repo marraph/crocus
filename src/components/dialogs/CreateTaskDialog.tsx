@@ -74,7 +74,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         return undefined;
     }
 
-    const status = ["Pending", "Planing", "Started", "Tested", "Finished", "Archived"];
+    const status = ["Pending", "Planing", "Started", "Tested", "Finished"];
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
