@@ -236,8 +236,8 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                             </Combobox>
                         </div>
                         <div className={"flex flex-col space-y-1 z-30"}>
-                            <span className={"text-gray text-xs"}>Due Date</span>
-                            <DatePicker iconSize={16} text={"Due Date"} ref={datePickerRef} preSelectedValue={taskElement.deadline} />
+                            <span className={"text-gray text-xs"}>Deadline</span>
+                            <DatePicker size={"medium"} iconSize={16} text={"Deadline"} ref={datePickerRef} preSelectedValue={taskElement.deadline} />
                         </div>
                     </div>
                     <Seperator />

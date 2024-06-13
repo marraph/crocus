@@ -84,7 +84,7 @@ export default function TasksID() {
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"flex flex-row items-center space-x-2 text-gray"}>
                             <CalendarDays size={16}/>
-                            <span className={"w-16"}>Due Date</span>
+                            <span className={"w-16"}>Deadline</span>
                         </div>
                         <span>{formatDate(taskElement.deadline?.toString())}</span>
                     </div>

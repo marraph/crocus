@@ -23,7 +23,7 @@ const header = [
     { key: "topic", label: "Topic" },
     { key: "name", label: "Title" },
     { key: "status", label: "Status" },
-    { key: "deadline", label: "DueDate" },
+    { key: "deadline", label: "Deadline" },
     { key: "createdDate", label: "Created At" },
     { key: "createdBy", label: "Creator" },
 ];
