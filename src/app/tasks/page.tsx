@@ -10,6 +10,7 @@ import {OctagonAlert} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {FilterRef} from "@marraph/daisy/components/filter/Filter";
+import {Skeleton, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
 
 
 export default function Tasks() {
@@ -76,7 +77,6 @@ export default function Tasks() {
         return taskElements;
     }, [User]);
 
-
     if (User === undefined) return null;
 
     return (
@@ -92,11 +92,13 @@ export default function Tasks() {
                 </div>
                 <SwitchButton firstTitle={"Table"} secondTitle={"Card"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>
             </div>
-            {viewMode ? (
-                <TaskTable taskElements={getTaskElements()}></TaskTable>
-            ) : (
-                <TaskCardView taskElements={getTaskElements()}></TaskCardView>
-            )}
+
+            {viewMode ?
+                <TaskTable taskElements={taskElements}/>
+                :
+                <TaskCardView taskElements={taskElements}/>
+            }
+
         </div>
     );
 }
