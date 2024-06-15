@@ -4,7 +4,7 @@ import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import React, {useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {BookCopy, CircleAlert, LineChart, SquareCheckBig, SquarePen, Tag, Users} from "lucide-react";
+import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, SquarePen, Tag, Users} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
@@ -14,6 +14,7 @@ import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@mar
 import {createTask} from "@/service/hooks/taskHook";
 import {PreviewUser, Priority, Project, Status, Task, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
+import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 
 
 export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
@@ -24,6 +25,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const statusRef = useRef<ComboboxRef>(null);
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
+    const durationRef = useRef<InputRef>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
     const [showAlert, setShowAlert] = useState(false);
@@ -97,7 +99,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             priority: priorityRef.current?.getSelectedValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
-            duration: null,
+            duration: durationRef.current?.getValue() ?? null,
             createdBy: {id: data.id, name: data.name, email: data.email},
             createdDate: new Date(),
             lastModifiedBy: {id: data.id, name: data.name, email: data.email},
@@ -125,6 +127,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         statusRef.current?.reset();
         priorityRef.current?.reset();
         datePickerRef.current?.reset();
+        durationRef.current?.reset();
         setTitleValue("");
         setDescriptionValue("");
         setTeamSelected({isSelected: false, team: ""})
@@ -177,9 +180,12 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>
+                            <Input placeholder={"Duration"} elementSize={"small"} className={"w-20"} ref={durationRef}
+                                   icon={<Hourglass size={12}/>}>
+                            </Input>
                         </div>
                     </div>
-                    <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick} />
+                    <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
                 </div>
                 <Seperator/>
                 <div className={cn("flex flex-row justify-end px-4 py-2", className)}>

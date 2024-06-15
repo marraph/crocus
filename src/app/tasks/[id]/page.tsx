@@ -11,7 +11,7 @@ import React from "react";
 import {formatDate} from "@/utils/format";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
-import {BookCopy, CalendarDays, CircleAlert, LineChart, SmartphoneCharging, Tag, Users} from "lucide-react";
+import {BookCopy, CalendarDays, CircleAlert, Hourglass, LineChart, SmartphoneCharging, Tag, Users} from "lucide-react";
 
 export default function TasksID() {
     const router = useRouter();
@@ -87,6 +87,13 @@ export default function TasksID() {
                             <span className={"w-16"}>Deadline</span>
                         </div>
                         <span>{formatDate(taskElement.deadline?.toString())}</span>
+                    </div>
+                    <div className={"flex flex-row space-x-4 px-4 py-2"}>
+                        <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                            <Hourglass size={16}/>
+                            <span className={"w-16"}>Duration</span>
+                        </div>
+                        <span>{taskElement.duration?.toString()}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>

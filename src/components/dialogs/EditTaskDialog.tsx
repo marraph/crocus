@@ -1,7 +1,7 @@
 "use client";
 
 import React, {MutableRefObject, useEffect, useRef, useState} from "react";
-import {BookCopy, CircleAlert, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
+import {BookCopy, CircleAlert, Hourglass, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
@@ -14,6 +14,7 @@ import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@mar
 import {Priority, Project, Status, Task, TaskElement, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
+import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
@@ -28,6 +29,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
     const statusRef = useRef<ComboboxRef>(null);
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
+    const durationRef = useRef<InputRef>(null);
     const [titleValue, setTitleValue] = useState(taskElement.name);
     const [descriptionValue, setDescriptionValue] = useState(taskElement.description ?? undefined);
     const [showAlert, setShowAlert] = useState(false);
@@ -60,7 +62,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             priority: priorityRef.current?.getSelectedValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
-            duration: null,
+            duration: durationRef.current?.getValue() ?? null,
             createdBy: taskElement.createdBy,
             createdDate: taskElement.createdDate,
             lastModifiedBy: { id: data.id, name: data.name, email: data.email },
@@ -126,6 +128,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
         statusRef.current?.setValue(taskElement.status);
         priorityRef.current?.setValue(taskElement.priority);
         datePickerRef.current?.setValue(taskElement.deadline);
+        durationRef.current?.setValue(taskElement.duration?.toString());
         setTitleValue(taskElement.name);
         setDescriptionValue(taskElement.description ?? "");
         setSelectedTeam(taskElement.team?.name ?? null);
@@ -224,39 +227,49 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                             <Combobox buttonTitle={"Topic"} icon={<Tag size={16} className={"mr-2"}/>} ref={topicRef}
                                       preSelectedValue={taskElement.topic?.title}>
                                 {getTopics().map((topic) => (
-                                    <ComboboxItem key={topic} title={topic} />
+                                    <ComboboxItem key={topic} title={topic}/>
                                 ))}
                             </Combobox>
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Status</span>
-                            <Combobox buttonTitle={"Status"} icon={<CircleAlert size={16} className={"mr-2"}/>} ref={statusRef}
+                            <Combobox buttonTitle={"Status"} icon={<CircleAlert size={16} className={"mr-2"}/>}
+                                      ref={statusRef}
                                       preSelectedValue={taskElement.status}>
                                 {status.map((status) => (
-                                    <ComboboxItem key={status} title={status} />
+                                    <ComboboxItem key={status} title={status}/>
                                 ))}
                             </Combobox>
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Priority</span>
-                            <Combobox buttonTitle={"Priority"} icon={<LineChart size={16} className={"mr-2"}/>} ref={priorityRef}
+                            <Combobox buttonTitle={"Priority"} icon={<LineChart size={16} className={"mr-2"}/>}
+                                      ref={priorityRef}
                                       preSelectedValue={taskElement.priority}>
                                 {priorities.map((priority) => (
-                                    <ComboboxItem key={priority} title={priority} />
+                                    <ComboboxItem key={priority} title={priority}/>
                                 ))}
                             </Combobox>
                         </div>
+
+                        <div className={"flex flex-col space-y-1 z-40"}>
+                            <span className={"text-gray text-xs"}>Duration</span>
+                            <Input placeholder={""} preSelectedValue={taskElement.duration?.toString()} elementSize={"medium"}
+                                   ref={durationRef} icon={<Hourglass size={18} />}>
+                            </Input>
+                        </div>
                     </div>
-                    <Seperator />
+                    <Seperator/>
                     <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
-                        <Button text={"Cancel"} className={cn("h-8")} onClick={() => handleCloseClick()} />
-                        <Button text={"Save changes"} theme={"white"} onClick={editTask} className={"h-8"} />
+                        <Button text={"Cancel"} className={cn("h-8")} onClick={() => handleCloseClick()}/>
+                        <Button text={"Save changes"} theme={"white"} onClick={editTask} className={"h-8"}/>
                     </div>
                 </Dialog>
             </div>
 
             {showAlert && (
-                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                <Alert duration={3000}
+                       className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
                     <AlertIcon icon={<Save />} />
                     <AlertContent>
                         <AlertTitle title={"Saved changes"}></AlertTitle>

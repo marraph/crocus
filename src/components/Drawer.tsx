@@ -1,19 +1,41 @@
 "use client";
 
 import {NavigationItem, useNavigation} from "@marraph/daisy/components/navigationitem/NavigationItem";
-import React from "react";
+import React, {useEffect} from "react";
 import {CalendarDays, ClipboardList, LayoutDashboard, Moon, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {SearchField} from "@/components/SearchField";
 import {User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 
 export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const router = useRouter();
-
+    const pathSegments = usePathname().split('/');
+    const path = pathSegments[pathSegments.length - 1];
     const { selectedItem, setSelectedItem } = useNavigation();
+
+    useEffect(() => {
+        console.log(path)
+        switch (path) {
+            case 'dashboard':
+                setSelectedItem('Dashboard');
+                break;
+            case 'tasks':
+                setSelectedItem('Tasks');
+                break;
+            case 'timetracking':
+                setSelectedItem('Timetracking');
+                break;
+            case 'calendar':
+                setSelectedItem('Calendar');
+                break;
+            default:
+                setSelectedItem('');
+                break;
+        }
+    }, [path, setSelectedItem]);
 
     const handleNavigation = (path: string, item: string) => {
         router.push(path);
