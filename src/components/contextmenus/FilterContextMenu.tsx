@@ -1,6 +1,6 @@
-import {Filter, FilterItem, FilterRef} from "@marraph/daisy/components/filter/Filter";
-import {BookCopy, CircleAlert, LineChart, SmartphoneCharging, Tag, User, Users} from "lucide-react";
-import React, {useImperativeHandle, useRef, useState} from "react";
+import {FilterButton, FilterItem, FilterRef} from "@marraph/daisy/components/filter/Filter";
+import {BookCopy, CircleAlert, LineChart, Tag, User, Users} from "lucide-react";
+import React, {useImperativeHandle, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {Project, Team} from "@/types/types";
 
@@ -84,7 +84,7 @@ export const FilterContextMenu = React.forwardRef<FilterRef, FilterContextMenuPr
     }));
 
     return (
-        <Filter onFilterChange={handleFilterChange} onResetTeamSelected={resetTeamSelected}>
+        <FilterButton onFilterChange={handleFilterChange} onResetTeamSelected={resetTeamSelected}>
             <FilterItem title={"Team"} data={getTeams()} onClick={onClick} icon={<Users size={16}/>}></FilterItem>
             {teamSelected.isSelected &&
                 <FilterItem title={"Project"} data={getProjects(teamSelected.team)} icon={<BookCopy size={16}/>}></FilterItem>
@@ -93,7 +93,7 @@ export const FilterContextMenu = React.forwardRef<FilterRef, FilterContextMenuPr
             <FilterItem title={"Status"} data={status} icon={<CircleAlert size={16}/>}></FilterItem>
             <FilterItem title={"Priority"} data={priorities} icon={<LineChart size={16}/>}></FilterItem>
             <FilterItem title={"Creator"} data={getCreators()} icon={<User size={16}/>}></FilterItem>
-        </Filter>
+        </FilterButton>
     );
 });
 FilterContextMenu.displayName = "FilterContextMenu";

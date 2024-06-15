@@ -1,7 +1,7 @@
 "use client";
 
 import React, {MutableRefObject, useEffect, useRef, useState} from "react";
-import {Pencil, Save} from "lucide-react";
+import {BookCopy, CircleAlert, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
@@ -191,9 +191,10 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                     <div className={"flex flex-row space-x-2 px-4"}>
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Team</span>
-                            <Combobox buttonTitle={"Team"} ref={teamRef} preSelectedValue={taskElement.team?.name} onChange={() => handleTeamChange}>
+                            <Combobox buttonTitle={"Team"} icon={<Users size={16} className={"mr-2"}/>} ref={teamRef}
+                                      preSelectedValue={taskElement.team?.name} onChange={() => handleTeamChange}>
                                 {getTeams().map((team) => (
-                                    <ComboboxItem key={team} title={team} onClick={() => handleTeamChange(team)} />
+                                    <ComboboxItem key={team} title={team} onClick={() => handleTeamChange(team)}/>
                                 ))}
                             </Combobox>
                         </div>
@@ -201,19 +202,27 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                             {selectedTeam && (
                                 <>
                                     <span className={"text-gray text-xs"}>Project</span>
-                                    <Combobox buttonTitle={"Project"} ref={projectRef} preSelectedValue={taskElement.project?.name}>
+                                    <Combobox buttonTitle={"Project"} icon={<BookCopy size={16} className={"mr-2"}/>}
+                                              ref={projectRef}
+                                              preSelectedValue={taskElement.project?.name}>
                                         {getProjects(selectedTeam).map((project) => (
-                                            <ComboboxItem key={project} title={project} />
+                                            <ComboboxItem key={project} title={project}/>
                                         ))}
                                     </Combobox>
                                 </>
                             )}
                         </div>
+                        <div className={"flex flex-col space-y-1 z-30"}>
+                            <span className={"text-gray text-xs"}>Deadline</span>
+                            <DatePicker size={"medium"} iconSize={16} text={"Deadline"} ref={datePickerRef}
+                                        preSelectedValue={taskElement.deadline}/>
+                        </div>
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 py-4"}>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Topic</span>
-                            <Combobox buttonTitle={"Topic"} ref={topicRef} preSelectedValue={taskElement.topic?.title}>
+                            <Combobox buttonTitle={"Topic"} icon={<Tag size={16} className={"mr-2"}/>} ref={topicRef}
+                                      preSelectedValue={taskElement.topic?.title}>
                                 {getTopics().map((topic) => (
                                     <ComboboxItem key={topic} title={topic} />
                                 ))}
@@ -221,7 +230,8 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Status</span>
-                            <Combobox buttonTitle={"Status"} ref={statusRef} preSelectedValue={taskElement.status}>
+                            <Combobox buttonTitle={"Status"} icon={<CircleAlert size={16} className={"mr-2"}/>} ref={statusRef}
+                                      preSelectedValue={taskElement.status}>
                                 {status.map((status) => (
                                     <ComboboxItem key={status} title={status} />
                                 ))}
@@ -229,15 +239,12 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Priority</span>
-                            <Combobox buttonTitle={"Priority"} ref={priorityRef} preSelectedValue={taskElement.priority}>
+                            <Combobox buttonTitle={"Priority"} icon={<LineChart size={16} className={"mr-2"}/>} ref={priorityRef}
+                                      preSelectedValue={taskElement.priority}>
                                 {priorities.map((priority) => (
                                     <ComboboxItem key={priority} title={priority} />
                                 ))}
                             </Combobox>
-                        </div>
-                        <div className={"flex flex-col space-y-1 z-30"}>
-                            <span className={"text-gray text-xs"}>Deadline</span>
-                            <DatePicker size={"medium"} iconSize={16} text={"Deadline"} ref={datePickerRef} preSelectedValue={taskElement.deadline} />
                         </div>
                     </div>
                     <Seperator />

@@ -4,7 +4,7 @@ import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import React, {useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {SquareCheckBig, SquarePen} from "lucide-react";
+import {BookCopy, CircleAlert, LineChart, SquareCheckBig, SquarePen, Tag, Users} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
@@ -145,35 +145,38 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}/>
                         <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder", className)} value={descriptionValue} />
 
-                        <div className={cn("flex flex-row space-x-2", className)}>
-                            <Combobox buttonTitle={"Team"} size={"small"} ref={teamRef}>
+                        <div className={cn("flex flex-row space-x-2 z-50", className)}>
+                            <Combobox buttonTitle={"Team"} size={"small"} icon={<Users size={12} className={"mr-1"}/>} ref={teamRef}>
                                 {getTeams().map((team) => (
                                     <ComboboxItem title={team} key={team} size={"small"} onClick={() => setTeamSelected({isSelected: true, team: team})}/>
                                 ))}
                             </Combobox>
                             {teamSelected.isSelected &&
-                                <Combobox buttonTitle={"Project"} size={"small"} ref={projectRef}>
+                                <Combobox buttonTitle={"Project"} size={"small"} icon={<BookCopy size={12} className={"mr-1"}/>} ref={projectRef}>
                                     {getProjects(teamSelected.team).map((project) => (
                                         <ComboboxItem title={project} key={project} size={"small"}/>
                                     ))}
                                 </Combobox>
                             }
-                            <Combobox buttonTitle={"Topic"} size={"small"} ref={topicRef}>
+                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef}/>
+                        </div>
+
+                        <div className={cn("flex flex-row space-x-2", className)}>
+                            <Combobox buttonTitle={"Topic"} size={"small"} icon={<Tag size={12} className={"mr-1"}/>} ref={topicRef}>
                                 {getTopics().map((topic) => (
                                     <ComboboxItem title={topic} key={topic} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Status"} size={"small"} ref={statusRef}>
+                            <Combobox buttonTitle={"Status"} size={"small"} icon={<CircleAlert size={12} className={"mr-1"}/>} ref={statusRef}>
                                 {status.map((status) => (
                                     <ComboboxItem title={status} key={status} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Priority"} size={"small"} ref={priorityRef}>
+                            <Combobox buttonTitle={"Priority"} size={"small"} icon={<LineChart size={12} className={"mr-1"}/>} ref={priorityRef}>
                                 {priorities.map((priority) => (
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef}/>
                         </div>
                     </div>
                     <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick} />
