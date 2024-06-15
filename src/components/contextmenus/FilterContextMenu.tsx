@@ -1,5 +1,5 @@
 import {Filter, FilterItem, FilterRef} from "@marraph/daisy/components/filter/Filter";
-import {BookCopy, LineChart, SmartphoneCharging, Tag, User, Users} from "lucide-react";
+import {BookCopy, CircleAlert, LineChart, SmartphoneCharging, Tag, User, Users} from "lucide-react";
 import React, {useImperativeHandle, useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {Project, Team} from "@/types/types";
@@ -90,7 +90,7 @@ export const FilterContextMenu = React.forwardRef<FilterRef, FilterContextMenuPr
                 <FilterItem title={"Project"} data={getProjects(teamSelected.team)} icon={<BookCopy size={16}/>}></FilterItem>
             }
             <FilterItem title={"Topic"} data={getTopics()} icon={<Tag size={16}/>}></FilterItem>
-            <FilterItem title={"Status"} data={status} icon={<SmartphoneCharging size={16}/>}></FilterItem>
+            <FilterItem title={"Status"} data={status} icon={<CircleAlert size={16}/>}></FilterItem>
             <FilterItem title={"Priority"} data={priorities} icon={<LineChart size={16}/>}></FilterItem>
             <FilterItem title={"Creator"} data={getCreators()} icon={<User size={16}/>}></FilterItem>
         </Filter>

@@ -11,7 +11,7 @@ import React from "react";
 import {formatDate} from "@/utils/format";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
-import {BookCopy, CalendarDays, LineChart, SmartphoneCharging, Tag, Users} from "lucide-react";
+import {BookCopy, CalendarDays, CircleAlert, LineChart, SmartphoneCharging, Tag, Users} from "lucide-react";
 
 export default function TasksID() {
     const router = useRouter();
@@ -76,7 +76,7 @@ export default function TasksID() {
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"flex flex-row items-center space-x-2 text-gray"}>
-                            <SmartphoneCharging size={16}/>
+                            <CircleAlert size={16}/>
                             <span className={"w-16"}>Status</span>
                         </div>
                         <span>{taskElement.status}</span>

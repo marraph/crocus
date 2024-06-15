@@ -15,6 +15,8 @@ const config: Config = {
       "selected": "#222121",
       "placeholder": "#7B7777",
       "dark": "#222121",
+      "badgegray": "#171616",
+
       "blue": "#2622F6",
       "lightblue": "#3633FD",
       "lightred": "#F55050",
@@ -26,9 +28,9 @@ const config: Config = {
 
       "topicblue": "#5752EB",
       "topicred": "#ED4C4C",
-      "topicgreen": "#119c21",
+      "topicgreen": "#328f32",
       "topicyellow": "#EDE240",
-      "topicpurple": "#ab14b3",
+      "topicpurple": "#793ec2",
 
       "calBlue": "#4D76DF",
       "calGreen": "#5FCF56",

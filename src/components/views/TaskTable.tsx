@@ -12,6 +12,7 @@ import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
 import {Status, TaskElement} from "@/types/types";
 import {formatDate} from "@/utils/format";
+import {ProfileBadge} from "@/components/badges/ProfileBadge";
 
 const path = "/image.png";
 
@@ -24,7 +25,6 @@ const header = [
     { key: "name", label: "Title" },
     { key: "status", label: "Status" },
     { key: "deadline", label: "Deadline" },
-    { key: "createdDate", label: "Created At" },
     { key: "createdBy", label: "Creator" },
 ];
 
@@ -167,10 +167,8 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                     <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                                 </TableCell>
                                 <TableCell>{formatDate(taskElement.deadline?.toString())}</TableCell>
-                                <TableCell>{formatDate(taskElement.createdDate?.toString())}</TableCell>
-                                <TableCell className={"flex flex-row space-x-2 items-center"}>
-                                    <span>{taskElement.createdBy?.name}</span>
-                                    <Avatar img_url={path} size={20} className={"p-0"}/>
+                                <TableCell>
+                                    <ProfileBadge name={taskElement.createdBy.name}/>
                                 </TableCell>
                             </TableRow>
                         ))}

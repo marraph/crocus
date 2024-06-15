@@ -5,8 +5,8 @@ import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {CreateTaskDialog} from "@/components/dialogs/CreateTaskDialog";
 import {TaskCardView} from "@/components/views/TaskCardView";
-import {FilterContextMenu} from "@/components/contextmenus/FilterContext";
-import {OctagonAlert} from "lucide-react";
+import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
+import {LoaderCircle, OctagonAlert} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {FilterRef} from "@marraph/daisy/components/filter/Filter";
@@ -86,7 +86,7 @@ export default function Tasks() {
                     <CreateTaskDialog/>
                     <FilterContextMenu ref={filterRef} onChange={() => setUpdate(update+1)}/>
                     <div className={"flex flex-row space-x-1"}>
-                        <OctagonAlert size={15} className={"text-placeholder"}/>
+                        <LoaderCircle size={14} className={"text-placeholder"}/>
                         <span className={"text-xs text-placeholder"}>{`${getTaskElements().length} OPEN`}</span>
                     </div>
                 </div>
