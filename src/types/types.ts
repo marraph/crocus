@@ -64,7 +64,7 @@ type Task = {
     description: string | null
     topic: Topic | null
     isArchived: boolean
-    duration: Date | null
+    duration: number | null
     deadline: Date | null
     status: Status | null
     priority: Priority | null
@@ -80,7 +80,7 @@ type TaskElement = {
     description: string | null
     topic: Topic | null
     isArchived: boolean
-    duration: Date | null
+    duration: number | null
     deadline: Date | null
     status: Status | null
     priority: Priority | null

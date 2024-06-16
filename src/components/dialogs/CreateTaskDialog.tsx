@@ -99,7 +99,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             priority: priorityRef.current?.getSelectedValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
-            duration: durationRef.current?.getValue() ?? null,
+            duration: Number(durationRef.current?.getValue()) ?? null,
             createdBy: {id: data.id, name: data.name, email: data.email},
             createdDate: new Date(),
             lastModifiedBy: {id: data.id, name: data.name, email: data.email},
