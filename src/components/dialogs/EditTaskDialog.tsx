@@ -249,8 +249,8 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Duration</span>
-                            <Input placeholder={""} preSelectedValue={taskElement.duration?.toString()} elementSize={"medium"}
-                                   ref={durationRef} icon={<Hourglass size={18} />}>
+                            <Input placeholder={""} preSelectedValue={durationRef.current?.getValue()} elementSize={"medium"}
+                                   ref={durationRef} icon={<Hourglass size={16} />}>
                             </Input>
                         </div>
                     </div>
