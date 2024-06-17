@@ -22,7 +22,7 @@ export default function TasksID() {
     return (
         <div className={"h-full flex flex-col space-y-4"}>
             <div className={"w-full flex flex-row justify-between"}>
-                <Breadcrump pastText={"Tasks"} nowText={"Api not working"} className={"h-8"}
+                <Breadcrump pastText={"Tasks"} nowText={taskElement.name} className={"h-8"}
                             onClick={() => router.push("/tasks/")}/>
                 <div className={"flex flex-row justify-end"}>
                     <MessageTaskDialog/>

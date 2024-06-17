@@ -13,29 +13,21 @@ import {useUser} from "@/context/UserContext";
 export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const router = useRouter();
     const pathSegments = usePathname().split('/');
-    const path = pathSegments[pathSegments.length - 1];
     const { selectedItem, setSelectedItem } = useNavigation();
 
     useEffect(() => {
-        console.log(path)
-        switch (path) {
-            case 'dashboard':
-                setSelectedItem('Dashboard');
-                break;
-            case 'tasks':
-                setSelectedItem('Tasks');
-                break;
-            case 'timetracking':
-                setSelectedItem('Timetracking');
-                break;
-            case 'calendar':
-                setSelectedItem('Calendar');
-                break;
-            default:
-                setSelectedItem('');
-                break;
+        if (pathSegments.includes('dashboard')) {
+            setSelectedItem('Dashboard');
+        } else if (pathSegments.includes('tasks')) {
+            setSelectedItem('Tasks');
+        } else if (pathSegments.includes('timetracking')) {
+            setSelectedItem('Timetracking');
+        } else if (pathSegments.includes('calendar')) {
+            setSelectedItem('Calendar');
+        } else {
+            setSelectedItem('');
         }
-    }, [path, setSelectedItem]);
+    }, [pathSegments, setSelectedItem]);
 
     const handleNavigation = (path: string, item: string) => {
         router.push(path);

@@ -76,7 +76,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         return undefined;
     }
 
-    const status = ["Pending", "Planing", "Started", "Tested", "Finished"];
+    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
@@ -180,7 +180,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                                     <ComboboxItem title={priority} key={priority} size={"small"}/>
                                 ))}
                             </Combobox>
-                            <Input placeholder={"Duration"} elementSize={"small"} className={"w-20"} ref={durationRef}
+                            <Input placeholder={"Duration in Hours"} elementSize={"small"} className={"w-28 placeholder-gray"} ref={durationRef}
                                    icon={<Hourglass size={12}/>}>
                             </Input>
                         </div>

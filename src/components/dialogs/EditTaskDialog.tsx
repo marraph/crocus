@@ -109,7 +109,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
         return undefined;
     };
 
-    const status = ["Pending", "Planning", "Started", "Tested", "Finished"];
+    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,12 +156,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             <div className={"flex items-center justify-center"}>
                 <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={getDialogRef()}>
                     <div className={"flex flex-row justify-between px-4 pb-2"}>
-                        <div className={"flex flex-col space-y-2"}>
-                            <div className={"flex flex-row justify-between space-x-2 items-center pt-4"}>
-                                <span className={"text-md text-white"}>Edit Task:</span>
-                                <Badge text={taskElement.id.toString()} className={"flex justify-end font-normal bg-dark text-white rounded-lg"}></Badge>
-                            </div>
-                        </div>
+                        <span className={"text-md text-white pt-4"}>Edit Task</span>
                         <CloseButton className={"h-min w-min mt-4"} onClick={() => handleCloseClick()} />
                     </div>
                     <Seperator />
@@ -215,7 +210,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                                 </>
                             )}
                         </div>
-                        <div className={"flex flex-col space-y-1 z-30"}>
+                        <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Deadline</span>
                             <DatePicker size={"medium"} iconSize={16} text={"Deadline"} ref={datePickerRef}
                                         preSelectedValue={taskElement.deadline}/>
@@ -268,9 +263,8 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             </div>
 
             {showAlert && (
-                <Alert duration={3000}
-                       className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
-                    <AlertIcon icon={<Save />} />
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                    <AlertIcon icon={<Save/>}/>
                     <AlertContent>
                         <AlertTitle title={"Saved changes"}></AlertTitle>
                         <AlertDescription description={"You successfully saved your task changes."}></AlertDescription>

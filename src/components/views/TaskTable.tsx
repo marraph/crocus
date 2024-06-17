@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
-import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {useRouter} from "next/navigation";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
 import {TopicBadge} from "@/components/badges/TopicBadge";
@@ -17,12 +16,10 @@ import {ProfileBadge} from "@/components/badges/ProfileBadge";
 const path = "/image.png";
 
 const header = [
-    { key: "id", label: "Id" },
-    { key: "team", label: "Team" },
+    { key: "name", label: "Title" },
     { key: "project", label: "Project" },
     { key: "priority", label: "Priority" },
     { key: "topic", label: "Topic" },
-    { key: "name", label: "Title" },
     { key: "status", label: "Status" },
     { key: "deadline", label: "Deadline" },
     { key: "createdBy", label: "Creator" },
@@ -72,7 +69,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
             let aComparable = aValue;
             let bComparable = bValue;
 
-            if (sort.key === 'team' || sort.key === 'project' || sort.key === 'createdBy') {
+            if (sort.key === 'project' || sort.key === 'createdBy') {
                 aComparable = aValue ? (aValue as any).name : '';
                 bComparable = bValue ? (bValue as any).name : '';
             }
@@ -153,8 +150,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                         {getSortedArray(taskElements).map((taskElement) => (
                             <TableRow key={taskElement.id} onClick={() => router.push(`/tasks/${taskElement.id}`)}
                                       onContextMenu={(event) => handleContextMenu(event, taskElement)}>
-                                <TableCell>{taskElement.id}</TableCell>
-                                <TableCell>{taskElement.team?.name}</TableCell>
+                                <TableCell className={"text-white"}>{taskElement.name}</TableCell>
                                 <TableCell>{taskElement.project?.name}</TableCell>
                                 <TableCell>
                                     <PriorityBadge priority={taskElement.priority?.toString()}/>
@@ -162,7 +158,6 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 <TableCell>
                                     <TopicBadge title={taskElement.topic?.title} color={"error"}/>
                                 </TableCell>
-                                <TableCell className={"text-white"}>{taskElement.name}</TableCell>
                                 <TableCell>
                                     <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                                 </TableCell>

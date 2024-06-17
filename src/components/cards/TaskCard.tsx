@@ -35,14 +35,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
                 <div className={"flex flex-row justify-between space-x-2"}>
                     <span className={cn("text-lg", className)}>{title}</span>
-                    <Badge text={_id.toString()} className={"text-xs w-max bg-badgegray text-gray px-2 py-0.5 rounded-md"}></Badge>
-                </div>
-                <div className={"flex flex-row justify-between"}>
-                    <div className={"flex flex-row space-x-2"}>
-                        <TopicBadge title={topic} color={"error"}/>
-                        <StatusBadge title={status} color={"warning"}/>
-                    </div>
                     <PriorityBadge priority={priority}/>
+                </div>
+                <div className={"flex flex-row space-x-2"}>
+                    <StatusBadge title={status} color={"warning"}/>
+                    <TopicBadge title={topic} color={"error"}/>
                 </div>
             </div>
 

@@ -36,16 +36,14 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
     return (
         <>
-            <Button text={"New Entry"} theme={"white"} onClick={() => getDialogRef().current?.showModal()}/>
+            <Button text={"New Entry"} theme={"white"} className={"w-min h-8"} onClick={() => getDialogRef().current?.showModal()}>
+                <AlarmClockPlus size={20} className={"mr-2"}/>
+            </Button>
 
             <div className={cn("flex items-center justify-center")}>
-                <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible p-4 space-y-4")} {...props} ref={getDialogRef()}>
-                    <div className={cn("flex flex-row justify-between space-x-4 px-4 pt-4 pb-2", className)}>
-                        <div className={cn("flex flex-col flex-grow space-y-2", className)}>
-
-
-
-                        </div>
+                <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={getDialogRef()}>
+                    <div className={cn("flex flex-row justify-between space-x-4 pt-4 pb-2 px-4", className)}>
+                        <span className={"text-white text-lg"}>{"Create a new entry"}</span>
                         <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
                     </div>
                     <Seperator/>

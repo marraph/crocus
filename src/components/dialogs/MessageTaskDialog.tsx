@@ -37,10 +37,7 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
                 <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={dialogRef}>
                     <div className={"flex flex-row justify-between space-x-2 px-4"}>
                         <div className={"flex flex-col w-full space-y-2 "}>
-                            <div className={"flex flex-row space-x-2 items-center pt-4"}>
-                                <span className={"text-md text-white"}>New Message:</span>
-                                <Badge text={title} className={"font-normal bg-dark text-white rounded-lg"}></Badge>
-                            </div>
+                            <span className={"text-md text-white pt-4"}>New Message</span>
                             <Textarea placeholder={"Write your message..."} className={"h-20 w-full bg-black placeholder-placeholder"}/>
                         </div>
                         <CloseButton className={"h-min w-min mt-4"} onClick={() => dialogRef.current?.close()}/>

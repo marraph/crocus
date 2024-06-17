@@ -82,10 +82,7 @@ export const CloseTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(
                 <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={getDialogRef()}>
                     <div className={"flex flex-row justify-between px-4"}>
                         <div className={"flex flex-col space-y-2"}>
-                            <div className={"flex flex-row space-x-2 items-center pt-4"}>
-                                <span className={"text-md text-white"}>Close Task:</span>
-                                <Badge text={title} className={"font-normal bg-dark text-white rounded-lg"}></Badge>
-                            </div>
+                            <span className={"text-md text-white pt-4"}>Close Task</span>
                             <span className={"text-gray pb-4"}>If you close this task, you can't change properties of the task. Are you sure you want to close this task?</span>
                         </div>
                         <CloseButton className={"h-min w-min mt-4"} onClick={() => getDialogRef().current?.close()}/>
