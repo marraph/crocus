@@ -6,10 +6,15 @@ import {Alert, AlertContent, AlertIcon, AlertTitle} from "@marraph/daisy/compone
 import {AlarmClockPlus} from "lucide-react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {Input} from "@marraph/daisy/components/input/Input";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import { useUser } from "@/context/UserContext";
+import {Project, Task, Team} from "@/types/types";
 
 export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [showAlert, setShowAlert] = useState(false);
+    const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
         if (ref && typeof ref === 'object') {
@@ -24,6 +29,42 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
             return () => clearTimeout(timer);
         }
     }, [showAlert]);
+
+    const getProjects = () => {
+        const projects: string[] = [];
+        user?.teams.forEach((team: Team) => {
+            team.projects.forEach((project: Project) => {
+                projects.push(project.name);
+            });
+        });
+        return projects;
+    }
+
+    const getAllTasks = () => {
+        const tasks: string[] = [];
+        user?.teams.forEach((team: Team) => {
+            team.projects.forEach((project: Project) => {
+                project.tasks.forEach((task: Task) => {
+                    tasks.push(task.name);
+                });
+            });
+        });
+        return tasks;
+    }
+
+    const getTasks = (projectToFind: string) => {
+        const tasks: string[] = [];
+        user?.teams.forEach((team: Team) => {
+            team.projects.forEach((project: Project) => {
+                if (project.name === projectToFind) {
+                    project.tasks.forEach((task: Task) => {
+                        tasks.push(task.name);
+                    });
+                }
+            });
+        });
+        return tasks;
+    }
 
     const createTimeEntry = () => {
         getDialogRef().current?.close();
@@ -46,6 +87,19 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                         <span className={"text-white text-lg"}>{"Create a new entry"}</span>
                         <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
                     </div>
+
+                    <Input placeholder={"Comment"} border={"none"}></Input>
+
+                    <Combobox buttonTitle={"Project"}>
+                        {getProjects().map((project) => (
+                            <ComboboxItem key={project} title={project}></ComboboxItem>
+                        ))}
+                    </Combobox>
+
+                    <Combobox buttonTitle={"Task"}>
+
+                    </Combobox>
+
                     <Seperator/>
                     <div className={cn("flex flex-row justify-end px-4 py-2", className)}>
                         <Button text={"Create"} theme={"white"} onClick={createTimeEntry} //disabled={titleValue.trim() === ""}
