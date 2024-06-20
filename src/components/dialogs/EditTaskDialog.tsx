@@ -180,7 +180,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                                 placeholder={"Add Description..."}
                                 onChange={handleDescriptionChange}
                                 spellCheck={false}
-                                className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20"}
+                                className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20 focus:text-gray"}
                                 value={descriptionValue}
                             />
                         </div>

@@ -146,7 +146,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                         <span className={cn("text-lg text-white", className)}>{"New Task"}</span>
                         <input placeholder={"Task Title"} id={"title"} value={titleValue} onChange={handleTitleChange}
                                className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}/>
-                        <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder", className)} value={descriptionValue} />
+                        <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder focus:text-gray", className)} value={descriptionValue} />
 
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"} size={"small"} icon={<Users size={12} className={"mr-1"}/>} ref={teamRef}>

@@ -7,13 +7,16 @@ import {AlarmClockPlus} from "lucide-react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {Input} from "@marraph/daisy/components/input/Input";
-import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import { useUser } from "@/context/UserContext";
 import {Project, Task, Team} from "@/types/types";
 
 export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
+    const taskRef = useRef<ComboboxRef>(null);
+    const projectRef = useRef<ComboboxRef>(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [projectSelected, setProjectSelected] = useState<string | null>(null);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
@@ -73,6 +76,9 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
     const handleCloseClick = () => {
         getDialogRef().current?.close();
+        taskRef.current?.reset();
+        projectRef.current?.reset();
+        setProjectSelected(null);
     }
 
     return (
@@ -84,20 +90,25 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
             <div className={cn("flex items-center justify-center")}>
                 <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={getDialogRef()}>
                     <div className={cn("flex flex-row justify-between space-x-4 pt-4 pb-2 px-4", className)}>
-                        <span className={"text-white text-lg"}>{"Create a new entry"}</span>
+                        <span className={"justify-start text-white text-lg"}>{"Create a new entry"}</span>
                         <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
                     </div>
 
                     <Input placeholder={"Comment"} border={"none"}></Input>
 
-                    <Combobox buttonTitle={"Project"}>
+                    <Combobox buttonTitle={"Project"} ref={projectRef}>
                         {getProjects().map((project) => (
-                            <ComboboxItem key={project} title={project}></ComboboxItem>
+                            <ComboboxItem key={project} title={project} onClick={() => setProjectSelected(project)}></ComboboxItem>
                         ))}
                     </Combobox>
 
-                    <Combobox buttonTitle={"Task"}>
-
+                    <Combobox buttonTitle={"Task"} ref={taskRef}>
+                        {!projectSelected && getAllTasks().map((task) => (
+                            <ComboboxItem key={task} title={task}></ComboboxItem>
+                        ))}
+                        {projectSelected && getTasks(projectSelected).map((task) => (
+                            <ComboboxItem key={task} title={task}></ComboboxItem>
+                        ))}
                     </Combobox>
 
                     <Seperator/>
