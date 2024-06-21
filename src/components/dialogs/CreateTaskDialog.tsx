@@ -15,6 +15,7 @@ import {createTask} from "@/service/hooks/taskHook";
 import {PreviewUser, Priority, Project, Status, Task, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
+import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 
 
 export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
@@ -26,6 +27,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
     const durationRef = useRef<InputRef>(null);
+    const switchRef = useRef<SwitchRef>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
     const [showAlert, setShowAlert] = useState(false);
@@ -107,7 +109,22 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         }
         //add to team & project
         const {data:Task, isLoading:taskLoading, error:taskError} = createTask(task);
-        handleCloseClick();
+
+        if (switchRef.current?.getValue() === false) {
+            dialogRef.current?.close();
+        }
+
+        teamRef.current?.reset();
+        projectRef.current?.reset();
+        topicRef.current?.reset();
+        statusRef.current?.reset();
+        priorityRef.current?.reset();
+        datePickerRef.current?.reset();
+        durationRef.current?.reset();
+        switchRef.current?.setValue(false);
+        setTitleValue("");
+        setDescriptionValue("");
+        setTeamSelected({isSelected: false, team: ""})
         setShowAlert(true);
     }
 
@@ -120,6 +137,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         priorityRef.current?.reset();
         datePickerRef.current?.reset();
         durationRef.current?.reset();
+        switchRef.current?.setValue(false);
         setTitleValue("");
         setDescriptionValue("");
         setTeamSelected({isSelected: false, team: ""})
@@ -180,7 +198,11 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                     <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
                 </div>
                 <Seperator/>
-                <div className={cn("flex flex-row justify-end px-4 py-2", className)}>
+                <div className={cn("flex flex-row justify-end items-center space-x-16 px-4 py-2", className)}>
+                    <div className={"flex flex-row items-center space-x-2 text-gray text-xs"}>
+                        <span>{"Create more"}</span>
+                        <Switch ref={switchRef}></Switch>
+                    </div>
                     <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={titleValue.trim() === ""}
                             className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>
                     </Button>

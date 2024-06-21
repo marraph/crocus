@@ -10,11 +10,13 @@ import { useUser } from "@/context/UserContext";
 import {Project, Task, Team} from "@/types/types";
 import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
+import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 
 export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const taskRef = useRef<SearchSelectRef>(null);
     const projectRef = useRef<SearchSelectRef>(null);
+    const switchRef = useRef<SwitchRef>(null);
     const [comment, setComment] = useState("");
     const [showAlert, setShowAlert] = useState(false);
     const [projectSelected, setProjectSelected] = useState<string | null>(null);
@@ -86,7 +88,14 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     }
 
     const createTimeEntry = () => {
-        getDialogRef().current?.close();
+        if (switchRef.current?.getValue() === false) {
+            getDialogRef().current?.close();
+        }
+        setComment("");
+        setProjectSelected(null);
+        setTaskSelected(null);
+        taskRef.current?.reset();
+        projectRef.current?.reset();
         setShowAlert(true);
     }
 
@@ -113,11 +122,12 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
     const handleCloseClick = () => {
         getDialogRef().current?.close();
-        taskRef.current?.reset();
-        projectRef.current?.reset();
         setComment("");
         setProjectSelected(null);
         setTaskSelected(null);
+        taskRef.current?.reset();
+        projectRef.current?.reset();
+        switchRef.current?.setValue(false);
     }
 
     return (
@@ -158,7 +168,11 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                     </div>
 
                     <Seperator/>
-                    <div className={cn("flex flex-row justify-end px-4 py-2", className)}>
+                    <div className={cn("flex flex-row items-center justify-end space-x-16 px-4 py-2", className)}>
+                        <div className={"flex flex-row items-center space-x-2 text-gray text-xs"}>
+                            <span>{"Create more"}</span>
+                            <Switch ref={switchRef}></Switch>
+                        </div>
                         <Button text={"Create"} theme={"white"} onClick={createTimeEntry} disabled={comment.trim() === "" && !projectSelected && !taskSelected}
                                 className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>
                         </Button>
@@ -167,8 +181,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
             </div>
 
             {showAlert && (
-                <Alert duration={3000}
-                       className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
+                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
                     <AlertIcon icon={<AlarmClockPlus/>}/>
                     <AlertContent>
                         <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>
