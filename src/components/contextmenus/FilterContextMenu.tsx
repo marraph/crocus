@@ -74,7 +74,7 @@ export const FilterContextMenu = React.forwardRef<FilterRef, FilterContextMenuPr
         return creators;
     }
 
-    const status = ["Pending", "Planing", "Started", "Tested", "Finished"];
+    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 

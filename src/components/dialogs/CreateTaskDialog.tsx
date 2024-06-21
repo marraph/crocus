@@ -111,14 +111,6 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         setShowAlert(true);
     }
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitleValue(e.target.value);
-    }
-
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescriptionValue(e.target.value);
-    }
-
     const handleCloseClick = () => {
         dialogRef.current?.close();
         teamRef.current?.reset();
@@ -144,9 +136,9 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                     <div className={cn("flex flex-col flex-grow space-y-2", className)}>
 
                         <span className={cn("text-lg text-white", className)}>{"New Task"}</span>
-                        <input placeholder={"Task Title"} id={"title"} value={titleValue} onChange={handleTitleChange}
+                        <input placeholder={"Task Title"} id={"title"} value={titleValue} onChange={(e) => setTitleValue(e.target.value)}
                                className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}/>
-                        <Textarea placeholder={"Add Description..."} onChange={handleDescriptionChange} className={cn("h-20 bg-black placeholder-placeholder focus:text-gray", className)} value={descriptionValue} />
+                        <Textarea placeholder={"Add Description..."} onChange={(e) => setDescriptionValue(e.target.value)} className={cn("h-20 bg-black placeholder-placeholder focus:text-gray", className)} value={descriptionValue} />
 
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"} size={"small"} icon={<Users size={12} className={"mr-1"}/>} ref={teamRef}>
