@@ -25,7 +25,7 @@ export default function Tasks() {
             const elements = getTaskElements();
             setTaskElements(elements);
         }
-    }, [User, update]);
+    }, [User, update, taskElements]);
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];

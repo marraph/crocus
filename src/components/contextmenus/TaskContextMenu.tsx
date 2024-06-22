@@ -1,14 +1,10 @@
 "use client";
 
-import {
-    ContextMenu,
-    ContextMenuIcon,
-    ContextMenuItem,
-    ContextMenuSeperator
-} from "@marraph/daisy/components/contextmenu/ContextMenu";
+import {ContextMenu, ContextMenuItem,} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {CheckCheck, ExternalLink, Pencil, Trash2} from "lucide-react";
 import React, {forwardRef} from "react";
 import {useRouter} from "next/navigation";
+import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
 interface TaskContextProps extends React.HTMLAttributes<HTMLDivElement> {
     taskId: number;
@@ -24,20 +20,16 @@ export const TaskContextMenu = forwardRef<HTMLDivElement, TaskContextProps>(({ d
 
     return (
         <ContextMenu className={"absolute z-50 text-xs w-max py-1 shadow-2xl"} style={{top: y, left: x}} {...props} ref={ref}>
-            <ContextMenuItem title={"Open"} className={"mx-1 mb-1"} onClick={() => router.push(`/tasks/${taskId}`)}>
-                <ContextMenuIcon icon={<ExternalLink size={16}/>}/>
-            </ContextMenuItem>
-            <ContextMenuSeperator/>
-            <ContextMenuItem title={"Edit"} className={"mx-1 mt-1"} onClick={() => editRef?.current?.showModal()}>
-                <ContextMenuIcon icon={<Pencil size={16}/>}/>
-            </ContextMenuItem>
-            <ContextMenuItem title={"Close"} className={"mx-1"} onClick={() => closeRef?.current?.showModal()}>
-                <ContextMenuIcon icon={<CheckCheck size={16}/>}/>
-            </ContextMenuItem>
+            <ContextMenuItem title={"Open"} className={"mb-1"} onClick={() => router.push(`/tasks/${taskId}`)}
+                             icon={<ExternalLink size={16}/>}/>
+            <Seperator/>
+            <ContextMenuItem title={"Edit"} className={"mt-1"} onClick={() => editRef?.current?.showModal()}
+                             icon={<Pencil size={16}/>}/>
+            <ContextMenuItem title={"Close"} onClick={() => closeRef?.current?.showModal()}
+                             icon={<CheckCheck size={16}/>}/>
             <ContextMenuItem title={"Delete"} onClick={() => deleteRef?.current?.showModal()}
-                             className={"mx-1 text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}>
-                <ContextMenuIcon icon={<Trash2 size={16}/>}/>
-            </ContextMenuItem>
+                             className={"text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}
+                             icon={<Trash2 size={16}/>}/>
         </ContextMenu>
     );
 });

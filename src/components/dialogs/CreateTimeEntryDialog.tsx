@@ -1,8 +1,8 @@
 import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
-import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
-import {Alert, AlertContent, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
+import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {Alert, AlertContent, AlertIcon, AlertRef, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {AlarmClockPlus, BookCopy, ClipboardList} from "lucide-react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
@@ -13,29 +13,15 @@ import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 
 export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
-    const dialogRef = useRef<HTMLDialogElement>(null);
+    const dialogRef = useRef<DialogRef>(null);
+    const alertRef = useRef<AlertRef>(null);
     const taskRef = useRef<SearchSelectRef>(null);
     const projectRef = useRef<SearchSelectRef>(null);
     const switchRef = useRef<SwitchRef>(null);
     const [comment, setComment] = useState("");
-    const [showAlert, setShowAlert] = useState(false);
     const [projectSelected, setProjectSelected] = useState<string | null>(null);
     const [taskSelected, setTaskSelected] = useState<string | null>(null);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
-
-    const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
-        if (ref && typeof ref === 'object') {
-            return ref as MutableRefObject<HTMLDialogElement | null>;
-        }
-        return dialogRef;
-    };
-
-    useEffect(() => {
-        if (showAlert) {
-            const timer = setTimeout(() => setShowAlert(false), 4000);
-            return () => clearTimeout(timer);
-        }
-    }, [showAlert]);
 
     const getProjects = () => {
         const projects: string[] = [];
@@ -89,14 +75,14 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
     const createTimeEntry = () => {
         if (switchRef.current?.getValue() === false) {
-            getDialogRef().current?.close();
+            dialogRef.current?.close();
         }
         setComment("");
         setProjectSelected(null);
         setTaskSelected(null);
         taskRef.current?.reset();
         projectRef.current?.reset();
-        setShowAlert(true);
+        alertRef.current?.show();
     }
 
     const handleProjectChange = (project: string) => {
@@ -121,7 +107,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     };
 
     const handleCloseClick = () => {
-        getDialogRef().current?.close();
+        dialogRef.current?.close();
         setComment("");
         setProjectSelected(null);
         setTaskSelected(null);
@@ -132,12 +118,12 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
     return (
         <>
-            <Button text={"New Entry"} theme={"white"} className={"w-min h-8"} onClick={() => getDialogRef().current?.showModal()}>
+            <Button text={"New Entry"} theme={"white"} className={"w-min h-8"} onClick={() => dialogRef.current?.show()}>
                 <AlarmClockPlus size={20} className={"mr-2"}/>
             </Button>
 
             <div className={cn("flex items-center justify-center")}>
-                <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={getDialogRef()}>
+                <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={dialogRef}>
                     <div className={"flex flex-row justify-between items-center space-x-4 pt-4 pb-2 px-4"}>
                         <span className={"text-white text-lg"}>{"Create a new entry"}</span>
                         <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
@@ -147,7 +133,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                               onChange={(e) => setComment(e.target.value)} value={comment}>
                     </Textarea>
 
-                    <div className={"flex flex-row items-center space-x-2 px-4"}>
+                    <div className={"flex flex-row items-center space-x-2 px-4 z-50"}>
                         <SearchSelect buttonTitle={"Project"} ref={projectRef} icon={<BookCopy size={16}/>} size={"small"}>
                             {!taskSelected && getProjects().map((project) => (
                                 <SearchSelectItem key={project} title={project} onClick={() => handleProjectChange(project)}></SearchSelectItem>
@@ -180,14 +166,12 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                 </Dialog>
             </div>
 
-            {showAlert && (
-                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
-                    <AlertIcon icon={<AlarmClockPlus/>}/>
-                    <AlertContent>
-                        <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>
-                    </AlertContent>
-                </Alert>
-            )}
+            <Alert duration={3000} ref={alertRef}>
+                <AlertIcon icon={<AlarmClockPlus/>}/>
+                <AlertContent>
+                    <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>
+                </AlertContent>
+            </Alert>
         </>
     );
 })

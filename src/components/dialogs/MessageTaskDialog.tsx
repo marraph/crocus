@@ -1,35 +1,33 @@
-import React, {forwardRef, useEffect, useState} from "react";
+import React, {forwardRef, useEffect, useRef, useState} from "react";
 import {MessageSquare, MessageSquarePlus, Send} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
-
-const title = "Server api doesnt work"
+import {
+    Alert,
+    AlertContent,
+    AlertDescription,
+    AlertIcon,
+    AlertRef,
+    AlertTitle
+} from "@marraph/daisy/components/alert/Alert";
 
 export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
-    const dialogRef = React.useRef<HTMLDialogElement>(null);
-    const [showAlert, setShowAlert] = useState(false);
-
-    useEffect(() => {
-        if (showAlert) {
-            const timer = setTimeout(() => setShowAlert(false), 4000);
-            return () => clearTimeout(timer);
-        }
-    }, [showAlert]);
+    const dialogRef = React.useRef<DialogRef>(null);
+    const alertRef = useRef<AlertRef>(null);
 
     const sendMessage = () => {
         dialogRef.current?.close();
-        setShowAlert(true);
+        alertRef.current?.show();
     }
 
     return (
         <>
-            <Button text={"Message"} theme={"white"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.showModal()}>
+            <Button text={"Message"} theme={"white"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.show()}>
                 <MessageSquare size={20} className={"mr-2"}/>
             </Button>
 
@@ -52,15 +50,13 @@ export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLA
                 </Dialog>
             </div>
 
-            {showAlert && (
-                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
-                    <AlertIcon icon={<MessageSquarePlus />}/>
-                    <AlertContent>
-                        <AlertTitle title={"Added Message"}></AlertTitle>
-                        <AlertDescription description={"You successfully added your message to the auditlog."}></AlertDescription>
-                    </AlertContent>
-                </Alert>
-            )}
+            <Alert duration={3000} ref={alertRef}>
+                <AlertIcon icon={<MessageSquarePlus />}/>
+                <AlertContent>
+                    <AlertTitle title={"Added Message"}></AlertTitle>
+                    <AlertDescription description={"You successfully added your message to the auditlog."}></AlertDescription>
+                </AlertContent>
+            </Alert>
         </>
 
     )

@@ -1,8 +1,8 @@
 "use client";
 
-import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import React, {useEffect, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, SquarePen, Tag, Users} from "lucide-react";
 import {cn} from "@/utils/cn";
@@ -10,7 +10,14 @@ import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
+import {
+    Alert,
+    AlertContent,
+    AlertDescription,
+    AlertIcon,
+    AlertRef,
+    AlertTitle
+} from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
 import {PreviewUser, Priority, Project, Status, Task, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
@@ -18,8 +25,9 @@ import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 
 
-export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
-    const dialogRef = useRef<HTMLDialogElement>(null);
+export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
+    const dialogRef = useRef<DialogRef>(null);
+    const alertRef = useRef<AlertRef>(null);
     const teamRef = useRef<ComboboxRef>(null);
     const projectRef = useRef<ComboboxRef>(null);
     const topicRef = useRef<ComboboxRef>(null);
@@ -30,7 +38,6 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
     const switchRef = useRef<SwitchRef>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
-    const [showAlert, setShowAlert] = useState(false);
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
     const {data, isLoading, error} = useUser();
 
@@ -82,12 +89,6 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
-    useEffect(() => {
-        if (showAlert) {
-            const timer = setTimeout(() => setShowAlert(false), 4000);
-            return () => clearTimeout(timer);
-        }
-    }, [showAlert]);
 
     if (data === undefined) return null;
 
@@ -96,9 +97,9 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
             id: 0,
             name: titleValue,
             description: descriptionValue,
-            topic: getTopicItem(topicRef.current?.getSelectedValue() as string) ?? null,
-            status: statusRef.current?.getSelectedValue() as Status ?? null,
-            priority: priorityRef.current?.getSelectedValue() as Priority ?? null,
+            topic: getTopicItem(topicRef.current?.getValue() as string) ?? null,
+            status: statusRef.current?.getValue() as Status ?? null,
+            priority: priorityRef.current?.getValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
             duration: Number(durationRef.current?.getValue()) ?? null,
@@ -125,7 +126,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
         setTitleValue("");
         setDescriptionValue("");
         setTeamSelected({isSelected: false, team: ""})
-        setShowAlert(true);
+        alertRef.current?.show();
     }
 
     const handleCloseClick = () => {
@@ -145,7 +146,7 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
 
     return (
         <>
-            <Button text={"Create Task"} theme={"white"} size={"small"} className={"w-min h-8"} onClick={() => dialogRef.current?.showModal()}>
+            <Button text={"Create Task"} theme={"white"} size={"small"} className={"w-min h-8"} onClick={() => dialogRef.current?.show()}>
                 <SquarePen size={20} className={"mr-2"}/>
             </Button>
 
@@ -209,15 +210,13 @@ export const CreateTaskDialog = React.forwardRef<HTMLDialogElement, React.Dialog
                 </div>
             </Dialog>
 
-            {showAlert && (
-                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
-                    <AlertIcon icon={<SquareCheckBig />}/>
-                    <AlertContent>
-                        <AlertTitle title={"Task created successfully!"}></AlertTitle>
-                        <AlertDescription description={"You can now work with the task in your task-overview."}></AlertDescription>
-                    </AlertContent>
-                </Alert>
-            )}
+            <Alert duration={3000} ref={alertRef}>
+                <AlertIcon icon={<SquareCheckBig />}/>
+                <AlertContent>
+                    <AlertTitle title={"Task created successfully!"}></AlertTitle>
+                    <AlertDescription description={"You can now work with the task in your task-overview."}></AlertDescription>
+                </AlertContent>
+            </Alert>
         </>
     )
 })

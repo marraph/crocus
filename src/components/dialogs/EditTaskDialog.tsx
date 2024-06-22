@@ -1,16 +1,22 @@
 "use client";
 
-import React, {MutableRefObject, useEffect, useRef, useState} from "react";
+import React, {forwardRef, useRef, useState} from "react";
 import {BookCopy, CircleAlert, Hourglass, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
-import {Badge} from "@marraph/daisy/components/badge/Badge";
+import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
-import {Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle} from "@marraph/daisy/components/alert/Alert";
+import {
+    Alert,
+    AlertContent,
+    AlertDescription,
+    AlertIcon,
+    AlertRef,
+    AlertTitle
+} from "@marraph/daisy/components/alert/Alert";
 import {Priority, Project, Status, Task, TaskElement, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
@@ -21,8 +27,9 @@ interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     taskElement: TaskElement;
 }
 
-export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
-    const dialogRef = useRef<HTMLDialogElement>(null);
+export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
+    const dialogRef = useRef<DialogRef>(null);
+    const alertRef = useRef<AlertRef>(null);
     const teamRef = useRef<ComboboxRef>(null);
     const projectRef = useRef<ComboboxRef>(null);
     const topicRef = useRef<ComboboxRef>(null);
@@ -32,23 +39,8 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
     const durationRef = useRef<InputRef>(null);
     const [titleValue, setTitleValue] = useState(taskElement.name);
     const [descriptionValue, setDescriptionValue] = useState(taskElement.description ?? undefined);
-    const [showAlert, setShowAlert] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState<string | null>(taskElement.team?.name ?? null);
     const { data, isLoading, error } = useUser();
-
-    const getDialogRef = (): MutableRefObject<HTMLDialogElement | null> => {
-        if (ref && typeof ref === 'object') {
-            return ref as MutableRefObject<HTMLDialogElement | null>;
-        }
-        return dialogRef;
-    };
-
-    useEffect(() => {
-        if (showAlert) {
-            const timer = setTimeout(() => setShowAlert(false), 4000);
-            return () => clearTimeout(timer);
-        }
-    }, [showAlert]);
 
     if (!data) return null;
 
@@ -57,9 +49,9 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             id: taskElement.id,
             name: titleValue,
             description: descriptionValue ?? null,
-            topic: getTopicItem(topicRef.current?.getSelectedValue() as string) ?? null,
-            status: statusRef.current?.getSelectedValue() as Status ?? null,
-            priority: priorityRef.current?.getSelectedValue() as Priority ?? null,
+            topic: getTopicItem(topicRef.current?.getValue() as string) ?? null,
+            status: statusRef.current?.getValue() as Status ?? null,
+            priority: priorityRef.current?.getValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
             duration: Number(durationRef.current?.getValue()) ?? null,
@@ -68,8 +60,8 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
             lastModifiedBy: { id: data.id, name: data.name, email: data.email },
             lastModifiedDate: new Date(),
         };
-        getDialogRef().current?.close();
-        setShowAlert(true);
+        dialogRef.current?.close();
+        alertRef.current?.show();
     };
 
     const getTeams = () => {
@@ -121,7 +113,7 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
     };
 
     const handleCloseClick = () => {
-        getDialogRef().current?.close();
+        dialogRef.current?.close();
         teamRef.current?.setValue(taskElement.team?.name);
         projectRef.current?.setValue(taskElement.project?.name);
         topicRef.current?.setValue(taskElement.topic?.title);
@@ -148,13 +140,13 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
     return (
         <>
             {buttonTrigger && (
-                <Button text={"Edit"} className={"h-8 mr-2"} onClick={() => getDialogRef().current?.showModal()}>
+                <Button text={"Edit"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.show()}>
                     <Pencil size={16} className={"mr-2"} />
                 </Button>
             )}
 
             <div className={"flex items-center justify-center"}>
-                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={getDialogRef()}>
+                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={dialogRef}>
                     <div className={"flex flex-row justify-between px-4 pb-2"}>
                         <span className={"text-md text-white pt-4"}>Edit Task</span>
                         <CloseButton className={"h-min w-min mt-4"} onClick={() => handleCloseClick()} />
@@ -262,15 +254,13 @@ export const EditTaskDialog = React.forwardRef<HTMLDialogElement, DialogProps>((
                 </Dialog>
             </div>
 
-            {showAlert && (
-                <Alert duration={3000} className={"fixed bottom-4 right-4 z-50 border border-white border-opacity-20 bg-dark"}>
-                    <AlertIcon icon={<Save/>}/>
-                    <AlertContent>
-                        <AlertTitle title={"Saved changes"}></AlertTitle>
-                        <AlertDescription description={"You successfully saved your task changes."}></AlertDescription>
-                    </AlertContent>
-                </Alert>
-            )}
+            <Alert duration={3000} ref={alertRef}>
+                <AlertIcon icon={<Save/>}/>
+                <AlertContent>
+                    <AlertTitle title={"Saved changes"}></AlertTitle>
+                    <AlertDescription description={"You successfully saved your task changes."}></AlertDescription>
+                </AlertContent>
+            </Alert>
         </>
     );
 });

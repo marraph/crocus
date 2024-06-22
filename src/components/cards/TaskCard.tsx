@@ -1,6 +1,4 @@
-import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import React from "react";
 import {cn} from "@/utils/cn";
 import {useRouter} from "next/navigation";
@@ -9,8 +7,6 @@ import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
 import {BookCopy, CalendarDays, Users} from "lucide-react";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
-
-const path = "/image.png";
 
 interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
     _id: number;

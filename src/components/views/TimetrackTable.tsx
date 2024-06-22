@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {Table, TableBody, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Caret} from "@/components/badges/Caret";
-import {TaskElement} from "@/types/types";
 
 const header = [
     { key: "entry", label: "Entry" },
