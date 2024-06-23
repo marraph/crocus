@@ -12,9 +12,9 @@ const config: Config = {
       "black": "#0F0E0E",
       "gray": "#A5A5A5",
       "white": "#EEEEEE",
-      "selected": "#222121",
+      "selected": "#151414",
       "placeholder": "#7B7777",
-      "dark": "#222121",
+      "dark": "#151414",
       "badgegray": "#171616",
 
       "blue": "#2622F6",

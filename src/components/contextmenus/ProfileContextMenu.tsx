@@ -34,7 +34,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                                      title={"Log out"} icon={<LogOut size={18}/>}/>
                 </ContextMenu>
             }
-            <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20 hover:bg-dark")}
+            <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20 hover:bg-selected")}
                 onClick={() => setShowProfile(!showProfile)}>
 
                 {isLoading ?
