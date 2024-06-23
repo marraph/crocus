@@ -147,9 +147,10 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody className={"text-sm"}>
-                        {getSortedArray(taskElements).map((taskElement) => (
+                        {getSortedArray(taskElements).map((taskElement, index) => (
                             <TableRow key={taskElement.id} onClick={() => router.push(`/tasks/${taskElement.id}`)}
-                                      onContextMenu={(event) => handleContextMenu(event, taskElement)}>
+                                      onContextMenu={(event) => handleContextMenu(event, taskElement)}
+                                      className={index === getSortedArray(taskElements).length - 1 ? " border-b border-b-white" : ""}>
                                 <TableCell className={"text-white"}>{taskElement.name}</TableCell>
                                 <TableCell>{taskElement.project?.name}</TableCell>
                                 <TableCell>

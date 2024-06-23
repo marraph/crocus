@@ -13,13 +13,13 @@ import {
     SquarePen,
     Timer
 } from "lucide-react";
-import {Dialog} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
 export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
-    const dialogRef = React.useRef<HTMLDialogElement>(null);
+    const dialogRef = React.useRef<DialogRef>(null);
 
     const closeDialog = () => {
         dialogRef.current?.close();
@@ -30,7 +30,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
     return (
         <>
             <div className={"group flex flex-row items-center space-x-1 rounded-lg bg-black border border-white border-opacity-20 focus:text-white"}
-                 onClick={() => dialogRef.current?.showModal()}>
+                 onClick={() => dialogRef.current?.show()}>
                 <Search size={18} className={"group-focus:text-white text-placeholder ml-2 mr-2"}/>
                 <Input placeholder={"Search"} border={"none"} className={"w-max text-sm m-0 p-0 h-8 bg-black"}></Input>
                 <Shortcut text={"⌘ K"}/>

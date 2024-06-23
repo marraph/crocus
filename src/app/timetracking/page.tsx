@@ -14,9 +14,25 @@ import {formatDate} from "@/utils/format";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 
+const data = [
+    { project: "Meeting", task: null, comment: "Discussing the new project", time: "10:00AM - 11.00AM", duration: "1h" },
+    { project: "Development", task: "Feature", comment: null, time: "11:00AM - 02:00PM", duration: "3h" },
+    { project: null, task: "Testing", comment: "Testing the new feature", time: "02:00PM - 02:30PM", duration: "0.5h" },
+]
+
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const [day, setDay] = useState<Date>(new Date());
+
+    const sumDuration = () => {
+        let totalDuration = 0.0;
+
+        for (const entry of data) {
+            const hours = parseFloat(entry.duration.replace('h', ''));
+            totalDuration += hours;
+        }
+        return totalDuration;
+    }
 
     const handleDayBefore = () => {
         setDay(new Date(day.setDate(day.getDate() - 1)));
@@ -43,8 +59,18 @@ export default function Timetracking() {
                 <CreateTimeEntryDialog className={"justify-end"}/>
             </div>
 
-            <div className={"w-full h-[838px] rounded-lg flex items-stretch mt-4"}>
-                <TimetrackTable/>
+            <div className={"w-full h-full rounded-lg flex flex-col items-stretch mt-4"}>
+                <TimetrackTable data={data}/>
+                <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
+                    <div className={"flex flex-row items-center space-x-2"}>
+                        <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
+                        <span className={"text-base text-white"}>{data.length}</span>
+                    </div>
+                    <div className={"flex flex-row items-center space-x-2"}>
+                        <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
+                        <span className={"text-base text-white"}>{sumDuration() + "h"}</span>
+                    </div>
+                </div>
             </div>
 
         </div>

@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import {TopicBadge} from "@/components/badges/TopicBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
-import {BookCopy, CalendarDays, Users} from "lucide-react";
+import {BookCopy, Box, CalendarDays, Users} from "lucide-react";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 
 interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -47,7 +47,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
                     <span className={cn("text-sm", className)}>{team}</span>
                 </div>
                 <div className={"flex flex-row items-center space-x-2 text-gray"}>
-                    <BookCopy size={16}/>
+                    <Box size={16}/>
                     <span className={cn("text-sm", className)}>{project}</span>
                 </div>
                 <div className={"flex flex-row items-center space-x-2 text-gray"}>
