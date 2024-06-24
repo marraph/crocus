@@ -3,9 +3,9 @@ import React, {useEffect, useState} from "react";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
 import {formatDate} from "@/utils/format";
 import {TaskElement} from "@/types/types";
-import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
-import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
-import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
+import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
+import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
+import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 
 interface TaskProps {
     taskElements: TaskElement[];

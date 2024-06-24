@@ -3,7 +3,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
-import {CreateTaskDialog} from "@/components/dialogs/CreateTaskDialog";
+import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
 import {TaskCardView} from "@/components/views/TaskCardView";
 import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
 import {LoaderCircle, OctagonAlert} from "lucide-react";

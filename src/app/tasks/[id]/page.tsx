@@ -3,10 +3,10 @@
 import {Breadcrump} from "@marraph/daisy/components/breadcrump/Breadcrump";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {useParams, useRouter} from "next/navigation";
-import {DeleteTaskDialog} from "@/components/dialogs/DeleteTaskDialog";
-import {CloseTaskDialog} from "@/components/dialogs/CloseTaskDialog";
-import {MessageTaskDialog} from "@/components/dialogs/MessageTaskDialog";
-import {EditTaskDialog} from "@/components/dialogs/EditTaskDialog";
+import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
+import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
+import {MessageTaskDialog} from "@/components/dialogs/tasks/MessageTaskDialog";
+import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 import React from "react";
 import {formatDate} from "@/utils/format";
 import {useUser} from "@/context/UserContext";

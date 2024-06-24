@@ -5,8 +5,8 @@ import {EntryProjectBadge} from "@/components/badges/EntryProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
 import {TimeEntry} from "@/types/types";
 import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
-import {DeleteTimeEntryDialog} from "@/components/dialogs/DeleteTimeEntryDialog";
-import {EditTimeEntryDialog} from "@/components/dialogs/EditTimeEntryDialog";
+import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
+import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 
 const header = [
     { key: "entry", label: "Entry" },

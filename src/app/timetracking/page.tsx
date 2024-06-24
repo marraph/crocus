@@ -4,7 +4,7 @@ import React, {useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
-import {CreateTimeEntryDialog} from "@/components/dialogs/CreateTimeEntryDialog";
+import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
 
