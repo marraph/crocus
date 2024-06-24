@@ -25,7 +25,7 @@ export default function Tasks() {
             const elements = getTaskElements();
             setTaskElements(elements);
         }
-    }, [User, update, taskElements]);
+    }, [User, update]);
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
@@ -54,14 +54,10 @@ export default function Tasks() {
             });
         });
 
-        console.log('Initial taskElements:', taskElements);
-
         const filters = filterRef.current?.getSelectedItems() ?? {};
         const hasFilters = Object.values(filters).some(value => value !== null && value !== '');
 
         if (hasFilters) {
-            console.log('Filters:', filters);
-
             taskElements = taskElements.filter((task) => {
                 if (filters["Team"] && task.team?.name !== filters["Team"]) return false;
                 if (filters["Project"] && task.project?.name !== filters["Project"]) return false;
@@ -71,7 +67,6 @@ export default function Tasks() {
                 if (filters["Creator"] && task.createdBy.name !== filters["Creator"]) return false;
                 return true;
             });
-            console.log('Filtered taskElements:', taskElements);
         }
 
         return taskElements;

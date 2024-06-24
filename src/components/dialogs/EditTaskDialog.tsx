@@ -1,6 +1,6 @@
 "use client";
 
-import React, {forwardRef, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useRef, useState} from "react";
 import {BookCopy, CircleAlert, Hourglass, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
@@ -19,7 +19,7 @@ import {
 } from "@marraph/daisy/components/alert/Alert";
 import {Priority, Project, Status, Task, TaskElement, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
+import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
@@ -30,6 +30,8 @@ interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
 export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
     const alertRef = useRef<AlertRef>(null);
+    const titleRef = useRef<InputRef>(null);
+    const descriptionRef = useRef<TextareaRef>(null);
     const teamRef = useRef<ComboboxRef>(null);
     const projectRef = useRef<ComboboxRef>(null);
     const topicRef = useRef<ComboboxRef>(null);
@@ -38,9 +40,15 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
     const datePickerRef = useRef<DatepickerRef>(null);
     const durationRef = useRef<InputRef>(null);
     const [titleValue, setTitleValue] = useState(taskElement.name);
-    const [descriptionValue, setDescriptionValue] = useState(taskElement.description ?? undefined);
-    const [selectedTeam, setSelectedTeam] = useState<string | null>(taskElement.team?.name ?? null);
+    const [descriptionValue, setDescriptionValue] = useState(taskElement.description ?? "");
+    const [durationValue, setDurationValue] = useState(taskElement.duration?.toString() ?? "");
+    const [selectedTeam, setSelectedTeam] = useState<string | null>(taskElement.team?.name ?? "");
+    const [valid, setValid] = useState(true);
     const { data, isLoading, error } = useUser();
+
+    useEffect(() => {
+        validateInput();
+    }, [titleValue]);
 
     if (!data) return null;
 
@@ -54,7 +62,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
             priority: priorityRef.current?.getValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
-            duration: Number(durationRef.current?.getValue()) ?? null,
+            duration: parseFloat(durationValue) ?? null,
             createdBy: taskElement.createdBy,
             createdDate: taskElement.createdDate,
             lastModifiedBy: { id: data.id, name: data.name, email: data.email },
@@ -104,14 +112,6 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
     const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitleValue(e.target.value);
-    };
-
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescriptionValue(e.target.value);
-    };
-
     const handleCloseClick = () => {
         dialogRef.current?.close();
         teamRef.current?.setValue(taskElement.team?.name);
@@ -121,8 +121,12 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
         priorityRef.current?.setValue(taskElement.priority);
         datePickerRef.current?.setValue(taskElement.deadline);
         durationRef.current?.setValue(taskElement.duration?.toString());
+        titleRef.current?.setValue(taskElement.name);
+        descriptionRef.current?.setValue(taskElement.description ?? "");
+        durationRef.current?.setValue(taskElement.duration ?? "");
         setTitleValue(taskElement.name);
         setDescriptionValue(taskElement.description ?? "");
+        setDurationValue(taskElement.duration?.toString() ?? "");
         setSelectedTeam(taskElement.team?.name ?? null);
     };
 
@@ -134,6 +138,35 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
         } else {
             setSelectedTeam(team);
             teamRef.current?.setValue(team);
+        }
+    };
+
+    const validateInput = () => {
+        if (titleValue.trim() === "") {
+            setValid(false);
+            return;
+        }
+
+        setValid(true);
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (
+            (e.key >= '0' && e.key <= '9') ||
+            e.key === '.' ||
+            e.key === 'Backspace' ||
+            e.key === 'Delete' ||
+            e.key === 'Tab' ||
+            e.key === 'Escape' ||
+            e.key === 'Enter' ||
+            e.key === 'ArrowLeft' ||
+            e.key === 'ArrowRight' ||
+            e.key === 'Home' ||
+            e.key === 'End'
+        ) {
+            return;
+        } else {
+            e.preventDefault();
         }
     };
 
@@ -155,22 +188,16 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
                     <div className={"flex flex-col space-y-4 p-4"}>
                         <div className={"flex flex-col space-y-1"}>
                             <span className={"text-gray text-xs"}>Title</span>
-                            <input
-                                placeholder={"Task Title"}
-                                id={"title"}
-                                value={titleValue}
-                                onChange={handleTitleChange}
-                                className={cn(
-                                    "mb-2 text-sm rounded-lg bg-black py-2 px-2 border border-white border-opacity-20 text-white placeholder-placeholder focus-visible:ring-0 focus-visible:outline-none",
-                                    className
-                                )}
+                            <Input
+                                placeholder={"Task Title"} ref={titleRef} value={titleValue}
+                                onChange={(e) => setTitleValue(e.target.value)}
                             />
                         </div>
                         <div className={"flex flex-col space-y-1"}>
                             <span className={"text-gray text-xs"}>Description</span>
                             <Textarea
-                                placeholder={"Add Description..."}
-                                onChange={handleDescriptionChange}
+                                placeholder={"Add Description..."} ref={descriptionRef}
+                                onChange={(e) => setDescriptionValue(e.target.value)}
                                 spellCheck={false}
                                 className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20 focus:text-gray"}
                                 value={descriptionValue}
@@ -241,15 +268,19 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Duration</span>
-                            <Input placeholder={""} preSelectedValue={durationRef.current?.getValue()} elementSize={"medium"}
-                                   ref={durationRef} icon={<Hourglass size={16} />}>
+                            <Input placeholder={"Duration in hours"} value={durationValue}
+                                   elementSize={"medium"} ref={durationRef} icon={<Hourglass size={16} />}
+                                   onChange={(e) => setDurationValue(e.target.value)}
+                                   onKeyDown={handleKeyDown}>
                             </Input>
                         </div>
                     </div>
                     <Seperator/>
                     <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
                         <Button text={"Cancel"} className={cn("h-8")} onClick={() => handleCloseClick()}/>
-                        <Button text={"Save changes"} theme={"white"} onClick={editTask} className={"h-8"}/>
+                        <Button text={"Save changes"} theme={"white"}
+                                onClick={editTask} disabled={!valid}
+                                className={"h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray"}/>
                     </div>
                 </Dialog>
             </div>

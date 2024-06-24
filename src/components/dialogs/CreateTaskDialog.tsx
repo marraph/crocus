@@ -38,8 +38,16 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
     const switchRef = useRef<SwitchRef>(null);
     const [titleValue, setTitleValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
+    const [durationValue, setDurationValue] = useState("");
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
+    const [valid, setValid] = useState(false);
     const {data, isLoading, error} = useUser();
+
+    useEffect(() => {
+        validateInput();
+    }, [titleValue, durationValue]);
+
+    if (data === undefined) return null;
 
     const getTeams = () => {
         const teams: string[] = [];
@@ -90,8 +98,6 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
 
-    if (data === undefined) return null;
-
     const handleCreateClick = () => {
         const task: Task = {
             id: 0,
@@ -125,6 +131,8 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
         switchRef.current?.setValue(false);
         setTitleValue("");
         setDescriptionValue("");
+        setDurationValue("");
+        setValid(false);
         setTeamSelected({isSelected: false, team: ""})
         alertRef.current?.show();
     }
@@ -141,8 +149,46 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
         switchRef.current?.setValue(false);
         setTitleValue("");
         setDescriptionValue("");
+        setDurationValue("");
+        setValid(false);
         setTeamSelected({isSelected: false, team: ""})
     }
+
+    const validateInput = () => {
+        console.log(parseFloat(durationValue));
+
+        if (durationValue.trim() !== "" && isNaN(parseFloat(durationValue))) {
+            setValid(false);
+            return;
+        }
+
+        if (titleValue.trim() === "") {
+            setValid(false);
+            return;
+        }
+
+        setValid(true);
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (
+            (e.key >= '0' && e.key <= '9') ||
+            e.key === '.' ||
+            e.key === 'Backspace' ||
+            e.key === 'Delete' ||
+            e.key === 'Tab' ||
+            e.key === 'Escape' ||
+            e.key === 'Enter' ||
+            e.key === 'ArrowLeft' ||
+            e.key === 'ArrowRight' ||
+            e.key === 'Home' ||
+            e.key === 'End'
+        ) {
+            return;
+        } else {
+            e.preventDefault();
+        }
+    };
 
     return (
         <>
@@ -192,7 +238,9 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
                                 ))}
                             </Combobox>
                             <Input placeholder={"Duration in Hours"} elementSize={"small"} className={"w-28 placeholder-gray"} ref={durationRef}
-                                   icon={<Hourglass size={12}/>}>
+                                   value={durationValue} icon={<Hourglass size={12}/>}
+                                   onChange={(e) => setDurationValue(e.target.value)}
+                                   onKeyDown={handleKeyDown}>
                             </Input>
                         </div>
                     </div>
@@ -204,7 +252,7 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
                         <span>{"Create more"}</span>
                         <Switch ref={switchRef}></Switch>
                     </div>
-                    <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={titleValue.trim() === ""}
+                    <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={!valid}
                             className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>
                     </Button>
                 </div>
