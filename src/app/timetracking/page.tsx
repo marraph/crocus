@@ -8,21 +8,17 @@ import {CreateTimeEntryDialog} from "@/components/dialogs/CreateTimeEntryDialog"
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
 
-const data = [
-    { project: "Meeting", task: null, comment: "Discussing the new project", time: "10:00AM - 11.00AM", duration: "1h" },
-    { project: "Development", task: "Feature", comment: null, time: "11:00AM - 02:00PM", duration: "3h" },
-    { project: null, task: "Testing", comment: "Testing the new feature", time: "02:00PM - 02:30PM", duration: "0.5h" },
-]
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const [day, setDay] = useState<Date>(new Date());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const entries = [] as any;
 
     const sumDuration = () => {
         let totalDuration = 0.0;
 
-        for (const entry of data) {
+        for (const entry of entries) {
             const hours = parseFloat(entry.duration.replace('h', ''));
             totalDuration += hours;
         }
@@ -55,11 +51,11 @@ export default function Timetracking() {
             </div>
 
             <div className={"w-full h-full rounded-lg flex flex-col items-stretch mt-4"}>
-                <TimetrackTable data={data}/>
+                <TimetrackTable entries={entries}/>
                 <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
                     <div className={"flex flex-row items-center space-x-2"}>
                         <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
-                        <span className={"text-base text-white"}>{data.length}</span>
+                        <span className={"text-base text-white"}>{entries.length}</span>
                     </div>
                     <div className={"flex flex-row items-center space-x-2"}>
                         <span className={"text-sm text-gray"}>{"Total Duration:"}</span>

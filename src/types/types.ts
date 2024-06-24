@@ -1,5 +1,6 @@
 type Priority = "LOW" | "MEDIUM" | "HIGH"
 type Status = "PENDING" | "PLANING" | "STARTED" | "TESTED" | "FINISHED"
+type AbsenceType = "VACATION" | "SICK"
 
 type PreviewUser = {
     id: number
@@ -92,8 +93,44 @@ type TaskElement = {
     project: Project | null
 }
 
+type TimeEntry = {
+    id: number,
+    task: Task | null,
+    project: Project | null,
+    comment: string | null,
+    startDate: Date,
+    endDate: Date,
+    dailyEntry: DailyEntry,
+    createdBy: PreviewUser
+    createdDate: Date
+    lastModifiedBy: PreviewUser
+    lastModifiedDate: Date
+}
 
-type Acceptable = User | Organisation | Team | Project | Topic | Task
+type DailyEntry = {
+    id: number,
+    startDate: Date,
+    endDate: Date,
+    createdBy: PreviewUser
+    createdDate: Date
+    lastModifiedBy: PreviewUser
+    lastModifiedDate: Date
+}
+
+type Absence = {
+    id: number,
+    absenceType: AbsenceType,
+    startDate: Date,
+    endDate: Date,
+    comment: string | null,
+    createdBy: PreviewUser
+    createdDate: Date
+    lastModifiedBy: PreviewUser
+    lastModifiedDate: Date
+
+}
+
+type Acceptable = User | Organisation | Team | Project | Topic | Task  | TimeEntry | DailyEntry | Absence
 
 export type {
     PreviewUser,
@@ -106,5 +143,8 @@ export type {
     Topic,
     Task,
     TaskElement,
+    TimeEntry,
+    DailyEntry,
+    Absence,
     Acceptable
 }
