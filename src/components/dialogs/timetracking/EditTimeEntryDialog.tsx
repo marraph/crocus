@@ -58,7 +58,7 @@ export const EditTimeEntryDialog = forwardRef<HTMLDialogElement, DialogProps>(({
                         <Button text={"Cancel"} className={cn("h-8")} onClick={() => handleCloseClick()}/>
                         <Button text={"Save changes"} theme={"white"}
                                 onClick={editTimeEntry} disabled={!valid}
-                                className={"h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray"}/>
+                                className={"h-8"}/>
                     </div>
                 </Dialog>
             </div>

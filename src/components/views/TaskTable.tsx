@@ -12,6 +12,7 @@ import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 import {Status, TaskElement} from "@/types/types";
 import {formatDate} from "@/utils/format";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
+import {cn} from "@/utils/cn";
 
 const path = "/image.png";
 
@@ -129,11 +130,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} closeRef={closeRef} editRef={editRef}/>
             }
 
-            <div className={"w-full h-[852px] text-xs flex items-stretch pt-4"}>
+            <div className={"h-[852px] w-full text-xs flex pt-4"}>
                 <Table className={"bg-black w-full no-scrollbar"}>
                     <TableHeader>
-                        <TableRow className={"border-none hover:bg-black"}>
-                            {header.map((header) => (
+                        <TableRow className={cn("hover:bg-black", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
+                        {header.map((header) => (
                                 <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key}
                                            onClick={() => handleHeaderClick(header.key)}>
                                     <span className={"flex flex-row items-center"}>

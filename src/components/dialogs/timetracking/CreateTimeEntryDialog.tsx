@@ -11,6 +11,7 @@ import {Project, Task, Team} from "@/types/types";
 import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 
 export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
@@ -18,12 +19,14 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     const commentRef = useRef<TextareaRef>(null);
     const taskRef = useRef<SearchSelectRef>(null);
     const projectRef = useRef<SearchSelectRef>(null);
+    const datepickerRef = useRef<DatepickerRef>(null);
     const timeFromRef = useRef<SearchSelectRef>(null);
     const timeToRef = useRef<SearchSelectRef>(null);
     const switchRef = useRef<SwitchRef>(null);
     const [comment, setComment] = useState("");
     const [projectSelected, setProjectSelected] = useState<string | null>(null);
     const [taskSelected, setTaskSelected] = useState<string | null>(null);
+    const [day, setDay] = useState<Date>(new Date());
     const [timeFrom, setTimeFrom] = useState<string | null>(null);
     const [timeTo, setTimeTo] = useState<string | null>(null);
     const [valid, setValid] = useState<boolean>(false);
@@ -31,7 +34,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
     useEffect(() => {
         validateInput();
-    }, [comment, projectSelected, taskSelected, timeFrom, timeTo]);
+    }, [comment, projectSelected, taskSelected, timeFrom, timeTo, datepickerRef.current]);
 
     const getProjects = () => {
         const projects: string[] = [];
@@ -113,10 +116,16 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     const validateInput = () => {
         let timeFrom = timeFromRef.current?.getSelectedValue();
         let timeTo = timeToRef.current?.getSelectedValue();
+        let date = datepickerRef.current?.getSelectedValue();
 
         console.log(timeFrom + " " + timeTo)
 
         if (comment.trim() === "" && !projectSelected && !taskSelected) {
+            setValid(false);
+            return;
+        }
+
+        if (date === null) {
             setValid(false);
             return;
         }
@@ -141,6 +150,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
         commentRef.current?.reset();
         taskRef.current?.reset();
         projectRef.current?.reset();
+        datepickerRef.current?.setValue(datepickerRef.current.getSelectedValue());
         timeFromRef.current?.reset();
         timeToRef.current?.reset();
         alertRef.current?.show();
@@ -197,6 +207,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
         commentRef.current?.reset();
         taskRef.current?.reset();
         projectRef.current?.reset();
+        datepickerRef.current?.setValue(datepickerRef.current.getSelectedValue());
         timeFromRef.current?.reset();
         timeToRef.current?.reset();
         switchRef.current?.setValue(false);
@@ -220,7 +231,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                     </Textarea>
 
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
-                        <SearchSelect buttonTitle={"Project"} ref={projectRef} width={100}
+                        <SearchSelect buttonTitle={"Project"} ref={projectRef}
                                       icon={<BookCopy size={16}/>} size={"small"} className={"z-50"}>
                             {!taskSelected && getProjects().map((project) => (
                                 <SearchSelectItem key={project} title={project} onClick={() => handleProjectChange(project)}></SearchSelectItem>
@@ -230,7 +241,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                             }
                         </SearchSelect>
 
-                        <SearchSelect buttonTitle={"Task"} ref={taskRef} width={100}
+                        <SearchSelect buttonTitle={"Task"} ref={taskRef}
                                       icon={<ClipboardList size={16}/>} size={"small"} className={"z-50"}>
                             {!projectSelected && getAllTasks().map((task) => (
                                 <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
@@ -242,13 +253,15 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                     </div>
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
-                        <SearchSelect buttonTitle={"From"} preSelectedValue={"09:00AM"} ref={timeFromRef} width={100}
+                        <DatePicker text={"Select a date"} iconSize={16} ref={datepickerRef}
+                                    preSelectedValue={day} size={"medium"}/>
+                        <SearchSelect buttonTitle={"From"} preSelectedValue={"09:00AM"} ref={timeFromRef}
                                       icon={<Clock2 size={16}/>} size={"small"} className={"z-40"}>
                             {times.map((time) => (
                                 <SearchSelectItem key={time} title={time} onClick={() => handleTimeFromChange(time)}></SearchSelectItem>
                             ))}
                         </SearchSelect>
-                        <SearchSelect buttonTitle={"To"} preSelectedValue={"09:00AM"} ref={timeToRef} width={100}
+                        <SearchSelect buttonTitle={"To"} preSelectedValue={"09:00AM"} ref={timeToRef}
                                       icon={<Clock8 size={16}/>} size={"small"} className={"z-40"}>
                             {times.map((time) => (
                                 <SearchSelectItem key={time} title={time} onClick={() => handleTimeToChange(time)}></SearchSelectItem>
@@ -263,7 +276,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                             <Switch ref={switchRef}></Switch>
                         </div>
                         <Button text={"Create"} theme={"white"} onClick={createTimeEntry} disabled={!valid}
-                                className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>
+                                className={cn("w-min h-8", className)}>
                         </Button>
                     </div>
                 </Dialog>

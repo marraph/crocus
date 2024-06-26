@@ -253,7 +253,7 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
                         <Switch ref={switchRef}></Switch>
                     </div>
                     <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={!valid}
-                            className={cn("w-min h-8 disabled:cursor-not-allowed disabled:hover:none disabled:bg-dark disabled:text-gray", className)}>
+                            className={"w-min h-8"}>
                     </Button>
                 </div>
             </Dialog>

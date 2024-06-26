@@ -29,11 +29,13 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
 
     return (
         <>
-            <div className={"group flex flex-row items-center space-x-1 rounded-lg bg-black border border-white border-opacity-20 focus:text-white"}
+            <div className={"group flex flex-row justify-between items-center space-x-1 rounded-lg bg-black border border-white border-opacity-20 focus:text-white pr-1"}
                  onClick={() => dialogRef.current?.show()}>
-                <Search size={18} className={"group-focus:text-white text-placeholder ml-2 mr-2"}/>
-                <Input placeholder={"Search"} border={"none"} className={"w-max text-sm m-0 p-0 h-8 bg-black"}></Input>
-                <Shortcut text={"⌘ K"}/>
+                <div className={"flex flex-row items-center"}>
+                    <Search size={18} className={"group-focus:text-white text-placeholder ml-2 mr-2"}/>
+                    <Input placeholder={"Search"} border={"none"} className={"w-max text-sm m-0 p-0 h-8 bg-black"}></Input>
+                </div>
+                <Shortcut text={"⌘ K"} className={"justify-end"}/>
             </div>
 
             <div className={"flex items-center justify-center"}>

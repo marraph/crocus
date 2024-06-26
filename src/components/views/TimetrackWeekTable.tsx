@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from "react";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
-import {Caret} from "@/components/badges/Caret";
-import {EntryProjectBadge} from "@/components/badges/EntryProjectBadge";
-import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
 import {TimeEntry} from "@/types/types";
-import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
+import React, {useEffect, useState} from "react";
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
+import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
+import {Caret} from "@/components/badges/Caret";
 import {cn} from "@/utils/cn";
 
 const header = [
-    { key: "entry", label: "Entry" },
-    { key: "time", label: "Time" },
-    { key: "duration", label: "Duration" },
+    { key: "monday", label: "Monday" },
+    { key: "tuesday", label: "Tuesday" },
+    { key: "wednesday", label: "Wednesday" },
+    { key: "thursday", label: "Thursday"},
+    { key: "friday", label: "Friday"},
 ];
 
 type SortOrder = "asc" | "desc";
@@ -22,7 +22,7 @@ interface TimetrackProps {
     entries: TimeEntry[];
 }
 
-export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
+export const TimetrackWeekTable: React.FC<TimetrackProps> = ({ entries }) => {
     const deleteRef = React.useRef<HTMLDialogElement>(null);
     const editRef = React.useRef<HTMLDialogElement>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
@@ -48,6 +48,8 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
         })
     }
 
+    console.log(entries.length)
+
     return (
         <>
             {focusTimeEntry &&
@@ -65,8 +67,11 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                 <Table className={"bg-black w-full no-scrollbar rounded-b-none"}>
                     <TableHeader>
                         <TableRow className={cn("hover:bg-black", entries.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
-                        {header.map((header) => (
-                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key} onClick={() => handleHeaderClick(header.key)}>
+                            {header.map((header) => (
+                                <TableHead
+                                    className={"text-placeholder text-sm w-max min-w-28"}
+                                    key={header.key}
+                                    onClick={() => handleHeaderClick(header.key)}>
                                     <span className={"flex flex-row items-center"}>
                                         {header.label}
                                         {header.key === sort.key && (
@@ -84,11 +89,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                                       onContextMenu={(event) => handleContextMenu(event, entry)}
                             >
                                 <TableCell>
-                                    <div className={"flex flex-row items-center space-x-2"}>
-                                        {entry.project && <EntryProjectBadge title={entry.project.name}/>}
-                                        {entry.task && <EntryTitleBadge title={entry.task.name}/>}
-                                        <span>{entry.comment}</span>
-                                    </div>
+
                                 </TableCell>
                                 <TableCell>{entry.startDate + " - " + entry.endDate}</TableCell>
                                 <TableCell>{"differenz"}</TableCell>
