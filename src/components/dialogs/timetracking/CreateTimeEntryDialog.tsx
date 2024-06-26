@@ -26,15 +26,15 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     const [comment, setComment] = useState("");
     const [projectSelected, setProjectSelected] = useState<string | null>(null);
     const [taskSelected, setTaskSelected] = useState<string | null>(null);
-    const [day, setDay] = useState<Date>(new Date());
     const [timeFrom, setTimeFrom] = useState<string | null>(null);
     const [timeTo, setTimeTo] = useState<string | null>(null);
     const [valid, setValid] = useState<boolean>(false);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
+
     useEffect(() => {
         validateInput();
-    }, [comment, projectSelected, taskSelected, timeFrom, timeTo, datepickerRef.current]);
+    }, [comment, projectSelected, taskSelected, timeFrom, timeTo]);
 
     const getProjects = () => {
         const projects: string[] = [];
@@ -116,16 +116,8 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     const validateInput = () => {
         let timeFrom = timeFromRef.current?.getSelectedValue();
         let timeTo = timeToRef.current?.getSelectedValue();
-        let date = datepickerRef.current?.getSelectedValue();
-
-        console.log(timeFrom + " " + timeTo)
 
         if (comment.trim() === "" && !projectSelected && !taskSelected) {
-            setValid(false);
-            return;
-        }
-
-        if (date === null) {
             setValid(false);
             return;
         }
@@ -232,7 +224,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
                         <SearchSelect buttonTitle={"Project"} ref={projectRef}
-                                      icon={<BookCopy size={16}/>} size={"small"} className={"z-50"}>
+                                      icon={<BookCopy size={16}/>} size={"medium"} className={"z-50"}>
                             {!taskSelected && getProjects().map((project) => (
                                 <SearchSelectItem key={project} title={project} onClick={() => handleProjectChange(project)}></SearchSelectItem>
                             ))}
@@ -242,7 +234,7 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                         </SearchSelect>
 
                         <SearchSelect buttonTitle={"Task"} ref={taskRef}
-                                      icon={<ClipboardList size={16}/>} size={"small"} className={"z-50"}>
+                                      icon={<ClipboardList size={16}/>} size={"medium"} className={"z-50"}>
                             {!projectSelected && getAllTasks().map((task) => (
                                 <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
@@ -254,15 +246,15 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
                         <DatePicker text={"Select a date"} iconSize={16} ref={datepickerRef}
-                                    preSelectedValue={day} size={"medium"}/>
+                                    preSelectedValue={new Date()} size={"medium"} closeButton={false}/>
                         <SearchSelect buttonTitle={"From"} preSelectedValue={"09:00AM"} ref={timeFromRef}
-                                      icon={<Clock2 size={16}/>} size={"small"} className={"z-40"}>
+                                      icon={<Clock2 size={16}/>} size={"medium"} className={"z-40"}>
                             {times.map((time) => (
                                 <SearchSelectItem key={time} title={time} onClick={() => handleTimeFromChange(time)}></SearchSelectItem>
                             ))}
                         </SearchSelect>
                         <SearchSelect buttonTitle={"To"} preSelectedValue={"09:00AM"} ref={timeToRef}
-                                      icon={<Clock8 size={16}/>} size={"small"} className={"z-40"}>
+                                      icon={<Clock8 size={16}/>} size={"medium"} className={"z-40"}>
                             {times.map((time) => (
                                 <SearchSelectItem key={time} title={time} onClick={() => handleTimeToChange(time)}></SearchSelectItem>
                             ))}

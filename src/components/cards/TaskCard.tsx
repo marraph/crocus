@@ -16,7 +16,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ taskElement, className, ...p
     const router = useRouter();
 
     return (
-        <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-72 cursor-pointer hover:bg-dark overflow-hidden", className)}
+        <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-full cursor-pointer hover:bg-dark overflow-hidden", className)}
              onClick={() => router.push(`/tasks/${taskElement.id}`)} {...props}>
 
             <div className={cn("flex flex-col p-2 space-y-2", className)}>

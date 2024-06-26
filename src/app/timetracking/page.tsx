@@ -10,7 +10,6 @@ import {useUser} from "@/context/UserContext";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {TimetrackWeekTable} from "@/components/views/TimetrackWeekTable";
 
-
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const [day, setDay] = useState<Date>(new Date());
@@ -48,26 +47,26 @@ export default function Timetracking() {
                     <Button text={""} className={"h-8 w-10 p-0 pl-2"} onClick={() => handleDayAfter()}>
                         <ChevronRight/>
                     </Button>
-                    <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day} ref={datepickerRef}/>
+                    <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day} ref={datepickerRef} closeButton={false}/>
                     <SwitchButton firstTitle={"Day"} secondTitle={"Week"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>
                 </div>
                 <CreateTimeEntryDialog className={"justify-end"}/>
             </div>
 
-            <div className={"w-full h-full rounded-lg flex flex-col items-stretch mt-4"}>
+            <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>
                 {viewMode ?
                     <>
-                    <TimetrackTable entries={entries}/>
-                    <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
-                        <div className={"flex flex-row items-center space-x-2"}>
-                            <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
-                            <span className={"text-base text-white"}>{entries.length}</span>
+                        <TimetrackTable entries={entries}/>
+                        <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
+                            <div className={"flex flex-row items-center space-x-2"}>
+                                <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
+                                <span className={"text-base text-white"}>{entries.length}</span>
+                            </div>
+                            <div className={"flex flex-row items-center space-x-2"}>
+                                <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
+                                <span className={"text-base text-white"}>{sumDuration() + "h"}</span>
+                            </div>
                         </div>
-                        <div className={"flex flex-row items-center space-x-2"}>
-                            <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
-                            <span className={"text-base text-white"}>{sumDuration() + "h"}</span>
-                        </div>
-                    </div>
                     </>
                     :
                     <TimetrackWeekTable entries={entries}/>

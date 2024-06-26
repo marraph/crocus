@@ -7,8 +7,7 @@ import { Status } from "@/types/types";
 import { Circle } from "lucide-react";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-    title?: string;
-    color: string;
+    title: string;
 }
 
 export const StatusBadge: React.FC<Props> = ({ title, className, ...props }) => {
