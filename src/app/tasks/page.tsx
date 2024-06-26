@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
-import {TaskCardView} from "@/components/views/TaskCardView";
+import {KanbanView} from "@/components/views/KanbanView";
 import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
 import {LoaderCircle, OctagonAlert} from "lucide-react";
 import {useUser} from "@/context/UserContext";
@@ -91,7 +91,7 @@ export default function Tasks() {
             {viewMode ?
                 <TaskTable taskElements={taskElements}/>
                 :
-                <TaskCardView taskElements={taskElements}/>
+                <KanbanView taskElements={taskElements}/>
             }
 
         </div>

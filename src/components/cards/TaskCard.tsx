@@ -3,39 +3,30 @@ import React from "react";
 import {cn} from "@/utils/cn";
 import {useRouter} from "next/navigation";
 import {TopicBadge} from "@/components/badges/TopicBadge";
-import {StatusBadge} from "@/components/badges/StatusBadge";
 import {PriorityBadge} from "@/components/badges/PriorityBadge";
-import {BookCopy, Box, CalendarDays, Users} from "lucide-react";
+import {Box, CalendarDays, Users} from "lucide-react";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
+import { TaskElement } from "@/types/types";
 
 interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
-    _id: number;
-    title: string;
-    topic?: string;
-    priority?: string;
-    team?: string;
-    project?: string;
-    status?: string;
-    createdAt: string;
-    createdBy: string;
-    dueDate?: string;
+    taskElement: TaskElement;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, project, status, priority, className, createdAt, createdBy, dueDate, ...props }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ taskElement, className, ...props }) => {
     const router = useRouter();
 
     return (
         <div className={cn("bg-black rounded-lg border border-white border-opacity-20 flex flex-col w-72 cursor-pointer hover:bg-dark overflow-hidden", className)}
-             onClick={() => router.push(`/tasks/${_id}`)} {...props}>
+             onClick={() => router.push(`/tasks/${taskElement.id}`)} {...props}>
 
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
                 <div className={"flex flex-row justify-between space-x-2"}>
-                    <span className={cn("text-lg", className)}>{title}</span>
-                    <PriorityBadge priority={priority}/>
+                    <span className={cn("text-lg", className)}>{taskElement.name}</span>
+                    <PriorityBadge priority={taskElement.priority}/>
                 </div>
                 <div className={"flex flex-row space-x-2"}>
-                    <StatusBadge title={status} color={"warning"}/>
-                    <TopicBadge title={topic} color={"error"}/>
+                    <TopicBadge title={taskElement.topic?.title} color={"error"}/>
+                    <ProfileBadge name={taskElement.createdBy.name}/>
                 </div>
             </div>
 
@@ -44,21 +35,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({ _id, title, topic, team, pro
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
                 <div className={"flex flex-row items-center space-x-2 text-gray"}>
                     <Users size={16}/>
-                    <span className={cn("text-sm", className)}>{team}</span>
+                    <span className={cn("text-sm", className)}>{taskElement.team?.name}</span>
                 </div>
                 <div className={"flex flex-row items-center space-x-2 text-gray"}>
                     <Box size={16}/>
-                    <span className={cn("text-sm", className)}>{project}</span>
+                    <span className={cn("text-sm", className)}>{taskElement.project?.name}</span>
                 </div>
                 <div className={"flex flex-row items-center space-x-2 text-gray"}>
                     <CalendarDays size={16}/>
-                    <span className={cn("text-sm", className)}>{dueDate}</span>
+                    <span className={cn("text-sm", className)}>{taskElement.deadline?.toString()}</span>
                 </div>
-            </div>
-
-            <Seperator/>
-            <div className={"m-2 mt-1"}>
-                <ProfileBadge name={createdBy}/>
             </div>
         </div>
     );

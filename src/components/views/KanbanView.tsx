@@ -1,22 +1,24 @@
-import {TaskCard} from "@/components/cards/TaskCard";
 import React, {useEffect, useState} from "react";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
-import {formatDate} from "@/utils/format";
 import {TaskElement} from "@/types/types";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
+import {KanbanCard} from "@/components/cards/KanbanCard";
 
 interface TaskProps {
     taskElements: TaskElement[];
 }
 
-export const TaskCardView: React.FC<TaskProps> = ({ taskElements }) => {
+export const KanbanView: React.FC<TaskProps> = ({ taskElements }) => {
     const deleteRef = React.useRef<HTMLDialogElement>(null);
     const editRef = React.useRef<HTMLDialogElement>(null);
     const closeRef = React.useRef<HTMLDialogElement>(null);
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
+
+    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
+
 
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
@@ -44,20 +46,9 @@ export const TaskCardView: React.FC<TaskProps> = ({ taskElements }) => {
                 <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} editRef={editRef} closeRef={closeRef}/>
             }
 
-            <div className={"grid grid-cols-3 gap-9 pt-4"}>
-                {taskElements.map((taskElement, index) => (
-                    <TaskCard key={index}
-                              _id={taskElement.id}
-                              title={taskElement.name}
-                              topic={taskElement.topic?.title}
-                              priority={taskElement.priority?.toString()}
-                              team={taskElement.team?.name}
-                              project={taskElement.project?.name}
-                              status={taskElement.status?.toString()}
-                              createdAt={formatDate(taskElement.createdDate.toString())}
-                              createdBy={taskElement.createdBy.name}
-                              dueDate={formatDate(taskElement.deadline?.toString())}
-                              onContextMenu={(event) => handleContextMenu(event, taskElement)}/>
+            <div className={"grid grid-cols-5 gap-9 pt-4"}>
+                {status.map((status) => (
+                    <KanbanCard key={status} taskElements={taskElements} status={status}/>
                 ))}
             </div>
         </>

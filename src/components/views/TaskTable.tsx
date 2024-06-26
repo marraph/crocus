@@ -155,7 +155,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 <TableCell className={"text-white"}>{taskElement.name}</TableCell>
                                 <TableCell>{taskElement.project?.name}</TableCell>
                                 <TableCell>
-                                    <PriorityBadge priority={taskElement.priority?.toString()}/>
+                                    <PriorityBadge priority={taskElement.priority}/>
                                 </TableCell>
                                 <TableCell>
                                     <TopicBadge title={taskElement.topic?.title} color={"error"}/>
