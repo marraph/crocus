@@ -45,13 +45,14 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ taskElements, status, cl
                 <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} editRef={editRef} closeRef={closeRef}/>
             }
 
-            <div className={"bg-badgegray border border-white border-opacity-20 rounded-lg flex flex-col justify-center p-4 space-y-4"}>
+            <div className={"overflow-hidden bg-badgegray border border-white border-opacity-20 rounded-lg flex flex-col justify-center p-4 space-y-4"}>
                 <div>
                     <StatusBadge title={status}/>
                 </div>
-                {taskElements.map((task, index) => (
-                    task.status === status &&
-                        <TaskCard key={index} taskElement={task} onContextMenu={(e) => handleContextMenu(e, task)}/>
+                {taskElements.map((task) => (
+                    <TaskCard key={task.id}
+                              taskElement={task}
+                              onContextMenu={(e) => handleContextMenu(e, task)}/>
                 ))}
             </div>
         </>

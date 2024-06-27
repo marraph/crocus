@@ -43,6 +43,11 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
         setContextMenu({ id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true });
     };
 
+    const handleOnClick = (timeEntry: TimeEntry) => {
+        setFocusTimeEntry(timeEntry);
+        editRef.current?.show();
+    }
+
     function handleHeaderClick(headerKey: string) {
         setSort({
             key: headerKey,
@@ -84,6 +89,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                             <TableRow key={index}
                                       className={index === entries.length - 1 ? " border-b border-b-white" : ""}
                                       onContextMenu={(event) => handleContextMenu(event, entry)}
+                                      onClick={() => handleOnClick(entry)}
                             >
                                 <TableCell>
                                     <div className={"flex flex-row items-center space-x-2"}>

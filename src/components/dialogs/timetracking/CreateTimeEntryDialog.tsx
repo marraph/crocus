@@ -33,8 +33,10 @@ export const CreateTimeEntryDialog = React.forwardRef<DialogRef, React.DialogHTM
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     useEffect(() => {
-        validateInput();
-    }, [comment, projectSelected, taskSelected, timeFrom, timeTo]);
+        if (user && dialogRef.current && commentRef.current && taskRef.current && projectRef.current && datepickerRef.current && timeFromRef.current && timeToRef.current) {
+            validateInput();
+        }
+    }, [user, comment, projectSelected, taskSelected, timeFrom, timeTo]);
 
     if (!dialogRef) return null;
     if (!user) return null;

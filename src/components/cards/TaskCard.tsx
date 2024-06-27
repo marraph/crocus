@@ -20,13 +20,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ taskElement, className, ...p
              onClick={() => router.push(`/tasks/${taskElement.id}`)} {...props}>
 
             <div className={cn("flex flex-col p-2 space-y-2", className)}>
-                <div className={"flex flex-row justify-between space-x-2"}>
-                    <span className={cn("text-lg", className)}>{taskElement.name}</span>
-                    <PriorityBadge priority={taskElement.priority}/>
-                </div>
+                <span className={cn("text-md", className)}>{taskElement.name}</span>
                 <div className={"flex flex-row space-x-2"}>
                     <TopicBadge title={taskElement.topic?.title} color={"error"}/>
                     <ProfileBadge name={taskElement.createdBy.name}/>
+                    <PriorityBadge priority={taskElement.priority}/>
                 </div>
             </div>
 

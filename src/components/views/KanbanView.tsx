@@ -8,19 +8,20 @@ interface TaskProps {
 
 export const KanbanView: React.FC<TaskProps> = ({ taskElements }) => {
 
-    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
+    const status = ["PENDING", "PLANING", "STARTED", "TESTED"];
 
     function isStatus(value: string): value is Status {
-        return ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"].includes(value);
+        return ["PENDING", "PLANING", "STARTED", "TESTED"].includes(value);
     }
 
     return (
         <>
             <div className={"grid grid-cols-4 gap-9 pt-4"}>
-                {status.map((status) => (
-                    isStatus(status) &&
-                        <KanbanCard key={status} taskElements={taskElements} status={status}/>
-                ))}
+                {status.map((status, index) => isStatus(status) &&
+                    <KanbanCard key={index}
+                                taskElements={taskElements.filter(task => task.status === status)}
+                                status={status}/>
+                )}
             </div>
         </>
     );

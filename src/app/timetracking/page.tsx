@@ -122,13 +122,15 @@ export default function Timetracking() {
     }
 
     const handleDayBefore = () => {
-        setDay(new Date(day.setDate(day.getDate() - 1)));
-        datepickerRef.current?.setValue(day);
+        let newDate = new Date(day.setDate(day.getDate() - 1));
+        setDay(newDate);
+        datepickerRef.current?.setValue(newDate);
     }
 
     const handleDayAfter = () => {
-        setDay(new Date(day.setDate(day.getDate() + 1)));
-        datepickerRef.current?.setValue(day);
+        let newDate = new Date(day.setDate(day.getDate() + 1));
+        setDay(newDate);
+        datepickerRef.current?.setValue(newDate);
     }
 
     return (
