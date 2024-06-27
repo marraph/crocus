@@ -7,13 +7,14 @@ import {AlarmClockPlus, BookCopy, ClipboardList, Clock2, Clock8} from "lucide-re
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import { useUser } from "@/context/UserContext";
-import {Project, Task, Team} from "@/types/types";
+import {Project, Task} from "@/types/types";
 import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
+import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 
-export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
+export const CreateTimeEntryDialog = React.forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
     const alertRef = useRef<AlertRef>(null);
     const commentRef = useRef<TextareaRef>(null);
@@ -31,60 +32,12 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
     const [valid, setValid] = useState<boolean>(false);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-
     useEffect(() => {
         validateInput();
     }, [comment, projectSelected, taskSelected, timeFrom, timeTo]);
 
-    const getProjects = () => {
-        const projects: string[] = [];
-        user?.teams.forEach((team: Team) => {
-            team.projects.forEach((project: Project) => {
-                projects.push(project.name);
-            });
-        });
-        return projects;
-    }
-
-    const getProject = (task: string) => {
-        let project: string = "";
-        user?.teams.forEach((team: Team) => {
-            team.projects.forEach((proj: Project) => {
-                proj.tasks.forEach((tsk: Task) => {
-                    if (tsk.name === task) {
-                        project = proj.name;
-                    }
-                });
-            });
-        });
-        return project;
-    }
-
-    const getAllTasks = () => {
-        const tasks: string[] = [];
-        user?.teams.forEach((team: Team) => {
-            team.projects.forEach((project: Project) => {
-                project.tasks.forEach((task: Task) => {
-                    tasks.push(task.name);
-                });
-            });
-        });
-        return tasks;
-    }
-
-    const getTasks = (projectToFind: string) => {
-        const tasks: string[] = [];
-        user?.teams.forEach((team: Team) => {
-            team.projects.forEach((project: Project) => {
-                if (project.name === projectToFind) {
-                    project.tasks.forEach((task: Task) => {
-                        tasks.push(task.name);
-                    });
-                }
-            });
-        });
-        return tasks;
-    }
+    if (!dialogRef) return null;
+    if (!user) return null;
 
     const times = [
         "12:00AM", "12:15AM", "12:30AM", "12:45AM",
@@ -112,41 +65,6 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
         "10:00PM", "10:15PM", "10:30PM", "10:45PM",
         "11:00PM", "11:15PM", "11:30PM", "11:45PM"
     ];
-
-    const validateInput = () => {
-        let timeFrom = timeFromRef.current?.getSelectedValue();
-        let timeTo = timeToRef.current?.getSelectedValue();
-
-        if (comment.trim() === "" && !projectSelected && !taskSelected) {
-            setValid(false);
-            return;
-        }
-
-        if (!times.includes(timeFrom as string) || !times.includes(timeTo as string) ||
-            times.indexOf(timeFrom as string) >= times.indexOf(timeTo as string)) {
-            setValid(false);
-            return;
-        }
-        setValid(true);
-    }
-
-    const createTimeEntry = () => {
-        if (switchRef.current?.getValue() === false) {
-            dialogRef.current?.close();
-        }
-        setComment("");
-        setProjectSelected(null);
-        setTaskSelected(null);
-        setTimeFrom("");
-        setTimeTo("");
-        commentRef.current?.reset();
-        taskRef.current?.reset();
-        projectRef.current?.reset();
-        datepickerRef.current?.setValue(datepickerRef.current.getSelectedValue());
-        timeFromRef.current?.reset();
-        timeToRef.current?.reset();
-        alertRef.current?.show();
-    }
 
     const handleProjectChange = (project: string) => {
         if (project === projectSelected){
@@ -189,13 +107,48 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
         }
     }
 
-    const handleCloseClick = () => {
-        dialogRef.current?.close();
+    const validateInput = () => {
+        let timeFrom = timeFromRef.current?.getSelectedValue();
+        let timeTo = timeToRef.current?.getSelectedValue();
+
+        if (comment.trim() === "" && !projectSelected && !taskSelected) {
+            setValid(false);
+            return;
+        }
+
+        if (!times.includes(timeFrom as string) || !times.includes(timeTo as string) ||
+            times.indexOf(timeFrom as string) >= times.indexOf(timeTo as string)) {
+            setValid(false);
+            return;
+        }
+        setValid(true);
+    }
+
+    const createTimeEntry = () => {
+        if (switchRef.current?.getValue() === false) {
+            dialogRef.current?.close();
+        }
         setComment("");
         setProjectSelected(null);
         setTaskSelected(null);
         setTimeFrom("");
         setTimeTo("");
+        commentRef.current?.reset();
+        taskRef.current?.reset();
+        projectRef.current?.reset();
+        datepickerRef.current?.setValue(datepickerRef.current.getSelectedValue());
+        timeFromRef.current?.reset();
+        timeToRef.current?.reset();
+        alertRef.current?.show();
+    }
+
+    const handleCloseClick = () => {
+        setComment("");
+        setProjectSelected(null);
+        setTaskSelected(null);
+        setTimeFrom("");
+        setTimeTo("");
+        dialogRef.current?.close();
         commentRef.current?.reset();
         taskRef.current?.reset();
         projectRef.current?.reset();
@@ -225,20 +178,21 @@ export const CreateTimeEntryDialog = React.forwardRef<HTMLDialogElement, React.D
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
                         <SearchSelect buttonTitle={"Project"} ref={projectRef}
                                       icon={<BookCopy size={16}/>} size={"medium"} className={"z-50"}>
-                            {!taskSelected && getProjects().map((project) => (
+                            {!taskSelected && getAllProjects(user).map((project) => (
                                 <SearchSelectItem key={project} title={project} onClick={() => handleProjectChange(project)}></SearchSelectItem>
                             ))}
-                            {taskSelected && getProject(taskSelected) &&
-                                <SearchSelectItem title={getProject(taskSelected)} onClick={() => handleProjectChange(getProject(taskSelected))}></SearchSelectItem>
+                            {taskSelected && getProjectFromTask(user, taskSelected) &&
+                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)}
+                                                  onClick={() => handleProjectChange(getProjectFromTask(user, taskSelected))}></SearchSelectItem>
                             }
                         </SearchSelect>
 
                         <SearchSelect buttonTitle={"Task"} ref={taskRef}
                                       icon={<ClipboardList size={16}/>} size={"medium"} className={"z-50"}>
-                            {!projectSelected && getAllTasks().map((task) => (
+                            {!projectSelected && getAllTasks(user).map((task) => (
                                 <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
-                            {projectSelected && getTasks(projectSelected).map((task) => (
+                            {projectSelected && getTasksFromProject(user, projectSelected).map((task) => (
                                 <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
                         </SearchSelect>

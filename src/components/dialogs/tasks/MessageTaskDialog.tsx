@@ -1,8 +1,7 @@
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {forwardRef, useRef} from "react";
 import {MessageSquare, MessageSquarePlus, Send} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
-import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";

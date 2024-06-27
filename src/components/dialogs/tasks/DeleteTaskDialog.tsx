@@ -16,17 +16,19 @@ import {
 import {Task, TaskElement} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {deleteTask, updateTask} from "@/service/hooks/taskHook";
+import {mutateRef} from "@/utils/mutateRef";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
     taskElement: TaskElement;
 }
 
-export const DeleteTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
-    const dialogRef = useRef<DialogRef>(null);
+export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
+    if (!dialogRef) return null;
     if (!user) return null;
 
     const deleteTheTask = () => {

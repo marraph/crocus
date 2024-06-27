@@ -19,13 +19,14 @@ import {
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Priority, Project, Status, Task, Team} from "@/types/types";
+import {PreviewUser, Priority, Project, Status, Task, TaskCreation, Team} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {getProject, getProjects, getTeams, getTopicItem, getTopics} from "@/utils/getTypes";
 
 
-export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
+export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
     const alertRef = useRef<AlertRef>(null);
     const teamRef = useRef<ComboboxRef>(null);
@@ -49,61 +50,16 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
 
     if (data === undefined) return null;
 
-    const getTeams = () => {
-        const teams: string[] = [];
-        data?.teams.forEach((team: Team) => {
-            teams.push(team.name);
-        });
-        return teams;
-    }
-
-    const getProjects = (teamToFind: string) => {
-        const specificTeam = data?.teams.find((team: Team) => team.name === teamToFind);
-        const projects: string[] = [];
-        specificTeam?.projects.forEach((project: Project) => {
-            projects.push(project.name);
-        });
-        return projects;
-    }
-
-    const getTopics = () => {
-        const topics: string[] = [];
-        data?.teams.forEach(team => {
-            team.projects.forEach(project => {
-                project.tasks.forEach(task => {
-                    if (task.topic && !topics.includes(task.topic.title)) {
-                        topics.push(task.topic.title);
-                    }
-                });
-            });
-        });
-        return topics;
-    }
-
-    const getTopicItem = (topic: string) => {
-        for (const team of data?.teams ?? []) {
-            for (const project of team.projects) {
-                for (const task of project.tasks) {
-                    if (task.topic?.title === topic) {
-                        return task.topic;
-                    }
-                }
-            }
-        }
-        return undefined;
-    }
-
     const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
-
     const handleCreateClick = () => {
-        const task: Task = {
+        const task: TaskCreation = {
             id: 0,
             name: titleValue,
             description: descriptionValue,
-            topic: getTopicItem(topicRef.current?.getValue() as string) ?? null,
+            topic: getTopicItem(data, topicRef.current?.getValue() as string) ?? null,
             status: statusRef.current?.getValue() as Status ?? null,
             priority: priorityRef.current?.getValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
@@ -113,8 +69,8 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
             createdDate: new Date(),
             lastModifiedBy: {id: data.id, name: data.name, email: data.email},
             lastModifiedDate: new Date(),
+            project: getProject(data, projectRef.current?.getValue()) ?? null
         }
-        //add to team & project
         const {data:Task, isLoading:taskLoading, error:taskError} = createTask(task);
 
         if (switchRef.current?.getValue() === false) {
@@ -155,8 +111,6 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
     }
 
     const validateInput = () => {
-        console.log(parseFloat(durationValue));
-
         if (durationValue.trim() !== "" && isNaN(parseFloat(durationValue))) {
             setValid(false);
             return;
@@ -207,23 +161,23 @@ export const CreateTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAt
 
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"} size={"small"} icon={<Users size={12} className={"mr-1"}/>} ref={teamRef}>
-                                {getTeams().map((team) => (
+                                {getTeams(data).map((team) => (
                                     <ComboboxItem title={team} key={team} size={"small"} onClick={() => setTeamSelected({isSelected: true, team: team})}/>
                                 ))}
                             </Combobox>
                             {teamSelected.isSelected &&
                                 <Combobox buttonTitle={"Project"} size={"small"} icon={<BookCopy size={12} className={"mr-1"}/>} ref={projectRef}>
-                                    {getProjects(teamSelected.team).map((project) => (
+                                    {getProjects(data, teamSelected.team).map((project) => (
                                         <ComboboxItem title={project} key={project} size={"small"}/>
                                     ))}
                                 </Combobox>
                             }
-                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef}/>
+                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef} closeButton={true}/>
                         </div>
 
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Topic"} size={"small"} icon={<Tag size={12} className={"mr-1"}/>} ref={topicRef}>
-                                {getTopics().map((topic) => (
+                                {getTopics(data).map((topic) => (
                                     <ComboboxItem title={topic} key={topic} size={"small"}/>
                                 ))}
                             </Combobox>

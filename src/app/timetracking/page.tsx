@@ -7,21 +7,115 @@ import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/Da
 import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
-import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
-import {TimetrackWeekTable} from "@/components/views/TimetrackWeekTable";
+import {TimeEntry} from "@/types/types";
+
+const timeEntry: TimeEntry = {
+    id: 1,
+    task: {
+        id: 1,
+        name: "Implement new feature",
+        description: "Develop and implement the new feature for the application",
+        topic: {
+            id: 1,
+            title: "Development",
+            hexCode: "#FF5733",
+            createdBy: {
+                id: 1,
+                name: "Jane Doe",
+                email: "jane.doe@example.com"
+            },
+            createdDate: new Date('2024-01-01T10:00:00Z'),
+            lastModifiedBy: {
+                id: 1,
+                name: "Jane Doe",
+                email: "jane.doe@example.com"
+            },
+            lastModifiedDate: new Date('2024-01-02T10:00:00Z')
+        },
+        isArchived: false,
+        duration: null,
+        deadline: new Date('2024-07-01T10:00:00Z'),
+        status: "STARTED",
+        priority: "HIGH",
+        createdBy: {
+            id: 1,
+            name: "Jane Doe",
+            email: "jane.doe@example.com"
+        },
+        createdDate: new Date('2024-01-01T10:00:00Z'),
+        lastModifiedBy: {
+            id: 1,
+            name: "Jane Doe",
+            email: "jane.doe@example.com"
+        },
+        lastModifiedDate: new Date('2024-01-02T10:00:00Z')
+    },
+    project: {
+        id: 1,
+        name: "Project Alpha",
+        description: "A project to develop the new feature",
+        priority: "HIGH",
+        isArchived: false,
+        tasks: [],
+        createdBy: {
+            id: 1,
+            name: "Jane Doe",
+            email: "jane.doe@example.com"
+        },
+        createdDate: new Date('2024-01-01T10:00:00Z'),
+        lastModifiedBy: {
+            id: 1,
+            name: "Jane Doe",
+            email: "jane.doe@example.com"
+        },
+        lastModifiedDate: new Date('2024-01-02T10:00:00Z')
+    },
+    comment: "Worked on initial setup and database integration.",
+    startDate: new Date('2024-06-01T08:00:00Z'),
+    endDate: new Date('2024-06-01T12:00:00Z'),
+    dailyEntry: {
+        id: 1,
+        startDate: new Date('2024-06-01T08:00:00Z'),
+        endDate: new Date('2024-06-01T17:00:00Z'),
+        createdBy: {
+            id: 1,
+            name: "Jane Doe",
+            email: "jane.doe@example.com"
+        },
+        createdDate: new Date('2024-01-01T10:00:00Z'),
+        lastModifiedBy: {
+            id: 1,
+            name: "Jane Doe",
+            email: "jane.doe@example.com"
+        },
+        lastModifiedDate: new Date('2024-01-02T10:00:00Z')
+    },
+    createdBy: {
+        id: 1,
+        name: "Jane Doe",
+        email: "jane.doe@example.com"
+    },
+    createdDate: new Date('2024-01-01T10:00:00Z'),
+    lastModifiedBy: {
+        id: 1,
+        name: "Jane Doe",
+        email: "jane.doe@example.com"
+    },
+    lastModifiedDate: new Date('2024-01-02T10:00:00Z')
+}
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const [day, setDay] = useState<Date>(new Date());
-    const [viewMode, setViewMode] = useState(true);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const entries = [] as any;
+    const entries: TimeEntry[] = [timeEntry];
 
     const sumDuration = () => {
         let totalDuration = 0.0;
 
         for (const entry of entries) {
-            const hours = parseFloat(entry.duration.replace('h', ''));
+            const duration = entry.endDate.getHours() - entry.startDate.getHours();
+            const hours = parseFloat(duration.toString());
             totalDuration += hours;
         }
         return totalDuration;
@@ -48,29 +142,24 @@ export default function Timetracking() {
                         <ChevronRight/>
                     </Button>
                     <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day} ref={datepickerRef} closeButton={false}/>
-                    <SwitchButton firstTitle={"Day"} secondTitle={"Week"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>
                 </div>
                 <CreateTimeEntryDialog className={"justify-end"}/>
             </div>
 
             <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>
-                {viewMode ?
-                    <>
-                        <TimetrackTable entries={entries}/>
-                        <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
-                            <div className={"flex flex-row items-center space-x-2"}>
-                                <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
-                                <span className={"text-base text-white"}>{entries.length}</span>
-                            </div>
-                            <div className={"flex flex-row items-center space-x-2"}>
-                                <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
-                                <span className={"text-base text-white"}>{sumDuration() + "h"}</span>
-                            </div>
+                <>
+                    <TimetrackTable entries={entries}/>
+                    <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
+                        <div className={"flex flex-row items-center space-x-2"}>
+                            <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
+                            <span className={"text-base text-white"}>{entries.length}</span>
                         </div>
-                    </>
-                    :
-                    <TimetrackWeekTable entries={entries}/>
-                }
+                        <div className={"flex flex-row items-center space-x-2"}>
+                            <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
+                            <span className={"text-base text-white"}>{sumDuration() + "h"}</span>
+                        </div>
+                    </div>
+                </>
             </div>
 
         </div>

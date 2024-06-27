@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {useRouter} from "next/navigation";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
@@ -13,6 +13,7 @@ import {Status, TaskElement} from "@/types/types";
 import {formatDate} from "@/utils/format";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {cn} from "@/utils/cn";
+import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 const path = "/image.png";
 
@@ -35,9 +36,9 @@ interface TaskProps {
 }
 
 export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
-    const deleteRef = React.useRef<HTMLDialogElement>(null);
-    const editRef = React.useRef<HTMLDialogElement>(null);
-    const closeRef = React.useRef<HTMLDialogElement>(null);
+    const deleteRef = useRef<DialogRef>(null);
+    const editRef = useRef<DialogRef>(null);
+    const closeRef = useRef<DialogRef>(null);
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });

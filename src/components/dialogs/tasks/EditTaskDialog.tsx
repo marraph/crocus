@@ -21,14 +21,16 @@ import {Priority, Project, Status, Task, TaskElement, Team} from "@/types/types"
 import {useUser} from "@/context/UserContext";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
+import {mutateRef} from "@/utils/mutateRef";
+import {getProjects, getTeams, getTopicItem, getTopics} from "@/utils/getTypes";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
     taskElement: TaskElement;
 }
 
-export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
-    const dialogRef = useRef<DialogRef>(null);
+export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
     const titleRef = useRef<InputRef>(null);
     const descriptionRef = useRef<TextareaRef>(null);
@@ -50,6 +52,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
         validateInput();
     }, [titleValue]);
 
+    if (!dialogRef) return null;
     if (!data) return null;
 
     const editTask = () => {
@@ -57,7 +60,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
             id: taskElement.id,
             name: titleValue,
             description: descriptionValue ?? null,
-            topic: getTopicItem(topicRef.current?.getValue() as string) ?? null,
+            topic: getTopicItem(data, topicRef.current?.getValue() as string) ?? null,
             status: statusRef.current?.getValue() as Status ?? null,
             priority: priorityRef.current?.getValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
@@ -70,43 +73,6 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
         };
         dialogRef.current?.close();
         alertRef.current?.show();
-    };
-
-    const getTeams = () => {
-        return data.teams.map((team: Team) => team.name);
-    };
-
-    const getProjects = (teamToFind: string | null) => {
-        if (!teamToFind) return [];
-        const specificTeam = data?.teams.find((team: Team) => team.name === teamToFind);
-        return specificTeam ? specificTeam.projects.map((project: Project) => project.name) : [];
-    };
-
-    const getTopics = () => {
-        const topics: string[] = [];
-        data?.teams.forEach((team) => {
-            team.projects.forEach((project) => {
-                project.tasks.forEach((task) => {
-                    if (task.topic && !topics.includes(task.topic.title)) {
-                        topics.push(task.topic.title);
-                    }
-                });
-            });
-        });
-        return topics;
-    };
-
-    const getTopicItem = (topic: string) => {
-        for (const team of data.teams ?? []) {
-            for (const project of team.projects) {
-                for (const task of project.tasks) {
-                    if (task.topic?.title === topic) {
-                        return task.topic;
-                    }
-                }
-            }
-        }
-        return undefined;
     };
 
     const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
@@ -210,7 +176,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
                             <span className={"text-gray text-xs"}>Team</span>
                             <Combobox buttonTitle={"Team"} icon={<Users size={16} className={"mr-2"}/>} ref={teamRef}
                                       preSelectedValue={taskElement.team?.name} onChange={() => handleTeamChange}>
-                                {getTeams().map((team) => (
+                                {getTeams(data).map((team) => (
                                     <ComboboxItem key={team} title={team} onClick={() => handleTeamChange(team)}/>
                                 ))}
                             </Combobox>
@@ -222,7 +188,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
                                     <Combobox buttonTitle={"Project"} icon={<BookCopy size={16} className={"mr-2"}/>}
                                               ref={projectRef}
                                               preSelectedValue={taskElement.project?.name}>
-                                        {getProjects(selectedTeam).map((project) => (
+                                        {getProjects(data, selectedTeam).map((project) => (
                                             <ComboboxItem key={project} title={project}/>
                                         ))}
                                     </Combobox>
@@ -232,7 +198,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Deadline</span>
                             <DatePicker size={"medium"} iconSize={16} text={"Deadline"} ref={datePickerRef}
-                                        preSelectedValue={taskElement.deadline}/>
+                                        preSelectedValue={taskElement.deadline} closeButton={true}/>
                         </div>
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 py-4"}>
@@ -240,7 +206,7 @@ export const EditTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ task
                             <span className={"text-gray text-xs"}>Topic</span>
                             <Combobox buttonTitle={"Topic"} icon={<Tag size={16} className={"mr-2"}/>} ref={topicRef}
                                       preSelectedValue={taskElement.topic?.title}>
-                                {getTopics().map((topic) => (
+                                {getTopics(data).map((topic) => (
                                     <ComboboxItem key={topic} title={topic}/>
                                 ))}
                             </Combobox>

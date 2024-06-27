@@ -5,14 +5,15 @@ import {CheckCheck, ExternalLink, Pencil, Trash2} from "lucide-react";
 import React, {forwardRef} from "react";
 import {useRouter} from "next/navigation";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 interface TaskContextProps extends React.HTMLAttributes<HTMLDivElement> {
     taskId: number;
     x: number;
     y: number;
-    deleteRef?: React.RefObject<HTMLDialogElement>;
-    editRef?: React.RefObject<HTMLDialogElement>;
-    closeRef?: React.RefObject<HTMLDialogElement>;
+    deleteRef: React.RefObject<DialogRef>;
+    editRef: React.RefObject<DialogRef>;
+    closeRef: React.RefObject<DialogRef>;
 }
 
 export const TaskContextMenu = forwardRef<HTMLDivElement, TaskContextProps>(({ deleteRef, editRef, closeRef, taskId, x, y, className, ...props }, ref) => {
@@ -23,11 +24,11 @@ export const TaskContextMenu = forwardRef<HTMLDivElement, TaskContextProps>(({ d
             <ContextMenuItem title={"Open"} className={"mb-1"} onClick={() => router.push(`/tasks/${taskId}`)}
                              icon={<ExternalLink size={16}/>}/>
             <Seperator/>
-            <ContextMenuItem title={"Edit"} className={"mt-1"} onClick={() => editRef?.current?.showModal()}
+            <ContextMenuItem title={"Edit"} className={"mt-1"} onClick={() => editRef.current?.show()}
                              icon={<Pencil size={16}/>}/>
-            <ContextMenuItem title={"Close"} onClick={() => closeRef?.current?.showModal()}
+            <ContextMenuItem title={"Close"} onClick={() => closeRef.current?.show()}
                              icon={<CheckCheck size={16}/>}/>
-            <ContextMenuItem title={"Delete"} onClick={() => deleteRef?.current?.showModal()}
+            <ContextMenuItem title={"Delete"} onClick={() => {deleteRef.current?.show(); console.log(deleteRef.current)}}
                              className={"text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}
                              icon={<Trash2 size={16}/>}/>
         </ContextMenu>

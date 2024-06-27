@@ -19,17 +19,19 @@ import {updateTask} from "@/service/hooks/taskHook";
 import {PreviewUser, Priority, Status, Task, TaskElement, Topic} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {getDiffieHellman} from "node:crypto";
+import {mutateRef} from "@/utils/mutateRef";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     buttonTrigger: boolean;
     taskElement: TaskElement;
 }
 
-export const CloseTaskDialog = forwardRef<HTMLDialogElement, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
-    const dialogRef = useRef<DialogRef>(null);
+export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
+    if (!dialogRef) return null;
     if (!user) return null;
 
     const closeTask = () => {

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Caret} from "@/components/badges/Caret";
 import {EntryProjectBadge} from "@/components/badges/EntryProjectBadge";
@@ -8,6 +8,8 @@ import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMe
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 import {cn} from "@/utils/cn";
+import {formatTime} from "@/utils/format";
+import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 const header = [
     { key: "entry", label: "Entry" },
@@ -23,8 +25,8 @@ interface TimetrackProps {
 }
 
 export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
-    const deleteRef = React.useRef<HTMLDialogElement>(null);
-    const editRef = React.useRef<HTMLDialogElement>(null);
+    const deleteRef = useRef<DialogRef>(null);
+    const editRef = useRef<DialogRef>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTimeEntry, setFocusTimeEntry] = useState<TimeEntry | null>(null);
@@ -90,7 +92,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                                         <span>{entry.comment}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell>{entry.startDate + " - " + entry.endDate}</TableCell>
+                                <TableCell>{formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}</TableCell>
                                 <TableCell>{"differenz"}</TableCell>
                             </TableRow>
                         ))}

@@ -93,6 +93,24 @@ type TaskElement = {
     project: Project | null
 }
 
+
+type TaskCreation = {
+    id: number
+    name: string
+    description: string | null
+    topic: Topic | null
+    isArchived: boolean
+    duration: number | null
+    deadline: Date | null
+    status: Status | null
+    priority: Priority | null
+    createdBy: PreviewUser
+    createdDate: Date
+    lastModifiedBy: PreviewUser
+    lastModifiedDate: Date
+    project: Project | null
+}
+
 type TimeEntry = {
     id: number,
     task: Task | null,
@@ -143,6 +161,7 @@ export type {
     Topic,
     Task,
     TaskElement,
+    TaskCreation,
     TimeEntry,
     DailyEntry,
     Absence,
