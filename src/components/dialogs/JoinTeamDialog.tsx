@@ -16,9 +16,11 @@ import {useUser} from "@/context/UserContext";
 import {deleteTask} from "@/service/hooks/taskHook";
 import {cn} from "@/utils/cn";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {Trash2} from "lucide-react";
+import {Trash2, Users} from "lucide-react";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {Simulate} from "react-dom/test-utils";
+import input = Simulate.input;
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {}
 
@@ -47,6 +49,18 @@ export const JoinTeamDialog = forwardRef<DialogRef, DialogProps>(({ className, .
         setValid(true);
     }
 
+    const close = () => {
+        dialogRef.current?.close();
+        inputRef.current?.reset();
+        setValid(false);
+        setLink("");
+    }
+
+    const joinTeam = () => {
+        alertRef.current?.show();
+        close();
+    }
+
     return (
         <>
             <div className={cn("flex items-center justify-center")}>
@@ -66,18 +80,18 @@ export const JoinTeamDialog = forwardRef<DialogRef, DialogProps>(({ className, .
                         <Seperator/>
 
                         <div className={cn("flex flex-row space-x-2 justify-end px-4 pb-2")}>
-                            <Button text={"Cancel"} className={cn("h-8")} onClick={() => dialogRef.current?.close()}/>
-                            <Button text={"Join"} theme={"white"} className={cn("h-8")} disabled={!valid}/>
+                            <Button text={"Cancel"} className={cn("h-8")} onClick={() => close}/>
+                            <Button text={"Join"} theme={"white"} className={cn("h-8")}
+                                    onClick={() => joinTeam} disabled={!valid}/>
                         </div>
                     </div>
                 </Dialog>
             </div>
 
             <Alert duration={3000} ref={alertRef}>
-                <AlertIcon icon={<Trash2 color="#F55050" />}/>
+                <AlertIcon icon={<Users color="#F55050" />}/>
                 <AlertContent>
-                    <AlertTitle title={"Entry deleted successfully!"}></AlertTitle>
-                    <AlertDescription description={"You can no longer interact with this entry."}></AlertDescription>
+                    <AlertTitle title={"Joined Team successfully!"}></AlertTitle>
                 </AlertContent>
             </Alert>
         </>
