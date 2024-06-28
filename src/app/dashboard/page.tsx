@@ -1,13 +1,25 @@
 "use client";
 
 import React from "react";
-import {SunMedium} from "lucide-react";
+import {Bell, ExternalLink, Moon, SunMedium} from "lucide-react";
 import {useUser} from "@/context/UserContext";
+import {getDashboardTasks} from "@/utils/getTypes";
+import {PriorityBadge} from "@/components/badges/PriorityBadge";
+import {StatusBadge} from "@/components/badges/StatusBadge";
+import {ProfileBadge} from "@/components/badges/ProfileBadge";
+import {Badge} from "@marraph/daisy/components/badge/Badge";
+import {Button} from "@marraph/daisy/components/button/Button";
+import {useRouter} from "next/navigation";
+import {formatDate} from "@/utils/format";
 
 
 export default function Dashboard() {
-
+    const router = useRouter();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+
+    if (!user) return null;
+
+    const { tasks, count } = getDashboardTasks(user);
 
     function parseDate(date: Date): string {
         const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -24,19 +36,43 @@ export default function Dashboard() {
         else return "Welcome back, "
     }
 
-
-
     return (
         <div className={"h-full flex flex-col justify-between"}>
-            <div className={"pt-4"}>
-                <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
-                <div className={"flex flex-row items-center space-x-2"}>
-                    <SunMedium size={18} color="#fff04d" />
-                    <span className={"text-gray"}>{parseDate(new Date())}</span>
+            <div className={"flex flex-row justify-between items-center"}>
+                <div className={"pt-4"}>
+                    <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
+                    <div className={"flex flex-row items-center space-x-2"}>
+                        {new Date().getHours() < 18 && <SunMedium size={18} color={"#fff04d"}/>}
+                        {new Date().getHours() >= 18 && <Moon size={18} color={"#c9c9c9"}/>}
+                        <span className={"text-gray"}>{parseDate(new Date())}</span>
+                    </div>
                 </div>
+                <Button text={""} className={"h-8"}>
+                    <Bell size={16}/>
+                </Button>
             </div>
             <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-16"}>
-                <div className={"bg-black rounded-lg border border-white border-opacity-20 w-1/2 h-72"}>
+                <div className={"flex flex-col justify-evenly bg-black rounded-lg border border-white border-opacity-20 p-4 space-y-4 w-1/2 h-72"}>
+                    <div className={"flex flex-row space-x-4 w-full h-full"}>
+                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                            <span className={"text-xl"}>{"40 Hours"}</span>
+                            <span className={"text-gray"}>{"worked this week"}</span>
+                        </div>
+                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                            <span className={"text-xl"}>{"30%"}</span>
+                            <span className={"text-gray"}>{"spend on meetings"}</span>
+                        </div>
+                    </div>
+                    <div className={"flex flex-row space-x-4 w-full h-full"}>
+                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                            <span className={"text-xl"}>{"50%"}</span>
+                            <span className={"text-gray"}>{"spend on Project A"}</span>
+                        </div>
+                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                            <span className={"text-xl"}>{"20%"}</span>
+                            <span className={"text-gray"}>{"spend on fixing bugs"}</span>
+                        </div>
+                    </div>
 
                 </div>
                 <div className={"bg-black rounded-lg border border-white border-opacity-20 w-1/2 h-72"}>
@@ -44,8 +80,38 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className={"bg-black rounded-lg border border-white border-opacity-20 w-full h-full"}>
-
+            <div className={"bg-black rounded-lg border border-white border-opacity-20 w-full h-[400px] " +
+                "overflow-hidden"}>
+                <div className={"flex flex-row justify-between items-center bg-badgegray border-b border-white border-opacity-20 "}>
+                    <div className={"flex flex-row items-center"}>
+                        <span className={"text-xl px-4 py-2"}>{"Tasks"}</span>
+                        <Badge text={count.toString() + " OPEN"}
+                               size={"small"}
+                               className={"rounded-md bg-selectwhite text-dark"}>
+                        </Badge>
+                    </div>
+                    <Button text={"Open"}
+                            className={"h-8 mx-4 my-2 bg-badgegray border-none"}
+                            onClick={() => router.push("/tasks")}>
+                        <ExternalLink size={16} className={"mr-2"}/>
+                    </Button>
+                </div>
+                {tasks.map((task, index) => (
+                    <div key={index}
+                         className={"group flex flex-row justify-between items-center p-2 border-b border-white border-opacity-20 " +
+                             "hover:bg-selected hover:cursor-pointer"}
+                         onClick={() => router.push(`/tasks/${task.id}`)}>
+                        <div className={"flex flex-row space-x-8 items-center pl-4"}>
+                            <span className={"text-gray group-hover:text-white"}>{task.name}</span>
+                            <PriorityBadge priority={task.priority} className={"text-gray group-hover:text-white"}/>
+                        </div>
+                        <div className={"flex flex-row space-x-8 items-center pr-4"}>
+                            <StatusBadge title={task.status?.toString()}/>
+                            <span className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
+                            <ProfileBadge name={task.createdBy?.name} />
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

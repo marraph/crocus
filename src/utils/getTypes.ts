@@ -1,4 +1,4 @@
-import {Project, Task, Team, Topic, User} from "@/types/types";
+import {Priority, Project, Status, Task, TaskElement, Team, Topic, User} from "@/types/types";
 
 export function getTeams(user: User): string[] {
     const teams: string[] = [];
@@ -102,4 +102,49 @@ export function getTasksFromProject(user: User, projectToFind: string): string[]
         });
     });
     return tasks;
+}
+
+interface DashboardTask {
+    tasks: TaskElement[];
+    count: number;
+}
+
+export function getDashboardTasks(user: User): DashboardTask {
+    const tasks: TaskElement[] = [];
+    let count: number = 0;
+    user.teams.forEach((team: Team) => {
+        team.projects.forEach((project: Project) => {
+            project.tasks.forEach((task: Task) => {
+                if (task.isArchived) return;
+                tasks.push({
+                    id: task.id,
+                    name: task.name,
+                    description: task.description,
+                    topic: task.topic,
+                    status: task.status,
+                    priority: task.priority,
+                    deadline: task.deadline,
+                    isArchived: task.isArchived,
+                    duration: task.duration,
+                    createdBy: task.createdBy,
+                    createdDate: task.createdDate,
+                    lastModifiedBy: task.lastModifiedBy,
+                    lastModifiedDate: task.lastModifiedDate,
+                    project: project,
+                    team: team
+                });
+                count++;
+            });
+        });
+    });
+    return {
+        tasks: tasks.filter((task: TaskElement) => task.status !== "FINISHED")
+                    .sort((a: TaskElement, b: TaskElement) => {
+                        const priorityOrder = {LOW: 1, MEDIUM: 2, HIGH: 3};
+                        const aPriority = a.priority ? priorityOrder[a.priority as keyof typeof priorityOrder] : 0;
+                        const bPriority = b.priority ? priorityOrder[b.priority as keyof typeof priorityOrder] : 0;
+                        return bPriority - aPriority;
+            }),
+        count: count
+    };
 }

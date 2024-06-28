@@ -8,6 +8,7 @@ import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTim
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
 import {TimeEntry} from "@/types/types";
+import {Badge} from "@marraph/daisy/components/badge/Badge";
 
 const timeEntry: TimeEntry = {
     id: 1,
@@ -151,11 +152,11 @@ export default function Timetracking() {
             <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>
                 <>
                     <TimetrackTable entries={entries}/>
-                    <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg p-4 flex flex-row justify-between items-center"}>
-                        <div className={"flex flex-row items-center space-x-2"}>
-                            <span className={"text-sm text-gray"}>{"Total Entries:"}</span>
-                            <span className={"text-base text-white"}>{entries.length}</span>
-                        </div>
+                    <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg px-4 flex flex-row justify-between items-center"}>
+                        <Badge text={entries.length.toString() + (entries.length === 1 ? " ENTRY" : " ENTRIES")}
+                               size={"small"}
+                               className={"rounded-md bg-selectwhite text-dark my-3"}>
+                        </Badge>
                         <div className={"flex flex-row items-center space-x-2"}>
                             <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
                             <span className={"text-base text-white"}>{sumDuration() + "h"}</span>

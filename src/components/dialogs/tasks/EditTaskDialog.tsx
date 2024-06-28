@@ -49,7 +49,9 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
     const { data, isLoading, error } = useUser();
 
     useEffect(() => {
-        validateInput();
+        if (data && dialogRef && titleRef.current && descriptionRef.current && teamRef.current && projectRef.current && topicRef.current && statusRef.current && priorityRef.current && datePickerRef.current && durationRef.current) {
+            validateInput();
+        }
     }, [titleValue]);
 
     if (!dialogRef) return null;
