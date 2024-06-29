@@ -11,7 +11,20 @@ import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {useRouter} from "next/navigation";
 import {formatDate} from "@/utils/format";
+import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 
+const notifications = [
+    { sender: "John Doe", task: "Task 1", date: new Date("2024-06-29T08:00:00"), type: "message" },
+    { sender: "Jane Doe", task: "Task 2", date: new Date("2024-06-28T14:30:00"), type: "change" },
+    { sender: "John Doe", task: "Task 3", date: new Date("2024-06-27T09:45:00"), type: "message" },
+    { sender: "Jane Doe", task: "Task 4", date: new Date("2024-06-26T11:15:00"), type: "change" },
+    { sender: "John Doe", task: "Task 5", date: new Date("2024-06-25T16:50:00"), type: "message" },
+    { sender: "Jane Doe", task: "Task 6", date: new Date("2024-06-24T13:20:00"), type: "change" },
+    { sender: "John Doe", task: "Task 7", date: new Date("2024-06-23T10:05:00"), type: "message" },
+    { sender: "Jane Doe", task: "Task 8", date: new Date("2024-06-22T15:40:00"), type: "change" },
+    { sender: "John Doe", task: "Task 9", date: new Date("2024-06-21T08:25:00"), type: "message" },
+    { sender: "Jane Doe", task: "Task 10", date: new Date("2024-06-20T14:10:00"), type: "change" },
+];
 
 export default function Dashboard() {
     const router = useRouter();
@@ -47,9 +60,7 @@ export default function Dashboard() {
                         <span className={"text-gray"}>{parseDate(new Date())}</span>
                     </div>
                 </div>
-                <Button text={""} className={"h-8"}>
-                    <Bell size={16}/>
-                </Button>
+                <NotificationContextMenu notifications={notifications}/>
             </div>
             <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-16"}>
                 <div className={"flex flex-col justify-evenly bg-black rounded-lg border border-white border-opacity-20 p-4 space-y-4 w-1/2 h-72"}>
@@ -80,9 +91,8 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className={"bg-black rounded-lg border border-white border-opacity-20 w-full h-[400px] " +
-                "overflow-hidden"}>
-                <div className={"flex flex-row justify-between items-center bg-badgegray border-b border-white border-opacity-20 "}>
+            <div className={"bg-black rounded-lg w-full"}>
+                <div className={"flex flex-row justify-between items-center bg-badgegray border border-white border-opacity-20 rounded-t-lg"}>
                     <div className={"flex flex-row items-center"}>
                         <span className={"text-xl px-4 py-2"}>{"Tasks"}</span>
                         <Badge text={count.toString() + " OPEN"}
@@ -96,22 +106,24 @@ export default function Dashboard() {
                         <ExternalLink size={16} className={"mr-2"}/>
                     </Button>
                 </div>
-                {tasks.map((task, index) => (
-                    <div key={index}
-                         className={"group flex flex-row justify-between items-center p-2 border-b border-white border-opacity-20 " +
-                             "hover:bg-selected hover:cursor-pointer"}
-                         onClick={() => router.push(`/tasks/${task.id}`)}>
-                        <div className={"flex flex-row space-x-8 items-center pl-4"}>
-                            <span className={"text-gray group-hover:text-white"}>{task.name}</span>
-                            <PriorityBadge priority={task.priority} className={"text-gray group-hover:text-white"}/>
+                <div className={"overflow-y-scroll h-[350px] no-scrollbar border border-white border-opacity-20 rounded-b-lg"}>
+                    {tasks.map((task, index) => (
+                        <div key={index}
+                             className={"group flex flex-row justify-between items-center p-2 border-b border-white border-opacity-20 " +
+                                 "hover:bg-selected hover:cursor-pointer"}
+                             onClick={() => router.push(`/tasks/${task.id}`)}>
+                            <div className={"flex flex-row space-x-8 items-center pl-4"}>
+                                <span className={"text-gray group-hover:text-white"}>{task.name}</span>
+                                <PriorityBadge priority={task.priority} className={"text-gray group-hover:text-white"}/>
+                            </div>
+                            <div className={"flex flex-row space-x-8 items-center pr-4"}>
+                                <StatusBadge title={task.status?.toString()}/>
+                                <span className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
+                                <ProfileBadge name={task.createdBy?.name} />
+                            </div>
                         </div>
-                        <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                            <StatusBadge title={task.status?.toString()}/>
-                            <span className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
-                            <ProfileBadge name={task.createdBy?.name} />
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );

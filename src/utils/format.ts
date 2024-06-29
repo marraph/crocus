@@ -39,3 +39,31 @@ export function formatTimeAMPM(date: Date) {
 
     return `${hours < 10 ? '0' : ''}${hours}:${minutesStr}${ampm}`;
 }
+
+export function formatTimeDifference(startDate: Date, endDate: Date): string {
+    const diffInMs = endDate.getTime() - startDate.getTime();
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const days = Math.floor(diffInMinutes / (60 * 24));
+    const hours = Math.floor((diffInMinutes % (60 * 24)) / 60);
+    const minutes = diffInMinutes % 60;
+
+    console.log(days, hours, minutes)
+
+    let result = '';
+    if (days > 0) {
+        result += `${days}d `;
+    }
+    if (days === 0 && hours > 0) {
+        result += `${hours}h `;
+    }
+    if (days === 0 && hours === 0 && minutes > 0) {
+        result += `${minutes}min`;
+    }
+    if (days === 0 && hours === 0 && minutes === 0) {
+        result = '0min';
+    }
+
+    result+= " ago";
+
+    return result;
+}
