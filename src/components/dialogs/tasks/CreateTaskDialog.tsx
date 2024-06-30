@@ -19,7 +19,7 @@ import {
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Priority, Project, Status, Task, TaskCreation, Team} from "@/types/types";
+import {PreviewUser, Priority, Project, Status, Task, TaskCreation, Team, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
@@ -42,36 +42,36 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
     const [durationValue, setDurationValue] = useState("");
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
     const [valid, setValid] = useState(false);
-    const {data, isLoading, error} = useUser();
+    const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     useEffect(() => {
         validateInput();
     }, [titleValue, durationValue]);
 
-    if (data === undefined) return null;
+    if (user === undefined) return null;
 
     const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
 
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
-    const handleCreateClick = () => {
-        const task: TaskCreation = {
+    function handleCreateClick(user: User) {
+        const newTask: TaskCreation = {
             id: 0,
             name: titleValue,
             description: descriptionValue,
-            topic: getTopicItem(data, topicRef.current?.getValue() as string) ?? null,
+            topic: getTopicItem(user, topicRef.current?.getValue() as string) ?? null,
             status: statusRef.current?.getValue() as Status ?? null,
             priority: priorityRef.current?.getValue() as Priority ?? null,
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
             duration: Number(durationRef.current?.getValue()) ?? null,
-            createdBy: {id: data.id, name: data.name, email: data.email},
+            createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
-            lastModifiedBy: {id: data.id, name: data.name, email: data.email},
+            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
             lastModifiedDate: new Date(),
-            project: getProject(data, projectRef.current?.getValue()) ?? null
+            project: getProject(user, projectRef.current?.getValue()) ?? null
         }
-        const {data:Task, isLoading:taskLoading, error:taskError} = createTask(task);
+        const {data:task, isLoading:taskLoading, error:taskError} = createTask(newTask);
 
         if (switchRef.current?.getValue() === false) {
             dialogRef.current?.close();
@@ -161,13 +161,13 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
 
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"} size={"small"} icon={<Users size={12} className={"mr-1"}/>} ref={teamRef}>
-                                {getTeams(data).map((team) => (
+                                {getTeams(user).map((team) => (
                                     <ComboboxItem title={team} key={team} size={"small"} onClick={() => setTeamSelected({isSelected: true, team: team})}/>
                                 ))}
                             </Combobox>
                             {teamSelected.isSelected &&
                                 <Combobox buttonTitle={"Project"} size={"small"} icon={<BookCopy size={12} className={"mr-1"}/>} ref={projectRef}>
-                                    {getProjects(data, teamSelected.team).map((project) => (
+                                    {getProjects(user, teamSelected.team).map((project) => (
                                         <ComboboxItem title={project} key={project} size={"small"}/>
                                     ))}
                                 </Combobox>
@@ -177,7 +177,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
 
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <Combobox buttonTitle={"Topic"} size={"small"} icon={<Tag size={12} className={"mr-1"}/>} ref={topicRef}>
-                                {getTopics(data).map((topic) => (
+                                {getTopics(user).map((topic) => (
                                     <ComboboxItem title={topic} key={topic} size={"small"}/>
                                 ))}
                             </Combobox>
@@ -206,7 +206,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
                         <span>{"Create more"}</span>
                         <Switch ref={switchRef}></Switch>
                     </div>
-                    <Button text={"Create"} theme={"white"} onClick={handleCreateClick} disabled={!valid}
+                    <Button text={"Create"} theme={"white"} onClick={() => handleCreateClick} disabled={!valid}
                             className={"w-min h-8"}>
                     </Button>
                 </div>

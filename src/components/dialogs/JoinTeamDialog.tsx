@@ -1,6 +1,6 @@
 "use client";
 
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {DialogHTMLAttributes, forwardRef, useEffect, useRef, useState} from "react";
 import {TimeEntry} from "@/types/types";
 import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
@@ -13,18 +13,13 @@ import {
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
 import {useUser} from "@/context/UserContext";
-import {deleteTask} from "@/service/hooks/taskHook";
 import {cn} from "@/utils/cn";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Trash2, Users} from "lucide-react";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {Simulate} from "react-dom/test-utils";
-import input = Simulate.input;
 
-interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {}
-
-export const JoinTeamDialog = forwardRef<DialogRef, DialogProps>(({ className, ...props}, ref) => {
+export const JoinTeamDialog = forwardRef<DialogRef, DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = mutateRef(ref);
     const inputRef = useRef<InputRef>(null);
     const alertRef = useRef<AlertRef>(null);
