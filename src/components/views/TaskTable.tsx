@@ -14,6 +14,7 @@ import {formatDate} from "@/utils/format";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {ProjectBadge} from "@/components/badges/ProjectBadge";
 
 const path = "/image.png";
 
@@ -21,7 +22,6 @@ const header = [
     { key: "name", label: "Title" },
     { key: "project", label: "Project" },
     { key: "priority", label: "Priority" },
-    { key: "topic", label: "Topic" },
     { key: "status", label: "Status" },
     { key: "deadline", label: "Deadline" },
     { key: "createdBy", label: "Creator" },
@@ -154,12 +154,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                       onContextMenu={(event) => handleContextMenu(event, taskElement)}
                                       className={index === getSortedArray(taskElements).length - 1 ? " border-b border-b-white" : ""}>
                                 <TableCell className={"text-white"}>{taskElement.name}</TableCell>
-                                <TableCell>{taskElement.project?.name}</TableCell>
-                                <TableCell>
-                                    <PriorityBadge priority={taskElement.priority}/>
+                                <TableCell className={"flex flex-row items-center space-x-2"}>
+                                    {taskElement.project && <ProjectBadge title={taskElement.project?.name}/>}
+                                    <TopicBadge title={taskElement.topic?.title} color={"error"}/>
                                 </TableCell>
                                 <TableCell>
-                                    <TopicBadge title={taskElement.topic?.title} color={"error"}/>
+                                    <PriorityBadge priority={taskElement.priority}/>
                                 </TableCell>
                                 <TableCell>
                                     <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>

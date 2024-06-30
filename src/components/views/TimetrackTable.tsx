@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {Caret} from "@/components/badges/Caret";
-import {EntryProjectBadge} from "@/components/badges/EntryProjectBadge";
+import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
 import {TimeEntry} from "@/types/types";
 import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
@@ -93,7 +93,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                             >
                                 <TableCell>
                                     <div className={"flex flex-row items-center space-x-2"}>
-                                        {entry.project && <EntryProjectBadge title={entry.project.name}/>}
+                                        {entry.project && <ProjectBadge title={entry.project.name}/>}
                                         {entry.task && <EntryTitleBadge title={entry.task.name}/>}
                                         <span>{entry.comment}</span>
                                     </div>

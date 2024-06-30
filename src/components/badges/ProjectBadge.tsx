@@ -6,7 +6,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement>{
     title: string;
 }
 
-export const EntryProjectBadge: React.FC<Props> = ({ title, className, ...props }) => {
+export const ProjectBadge: React.FC<Props> = ({ title, className, ...props }) => {
     if (!title) return null;
 
     return (

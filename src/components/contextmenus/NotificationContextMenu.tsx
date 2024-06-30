@@ -28,7 +28,7 @@ export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextP
             {showMenu &&
                 <div className={"absolute right-0 bg-black rounded-lg py-1 border border-white border-opacity-20 overflow-y-scroll no-scrollbar h-[300px] w-max z-50"}>
                     {notifications.map((n, index) => (
-                        <Notification key={index} sender={n.sender} task={n.task} date={n.date} type={n.type}/>
+                        <Notification key={index} sender={n.sender} task={n.task} date={n.date} type={n.type} unread={true}/>
                     ))}
                 </div>
             }
