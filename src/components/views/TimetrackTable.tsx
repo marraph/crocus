@@ -10,6 +10,8 @@ import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEnt
 import {cn} from "@/utils/cn";
 import {formatTime} from "@/utils/format";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {EllipsisVertical} from "lucide-react";
+import {Button} from "@marraph/daisy/components/button/Button";
 
 const header = [
     { key: "entry", label: "Entry" },
@@ -37,10 +39,25 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
         return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
-    const handleContextMenu = (e: React.MouseEvent<HTMLTableRowElement>, timeEntry: TimeEntry) => {
+    const handleContextMenu = (e: React.MouseEvent<HTMLElement>, timeEntry: TimeEntry) => {
         e.preventDefault();
+        e.stopPropagation();
+
         setFocusTimeEntry(timeEntry);
-        setContextMenu({ id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true });
+        console.log(e.target)
+
+        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            const buttonElement = e.currentTarget;
+            const rect = buttonElement.getBoundingClientRect();
+
+            const coordinates = {
+                x: rect.left - 52,
+                y: rect.top + 34
+            };
+            setContextMenu({ id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true });
+        } else {
+            setContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
+        }
     };
 
     const handleOnClick = (timeEntry: TimeEntry) => {
@@ -68,7 +85,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                 <TimeEntryContextMenu x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
             }
 
-            <div className={"w-full h-[796px] text-xs flex items-stretch pt-4"}>
+            <div className={"w-full h-[796px] text-xs flex pt-4"}>
                 <Table className={"bg-black w-full no-scrollbar rounded-b-none"}>
                     <TableHeader>
                         <TableRow className={cn("hover:bg-black", entries.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
@@ -99,7 +116,12 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                                     </div>
                                 </TableCell>
                                 <TableCell>{formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}</TableCell>
-                                <TableCell>{"differenz"}</TableCell>
+                                <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
+                                    {"differenz"}
+                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleContextMenu(e, entry);}}>
+                                        <EllipsisVertical size={16}/>
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

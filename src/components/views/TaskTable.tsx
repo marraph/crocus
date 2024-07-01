@@ -9,13 +9,14 @@ import {Caret} from "@/components/badges/Caret";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
-import {Status, TaskElement} from "@/types/types";
+import {TaskElement} from "@/types/types";
 import {formatDate} from "@/utils/format";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
-
+import {Button} from "@marraph/daisy/components/button/Button";
+import {EllipsisVertical} from "lucide-react";
 const path = "/image.png";
 
 const header = [
@@ -50,10 +51,25 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
-    const handleContextMenu = (e: React.MouseEvent<HTMLTableRowElement>, taskElement: TaskElement) => {
+    const handleContextMenu = (e: React.MouseEvent<HTMLElement>, taskElement: TaskElement) => {
         e.preventDefault();
+        e.stopPropagation();
+
         setFocusTaskElement(taskElement);
-        setContextMenu({ id: taskElement.id, x: e.clientX, y: e.clientY, visible: true });
+        console.log(e.target)
+
+        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            const buttonElement = e.currentTarget;
+            const rect = buttonElement.getBoundingClientRect();
+
+            const coordinates = {
+                x: rect.left - 52,
+                y: rect.top + 34
+            };
+            setContextMenu({ id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true });
+        } else {
+            setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
+        }
     };
 
     function handleHeaderClick(headerKey: string) {
@@ -165,8 +181,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                     <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                                 </TableCell>
                                 <TableCell>{formatDate(taskElement.deadline?.toString())}</TableCell>
-                                <TableCell>
+                                <TableCell className={"flex flex-row space-x-4 justify-between"}>
                                     <ProfileBadge name={taskElement.createdBy.name}/>
+                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleContextMenu(e, taskElement);}}>
+                                        <EllipsisVertical size={16}/>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

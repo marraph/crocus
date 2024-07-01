@@ -35,7 +35,7 @@ export default function TasksID() {
                 <Breadcrump pastText={"Tasks"} nowText={taskElement.name} className={"h-8"}
                             onClick={() => router.push("/tasks/")}/>
                 <div className={"flex flex-row justify-end"}>
-                    <MessageTaskDialog/>
+                    <MessageTaskDialog taskElement={taskElement}/>
                     <EditTaskDialog taskElement={taskElement} buttonTrigger={true}/>
                     <CloseTaskDialog taskElement={taskElement} buttonTrigger={true}/>
                     <DeleteTaskDialog taskElement={taskElement} buttonTrigger={true}/>

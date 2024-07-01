@@ -9,6 +9,7 @@ import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
 import {TimeEntry} from "@/types/types";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
+import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsenceDialog";
 
 const timeEntry: TimeEntry = {
     id: 1,
@@ -146,7 +147,12 @@ export default function Timetracking() {
                     </Button>
                     <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day} ref={datepickerRef} closeButton={false}/>
                 </div>
-                <CreateTimeEntryDialog className={"justify-end"}/>
+                <div className={"flex flex-row justify-end"}>
+                    <div className={"mr-2"}>
+                        <CreateAbsenceDialog/>
+                    </div>
+                    <CreateTimeEntryDialog/>
+                </div>
             </div>
 
             <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>

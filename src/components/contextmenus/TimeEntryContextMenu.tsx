@@ -1,3 +1,5 @@
+"use client";
+
 import React, {forwardRef} from "react";
 import {useRouter} from "next/navigation";
 import {ContextMenu, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";

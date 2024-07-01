@@ -1,4 +1,6 @@
-import React, {useEffect, useRef, useState} from "react";
+"use client";
+
+import React, {forwardRef, useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
 import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
@@ -14,7 +16,7 @@ import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 
-export const CreateTimeEntryDialog = React.forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
+export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
     const alertRef = useRef<AlertRef>(null);
     const commentRef = useRef<TextareaRef>(null);

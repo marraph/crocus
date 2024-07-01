@@ -14,10 +14,18 @@ import {
     AlertRef,
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
+import {mutateRef} from "@/utils/mutateRef";
+import {TaskElement} from "@/types/types";
 
-export const MessageTaskDialog = forwardRef<HTMLDialogElement, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}) => {
-    const dialogRef = React.useRef<DialogRef>(null);
+interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
+    taskElement: TaskElement;
+}
+
+export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({taskElement, className, ...props}, ref) => {
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
+
+    if (!dialogRef) return null;
 
     const sendMessage = () => {
         dialogRef.current?.close();
