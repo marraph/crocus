@@ -103,7 +103,7 @@ export default function TasksID() {
                             <Hourglass size={16}/>
                             <span className={"w-16"}>Duration</span>
                         </div>
-                        <span>{taskElement.duration?.toString()}</span>
+                        <span>{taskElement.bookedDuration?.toString() + "/" + taskElement.duration?.toString() + " Hours"}</span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>

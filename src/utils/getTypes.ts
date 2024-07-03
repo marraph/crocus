@@ -17,7 +17,7 @@ export function getProjects(user: User, teamToFind: string): string[] {
     return projects;
 }
 
-export function getAllProjects(user: User): string[] {
+export function getAllProjectsString(user: User): string[] {
     const projects: string[] = [];
     user?.teams.forEach((team: Team) => {
         team.projects.forEach((project: Project) => {
@@ -25,6 +25,17 @@ export function getAllProjects(user: User): string[] {
         });
     });
     return projects;
+}
+
+export function getAllProjects(user: User): Project[] {
+    const projects: Project[] = [];
+    user?.teams.forEach((team: Team) => {
+        team.projects.forEach((project: Project) => {
+            projects.push(project);
+        });
+    });
+    return projects;
+
 }
 
 export function getProject(user: User, projectName: string | null | undefined): Project | null {
@@ -37,13 +48,27 @@ export function getProject(user: User, projectName: string | null | undefined): 
     return null;
 }
 
-export function getProjectFromTask(user: User, task: string): string {
+export function getProjectFromTaskString(user: User, task: string): string {
     let project: string = "";
     user.teams.forEach((team: Team) => {
         team.projects.forEach((proj: Project) => {
             proj.tasks.forEach((tsk: Task) => {
                 if (tsk.name === task) {
                     project = proj.name;
+                }
+            });
+        });
+    });
+    return project;
+}
+
+export function getProjectFromTask(user: User, task: Task): Project | null {
+    let project: Project | null = null;
+    user.teams.forEach((team: Team) => {
+        team.projects.forEach((proj: Project) => {
+            proj.tasks.forEach((tsk: Task) => {
+                if (tsk.name === task.name) {
+                    project = proj;
                 }
             });
         });
@@ -78,7 +103,7 @@ export function getTopicItem(user: User, topic: string): Topic | undefined {
     return undefined;
 }
 
-export function getAllTasks(user: User): string[] {
+export function getAllTasksString(user: User): string[] {
     const tasks: string[] = [];
     user?.teams.forEach((team: Team) => {
         team.projects.forEach((project: Project) => {
@@ -90,13 +115,39 @@ export function getAllTasks(user: User): string[] {
     return tasks;
 }
 
-export function getTasksFromProject(user: User, projectToFind: string): string[] {
+export function getAllTasks(user: User): Task[] {
+    const tasks: Task[] = [];
+    user?.teams.forEach((team: Team) => {
+        team.projects.forEach((project: Project) => {
+            project.tasks.forEach((task: Task) => {
+                tasks.push(task);
+            });
+        });
+    });
+    return tasks;
+}
+
+export function getTasksFromProjectString(user: User, projectToFind: string): string[] {
     const tasks: string[] = [];
     user?.teams.forEach((team: Team) => {
         team.projects.forEach((project: Project) => {
             if (project.name === projectToFind) {
                 project.tasks.forEach((task: Task) => {
                     tasks.push(task.name);
+                });
+            }
+        });
+    });
+    return tasks;
+}
+
+export function getTasksFromProject(user: User, projectToFind: Project): Task[] {
+    const tasks: Task[] = [];
+    user?.teams.forEach((team: Team) => {
+        team.projects.forEach((project: Project) => {
+            if (project.name === projectToFind.name) {
+                project.tasks.forEach((task: Task) => {
+                    tasks.push(task);
                 });
             }
         });
@@ -126,6 +177,7 @@ export function getDashboardTasks(user: User): DashboardTask {
                     deadline: task.deadline,
                     isArchived: task.isArchived,
                     duration: task.duration,
+                    bookedDuration: task.bookedDuration,
                     createdBy: task.createdBy,
                     createdDate: task.createdDate,
                     lastModifiedBy: task.lastModifiedBy,

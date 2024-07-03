@@ -65,6 +65,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
             deadline: datePickerRef.current?.getSelectedValue() ?? null,
             isArchived: false,
             duration: Number(durationRef.current?.getValue()) ?? null,
+            bookedDuration: durationRef.current?.getValue() ? 0 : null,
             createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},

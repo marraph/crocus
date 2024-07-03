@@ -11,19 +11,22 @@ import {cn} from "@/utils/cn";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
-import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
+import {DateRangePicker, DateRangePickerRef} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
+import {Absence, AbsenceType, PreviewUser} from "@/types/types";
+import {createAbsence} from "@/service/hooks/absenceHook";
 
 export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
     const alertRef = useRef<AlertRef>(null);
     const commentRef = useRef<TextareaRef>(null);
     const absenceRef = useRef<ComboboxRef>(null);
+    const dateRef = useRef<DateRangePickerRef>(null);
     const [comment, setComment] = useState("");
     const [absence, setAbsence] = useState<string | null>(null);
     const [valid, setValid] = useState<boolean>(false);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    const absenceTypes = ["Vacation", "Sick"];
+    const absenceTypes = ["VACATION", "SICK"];
 
     useEffect(() => {
         if (user && dialogRef.current && commentRef.current && absenceRef.current) {
@@ -53,7 +56,19 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
         }
     }
 
-    const createAbsence = () => {
+    const createNewAbsence = () => {
+        const newAbsence: Absence = {
+            id: user.absences.length,
+            startDate: dateRef.current?.getSelectedValue()?.from as Date,
+            endDate: dateRef.current?.getSelectedValue()?.to as Date,
+            comment: comment ?? null,
+            absenceType: absenceRef.current?.getValue() as AbsenceType,
+            createdBy: {id: user.id, name: user.name, email: user.email},
+            createdDate: new Date(),
+            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
+            lastModifiedDate: new Date(),
+        }
+        const { data, isLoading, error } = createAbsence(newAbsence);
         handleCloseClick();
     }
 
@@ -88,12 +103,12 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                                 <ComboboxItem key={index} title={absence} onClick={() => handleAbsenceChange(absence)}/>
                             ))}
                         </Combobox>
-                        <DateRangePicker text={"Select your absence time"} iconSize={16} closeButton={false}/>
+                        <DateRangePicker text={"Select your absence time"} iconSize={16} closeButton={false} ref={dateRef}/>
                     </div>
 
                     <Seperator/>
                     <div className={cn("flex flex-row items-center justify-end space-x-16 px-4 py-2", className)}>
-                        <Button text={"Create"} theme={"white"} onClick={createAbsence} disabled={!valid}
+                        <Button text={"Create"} theme={"white"} onClick={createNewAbsence} disabled={!valid}
                                 className={cn("w-min h-8", className)}>
                         </Button>
                     </div>

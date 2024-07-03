@@ -1,6 +1,6 @@
 type Priority = "LOW" | "MEDIUM" | "HIGH"
 type Status = "PENDING" | "PLANING" | "STARTED" | "TESTED" | "FINISHED"
-type AbsenceType = "VACATION" | "SICK"
+export type AbsenceType = "VACATION" | "SICK"
 
 type PreviewUser = {
     id: number
@@ -15,6 +15,7 @@ type User = {
     email: string
     teams: Team[]
     timeEntries: TimeEntry[]
+    absences: Absence[]
 }
 
 type Organisation = {
@@ -67,6 +68,7 @@ type Task = {
     topic: Topic | null
     isArchived: boolean
     duration: number | null
+    bookedDuration: number | null
     deadline: Date | null
     status: Status | null
     priority: Priority | null
@@ -83,6 +85,7 @@ type TaskElement = {
     topic: Topic | null
     isArchived: boolean
     duration: number | null
+    bookedDuration: number | null
     deadline: Date | null
     status: Status | null
     priority: Priority | null
@@ -102,6 +105,7 @@ type TaskCreation = {
     topic: Topic | null
     isArchived: boolean
     duration: number | null
+    bookedDuration: number | null
     deadline: Date | null
     status: Status | null
     priority: Priority | null
@@ -119,7 +123,6 @@ type TimeEntry = {
     comment: string | null,
     startDate: Date,
     endDate: Date,
-    dailyEntry: DailyEntry,
     createdBy: PreviewUser
     createdDate: Date
     lastModifiedBy: PreviewUser
@@ -130,6 +133,8 @@ type DailyEntry = {
     id: number,
     startDate: Date,
     endDate: Date,
+    timeEntries: TimeEntry[],
+    comment: string | null,
     createdBy: PreviewUser
     createdDate: Date
     lastModifiedBy: PreviewUser

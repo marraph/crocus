@@ -9,7 +9,8 @@ import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsenceDialog";
-import {TimeEntry, User} from "@/types/types";
+import {Absence, TimeEntry, User} from "@/types/types";
+import {abs} from "stylis";
 
 function compareDays(date1: Date, date2: Date) {
     return date1.getFullYear() === date2.getFullYear() &&
@@ -22,7 +23,17 @@ function getFilterEntries(user: User | undefined, day: Date): TimeEntry[] | unde
     return user.timeEntries.filter((entry) =>
         compareDays(new Date(entry.startDate), day) &&
         compareDays(new Date(entry.endDate), day))
-        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+}
+
+function getFilterAbsences(user: User | undefined, day: Date) {
+    if (user === undefined) return undefined;
+    return user.absences.filter((absence) =>
+        new Date(absence.startDate) <= day ||
+        new Date(absence.endDate) >= day)
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
 }
 
 export default function Timetracking() {
@@ -31,9 +42,11 @@ export default function Timetracking() {
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterEntries(user, day));
+    const [dailyAbsences, setDailyAbsences] = useState<Absence[] | undefined>(getFilterAbsences(user, day));
 
     useEffect(() => {
         if (user?.timeEntries) setDailyEntries(getFilterEntries(user, day));
+        if (user?.absences) setDailyAbsences(getFilterAbsences(user, day));
     }, [day, user?.timeEntries]);
 
     if (!user) return null;
@@ -87,7 +100,7 @@ export default function Timetracking() {
 
             <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>
                 <>
-                    <TimetrackTable entries={dailyEntries}/>
+                    <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
                     <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg px-4 flex flex-row justify-between items-center"}>
                         <Badge text={dailyEntries?.length.toString() + (dailyEntries?.length === 1 ? " ENTRY" : " ENTRIES")}
                                size={"small"}

@@ -1,3 +1,4 @@
+
 export function formatDate(dateString: string | undefined): string {
 
     if (dateString === undefined) {
@@ -30,8 +31,9 @@ export function formatTime(date: Date): string {
 }
 
 export function formatTimeAMPM(date: Date) {
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
+    const newDate = new Date(date);
+    let hours = newDate.getHours();
+    const minutes = newDate.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
 
     hours = hours % 12;
@@ -42,7 +44,10 @@ export function formatTimeAMPM(date: Date) {
 }
 
 export function formatTimeDifference(startDate: Date, endDate: Date): string {
-    const diffInMs = endDate.getTime() - startDate.getTime();
+    const newStartDate = new Date(startDate);
+    const newEndDate = new Date(endDate);
+
+    const diffInMs = newEndDate.getTime() - newStartDate.getTime();
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const days = Math.floor(diffInMinutes / (60 * 24));
     const hours = Math.floor((diffInMinutes % (60 * 24)) / 60);

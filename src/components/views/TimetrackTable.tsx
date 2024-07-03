@@ -3,7 +3,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@ma
 import {Caret} from "@/components/badges/Caret";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
-import {TimeEntry} from "@/types/types";
+import {Absence, TimeEntry} from "@/types/types";
 import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
@@ -12,6 +12,8 @@ import {formatTime} from "@/utils/format";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {EllipsisVertical} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
+import {AbsenceBadge} from "@/components/badges/AbsenceBadge";
+import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDialog";
 
 const header = [
     { key: "entry", label: "Entry" },
@@ -19,32 +21,40 @@ const header = [
     { key: "duration", label: "Duration" },
 ];
 
-type SortOrder = "asc" | "desc";
-type SortState = { key: string; order: SortOrder; };
-
 interface TimetrackProps {
     entries: TimeEntry[] | undefined;
+    absences: Absence[] | undefined;
 }
 
-export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
+export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) => {
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
-    const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
-    const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
+    const [entryContextMenu, setEntryContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
+    const [absenceContextMenu, setAbsenceContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTimeEntry, setFocusTimeEntry] = useState<TimeEntry | null>(null);
+    const [focusAbsence, setFocusAbsence] = useState<Absence | null>(null);
 
     useEffect(() => {
-        const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
+        const handleClick = () => {
+            setEntryContextMenu({ ...entryContextMenu, visible: false});
+            setAbsenceContextMenu({ ...absenceContextMenu, visible: false});
+        }
         document.addEventListener('click', handleClick);
         return () => document.removeEventListener('click', handleClick);
-    }, [contextMenu]);
+    }, [entryContextMenu, absenceContextMenu]);
 
-    const handleContextMenu = (e: React.MouseEvent<HTMLElement>, timeEntry: TimeEntry) => {
+    const getElementLength = () => {
+        if (!entries && absences) return absences?.length;
+        if (!absences && entries) return entries?.length;
+        if (entries && absences) return entries?.length + absences?.length;
+        return 0;
+    }
+
+    const handleEntryContextMenu = (e: React.MouseEvent<HTMLElement>, timeEntry: TimeEntry) => {
         e.preventDefault();
         e.stopPropagation();
 
         setFocusTimeEntry(timeEntry);
-        console.log(e.target)
 
         if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
             const buttonElement = e.currentTarget;
@@ -54,22 +64,47 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                 x: rect.left - 52,
                 y: rect.top + 34
             };
-            setContextMenu({ id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true });
+            setEntryContextMenu({ id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true });
         } else {
-            setContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
+            setEntryContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
         }
     };
 
-    const handleOnClick = (timeEntry: TimeEntry) => {
+    const handleAbsenceContextMenu = (e: React.MouseEvent<HTMLElement>, absence: Absence) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setFocusAbsence(absence);
+
+        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            const buttonElement = e.currentTarget;
+            const rect = buttonElement.getBoundingClientRect();
+
+            const coordinates = {
+                x: rect.left - 52,
+                y: rect.top + 34
+            };
+            setAbsenceContextMenu({ id: absence.id, x: coordinates.x, y: coordinates.y, visible: true });
+        } else {
+            setAbsenceContextMenu({id: absence.id, x: e.clientX, y: e.clientY, visible: true});
+        }
+    };
+
+    const handleTimeEntryOnClick = (timeEntry: TimeEntry) => {
         setFocusTimeEntry(timeEntry);
         editRef.current?.show();
     }
 
-    function handleHeaderClick(headerKey: string) {
-        setSort({
-            key: headerKey,
-            order: sort.key === headerKey ? (sort.order === "asc" ? "desc" : "asc") : "desc"
-        })
+    const handleAbsenceOnClick = (absence: Absence) => {
+        setFocusAbsence(absence);
+        editRef.current?.show();
+    }
+
+    const calculateDifference = (entry: TimeEntry) => {
+        const endDate = new Date(entry.endDate);
+        const startDate = new Date(entry.startDate);
+
+        return endDate.getHours() - startDate.getHours();
     }
 
     return (
@@ -81,32 +116,57 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                 </>
             }
 
-            {contextMenu.visible &&
-                <TimeEntryContextMenu x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
+            {focusAbsence &&
+                <>
+                    <DeleteTimeEntryDialog ref={deleteRef} absence={focusAbsence}/>
+                    <EditAbsenceDialog ref={editRef} absence={focusAbsence}></EditAbsenceDialog>
+                </>
             }
+
+            {(entryContextMenu.visible || absenceContextMenu) &&
+                <TimeEntryContextMenu x={entryContextMenu.x} y={entryContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
+            }
+
 
             <div className={"w-full h-[796px] text-xs flex pt-4"}>
                 <Table className={"bg-black w-full no-scrollbar rounded-b-none"}>
                     <TableHeader>
                         <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
                         {header.map((header) => (
-                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key} onClick={() => handleHeaderClick(header.key)}>
+                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key}>
                                     <span className={"flex flex-row items-center"}>
                                         {header.label}
-                                        {header.key === sort.key && (
-                                            <Caret direction={sort.key === header.key ? sort.order : "asc"}/>
-                                        )}
                                     </span>
                                 </TableHead>
                             ))}
                         </TableRow>
                     </TableHeader>
                     <TableBody className={"text-sm"}>
+                        {absences?.map((absence, index) => (
+                            <TableRow key={index}
+                                      className={index === getElementLength() - 1 ? " border-b border-b-white" : ""}
+                                      onContextMenu={(event) => handleAbsenceContextMenu(event, absence)}
+                                      onClick={() => handleAbsenceOnClick(absence)}
+                            >
+                                <TableCell>
+                                    <div className={"flex flex-row items-center space-x-2"}>
+                                        <AbsenceBadge title={"Absence: " + absence.absenceType.toString()}/>
+                                        <span>{absence.comment}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>{}</TableCell>
+                                <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
+                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleAbsenceContextMenu(e, absence);}}>
+                                        <EllipsisVertical size={16}/>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
                         {entries?.map((entry, index) => (
                             <TableRow key={index}
                                       className={index === entries?.length - 1 ? " border-b border-b-white" : ""}
-                                      onContextMenu={(event) => handleContextMenu(event, entry)}
-                                      onClick={() => handleOnClick(entry)}
+                                      onContextMenu={(event) => handleEntryContextMenu(event, entry)}
+                                      onClick={() => handleTimeEntryOnClick(entry)}
                             >
                                 <TableCell>
                                     <div className={"flex flex-row items-center space-x-2"}>
@@ -117,8 +177,8 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries }) => {
                                 </TableCell>
                                 <TableCell>{formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}</TableCell>
                                 <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
-                                    {"differenz"}
-                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleContextMenu(e, entry);}}>
+                                    {calculateDifference(entry) + "h"}
+                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleEntryContextMenu(e, entry);}}>
                                         <EllipsisVertical size={16}/>
                                     </Button>
                                 </TableCell>

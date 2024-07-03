@@ -28,16 +28,14 @@ import {
     AlertRef,
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
-import {Priority, Project, Status, Task, TaskElement, Team, TimeEntry} from "@/types/types";
+import {Absence, Priority, Project, Status, Task, TaskElement, Team, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
-import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {mutateRef} from "@/utils/mutateRef";
 import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
-import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {formatTimeAMPM} from "@/utils/format";
-import entry from "next/dist/server/typescript/rules/entry";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
+import {updateTimEntry} from "@/service/hooks/timeentryHook";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     timeEntry: TimeEntry;
@@ -53,8 +51,8 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
     const timeFromRef = useRef<SearchSelectRef>(null);
     const timeToRef = useRef<SearchSelectRef>(null);
     const [comment, setComment] = useState<string | null>(timeEntry.comment);
-    const [projectSelected, setProjectSelected] = useState<string | null>(timeEntry.project?.name ?? null);
-    const [taskSelected, setTaskSelected] = useState<string | null>(timeEntry.task?.name ?? null);
+    const [projectSelected, setProjectSelected] = useState<Project | null>(timeEntry.project ?? null);
+    const [taskSelected, setTaskSelected] = useState<Task | null>(timeEntry.task ?? null);
     const [timeFrom, setTimeFrom] = useState<string>(timeEntry.startDate.toString());
     const [timeTo, setTimeTo] = useState<string>(timeEntry.endDate.toString());
     const [valid, setValid] = useState<boolean>(true);
@@ -98,24 +96,25 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         const time = formatTimeAMPM(date);
         if (times.includes(time)) return time;
     }
-    const handleProjectChange = (project: string) => {
+
+    const handleProjectChange = (project: Project | null) => {
         if (project === projectSelected){
             setProjectSelected(null);
             projectRef.current?.setValue(null);
             setProjectSelected(null);
         } else {
             setProjectSelected(project);
-            projectRef.current?.setValue(project);
+            projectRef.current?.setValue(project?.name);
         }
     };
 
-    const handleTaskChange = (task: string) => {
+    const handleTaskChange = (task: Task) => {
         if (task === taskSelected){
             setTaskSelected(null);
             taskRef.current?.setValue(null);
         } else {
             setTaskSelected(task);
-            taskRef.current?.setValue(task);
+            taskRef.current?.setValue(task.name);
         }
     };
 
@@ -157,6 +156,19 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
     }
 
     const editTimeEntry = () => {
+        const entry: TimeEntry = {
+            id: timeEntry.id,
+            comment: comment ?? null,
+            project: projectSelected ?? null,
+            task: taskSelected ?? null,
+            startDate: new Date(timeFrom),
+            endDate: new Date(timeTo),
+            createdBy: timeEntry.createdBy,
+            createdDate: timeEntry.createdDate,
+            lastModifiedBy: { id: user.id, name: user.name, email: user.email },
+            lastModifiedDate: new Date(),
+        }
+        const { data, isLoading, error } = updateTimEntry(timeEntry.id, entry);
         dialogRef.current?.close();
         alertRef.current?.show();
     };
@@ -195,10 +207,10 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                         <SearchSelect buttonTitle={"Project"} ref={projectRef} preSelectedValue={timeEntry.project?.name}
                                       icon={<BookCopy size={16}/>} size={"medium"} className={"z-50"}>
                             {!taskSelected && getAllProjects(user).map((project) => (
-                                <SearchSelectItem key={project} title={project} onClick={() => handleProjectChange(project)}></SearchSelectItem>
+                                <SearchSelectItem key={project.id} title={project.name} onClick={() => handleProjectChange(project)}></SearchSelectItem>
                             ))}
                             {taskSelected && getProjectFromTask(user, taskSelected) &&
-                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)}
+                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)?.name as string}
                                                   onClick={() => handleProjectChange(getProjectFromTask(user, taskSelected))}></SearchSelectItem>
                             }
                         </SearchSelect>
@@ -206,10 +218,10 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                         <SearchSelect buttonTitle={"Task"} ref={taskRef} preSelectedValue={timeEntry.task?.name}
                                       icon={<ClipboardList size={16}/>} size={"medium"} className={"z-50"}>
                             {!projectSelected && getAllTasks(user).map((task) => (
-                                <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
+                                <SearchSelectItem key={task.id} title={task.name} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
                             {projectSelected && getTasksFromProject(user, projectSelected).map((task) => (
-                                <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
+                                <SearchSelectItem key={task.id} title={task.name} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
                         </SearchSelect>
                     </div>
@@ -246,7 +258,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                 <AlertIcon icon={<Save/>}/>
                 <AlertContent>
                     <AlertTitle title={"Saved changes"}></AlertTitle>
-                    <AlertDescription description={"You successfully saved your task changes."}></AlertDescription>
+                    <AlertDescription description={"You successfully saved your entry changes."}></AlertDescription>
                 </AlertContent>
             </Alert>
         </>

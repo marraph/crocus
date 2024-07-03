@@ -13,25 +13,34 @@ import {
     AlertRef,
     AlertTitle
 } from "@marraph/daisy/components/alert/Alert";
-import {Task, TaskElement, TimeEntry} from "@/types/types";
+import {Absence, Task, TaskElement, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {deleteTask, updateTask} from "@/service/hooks/taskHook";
 import {mutateRef} from "@/utils/mutateRef";
+import {deleteTimeEntry} from "@/service/hooks/timeentryHook";
+import {deleteAbsence} from "@/service/hooks/absenceHook";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
-    timeEntry: TimeEntry;
+    timeEntry?: TimeEntry;
+    absence?: Absence;
 }
 
-export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEntry, className, ...props}, ref) => {
+export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEntry, absence, className, ...props}, ref) => {
     const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const { data:user, isLoading:userLoading, error:userError } = useUser();
 
+    if (!timeEntry && !absence) return null;
     if (!dialogRef) return null;
     if (!user) return null;
 
     const deleteEntry = () => {
-        const {isLoading, error} = deleteTask(timeEntry.id);
+        if (timeEntry)  {
+            const {wasSuccessful, isLoading, error} = deleteTimeEntry(timeEntry.id);
+        }
+        if (absence) {
+            const {wasSuccessful, isLoading, error} = deleteAbsence(absence.id);
+        }
+
         dialogRef.current?.close();
         alertRef.current?.show();
     }
@@ -41,7 +50,7 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeE
             <div className={cn("flex items-center justify-center")}>
                 <Dialog className={cn("border border-white border-opacity-20 w-3/8 drop-shadow-lg overflow-visible p-4 space-y-4")}{...props} ref={dialogRef}>
                     <div className={cn("flex flex-col space-y-4")}>
-                        <p className={cn("text-white")}>Are you sure you want to delete this entry?</p>
+                        <p className={cn("text-white")}>{"Are you sure you want to delete this" + (timeEntry ? "TimeEntry" : "Absence") + "?"}</p>
                         <div className={cn("flex flex-row space-x-2 justify-end")}>
                             <Button text={"Cancel"} className={cn("h-8")} onClick={() => dialogRef.current?.close()}/>
                             <Button text={"Delete"} onClick={deleteEntry} className={cn("h-8 text-lightred hover:bg-lightred hover:bg-opacity-10 hover:text-lightred")}/>
@@ -53,8 +62,8 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeE
             <Alert duration={3000} ref={alertRef}>
                 <AlertIcon icon={<Trash2 color="#F55050" />}/>
                 <AlertContent>
-                    <AlertTitle title={"Entry deleted successfully!"}></AlertTitle>
-                    <AlertDescription description={"You can no longer interact with this entry."}></AlertDescription>
+                    <AlertTitle title={(timeEntry ? "TimeEntry" : "Absence") + " deleted successfully!"}></AlertTitle>
+                    <AlertDescription description={"You can no longer interact with this " + (timeEntry ? "TimeEntry" : "Absence") + "."}></AlertDescription>
                 </AlertContent>
             </Alert>
         </>

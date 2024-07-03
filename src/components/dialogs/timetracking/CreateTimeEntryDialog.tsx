@@ -9,12 +9,13 @@ import {AlarmClockPlus, BookCopy, ClipboardList, Clock2, Clock8} from "lucide-re
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import { useUser } from "@/context/UserContext";
-import {Project, Task} from "@/types/types";
+import {PreviewUser, Project, Task, TimeEntry} from "@/types/types";
 import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
+import {createTimeEntry} from "@/service/hooks/timeentryHook";
 
 export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = useRef<DialogRef>(null);
@@ -27,8 +28,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
     const timeToRef = useRef<SearchSelectRef>(null);
     const switchRef = useRef<SwitchRef>(null);
     const [comment, setComment] = useState("");
-    const [projectSelected, setProjectSelected] = useState<string | null>(null);
-    const [taskSelected, setTaskSelected] = useState<string | null>(null);
+    const [projectSelected, setProjectSelected] = useState<Project | null>(null);
+    const [taskSelected, setTaskSelected] = useState<Task | null>(null);
     const [timeFrom, setTimeFrom] = useState<string | null>(null);
     const [timeTo, setTimeTo] = useState<string | null>(null);
     const [valid, setValid] = useState<boolean>(false);
@@ -70,24 +71,24 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         "11:00PM", "11:15PM", "11:30PM", "11:45PM"
     ];
 
-    const handleProjectChange = (project: string) => {
+    const handleProjectChange = (project: Project | null) => {
         if (project === projectSelected){
             setProjectSelected(null);
             projectRef.current?.setValue(null);
             setProjectSelected(null);
         } else {
             setProjectSelected(project);
-            projectRef.current?.setValue(project);
+            projectRef.current?.setValue(project?.name);
         }
     };
 
-    const handleTaskChange = (task: string) => {
+    const handleTaskChange = (task: Task) => {
         if (task === taskSelected){
             setTaskSelected(null);
             taskRef.current?.setValue(null);
         } else {
             setTaskSelected(task);
-            taskRef.current?.setValue(task);
+            taskRef.current?.setValue(task.name);
         }
     };
 
@@ -128,7 +129,21 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         setValid(true);
     }
 
-    const createTimeEntry = () => {
+    const createEntry = () => {
+        const newEntry: TimeEntry = {
+            id: user.timeEntries.length + 1,
+            comment: comment ?? null,
+            project: projectSelected ?? null,
+            task: taskSelected ?? null,
+            startDate: datepickerRef.current?.getSelectedValue() as Date,
+            endDate: datepickerRef.current?.getSelectedValue() as Date,
+            createdBy: {id: user.id, name: user.name, email: user.email},
+            createdDate: new Date(),
+            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
+            lastModifiedDate: new Date(),
+        }
+        const { data, isLoading, error } = createTimeEntry(newEntry);
+
         if (switchRef.current?.getValue() === false) {
             dialogRef.current?.close();
         }
@@ -183,10 +198,10 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                         <SearchSelect buttonTitle={"Project"} ref={projectRef}
                                       icon={<BookCopy size={16}/>} size={"medium"} className={"z-50"}>
                             {!taskSelected && getAllProjects(user).map((project) => (
-                                <SearchSelectItem key={project} title={project} onClick={() => handleProjectChange(project)}></SearchSelectItem>
+                                <SearchSelectItem key={project.id} title={project.name} onClick={() => handleProjectChange(project)}></SearchSelectItem>
                             ))}
                             {taskSelected && getProjectFromTask(user, taskSelected) &&
-                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)}
+                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)?.name as string}
                                                   onClick={() => handleProjectChange(getProjectFromTask(user, taskSelected))}></SearchSelectItem>
                             }
                         </SearchSelect>
@@ -194,10 +209,10 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                         <SearchSelect buttonTitle={"Task"} ref={taskRef}
                                       icon={<ClipboardList size={16}/>} size={"medium"} className={"z-50"}>
                             {!projectSelected && getAllTasks(user).map((task) => (
-                                <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
+                                <SearchSelectItem key={task.id} title={task.name} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
                             {projectSelected && getTasksFromProject(user, projectSelected).map((task) => (
-                                <SearchSelectItem key={task} title={task} onClick={() => handleTaskChange(task)}></SearchSelectItem>
+                                <SearchSelectItem key={task.id} title={task.name} onClick={() => handleTaskChange(task)}></SearchSelectItem>
                             ))}
                         </SearchSelect>
                     </div>
@@ -225,7 +240,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                             <span>{"Create more"}</span>
                             <Switch ref={switchRef}></Switch>
                         </div>
-                        <Button text={"Create"} theme={"white"} onClick={createTimeEntry} disabled={!valid}
+                        <Button text={"Create"} theme={"white"} onClick={createEntry} disabled={!valid}
                                 className={cn("w-min h-8", className)}>
                         </Button>
                     </div>
