@@ -14,6 +14,7 @@ type User = {
     password: string
     email: string
     teams: Team[]
+    timeEntries: TimeEntry[]
 }
 
 type Organisation = {

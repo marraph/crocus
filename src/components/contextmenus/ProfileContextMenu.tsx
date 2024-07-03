@@ -16,6 +16,8 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
     const [showProfile, setShowProfile] = useState(false);
     const {data, isLoading, error} = useUser();
 
+    console.log(data)
+
     const menuRef = useOutsideClick(() => {
         setShowProfile(false);
     });

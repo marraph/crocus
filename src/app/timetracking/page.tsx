@@ -1,122 +1,52 @@
 "use client";
 
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
-import {TimeEntry} from "@/types/types";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsenceDialog";
+import {TimeEntry, User} from "@/types/types";
 
-const timeEntry: TimeEntry = {
-    id: 1,
-    task: {
-        id: 1,
-        name: "Implement new feature",
-        description: "Develop and implement the new feature for the application",
-        topic: {
-            id: 1,
-            title: "Development",
-            hexCode: "#FF5733",
-            createdBy: {
-                id: 1,
-                name: "Jane Doe",
-                email: "jane.doe@example.com"
-            },
-            createdDate: new Date('2024-01-01T10:00:00Z'),
-            lastModifiedBy: {
-                id: 1,
-                name: "Jane Doe",
-                email: "jane.doe@example.com"
-            },
-            lastModifiedDate: new Date('2024-01-02T10:00:00Z')
-        },
-        isArchived: false,
-        duration: null,
-        deadline: new Date('2024-07-01T10:00:00Z'),
-        status: "STARTED",
-        priority: "HIGH",
-        createdBy: {
-            id: 1,
-            name: "Jane Doe",
-            email: "jane.doe@example.com"
-        },
-        createdDate: new Date('2024-01-01T10:00:00Z'),
-        lastModifiedBy: {
-            id: 1,
-            name: "Jane Doe",
-            email: "jane.doe@example.com"
-        },
-        lastModifiedDate: new Date('2024-01-02T10:00:00Z')
-    },
-    project: {
-        id: 1,
-        name: "Project Alpha",
-        description: "A project to develop the new feature",
-        priority: "HIGH",
-        isArchived: false,
-        tasks: [],
-        createdBy: {
-            id: 1,
-            name: "Jane Doe",
-            email: "jane.doe@example.com"
-        },
-        createdDate: new Date('2024-01-01T10:00:00Z'),
-        lastModifiedBy: {
-            id: 1,
-            name: "Jane Doe",
-            email: "jane.doe@example.com"
-        },
-        lastModifiedDate: new Date('2024-01-02T10:00:00Z')
-    },
-    comment: "Worked on initial setup and database integration.",
-    startDate: new Date('2024-06-01T08:00:00Z'),
-    endDate: new Date('2024-06-01T12:00:00Z'),
-    dailyEntry: {
-        id: 1,
-        startDate: new Date('2024-06-01T08:00:00Z'),
-        endDate: new Date('2024-06-01T17:00:00Z'),
-        createdBy: {
-            id: 1,
-            name: "Jane Doe",
-            email: "jane.doe@example.com"
-        },
-        createdDate: new Date('2024-01-01T10:00:00Z'),
-        lastModifiedBy: {
-            id: 1,
-            name: "Jane Doe",
-            email: "jane.doe@example.com"
-        },
-        lastModifiedDate: new Date('2024-01-02T10:00:00Z')
-    },
-    createdBy: {
-        id: 1,
-        name: "Jane Doe",
-        email: "jane.doe@example.com"
-    },
-    createdDate: new Date('2024-01-01T10:00:00Z'),
-    lastModifiedBy: {
-        id: 1,
-        name: "Jane Doe",
-        email: "jane.doe@example.com"
-    },
-    lastModifiedDate: new Date('2024-01-02T10:00:00Z')
+function compareDays(date1: Date, date2: Date) {
+    return date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
+}
+
+function getFilterEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
+    if (user === undefined) return undefined;
+    return user.timeEntries.filter((entry) =>
+        compareDays(new Date(entry.startDate), day) &&
+        compareDays(new Date(entry.endDate), day))
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 }
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const [day, setDay] = useState<Date>(new Date());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const entries: TimeEntry[] = [timeEntry];
+
+    const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterEntries(user, day));
+
+    useEffect(() => {
+        if (user?.timeEntries) setDailyEntries(getFilterEntries(user, day));
+    }, [day, user?.timeEntries]);
+
+    if (!user) return null;
 
     const sumDuration = () => {
+        if (dailyEntries === undefined) return 0;
         let totalDuration = 0.0;
 
-        for (const entry of entries) {
-            const duration = entry.endDate.getHours() - entry.startDate.getHours();
+        for (const entry of dailyEntries) {
+            const endDate = new Date(entry.endDate);
+            const startDate = new Date(entry.startDate);
+
+            const duration = endDate.getHours() - startDate.getHours();
             const hours = parseFloat(duration.toString());
             totalDuration += hours;
         }
@@ -157,9 +87,9 @@ export default function Timetracking() {
 
             <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>
                 <>
-                    <TimetrackTable entries={entries}/>
+                    <TimetrackTable entries={dailyEntries}/>
                     <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg px-4 flex flex-row justify-between items-center"}>
-                        <Badge text={entries.length.toString() + (entries.length === 1 ? " ENTRY" : " ENTRIES")}
+                        <Badge text={dailyEntries?.length.toString() + (dailyEntries?.length === 1 ? " ENTRY" : " ENTRIES")}
                                size={"small"}
                                className={"rounded-md bg-selectwhite text-dark my-3"}>
                         </Badge>

@@ -19,8 +19,9 @@ export function formatDate(dateString: string | undefined): string {
 }
 
 export function formatTime(date: Date): string {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+    const newDate = new Date(date);
+    const hours = newDate.getHours();
+    const minutes = newDate.getMinutes();
 
     const formattedHours = hours < 10 ? `0${hours}` : hours;
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
