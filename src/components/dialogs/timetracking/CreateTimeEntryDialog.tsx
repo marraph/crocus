@@ -219,7 +219,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
                         <DatePicker text={"Select a date"} iconSize={16} ref={datepickerRef}
-                                    preSelectedValue={new Date()} size={"medium"} closeButton={false}/>
+                                    preSelectedValue={new Date()} size={"medium"} closeButton={false} dayFormat={"short"}/>
                         <SearchSelect buttonTitle={"From"} preSelectedValue={"09:00AM"} ref={timeFromRef}
                                       icon={<Clock2 size={16}/>} size={"medium"} className={"z-40"}>
                             {times.map((time) => (
@@ -247,7 +247,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<AlarmClockPlus/>}/>
                 <AlertContent>
                     <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>

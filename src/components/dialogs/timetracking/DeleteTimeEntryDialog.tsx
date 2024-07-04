@@ -50,7 +50,7 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeE
             <div className={cn("flex items-center justify-center")}>
                 <Dialog className={cn("border border-white border-opacity-20 w-3/8 drop-shadow-lg overflow-visible p-4 space-y-4")}{...props} ref={dialogRef}>
                     <div className={cn("flex flex-col space-y-4")}>
-                        <p className={cn("text-white")}>{"Are you sure you want to delete this" + (timeEntry ? "TimeEntry" : "Absence") + "?"}</p>
+                        <p className={cn("text-white")}>{"Are you sure you want to delete this " + (timeEntry ? "TimeEntry" : "Absence") + "?"}</p>
                         <div className={cn("flex flex-row space-x-2 justify-end")}>
                             <Button text={"Cancel"} className={cn("h-8")} onClick={() => dialogRef.current?.close()}/>
                             <Button text={"Delete"} onClick={deleteEntry} className={cn("h-8 text-lightred hover:bg-lightred hover:bg-opacity-10 hover:text-lightred")}/>
@@ -59,7 +59,7 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeE
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Trash2 color="#F55050" />}/>
                 <AlertContent>
                     <AlertTitle title={(timeEntry ? "TimeEntry" : "Absence") + " deleted successfully!"}></AlertTitle>

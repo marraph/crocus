@@ -54,6 +54,9 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
         e.preventDefault();
         e.stopPropagation();
 
+        setFocusAbsence(null);
+        setAbsenceContextMenu({ ...absenceContextMenu, visible: false});
+
         setFocusTimeEntry(timeEntry);
 
         if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
@@ -73,6 +76,8 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     const handleAbsenceContextMenu = (e: React.MouseEvent<HTMLElement>, absence: Absence) => {
         e.preventDefault();
         e.stopPropagation();
+        setFocusTimeEntry(null);
+        setEntryContextMenu({ ...entryContextMenu, visible: false});
 
         setFocusAbsence(absence);
 
@@ -119,12 +124,15 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
             {focusAbsence &&
                 <>
                     <DeleteTimeEntryDialog ref={deleteRef} absence={focusAbsence}/>
-                    <EditAbsenceDialog ref={editRef} absence={focusAbsence}></EditAbsenceDialog>
+                    <EditAbsenceDialog ref={editRef} absence={focusAbsence}/>
                 </>
             }
 
-            {(entryContextMenu.visible || absenceContextMenu) &&
+            {entryContextMenu.visible &&
                 <TimeEntryContextMenu x={entryContextMenu.x} y={entryContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
+            }
+            {absenceContextMenu.visible &&
+                <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
             }
 
 
@@ -155,7 +163,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                     </div>
                                 </TableCell>
                                 <TableCell>{}</TableCell>
-                                <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
+                                <TableCell className={ "flex flex-row space-x-4 items-center justify-end"}>
                                     <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleAbsenceContextMenu(e, absence);}}>
                                         <EllipsisVertical size={16}/>
                                     </Button>

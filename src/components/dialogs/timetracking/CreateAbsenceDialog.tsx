@@ -98,12 +98,12 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                     </Textarea>
 
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
-                        <Combobox buttonTitle={"Absence type"} icon={<CircleOff size={14} className={"mr-2"}/>} ref={absenceRef}>
+                        <Combobox buttonTitle={"Absence Type"} icon={<CircleOff size={14} className={"mr-2"}/>} ref={absenceRef}>
                             {absenceTypes.map(((absence, index) =>
                                 <ComboboxItem key={index} title={absence} onClick={() => handleAbsenceChange(absence)}/>
                             ))}
                         </Combobox>
-                        <DateRangePicker text={"Select your absence time"} iconSize={16} closeButton={false} ref={dateRef}/>
+                        <DateRangePicker text={"Select your absence time"} iconSize={16} closeButton={false} ref={dateRef} dayFormat={"long"}/>
                     </div>
 
                     <Seperator/>
@@ -115,7 +115,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<TreePalm/>}/>
                 <AlertContent>
                     <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>

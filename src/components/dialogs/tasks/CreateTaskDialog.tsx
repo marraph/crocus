@@ -173,7 +173,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
                                     ))}
                                 </Combobox>
                             }
-                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef} closeButton={true}/>
+                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef} closeButton={true} dayFormat={"short"}/>
                         </div>
 
                         <div className={cn("flex flex-row space-x-2", className)}>
@@ -213,7 +213,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
                 </div>
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<SquareCheckBig />}/>
                 <AlertContent>
                     <AlertTitle title={"Task created successfully!"}></AlertTitle>

@@ -19,13 +19,14 @@ import {useUser} from "@/context/UserContext";
 import {formatTimeAMPM} from "@/utils/format";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {BookCopy, ClipboardList, Clock2, Clock8, Save} from "lucide-react";
-import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
+import {BookCopy, ClipboardList, Clock2, Clock8, Save, TreePalm, Users} from "lucide-react";
+import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject, getTeams} from "@/utils/getTypes";
 import {cn} from "@/utils/cn";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DateRangePicker, DateRangePickerRef} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
 import {DateRange} from "react-day-picker";
 import {updateAbsence} from "@/service/hooks/absenceHook";
+import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
     absence: Absence;
@@ -35,19 +36,23 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
     const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
     const commentRef = useRef<TextareaRef>(null);
+    const absenceRef = useRef<ComboboxRef>(null);
     const dateRef = useRef<DateRangePickerRef>(null);
     const [comment, setComment] = useState<string | null>(absence.comment);
+    const [absenceType, setAbsenceType] = useState<string | null>(absence.absenceType.toString());
     const [valid, setValid] = useState<boolean>(true);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     if (!user) return null;
     if (!dialogRef) return null;
 
+    const absenceTypes = ["VACATION", "SICK"];
+
     const editAbsence = () => {
         const newAbsence: Absence = {
             id: absence.id,
-            startDate: dateRef.current?.value?.from ?? absence.startDate,
-            endDate: dateRef.current?.value?.to ?? absence.endDate,
+            startDate: dateRef.current?.getSelectedValue()?.from ?? absence.startDate,
+            endDate: dateRef.current?.getSelectedValue()?.to ?? absence.endDate,
             comment: comment ?? null,
             absenceType: absenceRef.current?.getValue() as AbsenceType,
             createdBy: absence.createdBy,
@@ -64,9 +69,21 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
     const handleCloseClick = () => {
         setComment("");
         dialogRef.current?.close();
-        commentRef.current?.reset();
+        commentRef.current?.setValue(comment ?? "");
+        absenceRef.current?.setValue(absenceType);
         const dateRange: DateRange = { from: absence.startDate, to: absence.endDate };
         dateRef.current?.setValue(dateRange ?? null);
+    };
+
+    const handleAbsenceTypeChange = (type: string) => {
+
+        if (type === absenceType){
+            setAbsenceType(null);
+            absenceRef.current?.setValue(null);
+        } else {
+            setAbsenceType(type);
+            absenceRef.current?.setValue(type);
+        }
     };
 
     return (
@@ -74,7 +91,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
             <div className={"flex items-center justify-center"}>
                 <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={dialogRef}>
                     <div className={"flex flex-row justify-between px-4 pb-2"}>
-                        <span className={"text-md text-white pt-4"}>Edit entry</span>
+                        <span className={"text-md text-white pt-4"}>Edit absence</span>
                         <CloseButton className={"h-min w-min mt-4"} onClick={() => handleCloseClick()} />
                     </div>
                     <Seperator />
@@ -84,9 +101,15 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
                               ref={commentRef}>
                     </Textarea>
 
-
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
-                        <DateRangePicker text={"Select a date"} iconSize={16} ref={dateRef} size={"medium"} closeButton={false}/>
+                        <DateRangePicker text={"Select a date"} iconSize={16} ref={dateRef} size={"medium"}
+                                         closeButton={false} dayFormat={"long"}/>
+                        <Combobox buttonTitle={"Absence Type"} icon={<TreePalm size={16} className={"mr-2"}/>} ref={absenceRef}
+                                  preSelectedValue={absence.absenceType} onChange={() => handleAbsenceTypeChange}>
+                            {absenceTypes.map((type) => (
+                                <ComboboxItem key={type} title={type} onClick={() => handleAbsenceTypeChange(type)}/>
+                            ))}
+                        </Combobox>
                     </div>
 
 
@@ -100,7 +123,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Save/>}/>
                 <AlertContent>
                     <AlertTitle title={"Saved changes"}></AlertTitle>

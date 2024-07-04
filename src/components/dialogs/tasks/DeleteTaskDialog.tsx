@@ -58,7 +58,7 @@ export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElemen
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Trash2 color="#F55050" />}/>
                 <AlertContent>
                     <AlertTitle title={"Task deleted successfully!"}></AlertTitle>

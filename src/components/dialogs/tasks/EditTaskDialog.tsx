@@ -203,7 +203,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
                         <div className={"flex flex-col space-y-1 z-50"}>
                             <span className={"text-gray text-xs"}>Deadline</span>
                             <DatePicker size={"medium"} iconSize={16} text={"Deadline"} ref={datePickerRef}
-                                        preSelectedValue={taskElement.deadline} closeButton={true}/>
+                                        preSelectedValue={taskElement.deadline} closeButton={true} dayFormat={"short"}/>
                         </div>
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 py-4"}>
@@ -256,7 +256,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Save/>}/>
                 <AlertContent>
                     <AlertTitle title={"Saved changes"}></AlertTitle>

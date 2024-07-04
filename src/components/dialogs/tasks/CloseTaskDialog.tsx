@@ -42,6 +42,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
             topic: taskElement.topic,
             isArchived: true,
             duration: taskElement.duration,
+            bookedDuration: taskElement.bookedDuration,
             deadline: taskElement.deadline,
             status: taskElement.status,
             priority: taskElement.priority,
@@ -84,7 +85,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<CheckCheck />}/>
                 <AlertContent>
                     <AlertTitle title={"Task closed successfully!"}></AlertTitle>

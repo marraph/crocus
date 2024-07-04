@@ -227,7 +227,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                     </div>
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
-                        <DatePicker text={"Select a date"} iconSize={16} ref={datepickerRef}
+                        <DatePicker text={"Select a date"} iconSize={16} ref={datepickerRef} dayFormat={"short"}
                                     preSelectedValue={timeEntry.startDate} size={"medium"} closeButton={false}/>
                         <SearchSelect buttonTitle={"From"} preSelectedValue={validateTime(timeEntry.startDate)} ref={timeFromRef}
                                       icon={<Clock2 size={16}/>} size={"medium"} className={"z-40"}>
@@ -254,7 +254,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Save/>}/>
                 <AlertContent>
                     <AlertTitle title={"Saved changes"}></AlertTitle>

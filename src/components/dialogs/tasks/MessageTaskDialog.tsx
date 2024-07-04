@@ -57,7 +57,7 @@ export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({taskElemen
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<MessageSquarePlus />}/>
                 <AlertContent>
                     <AlertTitle title={"Added Message"}></AlertTitle>

@@ -29,11 +29,14 @@ function getFilterEntries(user: User | undefined, day: Date): TimeEntry[] | unde
 
 function getFilterAbsences(user: User | undefined, day: Date) {
     if (user === undefined) return undefined;
-    return user.absences.filter((absence) =>
-        new Date(absence.startDate) <= day ||
-        new Date(absence.endDate) >= day)
-        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-    );
+    const comparisonDay = new Date(day).setHours(0, 0, 0, 0);
+
+    return user.absences.filter((absence) => {
+        const startDate = new Date(absence.startDate).setHours(0, 0, 0, 0);
+        const endDate = new Date(absence.endDate).setHours(0, 0, 0, 0);
+
+        return startDate <= comparisonDay && endDate >= comparisonDay;
+    }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 }
 
 export default function Timetracking() {
@@ -47,7 +50,7 @@ export default function Timetracking() {
     useEffect(() => {
         if (user?.timeEntries) setDailyEntries(getFilterEntries(user, day));
         if (user?.absences) setDailyAbsences(getFilterAbsences(user, day));
-    }, [day, user?.timeEntries]);
+    }, [day, user?.timeEntries, user?.absences]);
 
     if (!user) return null;
 
@@ -78,6 +81,10 @@ export default function Timetracking() {
         datepickerRef.current?.setValue(newDate);
     }
 
+    const handleDayChange = (day: Date) => {
+        // setDay(day);
+    }
+
     return (
         <div className={"h-full flex flex-col"}>
             <div className={"text-nowrap flex flex-row items-center justify-between"}>
@@ -88,7 +95,8 @@ export default function Timetracking() {
                     <Button text={""} className={"h-8 w-10 p-0 pl-2"} onClick={() => handleDayAfter()}>
                         <ChevronRight/>
                     </Button>
-                    <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day} ref={datepickerRef} closeButton={false}/>
+                    <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day}
+                                ref={datepickerRef} closeButton={false} onClick={() => handleDayChange} dayFormat={"long"}/>
                 </div>
                 <div className={"flex flex-row justify-end"}>
                     <div className={"mr-2"}>

@@ -83,7 +83,7 @@ export const JoinTeamDialog = forwardRef<DialogRef, DialogHTMLAttributes<HTMLDia
                 </Dialog>
             </div>
 
-            <Alert duration={3000} ref={alertRef}>
+            <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Users color="#F55050" />}/>
                 <AlertContent>
                     <AlertTitle title={"Joined Team successfully!"}></AlertTitle>
