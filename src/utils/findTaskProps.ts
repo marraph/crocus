@@ -20,6 +20,7 @@ export const findTaskProps = (user: User | undefined, taskId: number): PropsCont
                         topic: task.topic,
                         isArchived: task.isArchived,
                         duration: task.duration,
+                        bookedDuration: task.bookedDuration,
                         deadline: task.deadline,
                         status: task.status,
                         priority: task.priority,
