@@ -19,7 +19,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <html lang="en">
             <body className={roboto.className}>
                 <NavigationProvider>
-                    <UserProvider id={324}>
+                    <UserProvider id={6}>
                         <div className={"flex flex-row"}>
                             <Drawer></Drawer>
                             <div className={"w-full flex flex-col space-y-4 p-8"}>
