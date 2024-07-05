@@ -10,7 +10,7 @@ import {LoaderCircle, OctagonAlert} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {FilterRef} from "@marraph/daisy/components/filter/Filter";
-import {Skeleton, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 
 export default function Tasks() {
@@ -40,6 +40,7 @@ export default function Tasks() {
                         topic: task.topic,
                         isArchived: task.isArchived,
                         duration: task.duration,
+                        bookedDuration: task.bookedDuration,
                         deadline: task.deadline,
                         status: task.status,
                         priority: task.priority,
@@ -75,7 +76,7 @@ export default function Tasks() {
     if (User === undefined) return null;
 
     return (
-        <div className={"h-full flex flex-col"}>
+        <div className={"h-screen flex flex-col space-y-4 p-8"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
                     <CreateTaskDialog/>
@@ -89,7 +90,9 @@ export default function Tasks() {
             </div>
 
             {viewMode ?
-                <TaskTable taskElements={taskElements}/>
+                <div className={"border border-white border-opacity-20 rounded-lg flex flex-col h-max overflow-hidden"}>
+                    <TaskTable taskElements={taskElements}/>
+                </div>
                 :
                 <KanbanView taskElements={taskElements}/>
             }

@@ -50,9 +50,9 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                     :
                 <div className={cn("flex flex-row items-center space-x-2")}>
                     <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
-                    <div className={cn("flex flex-col items-start truncate ...")}>
-                        <span className={"text-sm"}>{data?.name}</span>
-                        <span className={cn("text-gray text-xs")}>{data?.teams[0].organisation.name}</span>
+                    <div className={cn("flex flex-col items-start overflow-hidden")}>
+                        <span className={"text-sm truncate w-full"}>{data?.name}</span>
+                        <span className={cn("text-gray text-xs truncate w-full")}>{data?.teams[0].organisation.name}</span>
                     </div>
                 </div>
                 }

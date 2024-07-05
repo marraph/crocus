@@ -30,7 +30,7 @@ export default function TasksID() {
     const {taskElement} = findTaskProps(user, id);
 
     return (
-        <div className={"h-full flex flex-col space-y-4"}>
+        <div className={"h-full flex flex-col space-y-4 p-8"}>
             <div className={"w-full flex flex-row justify-between"}>
                 <Breadcrump pastText={"Tasks"} nowText={taskElement.name} className={"h-8"}
                             onClick={() => router.push("/tasks/")}/>
@@ -105,7 +105,8 @@ export default function TasksID() {
                         </div>
                         <span>{
                             !taskElement.bookedDuration ? 0 : taskElement.bookedDuration?.toString()
-                            + "/" + taskElement.duration?.toString() + " Hours"}</span>
+                            + "/" + taskElement.duration?.toString() + " Hours"}
+                        </span>
                     </div>
                     <Seperator className={"w-full py-4"}/>
                     <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>

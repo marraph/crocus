@@ -11,6 +11,7 @@ import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsenceDialog";
 import {Absence, TimeEntry, User} from "@/types/types";
 import {abs} from "stylis";
+import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 
 function compareDays(date1: Date, date2: Date) {
     return date1.getFullYear() === date2.getFullYear() &&
@@ -54,21 +55,6 @@ export default function Timetracking() {
 
     if (!user) return null;
 
-    const sumDuration = () => {
-        if (dailyEntries === undefined) return 0;
-        let totalDuration = 0.0;
-
-        for (const entry of dailyEntries) {
-            const endDate = new Date(entry.endDate);
-            const startDate = new Date(entry.startDate);
-
-            const duration = endDate.getHours() - startDate.getHours();
-            const hours = parseFloat(duration.toString());
-            totalDuration += hours;
-        }
-        return totalDuration;
-    }
-
     const handleDayBefore = () => {
         let newDate = new Date(day.setDate(day.getDate() - 1));
         setDay(newDate);
@@ -86,7 +72,7 @@ export default function Timetracking() {
     }
 
     return (
-        <div className={"h-full flex flex-col"}>
+        <div className={"h-screen flex flex-col p-8"}>
             <div className={"text-nowrap flex flex-row items-center justify-between"}>
                 <div className={"w-full flex flex-row items-center space-x-2"}>
                     <Button text={""} className={"h-8 w-10 p-0 pl-1.5"} onClick={() => handleDayBefore()}>
@@ -106,22 +92,11 @@ export default function Timetracking() {
                 </div>
             </div>
 
-            <div className={"w-full h-full rounded-lg flex flex-col items-stretch"}>
-                <>
-                    <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                    <div className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg px-4 flex flex-row justify-between items-center"}>
-                        <Badge text={dailyEntries?.length.toString() + (dailyEntries?.length === 1 ? " ENTRY" : " ENTRIES")}
-                               size={"small"}
-                               className={"rounded-md bg-selectwhite text-dark my-3"}>
-                        </Badge>
-                        <div className={"flex flex-row items-center space-x-2"}>
-                            <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
-                            <span className={"text-base text-white"}>{sumDuration() + "h"}</span>
-                        </div>
-                    </div>
-                </>
+            <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
+                <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
+                <div className={"flex-grow bg-black border border-y-0 border-white border-opacity-20"}></div>
+                <TimeEntryDaySummary entries={dailyEntries}/>
             </div>
-
         </div>
     );
 }

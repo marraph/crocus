@@ -22,7 +22,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
                     <UserProvider id={6}>
                         <div className={"flex flex-row"}>
                             <Drawer></Drawer>
-                            <div className={"w-full flex flex-col space-y-4 p-8"}>
+                            <div className={"w-full flex flex-col space-y-4"}>
                                 {children}
                             </div>
                         </div>

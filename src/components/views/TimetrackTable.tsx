@@ -135,66 +135,63 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                 <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
             }
 
-
-            <div className={"w-full h-[796px] text-xs flex pt-4"}>
-                <Table className={"bg-black w-full no-scrollbar rounded-b-none"}>
-                    <TableHeader>
-                        <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
-                        {header.map((header) => (
-                                <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key}>
-                                    <span className={"flex flex-row items-center"}>
-                                        {header.label}
-                                    </span>
-                                </TableHead>
-                            ))}
+            <Table className={"bg-black w-full no-scrollbar rounded-b-none text-xs"}>
+                <TableHeader>
+                    <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
+                    {header.map((header) => (
+                            <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key}>
+                                <span className={"flex flex-row items-center"}>
+                                    {header.label}
+                                </span>
+                            </TableHead>
+                        ))}
+                    </TableRow>
+                </TableHeader>
+                <TableBody className={"text-sm"}>
+                    {absences?.map((absence, index) => (
+                        <TableRow key={index}
+                                  className={cn("h-min", index === getElementLength() - 1 ? " border-b border-b-white" : "")}
+                                  onContextMenu={(event) => handleAbsenceContextMenu(event, absence)}
+                                  onClick={() => handleAbsenceOnClick(absence)}
+                        >
+                            <TableCell>
+                                <div className={"flex flex-row items-center space-x-2"}>
+                                    <AbsenceBadge title={"Absence: " + absence.absenceType.toString()}/>
+                                    <span>{absence.comment}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell>{}</TableCell>
+                            <TableCell className={ "flex flex-row space-x-4 items-center justify-end"}>
+                                <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleAbsenceContextMenu(e, absence);}}>
+                                    <EllipsisVertical size={16}/>
+                                </Button>
+                            </TableCell>
                         </TableRow>
-                    </TableHeader>
-                    <TableBody className={"text-sm"}>
-                        {absences?.map((absence, index) => (
-                            <TableRow key={index}
-                                      className={index === getElementLength() - 1 ? " border-b border-b-white" : ""}
-                                      onContextMenu={(event) => handleAbsenceContextMenu(event, absence)}
-                                      onClick={() => handleAbsenceOnClick(absence)}
-                            >
-                                <TableCell>
-                                    <div className={"flex flex-row items-center space-x-2"}>
-                                        <AbsenceBadge title={"Absence: " + absence.absenceType.toString()}/>
-                                        <span>{absence.comment}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{}</TableCell>
-                                <TableCell className={ "flex flex-row space-x-4 items-center justify-end"}>
-                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleAbsenceContextMenu(e, absence);}}>
-                                        <EllipsisVertical size={16}/>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {entries?.map((entry, index) => (
-                            <TableRow key={index}
-                                      className={index === entries?.length - 1 ? " border-b border-b-white" : ""}
-                                      onContextMenu={(event) => handleEntryContextMenu(event, entry)}
-                                      onClick={() => handleTimeEntryOnClick(entry)}
-                            >
-                                <TableCell>
-                                    <div className={"flex flex-row items-center space-x-2"}>
-                                        {entry.project && <ProjectBadge title={entry.project.name}/>}
-                                        {entry.task && <EntryTitleBadge title={entry.task.name}/>}
-                                        <span>{entry.comment}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}</TableCell>
-                                <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
-                                    {calculateDifference(entry) + "h"}
-                                    <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleEntryContextMenu(e, entry);}}>
-                                        <EllipsisVertical size={16}/>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
+                    ))}
+                    {entries?.map((entry, index) => (
+                        <TableRow key={index}
+                                  className={index === entries?.length - 1 ? " border-b border-b-white" : ""}
+                                  onContextMenu={(event) => handleEntryContextMenu(event, entry)}
+                                  onClick={() => handleTimeEntryOnClick(entry)}
+                        >
+                            <TableCell>
+                                <div className={"flex flex-row items-center space-x-2"}>
+                                    {entry.project && <ProjectBadge title={entry.project.name}/>}
+                                    {entry.task && <EntryTitleBadge title={entry.task.name}/>}
+                                    <span>{entry.comment}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell>{formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}</TableCell>
+                            <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
+                                {calculateDifference(entry) + "h"}
+                                <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleEntryContextMenu(e, entry);}}>
+                                    <EllipsisVertical size={16}/>
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
         </>
     );
 }

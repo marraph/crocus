@@ -12,9 +12,9 @@ export const PriorityBadge: React.FC<Props> = ({ priority, className }) => {
 
     return (
         <>
-            {priority === "LOW" && <SignalLow strokeWidth={3} className={className}/>}
-            {priority === 'MEDIUM' && <SignalMedium strokeWidth={3} className={className}/>}
-            {priority === 'HIGH' && <SignalHigh strokeWidth={3} className={className}/>}
+            {priority === "LOW" && <SignalLow strokeWidth={3} size={16} className={className}/>}
+            {priority === 'MEDIUM' && <SignalMedium strokeWidth={3} size={16} className={className}/>}
+            {priority === 'HIGH' && <SignalHigh strokeWidth={3} size={16} className={className}/>}
         </>
     )
 }

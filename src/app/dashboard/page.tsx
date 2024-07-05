@@ -12,6 +12,7 @@ import {Button} from "@marraph/daisy/components/button/Button";
 import {useRouter} from "next/navigation";
 import {formatDate} from "@/utils/format";
 import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
+import {ProjectBadge} from "@/components/badges/ProjectBadge";
 
 const notifications = [
     { sender: "John Doe", task: "Task 1", date: new Date("2024-06-29T08:00:00"), type: "message" },
@@ -50,7 +51,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className={"h-full flex flex-col justify-between"}>
+        <div className={"h-full flex flex-col justify-between p-8 "}>
             <div className={"flex flex-row justify-between items-center"}>
                 <div className={"pt-4"}>
                     <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
@@ -113,11 +114,11 @@ export default function Dashboard() {
                                  "hover:bg-selected hover:cursor-pointer"}
                              onClick={() => router.push(`/tasks/${task.id}`)}>
                             <div className={"flex flex-row space-x-8 items-center pl-4"}>
+                                <ProjectBadge title={task.project?.name ?? ""}/>
                                 <span className={"text-gray group-hover:text-white"}>{task.name}</span>
-                                <PriorityBadge priority={task.priority} className={"text-gray group-hover:text-white"}/>
                             </div>
                             <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                                <StatusBadge title={task.status?.toString()}/>
+                            <StatusBadge title={task.status?.toString()}/>
                                 <span className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
                                 <ProfileBadge name={task.createdBy?.name} />
                             </div>
