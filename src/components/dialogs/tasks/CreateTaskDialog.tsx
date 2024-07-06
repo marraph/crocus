@@ -1,8 +1,16 @@
 "use client";
 
-import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {
+    forwardRef,
+    HTMLAttributes,
+    MutableRefObject,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState
+} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, SquarePen, Tag, Users} from "lucide-react";
 import {cn} from "@/utils/cn";
@@ -24,11 +32,25 @@ import {useUser} from "@/context/UserContext";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getProject, getProjects, getTeams, getTopicItem, getTopics} from "@/utils/getTypes";
+import {mutateRef} from "@/utils/mutateRef";
 
 
-export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({className, ...props}, ref) => {
-    const dialogRef = useRef<DialogRef>(null);
+type InitialValues = {
+    title: string;
+    description: string;
+    team: string | null;
+    project: string | null;
+    topic: string | null;
+    status: string | null;
+    priority: string | null;
+    deadline: Date | null;
+    duration: string;
+}
+
+export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>(({className}, ref) => {
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
+    const switchRef = useRef<SwitchRef>(null);
     const teamRef = useRef<ComboboxRef>(null);
     const projectRef = useRef<ComboboxRef>(null);
     const topicRef = useRef<ComboboxRef>(null);
@@ -36,29 +58,37 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
     const priorityRef = useRef<ComboboxRef>(null);
     const datePickerRef = useRef<DatepickerRef>(null);
     const durationRef = useRef<InputRef>(null);
-    const switchRef = useRef<SwitchRef>(null);
-    const [titleValue, setTitleValue] = useState("");
-    const [descriptionValue, setDescriptionValue] = useState("");
-    const [durationValue, setDurationValue] = useState("");
+
+    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
+    const priorities = ["LOW", "MEDIUM", "HIGH"];
+    const initialValues: InitialValues = {
+        title: "",
+        description: "",
+        team: null,
+        project: null,
+        topic: null,
+        status: null,
+        priority: null,
+        deadline: null,
+        duration: ""
+    }
+    const [values, setValues] = useState(initialValues);
     const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
     const [valid, setValid] = useState(false);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     useEffect(() => {
         validateInput();
-    }, [titleValue, durationValue]);
+    }, [values]);
 
+    if (!dialogRef) return null;
     if (user === undefined) return null;
-
-    const status = ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"];
-
-    const priorities = ["LOW", "MEDIUM", "HIGH"];
 
     function handleCreateClick(user: User) {
         const newTask: TaskCreation = {
             id: 0,
-            name: titleValue,
-            description: descriptionValue,
+            name: values.title,
+            description: values.description,
             topic: getTopicItem(user, topicRef.current?.getValue() as string) ?? null,
             status: statusRef.current?.getValue() as Status ?? null,
             priority: priorityRef.current?.getValue() as Priority ?? null,
@@ -74,10 +104,6 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
         }
         const {data:task, isLoading:taskLoading, error:taskError} = createTask(newTask);
 
-        if (switchRef.current?.getValue() === false) {
-            dialogRef.current?.close();
-        }
-
         teamRef.current?.reset();
         projectRef.current?.reset();
         topicRef.current?.reset();
@@ -86,16 +112,13 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
         datePickerRef.current?.reset();
         durationRef.current?.reset();
         switchRef.current?.setValue(false);
-        setTitleValue("");
-        setDescriptionValue("");
-        setDurationValue("");
+        setValues(initialValues);
         setValid(false);
         setTeamSelected({isSelected: false, team: ""})
         alertRef.current?.show();
     }
 
     const handleCloseClick = () => {
-        dialogRef.current?.close();
         teamRef.current?.reset();
         projectRef.current?.reset();
         topicRef.current?.reset();
@@ -104,20 +127,20 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
         datePickerRef.current?.reset();
         durationRef.current?.reset();
         switchRef.current?.setValue(false);
-        setTitleValue("");
-        setDescriptionValue("");
-        setDurationValue("");
+        setValues(initialValues);
         setValid(false);
         setTeamSelected({isSelected: false, team: ""})
     }
 
     const validateInput = () => {
-        if (durationValue.trim() !== "" && isNaN(parseFloat(durationValue))) {
+        if (!values.duration) return;
+
+        if (values.duration.trim() !== "" && isNaN(parseFloat(values.duration))) {
             setValid(false);
             return;
         }
 
-        if (titleValue.trim() === "") {
+        if (values.title.trim() === "") {
             setValid(false);
             return;
         }
@@ -147,77 +170,125 @@ export const CreateTaskDialog = forwardRef<DialogRef, React.DialogHTMLAttributes
 
     return (
         <>
-            <Button text={"Create Task"} theme={"white"} size={"small"} className={"w-min h-8"} onClick={() => dialogRef.current?.show()}>
-                <SquarePen size={20} className={"mr-2"}/>
-            </Button>
-
-            <Dialog className={cn("border border-white border-opacity-20 left-1/3 w-1/3 drop-shadow-lg overflow-visible", className)} {...props} ref={dialogRef}>
-                <div className={cn("flex flex-row justify-between space-x-4 px-4 pt-4 pb-2", className)}>
+            <Dialog width={600} ref={dialogRef}>
+                <DialogHeader title={"New Task"}
+                              dialogRef={dialogRef}
+                              switchRef={switchRef as MutableRefObject<SwitchRef>}
+                              onClose={handleCloseClick}
+                />
+                <DialogContent>
                     <div className={cn("flex flex-col flex-grow space-y-2", className)}>
-
-                        <span className={cn("text-lg text-white", className)}>{"New Task"}</span>
-                        <input placeholder={"Task Title"} id={"title"} value={titleValue} onChange={(e) => setTitleValue(e.target.value)}
-                               className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}/>
-                        <Textarea placeholder={"Add Description..."} onChange={(e) => setDescriptionValue(e.target.value)} className={cn("h-20 bg-black placeholder-placeholder focus:text-gray", className)} value={descriptionValue} />
-
+                        <input placeholder={"Task Title"}
+                               value={values.title}
+                               onChange={(e) => values.title == e.target.value}
+                               className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}
+                        />
+                        <Textarea placeholder={"Add Description..."}
+                                  onChange={(e) => values.description == e.target.value}
+                                  className={cn("h-20 bg-black placeholder-placeholder focus:text-gray", className)}
+                                  value={values.description}
+                        />
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
-                            <Combobox buttonTitle={"Team"} size={"small"} icon={<Users size={12} className={"mr-1"}/>} ref={teamRef}>
+                            <Combobox buttonTitle={"Team"}
+                                      size={"small"}
+                                      icon={<Users size={12} className={"mr-1"}/>}
+                                      ref={teamRef}
+                            >
                                 {getTeams(user).map((team) => (
-                                    <ComboboxItem title={team} key={team} size={"small"} onClick={() => setTeamSelected({isSelected: true, team: team})}/>
+                                    <ComboboxItem title={team}
+                                                  key={team}
+                                                  size={"small"}
+                                                  onClick={() => setTeamSelected({isSelected: true, team: team})}
+                                    />
                                 ))}
                             </Combobox>
                             {teamSelected.isSelected &&
-                                <Combobox buttonTitle={"Project"} size={"small"} icon={<BookCopy size={12} className={"mr-1"}/>} ref={projectRef}>
+                                <Combobox buttonTitle={"Project"}
+                                          size={"small"}
+                                          icon={<BookCopy size={12} className={"mr-1"}/>}
+                                          ref={projectRef}
+                                >
                                     {getProjects(user, teamSelected.team).map((project) => (
-                                        <ComboboxItem title={project} key={project} size={"small"}/>
+                                        <ComboboxItem title={project}
+                                                      key={project}
+                                                      size={"small"}
+                                        />
                                     ))}
                                 </Combobox>
                             }
-                            <DatePicker text={"Deadline"} iconSize={12} size={"small"} ref={datePickerRef} closeButton={true} dayFormat={"short"}/>
+                            <DatePicker text={"Deadline"}
+                                        iconSize={12}
+                                        size={"small"}
+                                        ref={datePickerRef}
+                                        closeButton={true}
+                                        dayFormat={"short"}
+                            />
                         </div>
-
                         <div className={cn("flex flex-row space-x-2", className)}>
-                            <Combobox buttonTitle={"Topic"} size={"small"} icon={<Tag size={12} className={"mr-1"}/>} ref={topicRef}>
+                            <Combobox buttonTitle={"Topic"}
+                                      size={"small"}
+                                      icon={<Tag size={12} className={"mr-1"}/>}
+                                      ref={topicRef}
+                            >
                                 {getTopics(user).map((topic) => (
-                                    <ComboboxItem title={topic} key={topic} size={"small"}/>
+                                    <ComboboxItem title={topic}
+                                                  key={topic}
+                                                  size={"small"}
+                                    />
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Status"} size={"small"} icon={<CircleAlert size={12} className={"mr-1"}/>} ref={statusRef}>
+                            <Combobox buttonTitle={"Status"}
+                                      size={"small"}
+                                      icon={<CircleAlert size={12} className={"mr-1"}/>}
+                                      ref={statusRef}
+                            >
                                 {status.map((status) => (
-                                    <ComboboxItem title={status} key={status} size={"small"}/>
+                                    <ComboboxItem title={status}
+                                                  key={status}
+                                                  size={"small"}
+                                    />
                                 ))}
                             </Combobox>
-                            <Combobox buttonTitle={"Priority"} size={"small"} icon={<LineChart size={12} className={"mr-1"}/>} ref={priorityRef}>
+                            <Combobox buttonTitle={"Priority"}
+                                      size={"small"}
+                                      icon={<LineChart size={12} className={"mr-1"}/>}
+                                      ref={priorityRef}
+                            >
                                 {priorities.map((priority) => (
-                                    <ComboboxItem title={priority} key={priority} size={"small"}/>
+                                    <ComboboxItem title={priority}
+                                                  key={priority}
+                                                  size={"small"}
+                                    />
                                 ))}
                             </Combobox>
-                            <Input placeholder={"Duration in Hours"} elementSize={"small"} className={"w-28 placeholder-gray"} ref={durationRef}
-                                   value={durationValue} icon={<Hourglass size={12}/>}
-                                   onChange={(e) => setDurationValue(e.target.value)}
-                                   onKeyDown={handleKeyDown}>
-                            </Input>
+                            <Input placeholder={"Duration in Hours"}
+                                   elementSize={"small"}
+                                   className={"w-28 placeholder-gray"}
+                                   ref={durationRef}
+                                   value={values.duration}
+                                   icon={<Hourglass size={12}/>}
+                                   onChange={(e) => values.duration == e.target.value}
+                                   onKeyDown={handleKeyDown}
+                            />
                         </div>
                     </div>
-                    <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
-                </div>
-                <Seperator/>
-                <div className={cn("flex flex-row justify-end items-center space-x-16 px-4 py-2", className)}>
-                    <div className={"flex flex-row items-center space-x-2 text-gray text-xs"}>
-                        <span>{"Create more"}</span>
-                        <Switch ref={switchRef}></Switch>
-                    </div>
-                    <Button text={"Create"} theme={"white"} onClick={() => handleCreateClick} disabled={!valid}
-                            className={"w-min h-8"}>
-                    </Button>
-                </div>
+                </DialogContent>
+                <DialogFooter saveButtonTitle={"Create"}
+                              cancelButton={true}
+                              switchButton={true}
+                              dialogRef={dialogRef}
+                              switchRef={switchRef as MutableRefObject<SwitchRef>}
+                              onClick={() => handleCreateClick(user)}
+                              onClose={handleCloseClick}
+                />
             </Dialog>
 
             <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<SquareCheckBig />}/>
+                <AlertIcon icon={<SquareCheckBig/>}/>
                 <AlertContent>
                     <AlertTitle title={"Task created successfully!"}></AlertTitle>
-                    <AlertDescription description={"You can now work with the task in your task-overview."}></AlertDescription>
+                    <AlertDescription
+                        description={"You can now work with the task in your task-overview."}></AlertDescription>
                 </AlertContent>
             </Alert>
         </>

@@ -76,9 +76,9 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         <>
             {focusTaskElement &&
                 <>
-                    <DeleteTaskDialog ref={deleteRef} taskElement={focusTaskElement} buttonTrigger={false}/>
-                    <CloseTaskDialog ref={closeRef} taskElement={focusTaskElement} buttonTrigger={false}/>
-                    <EditTaskDialog ref={editRef} taskElement={focusTaskElement} buttonTrigger={false}/>
+                    <DeleteTaskDialog ref={deleteRef} taskElement={focusTaskElement}/>
+                    <CloseTaskDialog ref={closeRef} taskElement={focusTaskElement}/>
+                    <EditTaskDialog ref={editRef} taskElement={focusTaskElement}/>
                 </>
             }
 

@@ -3,7 +3,7 @@
 import React, {forwardRef, useEffect, useRef, useState} from "react";
 import {BookCopy, CircleAlert, Hourglass, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
@@ -26,11 +26,10 @@ import {getProjects, getTeams, getTopicItem, getTopics} from "@/utils/getTypes";
 import {updateTask} from "@/service/hooks/taskHook";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
-    buttonTrigger: boolean;
     taskElement: TaskElement;
 }
 
-export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement, buttonTrigger, className, ...props}, ref) => {
+export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
     const titleRef = useRef<InputRef>(null);
@@ -76,7 +75,6 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
             lastModifiedDate: new Date(),
         };
         const { data, isLoading, error } = updateTask(taskElement.id, task);
-        dialogRef.current?.close();
         alertRef.current?.show();
     };
 
@@ -84,7 +82,6 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
     const priorities = ["LOW", "MEDIUM", "HIGH"];
 
     const handleCloseClick = () => {
-        dialogRef.current?.close();
         teamRef.current?.setValue(taskElement.team?.name);
         projectRef.current?.setValue(taskElement.project?.name);
         topicRef.current?.setValue(taskElement.topic?.title);
@@ -143,31 +140,26 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
 
     return (
         <>
-            {buttonTrigger && (
-                <Button text={"Edit"} className={"h-8 mr-2"} onClick={() => dialogRef.current?.show()}>
-                    <Pencil size={16} className={"mr-2"} />
-                </Button>
-            )}
-
-            <div className={"flex items-center justify-center"}>
-                <Dialog className={"border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible"} {...props} ref={dialogRef}>
-                    <div className={"flex flex-row justify-between px-4 pb-2"}>
-                        <span className={"text-md text-white pt-4"}>Edit Task</span>
-                        <CloseButton className={"h-min w-min mt-4"} onClick={() => handleCloseClick()} />
-                    </div>
-                    <Seperator />
+            <Dialog width={600} ref={dialogRef}>
+                <DialogHeader title={"Edit Task"}
+                              dialogRef={dialogRef}
+                />
+                <DialogContent>
                     <div className={"flex flex-col space-y-4 p-4"}>
                         <div className={"flex flex-col space-y-1"}>
                             <span className={"text-gray text-xs"}>Title</span>
                             <Input
-                                placeholder={"Task Title"} ref={titleRef} value={titleValue}
+                                placeholder={"Task Title"}
+                                ref={titleRef}
+                                value={titleValue}
                                 onChange={(e) => setTitleValue(e.target.value)}
                             />
                         </div>
                         <div className={"flex flex-col space-y-1"}>
                             <span className={"text-gray text-xs"}>Description</span>
                             <Textarea
-                                placeholder={"Add Description..."} ref={descriptionRef}
+                                placeholder={"Add Description..."}
+                                ref={descriptionRef}
                                 onChange={(e) => setDescriptionValue(e.target.value)}
                                 spellCheck={false}
                                 className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20 focus:text-gray"}
@@ -239,22 +231,25 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Duration</span>
-                            <Input placeholder={"Duration in hours"} value={durationValue}
-                                   elementSize={"medium"} ref={durationRef} icon={<Hourglass size={16} />}
+                            <Input placeholder={"Duration in hours"}
+                                   value={durationValue}
+                                   elementSize={"medium"}
+                                   ref={durationRef}
+                                   icon={<Hourglass size={16}/>}
                                    onChange={(e) => setDurationValue(e.target.value)}
                                    onKeyDown={handleKeyDown}>
                             </Input>
                         </div>
                     </div>
-                    <Seperator/>
-                    <div className={cn("flex flex-row space-x-2 justify-end px-4 py-2")}>
-                        <Button text={"Cancel"} className={cn("h-8")} onClick={() => handleCloseClick()}/>
-                        <Button text={"Save changes"} theme={"white"}
-                                onClick={editTask} disabled={!valid}
-                                className={"h-8"}/>
-                    </div>
-                </Dialog>
-            </div>
+                </DialogContent>
+                <DialogFooter saveButtonTitle={"Save changes"}
+                              cancelButton={true}
+                              switchButton={false}
+                              dialogRef={dialogRef}
+                              onClick={editTask}
+                              onClose={handleCloseClick}
+                />
+            </Dialog>
 
             <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Save/>}/>
@@ -264,7 +259,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement,
                 </AlertContent>
             </Alert>
         </>
-    );
+);
 });
 EditTaskDialog.displayName = "EditTaskDialog";
 

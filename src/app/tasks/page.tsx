@@ -6,16 +6,18 @@ import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton"
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
 import {KanbanView} from "@/components/views/KanbanView";
 import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
-import {LoaderCircle, OctagonAlert} from "lucide-react";
+import {LoaderCircle, SquarePen} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {FilterRef} from "@marraph/daisy/components/filter/Filter";
-import { Scrollbars } from 'react-custom-scrollbars-2';
+import {Button} from "@marraph/daisy/components/button/Button";
+import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 
 export default function Tasks() {
     const [viewMode, setViewMode] = useState(true);
     const filterRef = useRef<FilterRef>(null);
+    const dialogRef = useRef<DialogRef>(null);
     const [update, setUpdate] = useState(0);
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const { data: User, isLoading: userLoading, error: userError } = useUser();
@@ -76,27 +78,45 @@ export default function Tasks() {
     if (User === undefined) return null;
 
     return (
-        <div className={"h-screen flex flex-col space-y-4 p-8"}>
-            <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
-                <div className={"flex flex-row items-center space-x-2 z-10"}>
-                    <CreateTaskDialog/>
-                    <FilterContextMenu ref={filterRef} onChange={() => setUpdate(update+1)}/>
-                    <div className={"flex flex-row space-x-1"}>
-                        <LoaderCircle size={14} className={"text-placeholder"}/>
-                        <span className={"text-xs text-placeholder"}>{`${getTaskElements().length} OPEN`}</span>
+        <>
+            <CreateTaskDialog ref={dialogRef}/>
+
+            <div className={"h-screen flex flex-col space-y-4 p-8"}>
+                <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
+                    <div className={"flex flex-row items-center space-x-2 z-10"}>
+                        <Button text={"Create Task"}
+                                theme={"white"}
+                                size={"small"}
+                                className={"w-min h-8"}
+                                onClick={() => {dialogRef.current?.show(); console.log(dialogRef.current)}}
+                        >
+                            <SquarePen size={20} className={"mr-2"}/>
+                        </Button>
+                        <FilterContextMenu ref={filterRef}
+                                           onChange={() => setUpdate(update+1)}
+                        />
+                        <div className={"flex flex-row space-x-1"}>
+                            <LoaderCircle size={14} className={"text-placeholder"}/>
+                            <span className={"text-xs text-placeholder"}>{`${getTaskElements().length} OPEN`}</span>
+                        </div>
                     </div>
+                    <SwitchButton firstTitle={"Table"}
+                                  secondTitle={"Card"}
+                                  className={"h-8"}
+                                  onClick={() => setViewMode(!viewMode)}
+                    />
                 </div>
-                <SwitchButton firstTitle={"Table"} secondTitle={"Card"} className={"h-8"} onClick={() => setViewMode(!viewMode)}/>
+
+                {viewMode ?
+                    <div className={"border border-white border-opacity-20 rounded-lg flex flex-col h-max overflow-hidden"}>
+                        <TaskTable taskElements={taskElements}/>
+                    </div>
+                    :
+                    <KanbanView taskElements={taskElements}/>
+                }
+
             </div>
+        </>
 
-            {viewMode ?
-                <div className={"border border-white border-opacity-20 rounded-lg flex flex-col h-max overflow-hidden"}>
-                    <TaskTable taskElements={taskElements}/>
-                </div>
-                :
-                <KanbanView taskElements={taskElements}/>
-            }
-
-        </div>
     );
 }
