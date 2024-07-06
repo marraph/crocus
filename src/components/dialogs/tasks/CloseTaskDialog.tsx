@@ -28,6 +28,7 @@ interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
 export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
+    const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     if (!dialogRef) return null;
@@ -54,11 +55,16 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
         alertRef.current?.show();
     }
 
+    const handleClose = () => {
+        setDialogKey(Date.now());
+    }
+
     return (
         <>
-            <Dialog width={600} ref={dialogRef}>
+            <Dialog width={600} ref={dialogRef} key={dialogKey}>
                 <DialogHeader title={"Close Task"}
                               dialogRef={dialogRef}
+                              onClose={handleClose}
                 />
                 <DialogContent>
                     <span className={"text-gray pb-4"}>
@@ -70,6 +76,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
                               switchButton={false}
                               dialogRef={dialogRef}
                               onClick={closeTask}
+                              onClose={handleClose}
                 />
             </Dialog>
 

@@ -21,14 +21,18 @@ export const TaskContextMenu = forwardRef<HTMLDivElement, TaskContextProps>(({ d
 
     return (
         <ContextMenu className={"absolute z-50 text-xs w-max py-1 shadow-2xl"} style={{top: y, left: x}} {...props} ref={ref}>
-            <ContextMenuItem title={"Open"} className={"mb-1"} onClick={() => router.push(`/tasks/${taskId}`)}
+            <ContextMenuItem title={"Open"} className={"mb-1"}
+                             onClick={() => router.push(`/tasks/${taskId}`)}
                              icon={<ExternalLink size={16}/>}/>
             <Seperator/>
-            <ContextMenuItem title={"Edit"} className={"mt-1"} onClick={() => editRef.current?.show()}
+            <ContextMenuItem title={"Edit"} className={"mt-1"}
+                             onClick={() => editRef.current?.show()}
                              icon={<Pencil size={16}/>}/>
-            <ContextMenuItem title={"Close"} onClick={() => closeRef.current?.show()}
+            <ContextMenuItem title={"Close"}
+                             onClick={() => closeRef.current?.show()}
                              icon={<CheckCheck size={16}/>}/>
-            <ContextMenuItem title={"Delete"} onClick={() => {deleteRef.current?.show(); console.log(deleteRef.current)}}
+            <ContextMenuItem title={"Delete"}
+                             onClick={() => deleteRef.current?.show()}
                              className={"text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}
                              icon={<Trash2 size={16}/>}/>
         </ContextMenu>

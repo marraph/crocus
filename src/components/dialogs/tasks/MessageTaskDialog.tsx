@@ -1,4 +1,4 @@
-import React, {forwardRef, useRef} from "react";
+import React, {forwardRef, useRef, useState} from "react";
 import {MessageSquarePlus} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
@@ -20,6 +20,7 @@ interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
 export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
+    const [dialogKey, setDialogKey] = useState(Date.now());
 
     if (!dialogRef) return null;
 
@@ -27,11 +28,16 @@ export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskEleme
         alertRef.current?.show();
     }
 
+    const handleClose = () => {
+        setDialogKey(Date.now());
+    }
+
     return (
         <>
-            <Dialog width={600} ref={dialogRef}>
+            <Dialog width={600} ref={dialogRef} key={dialogKey}>
                 <DialogHeader title={"New Message"}
                               dialogRef={dialogRef}
+                              onClose={handleClose}
                 />
                 <DialogContent>
                     <Textarea placeholder={"Write your message..."}
@@ -43,6 +49,7 @@ export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskEleme
                               switchButton={false}
                               dialogRef={dialogRef}
                               onClick={sendMessage}
+                              onClose={handleClose}
                 />
             </Dialog>
 

@@ -1,5 +1,6 @@
-import {ChevronDown, ChevronUp} from "lucide-react";
+"use client";
 
+import {ChevronDown, ChevronUp} from "lucide-react";
 
 export function Caret({ direction }: { direction: "asc" | "desc" }) {
     return (

@@ -25,6 +25,7 @@ interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
 export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
+    const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     if (!dialogRef) return null;
@@ -35,11 +36,16 @@ export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElemen
         alertRef.current?.show();
     }
 
+    const handleClose = () => {
+        setDialogKey(Date.now());
+    }
+
     return (
         <>
-            <Dialog width={600} ref={dialogRef}>
+            <Dialog width={600} ref={dialogRef} key={dialogKey}>
                 <DialogHeader title={"Delete Task"}
                               dialogRef={dialogRef}
+                              onClose={handleClose}
                 />
                 <DialogContent>
                     <span className={"text-white"}>Are you sure you want to delete this task?</span>
@@ -49,6 +55,7 @@ export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElemen
                               switchButton={false}
                               dialogRef={dialogRef}
                               onClick={deleteTheTask}
+                                onClose={handleClose}
                 />
             </Dialog>
 

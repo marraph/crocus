@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
 import {useRouter} from "next/navigation";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
@@ -31,12 +31,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
 
-    const header = [
-        { key: "project", label: "Project" },
-        { key: "name", label: "Title" },
-        { key: "status", label: "Status" },
-        { key: "deadline", label: "Deadline" },
-    ];
+    const header = useMemo(() => [
+        { key: 'project', label: 'Project' },
+        { key: 'name', label: 'Title' },
+        { key: 'status', label: 'Status' },
+        { key: 'deadline', label: 'Deadline' }
+    ], []);
 
     useEffect(() => {
         const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
@@ -44,12 +44,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         return () => document.removeEventListener('click', handleClick);
     }, [contextMenu]);
 
-    const handleContextMenu = (e: React.MouseEvent<HTMLElement>, taskElement: TaskElement) => {
+    const handleContextMenu = useCallback((e: React.MouseEvent<HTMLElement>, taskElement: TaskElement) => {
         e.preventDefault();
         e.stopPropagation();
 
         setFocusTaskElement(taskElement);
-        console.log(e.target)
 
         if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
             const buttonElement = e.currentTarget;
@@ -63,7 +62,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         } else {
             setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
         }
-    };
+    }, []);
 
     const handleHeaderClick = (headerKey: string) => {
         setSort({
@@ -83,7 +82,13 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
             }
 
             {contextMenu.visible &&
-                <TaskContextMenu taskId={contextMenu.id} x={contextMenu.x} y={contextMenu.y} deleteRef={deleteRef} closeRef={closeRef} editRef={editRef}/>
+                <TaskContextMenu taskId={contextMenu.id}
+                                 x={contextMenu.x}
+                                 y={contextMenu.y}
+                                 deleteRef={deleteRef}
+                                 closeRef={closeRef}
+                                 editRef={editRef}
+                />
             }
 
             <Table className={"bg-black w-full text-xs border-0 no-scrollbar"}>
@@ -128,7 +133,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 {formatDate(taskElement.deadline?.toString())}
                                 <Button text={""}
                                         className={"p-1.5 ml-4"}
-                                        onClick={(e) => {e.stopPropagation(); handleContextMenu(e, taskElement);}}>
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleContextMenu(e, taskElement);
+                                        }}
+                                >
                                     <EllipsisVertical size={16}/>
                                 </Button>
                             </TableCell>
