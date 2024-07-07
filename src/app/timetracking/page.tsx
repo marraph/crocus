@@ -2,7 +2,7 @@
 
 import React, {useEffect, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {ChevronLeft, ChevronRight} from "lucide-react";
+import {AlarmClockPlus, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
@@ -12,6 +12,7 @@ import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsen
 import {Absence, TimeEntry, User} from "@/types/types";
 import {abs} from "stylis";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
+import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 function compareDays(date1: Date, date2: Date) {
     return date1.getFullYear() === date2.getFullYear() &&
@@ -42,6 +43,8 @@ function getFilterAbsences(user: User | undefined, day: Date) {
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
+    const entryDialogRef = useRef<DialogRef>(null);
+    const absenceDialogRef = useRef<DialogRef>(null);
     const [day, setDay] = useState<Date>(new Date());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
@@ -68,44 +71,61 @@ export default function Timetracking() {
     }
 
     return (
-        <div className={"h-screen flex flex-col p-8"}>
-            <div className={"text-nowrap flex flex-row items-center justify-between"}>
-                <div className={"w-full flex flex-row items-center space-x-2"}>
-                    <Button text={""}
-                            className={"h-8 w-10 p-0 pl-1.5"}
-                            onClick={() => handleDayBefore()}
-                    >
-                        <ChevronLeft/>
-                    </Button>
-                    <Button text={""}
-                            className={"h-8 w-10 p-0 pl-2"}
-                            onClick={() => handleDayAfter()}
-                    >
-                        <ChevronRight/>
-                    </Button>
-                    <DatePicker text={"Select a Date"}
-                                iconSize={16}
-                                size={"medium"}
-                                preSelectedValue={day}
-                                ref={datepickerRef}
-                                closeButton={false}
-                                onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
-                                dayFormat={"long"}
-                    />
-                </div>
-                <div className={"flex flex-row justify-end"}>
-                    <div className={"mr-2"}>
-                        <CreateAbsenceDialog/>
-                    </div>
-                    <CreateTimeEntryDialog/>
-                </div>
-            </div>
+        <>
+            <CreateAbsenceDialog ref={absenceDialogRef}/>
+            <CreateTimeEntryDialog ref={entryDialogRef}/>
 
-            <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
-                <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                <div className={"flex-grow bg-black border border-y-0 border-white border-opacity-20"}></div>
-                <TimeEntryDaySummary entries={dailyEntries}/>
+            <div className={"h-screen flex flex-col p-8"}>
+                <div className={"text-nowrap flex flex-row items-center justify-between"}>
+                    <div className={"w-full flex flex-row items-center space-x-2"}>
+                        <Button text={""}
+                                className={"h-8 w-10 p-0 pl-1.5"}
+                                onClick={() => handleDayBefore()}
+                        >
+                            <ChevronLeft/>
+                        </Button>
+                        <Button text={""}
+                                className={"h-8 w-10 p-0 pl-2"}
+                                onClick={() => handleDayAfter()}
+                        >
+                            <ChevronRight/>
+                        </Button>
+                        <DatePicker text={"Select a Date"}
+                                    iconSize={16}
+                                    size={"medium"}
+                                    preSelectedValue={day}
+                                    ref={datepickerRef}
+                                    closeButton={false}
+                                    onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
+                                    dayFormat={"long"}
+                        />
+                    </div>
+                    <div className={"flex flex-row justify-end"}>
+                        <div className={"mr-2"}>
+                            <Button text={"New Absence"}
+                                    theme={"dark"}
+                                    className={"w-min h-8"}
+                                    onClick={() => absenceDialogRef.current?.show()}
+                            >
+                                <TreePalm size={20} className={"mr-2"}/>
+                            </Button>
+                        </div>
+                        <Button text={"New Entry"}
+                                theme={"white"}
+                                className={"w-min h-8"}
+                                onClick={() => entryDialogRef.current?.show()}
+                        >
+                            <AlarmClockPlus size={20} className={"mr-2"}/>
+                        </Button>
+                    </div>
+                </div>
+
+                <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
+                    <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
+                    <div className={"flex-grow bg-black border border-y-0 border-white border-opacity-20"}></div>
+                    <TimeEntryDaySummary entries={dailyEntries}/>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

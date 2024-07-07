@@ -62,7 +62,8 @@ export function getProjectFromTaskString(user: User, task: string): string {
     return project;
 }
 
-export function getProjectFromTask(user: User, task: Task): Project | null {
+export function getProjectFromTask(user: User, task: Task | null): Project | null {
+    if (!task) return null;
     let project: Project | null = null;
     user.teams.forEach((team: Team) => {
         team.projects.forEach((proj: Project) => {

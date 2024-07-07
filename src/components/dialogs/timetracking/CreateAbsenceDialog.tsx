@@ -1,7 +1,7 @@
 "use client";
 
-import React, {forwardRef, useEffect, useRef, useState} from "react";
-import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Alert, AlertContent, AlertIcon, AlertRef, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
@@ -14,55 +14,49 @@ import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/com
 import {DateRangePicker, DateRangePickerRef} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
 import {Absence, AbsenceType, PreviewUser} from "@/types/types";
 import {createAbsence} from "@/service/hooks/absenceHook";
+import {DateRange} from "react-day-picker";
+import {mutateRef} from "@/utils/mutateRef";
+
+type InitialValues = {
+    comment: string,
+    absenceType: string,
+    dateRange: DateRange,
+}
 
 export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
-    const dialogRef = useRef<DialogRef>(null);
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
-    const commentRef = useRef<TextareaRef>(null);
-    const absenceRef = useRef<ComboboxRef>(null);
-    const dateRef = useRef<DateRangePickerRef>(null);
-    const [comment, setComment] = useState("");
-    const [absence, setAbsence] = useState<string | null>(null);
+    const initialValues: InitialValues = {
+        comment: "",
+        absenceType: "",
+        dateRange: {
+            from: new Date(),
+            to: new Date()
+        }
+    };
+    const [values, setValues] = useState(initialValues);
     const [valid, setValid] = useState<boolean>(false);
+    const [dialogKey, setDialogKey] = useState(Date.now());
+    const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    const absenceTypes = ["VACATION", "SICK"];
-
     useEffect(() => {
-        if (user && dialogRef.current && commentRef.current && absenceRef.current) {
-            validateInput();
-        }
-    }, [user, comment, absence]);
+        validateInput();
+    }, [values.absenceType]);
 
-    if (!dialogRef) return null;
-    if (!user) return null;
+    if (!dialogRef || user === undefined) return null;
 
     const validateInput = () => {
-        if (!absence) {
-            setValid(false);
-            return;
-        }
-
-        setValid(true);
-    }
-
-    const handleAbsenceChange = (newAbsence: string) => {
-        if (absence === newAbsence) {
-            setAbsence(null);
-            absenceRef.current?.setValue(null);
-        } else {
-            setAbsence(newAbsence);
-            absenceRef.current?.setValue(newAbsence);
-        }
+        setValid(values.absenceType === "VACATION" || values.absenceType === "SICK");
     }
 
     const createNewAbsence = () => {
         const newAbsence: Absence = {
-            id: user.absences.length,
-            startDate: dateRef.current?.getSelectedValue()?.from as Date,
-            endDate: dateRef.current?.getSelectedValue()?.to as Date,
-            comment: comment ?? null,
-            absenceType: absenceRef.current?.getValue() as AbsenceType,
+            id: 0,
+            startDate: values.dateRange.from ?? new Date(),
+            endDate: values.dateRange.to ?? new Date(),
+            comment: values.comment,
+            absenceType: values.absenceType as AbsenceType,
             createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
@@ -73,47 +67,66 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
     }
 
     const handleCloseClick = () => {
-        setComment("");
+        setValues(initialValues);
         setValid(false);
-        dialogRef.current?.close();
-        commentRef.current?.reset();
-        absenceRef.current?.reset();
+        setDialogKey(Date.now());
     }
+
+    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setValues((prevValues) => ({
+            ...prevValues,
+            [field]: e.target.value
+        }));
+    };
 
     return (
         <>
-            <Button text={"New Absence"} theme={"dark"} className={"w-min h-8"} onClick={() => dialogRef.current?.show()}>
-                <TreePalm size={20} className={"mr-2"}/>
-            </Button>
-
-            <div className={cn("flex items-center justify-center")}>
-                <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={dialogRef}>
-                    <div className={"flex flex-row justify-between items-center space-x-4 pt-4 pb-2 px-4"}>
-                        <span className={"text-white text-lg"}>{"Create a new absence"}</span>
-                        <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
-                    </div>
-
-                    <Textarea placeholder={"Comment"} className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"} spellCheck={false}
-                              onChange={(e) => setComment(e.target.value)} value={comment} ref={commentRef}>
+            <Dialog width={600}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
+                <DialogHeader title={"New absence"}
+                              dialogRef={dialogRef}
+                              onClose={handleCloseClick}
+                />
+                <DialogContent>
+                    <Textarea placeholder={"Comment"}
+                              className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                              spellCheck={false}
+                              onChange={handleInputChange("comment", setValues)}
+                              value={values.comment}
+                    >
                     </Textarea>
-
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
-                        <Combobox buttonTitle={"Absence Type"} icon={<CircleOff size={14} className={"mr-2"}/>} ref={absenceRef}>
+                        <Combobox buttonTitle={"Absence Type"}
+                                  icon={<CircleOff size={14} className={"mr-2"}/>}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, absenceType: value ?? "" }))}
+                        >
                             {absenceTypes.map(((absence, index) =>
-                                <ComboboxItem key={index} title={absence} onClick={() => handleAbsenceChange(absence)}/>
+                                    <ComboboxItem key={index}
+                                                  title={absence}
+                                    />
                             ))}
                         </Combobox>
-                        <DateRangePicker text={"Select your absence time"} iconSize={16} closeButton={false} ref={dateRef} dayFormat={"long"}/>
+                        <DateRangePicker text={"Select your absence time"}
+                                         iconSize={16}
+                                         closeButton={false}
+                                         dayFormat={"long"}
+                                         onRangeChange={(value) =>
+                                             setValues((prevValues) => ({ ...prevValues, dateRange: value ?? {from: new Date(), to: new Date()} }))}
+                        />
                     </div>
-
-                    <Seperator/>
-                    <div className={cn("flex flex-row items-center justify-end space-x-16 px-4 py-2", className)}>
-                        <Button text={"Create"} theme={"white"} onClick={createNewAbsence} disabled={!valid}
-                                className={cn("w-min h-8", className)}>
-                        </Button>
-                    </div>
-                </Dialog>
-            </div>
+                </DialogContent>
+                <DialogFooter saveButtonTitle={"Create"}
+                              cancelButton={true}
+                              switchButton={false}
+                              dialogRef={dialogRef}
+                              disabledButton={!valid}
+                              onClose={handleCloseClick}
+                              onClick={createNewAbsence}
+                />
+            </Dialog>
 
             <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<TreePalm/>}/>

@@ -1,9 +1,9 @@
 "use client";
 
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {cn} from "@/utils/cn";
-import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Alert, AlertContent, AlertIcon, AlertRef, AlertTitle} from "@marraph/daisy/components/alert/Alert";
 import {AlarmClockPlus, BookCopy, ClipboardList, Clock2, Clock8} from "lucide-react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
@@ -16,35 +16,36 @@ import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
+import {mutateRef} from "@/utils/mutateRef";
+
+type InitialValues = {
+    comment: string,
+    project: Project | null,
+    task: Task | null,
+    timeFrom: string,
+    timeTo: string,
+
+}
 
 export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
-    const dialogRef = useRef<DialogRef>(null);
+    const dialogRef = mutateRef(ref);
     const alertRef = useRef<AlertRef>(null);
-    const commentRef = useRef<TextareaRef>(null);
-    const taskRef = useRef<SearchSelectRef>(null);
-    const projectRef = useRef<SearchSelectRef>(null);
-    const datepickerRef = useRef<DatepickerRef>(null);
-    const timeFromRef = useRef<SearchSelectRef>(null);
-    const timeToRef = useRef<SearchSelectRef>(null);
     const switchRef = useRef<SwitchRef>(null);
-    const [comment, setComment] = useState("");
-    const [projectSelected, setProjectSelected] = useState<Project | null>(null);
-    const [taskSelected, setTaskSelected] = useState<Task | null>(null);
-    const [timeFrom, setTimeFrom] = useState<string | null>(null);
-    const [timeTo, setTimeTo] = useState<string | null>(null);
+
+    const initialValues: InitialValues = {
+        comment: "",
+        project: null,
+        task: null,
+        timeFrom: "",
+        timeTo: "",
+    }
+
+    const [values, setValues] = useState(initialValues);
     const [valid, setValid] = useState<boolean>(false);
+    const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    useEffect(() => {
-        if (user && dialogRef.current && commentRef.current && taskRef.current && projectRef.current && datepickerRef.current && timeFromRef.current && timeToRef.current) {
-            validateInput();
-        }
-    }, [user, comment, projectSelected, taskSelected, timeFrom, timeTo]);
-
-    if (!dialogRef) return null;
-    if (!user) return null;
-
-    const times = [
+    const times = useMemo(() => [
         "12:00AM", "12:15AM", "12:30AM", "12:45AM",
         "01:00AM", "01:15AM", "01:30AM", "01:45AM",
         "02:00AM", "02:15AM", "02:30AM", "02:45AM",
@@ -69,52 +70,16 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         "09:00PM", "09:15PM", "09:30PM", "09:45PM",
         "10:00PM", "10:15PM", "10:30PM", "10:45PM",
         "11:00PM", "11:15PM", "11:30PM", "11:45PM"
-    ];
+    ], []);
 
-    const handleProjectChange = (project: Project | null) => {
-        if (project === projectSelected){
-            setProjectSelected(null);
-            projectRef.current?.setValue(null);
-            setProjectSelected(null);
-        } else {
-            setProjectSelected(project);
-            projectRef.current?.setValue(project?.name);
-        }
-    };
+    useEffect(() => {
+        validateInput();
+    }, [values.comment, values.project, values.task, values.timeFrom, values.timeTo]);
 
-    const handleTaskChange = (task: Task) => {
-        if (task === taskSelected){
-            setTaskSelected(null);
-            taskRef.current?.setValue(null);
-        } else {
-            setTaskSelected(task);
-            taskRef.current?.setValue(task.name);
-        }
-    };
-
-    const handleTimeFromChange = (time: string) => {
-        if (time === timeFrom){
-            setTimeFrom(null);
-            timeFromRef.current?.setValue(null);
-        } else {
-            setTimeFrom(time);
-            timeFromRef.current?.setValue(time);
-        }
-    }
-
-    const handleTimeToChange = (time: string) => {
-        if (time === timeTo){
-            setTimeTo(null);
-            timeToRef.current?.setValue(null);
-        } else {
-            setTimeTo(time);
-            timeToRef.current?.setValue(time);
-        }
-    }
+    if (!dialogRef) return null;
+    if (!user) return null;
 
     const validateInput = () => {
-        let timeFrom = timeFromRef.current?.getSelectedValue();
-        let timeTo = timeToRef.current?.getSelectedValue();
 
         if (comment.trim() === "" && !projectSelected && !taskSelected) {
             setValid(false);
@@ -131,12 +96,12 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
 
     const createEntry = () => {
         const newEntry: TimeEntry = {
-            id: user.timeEntries.length + 1,
-            comment: comment ?? null,
-            project: projectSelected ?? null,
-            task: taskSelected ?? null,
-            startDate: datepickerRef.current?.getSelectedValue() as Date,
-            endDate: datepickerRef.current?.getSelectedValue() as Date,
+            id: 0,
+            comment: values.comment,
+            project: values.project ?? null,
+            task: values.task ?? null,
+            startDate: new Date(values.timeFrom),
+            endDate: new Date(values.timeTo),
             createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
@@ -144,108 +109,119 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         }
         const { data, isLoading, error } = createTimeEntry(newEntry);
 
-        if (switchRef.current?.getValue() === false) {
-            dialogRef.current?.close();
-        }
-        setComment("");
-        setProjectSelected(null);
-        setTaskSelected(null);
-        setTimeFrom("");
-        setTimeTo("");
-        commentRef.current?.reset();
-        taskRef.current?.reset();
-        projectRef.current?.reset();
-        datepickerRef.current?.setValue(datepickerRef.current.getSelectedValue());
-        timeFromRef.current?.reset();
-        timeToRef.current?.reset();
+        handleCloseClick();
         alertRef.current?.show();
     }
 
     const handleCloseClick = () => {
-        setComment("");
-        setProjectSelected(null);
-        setTaskSelected(null);
-        setTimeFrom("");
-        setTimeTo("");
-        dialogRef.current?.close();
-        commentRef.current?.reset();
-        taskRef.current?.reset();
-        projectRef.current?.reset();
-        datepickerRef.current?.setValue(datepickerRef.current.getSelectedValue());
-        timeFromRef.current?.reset();
-        timeToRef.current?.reset();
+        setValues(initialValues);
+        setValid(false);
+        setDialogKey(Date.now());
         switchRef.current?.setValue(false);
     }
 
+    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setValues((prevValues) => ({
+            ...prevValues,
+            [field]: e.target.value
+        }));
+    };
+
     return (
         <>
-            <Button text={"New Entry"} theme={"white"} className={"w-min h-8"} onClick={() => dialogRef.current?.show()}>
-                <AlarmClockPlus size={20} className={"mr-2"}/>
-            </Button>
-
-            <div className={cn("flex items-center justify-center")}>
-                <Dialog className={cn("border border-white border-opacity-20 w-1/3 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={dialogRef}>
-                    <div className={"flex flex-row justify-between items-center space-x-4 pt-4 pb-2 px-4"}>
-                        <span className={"text-white text-lg"}>{"Create a new entry"}</span>
-                        <CloseButton className={cn("h-min w-min", className)} onClick={handleCloseClick}/>
-                    </div>
-
-                    <Textarea placeholder={"Comment"} className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"} spellCheck={false}
-                              onChange={(e) => setComment(e.target.value)} value={comment} ref={commentRef}>
-                    </Textarea>
-
+            <Dialog width={600}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
+                <DialogHeader title={"New entry"}
+                              dialogRef={dialogRef}
+                              onClose={handleCloseClick}
+                />
+                <DialogContent>
+                    <Textarea placeholder={"Comment"}
+                              className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                              spellCheck={false}
+                              onChange={handleInputChange("comment", setValues)}
+                              value={values.comment}
+                    />
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
-                        <SearchSelect buttonTitle={"Project"} ref={projectRef}
-                                      icon={<BookCopy size={16}/>} size={"medium"} className={"z-50"}>
-                            {!taskSelected && getAllProjects(user).map((project) => (
-                                <SearchSelectItem key={project.id} title={project.name} onClick={() => handleProjectChange(project)}></SearchSelectItem>
+                        <SearchSelect buttonTitle={"Project"}
+                                      icon={<BookCopy size={16}/>}
+                                      size={"medium"}
+                                      className={"z-50"}
+                                      onValueChange={(value) =>
+                                          setValues((prevValues) => ({ ...prevValues, project: values.task ? value : getProjectFromTask(user, values.task)}))}
+                        >
+                            {!values.task && getAllProjects(user).map((project) => (
+                                <SearchSelectItem key={project.id} title={project.name}/>
                             ))}
-                            {taskSelected && getProjectFromTask(user, taskSelected) &&
-                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)?.name as string}
-                                                  onClick={() => handleProjectChange(getProjectFromTask(user, taskSelected))}></SearchSelectItem>
+                            {values.task && getProjectFromTask(user, values.task) &&
+                                <SearchSelectItem title={getProjectFromTask(user, values.task)?.name as string}/>
                             }
                         </SearchSelect>
 
-                        <SearchSelect buttonTitle={"Task"} ref={taskRef}
-                                      icon={<ClipboardList size={16}/>} size={"medium"} className={"z-50"}>
-                            {!projectSelected && getAllTasks(user).map((task) => (
-                                <SearchSelectItem key={task.id} title={task.name} onClick={() => handleTaskChange(task)}></SearchSelectItem>
+                        <SearchSelect buttonTitle={"Task"}
+                                      icon={<ClipboardList size={16}/>}
+                                      size={"medium"}
+                                      className={"z-50"}
+                                        onValueChange={(value) =>
+                                            setValues((prevValues) => ({ ...prevValues, task: value }))}
+                        >
+                            {!values.project && getAllTasks(user).map((task) => (
+                                <SearchSelectItem key={task.id} title={task.name}/>
                             ))}
-                            {projectSelected && getTasksFromProject(user, projectSelected).map((task) => (
-                                <SearchSelectItem key={task.id} title={task.name} onClick={() => handleTaskChange(task)}></SearchSelectItem>
+                            {values.project && getTasksFromProject(user, values.project).map((task) => (
+                                <SearchSelectItem key={task.id} title={task.name}/>
                             ))}
                         </SearchSelect>
                     </div>
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
-                        <DatePicker text={"Select a date"} iconSize={16} ref={datepickerRef}
-                                    preSelectedValue={new Date()} size={"medium"} closeButton={false} dayFormat={"short"}/>
-                        <SearchSelect buttonTitle={"From"} preSelectedValue={"09:00AM"} ref={timeFromRef}
-                                      icon={<Clock2 size={16}/>} size={"medium"} className={"z-40"}>
+                        <DatePicker text={"Select a date"}
+                                    iconSize={16}
+                                    preSelectedValue={new Date()}
+                                    size={"medium"}
+                                    closeButton={false}
+                                    dayFormat={"short"}
+                                    onValueChange={}
+                        />
+                        <SearchSelect buttonTitle={"From"}
+                                      preSelectedValue={"09:00AM"}
+                                      icon={<Clock2 size={16}/>}
+                                      size={"medium"}
+                                      className={"z-40"}
+                                      onValueChange={}
+                        >
                             {times.map((time) => (
-                                <SearchSelectItem key={time} title={time} onClick={() => handleTimeFromChange(time)}></SearchSelectItem>
+                                <SearchSelectItem key={time}
+                                                  title={time}
+                                />
                             ))}
                         </SearchSelect>
-                        <SearchSelect buttonTitle={"To"} preSelectedValue={"09:00AM"} ref={timeToRef}
-                                      icon={<Clock8 size={16}/>} size={"medium"} className={"z-40"}>
+                        <SearchSelect buttonTitle={"To"}
+                                      preSelectedValue={"09:00AM"}
+                                      icon={<Clock8 size={16}/>}
+                                      size={"medium"}
+                                      className={"z-40"}
+                                      onValueChange={}
+                        >
                             {times.map((time) => (
-                                <SearchSelectItem key={time} title={time} onClick={() => handleTimeToChange(time)}></SearchSelectItem>
+                                <SearchSelectItem key={time}
+                                                  title={time}
+                                />
                             ))}
                         </SearchSelect>
                     </div>
-
-                    <Seperator/>
-                    <div className={cn("flex flex-row items-center justify-end space-x-16 px-4 py-2", className)}>
-                        <div className={"flex flex-row items-center space-x-2 text-gray text-xs"}>
-                            <span>{"Create more"}</span>
-                            <Switch ref={switchRef}></Switch>
-                        </div>
-                        <Button text={"Create"} theme={"white"} onClick={createEntry} disabled={!valid}
-                                className={cn("w-min h-8", className)}>
-                        </Button>
-                    </div>
-                </Dialog>
-            </div>
+                </DialogContent>
+                <DialogFooter saveButtonTitle={"Create"}
+                              cancelButton={true}
+                              switchButton={true}
+                              dialogRef={dialogRef}
+                              onClose={handleCloseClick}
+                              onClick={createEntry}
+                              disabledButton={!valid}
+                />
+            </Dialog>
 
             <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<AlarmClockPlus/>}/>
