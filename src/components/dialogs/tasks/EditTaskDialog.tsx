@@ -1,6 +1,6 @@
 "use client";
 
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useEffect, useRef, useState} from "react";
 import {BookCopy, CircleAlert, Hourglass, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
@@ -63,7 +63,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
 
     useEffect(() => {
         validateInput();
-    }, [values.title, values.duration]);
+    }, [values.title]);
 
     if (!dialogRef) return null;
     if (!user) return null;
@@ -99,13 +99,15 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
     };
 
     const validateInput = () => {
-        if (values.title.trim() === "") {
-            setValid(false);
-            return;
-        }
-
-        setValid(true);
+        setValid(values.title.trim() !== "");
     }
+
+    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setValues((prevValues) => ({
+            ...prevValues,
+            [field]: e.target.value
+        }));
+    };
 
     const handleNumberInput = (e: React.KeyboardEvent) => {
         if (!/\d/.test(e.key) && e.key !== 'Backspace') {
@@ -126,13 +128,13 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             <span className={"text-gray text-xs"}>Title</span>
                             <Input placeholder={"Task Title"}
                                    value={values.title}
-                                   onChange={(e) => values.title = e.target.value}
+                                   onChange={handleInputChange("title", setValues)}
                             />
                         </div>
                         <div className={"flex flex-col space-y-1"}>
                             <span className={"text-gray text-xs"}>Description</span>
                             <Textarea placeholder={"Add Description..."}
-                                      onChange={(e) => values.description = e.target.value}
+                                      onChange={handleInputChange("description", setValues)}
                                       spellCheck={false}
                                       value={values.description ?? ""}
                                       className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20 focus:text-gray"}
@@ -145,7 +147,10 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             <Combobox buttonTitle={"Team"}
                                       icon={<Users size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.team}
-                                      onValueChange={(value) => setTeamSelected({isSelected: value !== null, team: value ?? ""})}
+                                      onValueChange={(value) => {
+                                          setTeamSelected({isSelected: value !== null, team: value ?? ""});
+                                          setValues((prevValues) => ({ ...prevValues, team: value }));
+                                      }}
                             >
                                 {getTeams(user).map((team) => (
                                     <ComboboxItem key={team}
@@ -161,7 +166,8 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                     <Combobox buttonTitle={"Project"}
                                               icon={<BookCopy size={16} className={"mr-2"}/>}
                                               preSelectedValue={values.project}
-                                              onValueChange={(value) => values.project = value}
+                                              onValueChange={(value) =>
+                                                  setValues((prevValues) => ({ ...prevValues, project: value }))}
                                     >
                                         {getProjects(user, teamSelected.team).map((project) => (
                                             <ComboboxItem key={project} title={project}/>
@@ -176,7 +182,8 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                         iconSize={16}
                                         text={"Deadline"}
                                         preSelectedValue={values.deadline}
-                                        onValueChange={(value) => values.deadline = value}
+                                        onValueChange={(value) =>
+                                            setValues((prevValues) => ({ ...prevValues, deadline: value }))}
                                         closeButton={true}
                                         dayFormat={"short"}
                             />
@@ -188,7 +195,8 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             <Combobox buttonTitle={"Topic"}
                                       icon={<Tag size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.topic}
-                                      onValueChange={(value) => values.topic = value}
+                                      onValueChange={(value) =>
+                                          setValues((prevValues) => ({ ...prevValues, topic: value }))}
                             >
                                 {getTopics(user).map((topic) => (
                                     <ComboboxItem key={topic} title={topic}/>
@@ -200,7 +208,8 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             <Combobox buttonTitle={"Status"}
                                       icon={<CircleAlert size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.status}
-                                      onValueChange={(value) => values.status = value}
+                                      onValueChange={(value) =>
+                                          setValues((prevValues) => ({ ...prevValues, status: value }))}
                             >
                                 {status.map((status) => (
                                     <ComboboxItem key={status} title={status}/>
@@ -212,7 +221,8 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             <Combobox buttonTitle={"Priority"}
                                       icon={<LineChart size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.priority}
-                                      onValueChange={(value) => values.priority = value}
+                                      onValueChange={(value) =>
+                                          setValues((prevValues) => ({ ...prevValues, priority: value }))}
                             >
                                 {priorities.map((priority) => (
                                     <ComboboxItem key={priority} title={priority}/>
@@ -226,7 +236,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                    value={values.duration?.toString()}
                                    elementSize={"medium"}
                                    icon={<Hourglass size={16}/>}
-                                   onChange={(e) => values.duration = e.target.value}
+                                   onChange={handleInputChange("duration", setValues)}
                                    onKeyDown={(e) => handleNumberInput(e)}
                             />
                         </div>
@@ -238,14 +248,15 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                               dialogRef={dialogRef}
                               onClick={editTask}
                               onClose={handleCloseClick}
+                              disabledButton={!valid}
                 />
             </Dialog>
 
             <Alert duration={3000} ref={alertRef} closeButton={false}>
                 <AlertIcon icon={<Save/>}/>
                 <AlertContent>
-                    <AlertTitle title={"Saved changes"}></AlertTitle>
-                    <AlertDescription description={"You successfully saved your task changes."}></AlertDescription>
+                    <AlertTitle title={"Saved changes"}/>
+                    <AlertDescription description={"You successfully saved your task changes."}/>
                 </AlertContent>
             </Alert>
         </>

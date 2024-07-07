@@ -2,7 +2,7 @@
 
 import React, {DialogHTMLAttributes, forwardRef, useEffect, useRef, useState} from "react";
 import {TimeEntry} from "@/types/types";
-import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
 import {
     Alert,
@@ -21,70 +21,64 @@ import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 
 export const JoinTeamDialog = forwardRef<DialogRef, DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = mutateRef(ref);
-    const inputRef = useRef<InputRef>(null);
     const alertRef = useRef<AlertRef>(null);
     const [link, setLink] = useState<string>("");
     const [valid, setValid] = useState<boolean>(false);
+    const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    useEffect(() => {
-        if (user && inputRef.current) {
-            validate();
-        }
-    }, [user, link]);
-
-    if (!dialogRef) return null;
-    if (!user) return null;
-
     const validate = () => {
-        if (link.trim() === "") {
-            setValid(false);
-            return;
-        }
-        setValid(true);
+        setValid(link.trim() !== "");
     }
 
-    const close = () => {
-        dialogRef.current?.close();
-        inputRef.current?.reset();
+    useEffect(() => {
+        validate();
+    }, [link]);
+
+    if (!dialogRef || user === undefined) return null;
+
+    const handleClose = () => {
         setValid(false);
         setLink("");
+        setDialogKey(Date.now());
     }
 
     const joinTeam = () => {
         alertRef.current?.show();
-        close();
+        handleClose();
     }
 
     return (
         <>
-            <div className={cn("flex items-center justify-center")}>
-                <Dialog className={cn("border border-white border-opacity-20 w-2/5 drop-shadow-lg overflow-visible space-y-2")} {...props} ref={dialogRef}>
-                    <div className={cn("flex flex-col space-y-2")}>
-                        <span className={"text-white text-lg p-4"}>{"Join a team"}</span>
-                        <span className={"text-sm text-gray px-4"}>
-                            {"You can join a team by inserting a invite link in the correct format."}
-                        </span>
-                        <Input placeholder={"app.luna.io/invite/xxxx-xxxx-xxxx"}
-                               className={"w-full px-2 pb-2"}
-                               value={link}
-                                 onChange={(e) => setLink(e.target.value)}
-                               ref={inputRef}
-                        />
-
-                        <Seperator/>
-
-                        <div className={cn("flex flex-row space-x-2 justify-end px-4 pb-2")}>
-                            <Button text={"Cancel"} className={cn("h-8")} onClick={() => close}/>
-                            <Button text={"Join"} theme={"white"} className={cn("h-8")}
-                                    onClick={() => joinTeam} disabled={!valid}/>
-                        </div>
-                    </div>
-                </Dialog>
-            </div>
+            <Dialog width={600}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
+                <DialogHeader title={"Join a team"}
+                              dialogRef={dialogRef}
+                              onClose={handleClose}
+                />
+                <DialogContent>
+                    <span className={"text-sm text-gray px-4"}>
+                        {"You can join a team by inserting a invite link in the correct format."}
+                    </span>
+                    <Input placeholder={"app.luna.io/invite/xxxx-xxxx-xxxx"}
+                           className={"w-full px-2 pb-2"}
+                           value={link}
+                           onChange={(e) => setLink(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogFooter saveButtonTitle={"Join"}
+                              cancelButton={false}
+                              switchButton={false}
+                              dialogRef={dialogRef}
+                              onClick={joinTeam}
+                              disabledButton={!valid}
+                />
+            </Dialog>
 
             <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Users color="#F55050" />}/>
+                <AlertIcon icon={<Users color="#F55050"/>}/>
                 <AlertContent>
                     <AlertTitle title={"Joined Team successfully!"}></AlertTitle>
                 </AlertContent>

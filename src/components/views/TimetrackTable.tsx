@@ -135,7 +135,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                 <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
             }
 
-            <Table className={"bg-black w-full no-scrollbar rounded-b-none text-xs"}>
+            <Table className={"bg-black w-full no-scrollbar rounded-b-none text-xs border-b-0"}>
                 <TableHeader>
                     <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
                     {header.map((header) => (

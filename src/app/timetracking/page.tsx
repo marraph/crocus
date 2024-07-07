@@ -67,22 +67,31 @@ export default function Timetracking() {
         datepickerRef.current?.setValue(newDate);
     }
 
-    const handleDayChange = (day: Date) => {
-        // setDay(day);
-    }
-
     return (
         <div className={"h-screen flex flex-col p-8"}>
             <div className={"text-nowrap flex flex-row items-center justify-between"}>
                 <div className={"w-full flex flex-row items-center space-x-2"}>
-                    <Button text={""} className={"h-8 w-10 p-0 pl-1.5"} onClick={() => handleDayBefore()}>
+                    <Button text={""}
+                            className={"h-8 w-10 p-0 pl-1.5"}
+                            onClick={() => handleDayBefore()}
+                    >
                         <ChevronLeft/>
                     </Button>
-                    <Button text={""} className={"h-8 w-10 p-0 pl-2"} onClick={() => handleDayAfter()}>
+                    <Button text={""}
+                            className={"h-8 w-10 p-0 pl-2"}
+                            onClick={() => handleDayAfter()}
+                    >
                         <ChevronRight/>
                     </Button>
-                    <DatePicker text={"Select a Date"} iconSize={16} size={"medium"} preSelectedValue={day}
-                                ref={datepickerRef} closeButton={false} onClick={() => handleDayChange} dayFormat={"long"}/>
+                    <DatePicker text={"Select a Date"}
+                                iconSize={16}
+                                size={"medium"}
+                                preSelectedValue={day}
+                                ref={datepickerRef}
+                                closeButton={false}
+                                onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
+                                dayFormat={"long"}
+                    />
                 </div>
                 <div className={"flex flex-row justify-end"}>
                     <div className={"mr-2"}>
