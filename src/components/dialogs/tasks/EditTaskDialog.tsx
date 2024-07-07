@@ -117,7 +117,10 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
 
     return (
         <>
-            <Dialog width={600} ref={dialogRef} key={dialogKey}>
+            <Dialog width={1000}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
                 <DialogHeader title={"Edit Task"}
                               dialogRef={dialogRef}
                               onClose={handleCloseClick}
