@@ -1,18 +1,53 @@
 "use client";
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {AlarmClockPlus, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
+import {AlarmClockPlus, CalendarDays, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
-import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsenceDialog";
 import {Absence, TimeEntry, User} from "@/types/types";
-import {abs} from "stylis";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {WeekView} from "@/components/views/WeekView";
+import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
+import {Combobox} from "@marraph/daisy/components/combobox/Combobox";
+
+interface Week {
+    start: Date;
+    end: Date;
+}
+
+function getStartAndEndOfWeek(date: Date): Week {
+    const start = new Date(date);
+    const day = start.getDay();
+    const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+
+    start.setDate(diff);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+
+    return { start, end };
+}
+
+function getNextFiftyWeeks(): Week[] {
+    const weeks: Week[] = [];
+    let currentDate = new Date();
+
+    for (let i = 0; i < 50; i++) {
+        const week = getStartAndEndOfWeek(currentDate);
+        weeks.push(week);
+
+        currentDate.setDate(currentDate.getDate() + 7);
+    }
+
+    return weeks;
+}
 
 function compareDays(date1: Date, date2: Date) {
     return date1.getFullYear() === date2.getFullYear() &&
@@ -20,7 +55,7 @@ function compareDays(date1: Date, date2: Date) {
         date1.getDate() === date2.getDate();
 }
 
-function getFilterEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
+function getFilterDayEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
     if (user === undefined) return undefined;
     return user.timeEntries.filter((entry) =>
         compareDays(new Date(entry.startDate), day) &&
@@ -29,7 +64,7 @@ function getFilterEntries(user: User | undefined, day: Date): TimeEntry[] | unde
     );
 }
 
-function getFilterAbsences(user: User | undefined, day: Date) {
+function getFilterDayAbsences(user: User | undefined, day: Date) {
     if (user === undefined) return undefined;
     const comparisonDay = new Date(day).setHours(0, 0, 0, 0);
 
@@ -41,20 +76,59 @@ function getFilterAbsences(user: User | undefined, day: Date) {
     }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 }
 
+function getFilterWeekEntries(user: User | undefined, weekDates: Date[]): TimeEntry[] | undefined {
+    return user?.timeEntries.filter((entry) => {
+        const startDate = new Date(entry.startDate);
+        const endDate = new Date(entry.endDate);
+
+        return weekDates.some((date) => startDate <= date && endDate >= date);
+    }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+}
+
+function getFilterWeekAbsences(user: User | undefined, weekDates: Date[]) {
+    return user?.absences.filter((absence) => {
+        const startDate = new Date(absence.startDate);
+        const endDate = new Date(absence.endDate);
+
+        return weekDates.some((date) => startDate <= date && endDate >= date);
+    }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+}
+
+function getCurrentWeekDates(): Date[] {
+    const currentDate = new Date();
+    const day = currentDate.getDay();
+    const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const monday = new Date(currentDate.setDate(diff));
+    return Array.from({length: 5}, (_, i) => {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + i);
+        return date;
+    });
+}
+
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
+
     const [day, setDay] = useState<Date>(new Date());
+    const [week, setWeek] = useState<Date[]>(getCurrentWeekDates());
+    const [view, setView] = useState<boolean>(true);
+    const weeks = useMemo(() => getNextFiftyWeeks(), []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterEntries(user, day));
-    const [dailyAbsences, setDailyAbsences] = useState<Absence[] | undefined>(getFilterAbsences(user, day));
+    const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterDayEntries(user, day));
+    const [weekEntries, setWeekEntries] = useState<TimeEntry[] | undefined>(getFilterWeekEntries(user, week));
+    const [dailyAbsences, setDailyAbsences] = useState<Absence[] | undefined>(getFilterDayAbsences(user, day));
+    const [weekAbsences, setWeekAbsences] = useState<Absence[] | undefined>(getFilterWeekAbsences(user, week));
 
     useEffect(() => {
-        if (user?.timeEntries) setDailyEntries(getFilterEntries(user, day));
-        if (user?.absences) setDailyAbsences(getFilterAbsences(user, day));
-    }, [day, user?.timeEntries, user?.absences]);
+        if (user?.timeEntries) setDailyEntries(getFilterDayEntries(user, day));
+        if (user?.timeEntries) setWeekEntries(getFilterWeekEntries(user, week));
+        if (user?.absences) setDailyAbsences(getFilterDayAbsences(user, day));
+        if (user?.absences) setWeekAbsences(getFilterWeekAbsences(user, week));
+
+    }, [user, day, week, user?.timeEntries, user?.absences]);
 
     if (!user) return null;
 
@@ -70,46 +144,77 @@ export default function Timetracking() {
         datepickerRef.current?.setValue(newDate);
     }
 
+    const handleWeekBefore = () => {
+
+    }
+
+    const handleWeekAfter = () => {
+
+    }
+
     return (
         <>
-            <CreateAbsenceDialog ref={absenceDialogRef}/>
-            <CreateTimeEntryDialog ref={entryDialogRef}/>
-
             <div className={"h-screen flex flex-col p-8"}>
                 <div className={"text-nowrap flex flex-row items-center justify-between"}>
                     <div className={"w-full flex flex-row items-center space-x-2"}>
-                        <Button text={""}
-                                className={"h-8 w-10 p-0 pl-1.5"}
-                                onClick={() => handleDayBefore()}
-                        >
-                            <ChevronLeft/>
-                        </Button>
-                        <Button text={""}
-                                className={"h-8 w-10 p-0 pl-2"}
-                                onClick={() => handleDayAfter()}
-                        >
-                            <ChevronRight/>
-                        </Button>
-                        <DatePicker text={"Select a Date"}
-                                    iconSize={16}
-                                    size={"medium"}
-                                    preSelectedValue={day}
-                                    ref={datepickerRef}
-                                    closeButton={false}
-                                    onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
-                                    dayFormat={"long"}
-                        />
+                        {view ?
+                            <>
+                                <Button text={""}
+                                        className={"h-8 w-10 p-0 pl-1.5"}
+                                        onClick={() => handleDayBefore()}
+                                >
+                                    <ChevronLeft/>
+                                </Button>
+                                <Button text={""}
+                                        className={"h-8 w-10 p-0 pl-2"}
+                                        onClick={() => handleDayAfter()}
+                                >
+                                    <ChevronRight/>
+                                </Button>
+                                <DatePicker text={"Select a Date"}
+                                            iconSize={16}
+                                            size={"medium"}
+                                            preSelectedValue={day}
+                                            ref={datepickerRef}
+                                            closeButton={false}
+                                            onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
+                                            dayFormat={"long"}
+                                />
+                            </>
+                            :
+                            <>
+                                <Button text={""}
+                                        className={"h-8 w-10 p-0 pl-1.5"}
+                                        onClick={() => handleWeekBefore()}
+                                >
+                                    <ChevronLeft/>
+                                </Button>
+                                <Button text={""}
+                                        className={"h-8 w-10 p-0 pl-2"}
+                                        onClick={() => handleWeekAfter()}
+                                >
+                                    <ChevronRight/>
+                                </Button>
+                                <Combobox buttonTitle={"Week"} icon={<CalendarDays size={16} className={"mr-2"}/>}>
+                                    {weeks.map((week, index) => (
+                                        <div key={index} className={"flex flex-row items-center space-x-2"}>
+                                            <span>{week.start.toLocaleDateString()} - {week.end.toLocaleDateString()}</span>
+                                        </div>
+                                    ))}
+                                </Combobox>
+                            </>
+                        }
+
                     </div>
-                    <div className={"flex flex-row justify-end"}>
-                        <div className={"mr-2"}>
-                            <Button text={"New Absence"}
-                                    theme={"dark"}
-                                    className={"w-min h-8"}
-                                    onClick={() => absenceDialogRef.current?.show()}
-                            >
-                                <TreePalm size={20} className={"mr-2"}/>
-                            </Button>
-                        </div>
+                    <div className={"flex flex-row justify-end space-x-2"}>
+                        <SwitchButton firstTitle={"Day"} secondTitle={"Week"} onClick={() => setView(!view)}/>
+                        <Button text={"New Absence"}
+                                theme={"dark"}
+                                className={"w-min h-8"}
+                                onClick={() => absenceDialogRef.current?.show()}
+                        >
+                            <TreePalm size={20} className={"mr-2"}/>
+                        </Button>
                         <Button text={"New Entry"}
                                 theme={"white"}
                                 className={"w-min h-8"}
@@ -120,12 +225,22 @@ export default function Timetracking() {
                     </div>
                 </div>
 
-                <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
-                    <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                    <div className={"flex-grow bg-black border border-y-0 border-white border-opacity-20"}></div>
-                    <TimeEntryDaySummary entries={dailyEntries}/>
-                </div>
+                {view ?
+                    <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
+                        <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
+                        <div className={"flex-grow bg-black border border-y-0 border-white border-opacity-20"}></div>
+                        <TimeEntryDaySummary entries={dailyEntries}/>
+                    </div>
+                    :
+                    <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
+                        <WeekView timeEntries={weekEntries} absences={weekAbsences} weekDates={getCurrentWeekDates()}/>
+                        <TimeEntryDaySummary entries={weekEntries}/>
+                    </div>
+                }
             </div>
+
+            <CreateAbsenceDialog ref={absenceDialogRef}/>
+            <CreateTimeEntryDialog ref={entryDialogRef}/>
         </>
     );
 }

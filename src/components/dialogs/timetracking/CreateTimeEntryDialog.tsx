@@ -24,7 +24,6 @@ type InitialValues = {
     task: Task | null,
     timeFrom: string,
     timeTo: string,
-
 }
 
 export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
@@ -81,13 +80,13 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
 
     const validateInput = () => {
 
-        if (comment.trim() === "" && !projectSelected && !taskSelected) {
+        if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
         }
 
-        if (!times.includes(timeFrom as string) || !times.includes(timeTo as string) ||
-            times.indexOf(timeFrom as string) >= times.indexOf(timeTo as string)) {
+        if (!times.includes(values.timeFrom as string) || !times.includes(values.timeTo as string) ||
+            times.indexOf(values.timeFrom as string) >= times.indexOf(values.timeTo as string)) {
             setValid(false);
             return;
         }
@@ -177,20 +176,13 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                     </div>
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
-                        <DatePicker text={"Select a date"}
-                                    iconSize={16}
-                                    preSelectedValue={new Date()}
-                                    size={"medium"}
-                                    closeButton={false}
-                                    dayFormat={"short"}
-                                    onValueChange={}
-                        />
                         <SearchSelect buttonTitle={"From"}
                                       preSelectedValue={"09:00AM"}
                                       icon={<Clock2 size={16}/>}
                                       size={"medium"}
                                       className={"z-40"}
-                                      onValueChange={}
+                                      onValueChange={(value) =>
+                                          setValues((prevValues) => ({ ...prevValues, timeFrom: value }))}
                         >
                             {times.map((time) => (
                                 <SearchSelectItem key={time}
@@ -203,7 +195,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                                       icon={<Clock8 size={16}/>}
                                       size={"medium"}
                                       className={"z-40"}
-                                      onValueChange={}
+                                      onValueChange={(value) =>
+                                          setValues((prevValues) => ({ ...prevValues, timeTo: value }))}
                         >
                             {times.map((time) => (
                                 <SearchSelectItem key={time}

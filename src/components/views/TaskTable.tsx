@@ -1,5 +1,13 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
+import React, {ButtonHTMLAttributes, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {
+    Table,
+    TableAction,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@marraph/daisy/components/table/Table";
 import {useRouter} from "next/navigation";
 import {TaskContextMenu} from "@/components/contextmenus/TaskContextMenu";
 import {TopicBadge} from "@/components/badges/TopicBadge";
@@ -116,11 +124,9 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                   className={index === getSortedTaskTable(taskElements, sort).length - 1 ? " border-b border-b-white" : ""}>
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
-                                    <PriorityBadge priority={taskElement.priority}/>
-                                    {taskElement.project &&
-                                        <ProjectBadge title={taskElement.project?.name}/>
-                                    }
-                                    <TopicBadge title={taskElement.topic?.title} color={"error"}/>
+                                    {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
+                                    {taskElement.project && <ProjectBadge title={taskElement.project?.name}/>}
+                                    {taskElement.topic && <TopicBadge title={taskElement.topic?.title} color={"error"}/>}
                                 </div>
                             </TableCell>
                             <TableCell className={"text-white truncate"}>
@@ -131,16 +137,8 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                             </TableCell>
                             <TableCell className={"flex flex-row space-x-4 items-center justify-between text-xs"}>
                                 {formatDate(taskElement.deadline?.toString())}
-                                <Button text={""}
-                                        className={"p-1.5 ml-4"}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleContextMenu(e, taskElement);
-                                        }}
-                                >
-                                    <EllipsisVertical size={16}/>
-                                </Button>
                             </TableCell>
+                            <TableAction onClick={(e) => handleContextMenu(e, taskElement)}/>
                         </TableRow>
                     ))}
                 </TableBody>

@@ -126,7 +126,6 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
             <Dialog width={600} ref={dialogRef} key={dialogKey}>
                 <DialogHeader title={"New Task"}
                               dialogRef={dialogRef}
-                              switchRef={switchRef as MutableRefObject<SwitchRef>}
                               onClose={handleCloseClick}
                 />
                 <DialogContent>

@@ -20,7 +20,6 @@ export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...pr
             const hours = parseFloat(duration.toString());
             totalDuration += hours;
         }
-        return totalDuration;
     }
 
     return (

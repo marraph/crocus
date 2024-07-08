@@ -1,5 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@marraph/daisy/components/table/Table";
+import {
+    Table,
+    TableAction,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@marraph/daisy/components/table/Table";
 import {Caret} from "@/components/badges/Caret";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
@@ -181,13 +189,13 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                     <span>{entry.comment}</span>
                                 </div>
                             </TableCell>
-                            <TableCell>{formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}</TableCell>
+                            <TableCell>
+                                {formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}
+                            </TableCell>
                             <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
                                 {calculateDifference(entry) + "h"}
-                                <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleEntryContextMenu(e, entry);}}>
-                                    <EllipsisVertical size={16}/>
-                                </Button>
                             </TableCell>
+                            <TableAction onClick={(e) => handleEntryContextMenu(e, entry)}/>
                         </TableRow>
                     ))}
                 </TableBody>

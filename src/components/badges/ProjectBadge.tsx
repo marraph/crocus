@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Box} from "lucide-react";
