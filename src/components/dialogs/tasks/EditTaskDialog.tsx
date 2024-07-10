@@ -18,7 +18,7 @@ import {useUser} from "@/context/UserContext";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {mutateRef} from "@/utils/mutateRef";
-import {getProjects, getTeams, getTopicItem, getTopics} from "@/utils/getTypes";
+import {getProjects, getAllTeams, getTopicItem, getAllTopics} from "@/utils/getTypes";
 import {updateTask} from "@/service/hooks/taskHook";
 
 
@@ -155,7 +155,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                           setValues((prevValues) => ({ ...prevValues, team: value }));
                                       }}
                             >
-                                {getTeams(user).map((team) => (
+                                {getAllTeams(user).map((team) => (
                                     <ComboboxItem key={team}
                                                   title={team}
                                     />
@@ -201,7 +201,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                       onValueChange={(value) =>
                                           setValues((prevValues) => ({ ...prevValues, topic: value }))}
                             >
-                                {getTopics(user).map((topic) => (
+                                {getAllTopics(user).map((topic) => (
                                     <ComboboxItem key={topic} title={topic}/>
                                 ))}
                             </Combobox>

@@ -29,7 +29,7 @@ import {PreviewUser, Priority, Project, Status, Task, TaskCreation, Team, User} 
 import {useUser} from "@/context/UserContext";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
-import {getProject, getProjects, getTeams, getTopicItem, getTopics} from "@/utils/getTypes";
+import {getProject, getProjects, getAllTeams, getTopicItem, getAllTopics} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
 
 
@@ -147,7 +147,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                           setTeamSelected({isSelected: value !== null, team: value ?? ""});
                                       }}
                             >
-                                {getTeams(user).map((team) => (
+                                {getAllTeams(user).map((team) => (
                                     <ComboboxItem title={team}
                                                   key={team}
                                                   size={"small"}
@@ -185,7 +185,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                       onValueChange={(value) =>
                                           setValues((prevValues) => ({ ...prevValues, topic: value }))}
                             >
-                                {getTopics(user).map((topic) => (
+                                {getAllTopics(user).map((topic) => (
                                     <ComboboxItem title={topic}
                                                   key={topic}
                                                   size={"small"}

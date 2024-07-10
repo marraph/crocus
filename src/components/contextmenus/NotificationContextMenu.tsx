@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ReactNode, useState} from "react";
+import React, {useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Notification} from "@/components/Notification";

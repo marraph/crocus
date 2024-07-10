@@ -20,18 +20,20 @@ export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const [update, setUpdate] = useState(0);
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
-    const { data: User, isLoading: userLoading, error: userError } = useUser();
+    const { data:user, isLoading:userLoading, error:userError } = useUser();
+
+    console.log(user)
 
     useEffect(() => {
-        if (User) {
+        if (user) {
             const elements = getTaskElements();
             setTaskElements(elements);
         }
-    }, [User, update]);
+    }, [user, update]);
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
-        User?.teams?.forEach((team: Team) => {
+        user?.teams?.forEach((team: Team) => {
             team.projects?.forEach((project: Project) => {
                 project.tasks?.forEach((task: Task) => {
                     if (task.isArchived) return;
@@ -73,9 +75,9 @@ export default function Tasks() {
         }
 
         return taskElements;
-    }, [User]);
+    }, [user]);
 
-    if (User === undefined) return null;
+    if (user === undefined) return null;
 
     return (
         <div className={"h-screen flex flex-col space-y-4 p-8"}>
@@ -106,7 +108,7 @@ export default function Tasks() {
             </div>
 
             {viewMode ?
-                <div className={"border border-white border-opacity-20 rounded-lg flex flex-col h-max overflow-hidden"}>
+                <div className={"border border-white border-opacity-20 rounded-lg bg-black flex flex-col h-screen overflow-hidden"}>
                     <TaskTable taskElements={taskElements}/>
                 </div>
                 :

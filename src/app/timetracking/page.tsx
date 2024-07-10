@@ -13,7 +13,7 @@ import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {WeekView} from "@/components/views/WeekView";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
-import {Combobox} from "@marraph/daisy/components/combobox/Combobox";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 
 interface Week {
     start: Date;
@@ -35,14 +35,24 @@ function getStartAndEndOfWeek(date: Date): Week {
     return { start, end };
 }
 
-function getNextFiftyWeeks(): Week[] {
+function getNextAndPreviousFiftyWeeks(): Week[] {
     const weeks: Week[] = [];
     let currentDate = new Date();
 
+    // Get the previous 50 weeks
+    for (let i = 0; i < 50; i++) {
+        currentDate.setDate(currentDate.getDate() - 7);
+        const week = getStartAndEndOfWeek(currentDate);
+        weeks.push(week);
+    }
+
+    // Reset the date to current date
+    currentDate = new Date();
+
+    // Get the next 50 weeks
     for (let i = 0; i < 50; i++) {
         const week = getStartAndEndOfWeek(currentDate);
         weeks.push(week);
-
         currentDate.setDate(currentDate.getDate() + 7);
     }
 
@@ -53,6 +63,11 @@ function compareDays(date1: Date, date2: Date) {
     return date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth() &&
         date1.getDate() === date2.getDate();
+}
+
+function findCurrentWeek(weeks: Week[]): Week | undefined {
+    const currentDate = new Date();
+    return weeks.find((week) => currentDate >= week.start && currentDate <= week.end);
 }
 
 function getFilterDayEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
@@ -114,7 +129,7 @@ export default function Timetracking() {
     const [day, setDay] = useState<Date>(new Date());
     const [week, setWeek] = useState<Date[]>(getCurrentWeekDates());
     const [view, setView] = useState<boolean>(true);
-    const weeks = useMemo(() => getNextFiftyWeeks(), []);
+    const weeks = useMemo(() => getNextAndPreviousFiftyWeeks(), []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterDayEntries(user, day));
@@ -195,11 +210,12 @@ export default function Timetracking() {
                                 >
                                     <ChevronRight/>
                                 </Button>
-                                <Combobox buttonTitle={"Week"} icon={<CalendarDays size={16} className={"mr-2"}/>}>
+                                <Combobox buttonTitle={"Week"}
+                                          icon={<CalendarDays size={16} className={"mr-2"}/>}
+                                          preSelectedValue={findCurrentWeek(weeks)?.start.toLocaleDateString() + " - " + findCurrentWeek(weeks)?.end.toLocaleDateString()}
+                                >
                                     {weeks.map((week, index) => (
-                                        <div key={index} className={"flex flex-row items-center space-x-2"}>
-                                            <span>{week.start.toLocaleDateString()} - {week.end.toLocaleDateString()}</span>
-                                        </div>
+                                        <ComboboxItem key={index} title={week.start.toLocaleDateString() + " - " + week.end.toLocaleDateString()}/>
                                     ))}
                                 </Combobox>
                             </>

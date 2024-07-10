@@ -1,11 +1,25 @@
 import {Priority, Project, Status, Task, TaskElement, Team, Topic, User} from "@/types/types";
 
-export function getTeams(user: User): string[] {
+export function getAllTeams(user: User): string[] {
     const teams: string[] = [];
     user.teams.forEach((team: Team) => {
         teams.push(team.name);
     });
     return teams;
+}
+
+export function getAllCreators(user: User): string[] {
+    const creators: string[] = [];
+    user.teams.forEach(team => {
+        team.projects.forEach(project => {
+            project.tasks.forEach(task => {
+                if (!creators.includes(task.createdBy.name))
+                    creators.push(task.createdBy.name);
+            });
+        });
+    });
+    return creators;
+
 }
 
 export function getProjects(user: User, teamToFind: string): string[] {
@@ -77,7 +91,7 @@ export function getProjectFromTask(user: User, task: Task | null): Project | nul
     return project;
 }
 
-export function getTopics(user: User): string[] {
+export function getAllTopics(user: User): string[] {
     const topics: string[] = [];
     user.teams.forEach(team => {
         team.projects.forEach(project => {

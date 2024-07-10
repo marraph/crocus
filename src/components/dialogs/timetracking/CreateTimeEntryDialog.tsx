@@ -75,8 +75,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         validateInput();
     }, [values.comment, values.project, values.task, values.timeFrom, values.timeTo]);
 
-    if (!dialogRef) return null;
-    if (!user) return null;
+    if (!dialogRef || user === undefined) return null;
 
     const validateInput = () => {
 
