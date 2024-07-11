@@ -14,25 +14,31 @@ import {getAllCreators, getAllTeams, getAllTopics, getProjects} from "@/utils/ge
 interface FilterContextMenuProps extends React.HTMLAttributes<HTMLDivElement> {
     onClick?: () => void;
     onChange?: () => void;
+    updateStateValue: (newValue: Filter[]) => void;
 }
 
-export const FilterContextMenu = forwardRef<FilterRef, FilterContextMenuProps>(({onClick, onChange, className, ...props}, ref) => {
+export const FilterContextMenu = forwardRef<FilterRef, FilterContextMenuProps>(({updateStateValue, onClick, onChange, className, ...props}, ref) => {
     const [team, setTeam] = useState<string | null>(null);
-    const [filters, setFilters] = useState<Filter[]>(getFilterFromCache(sessionStorage));
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const [filters, setFilters] = useState<Filter[]>(getFilterFromCache(sessionStorage) ?? []);
     const statuses = useMemo(() => ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"], []);
     const priorities = useMemo(() => ["LOW", "MEDIUM", "HIGH"], []);
+    const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     if (user === undefined) return;
     console.log(filters);
 
     const handleFilterChange = (newFilter: Filter | null) => {
+        if (!newFilter || !newFilter.key) return;
+
+        console.log("CHANGE: " + newFilter?.key + " " + newFilter?.value)
         if (onChange) onChange();
-        if (!newFilter) return;
 
         const newFilterList = putFilterInCache(sessionStorage, filters, newFilter?.key, newFilter?.value ?? null)
+            .filter(filter => filter && filter.key && filter.value);
+
         setFilters(newFilterList);
-        sessionStorage.setItem('filters', JSON.stringify(filters));
+        sessionStorage.setItem('filters', JSON.stringify(newFilterList));
+        updateStateValue(newFilterList);
 
         if (filters.some(filter => filter.key === "Team")) {
             setTeam(filters.find(filter => filter.key === "Team")?.value ?? null);

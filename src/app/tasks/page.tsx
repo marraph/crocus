@@ -8,7 +8,7 @@ import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
 import {LoaderCircle, SquarePen} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
-import {FilterRef} from "@marraph/daisy/components/filter/Filter";
+import {Filter, FilterRef} from "@marraph/daisy/components/filter/Filter";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
@@ -19,6 +19,7 @@ export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const [update, setUpdate] = useState(0);
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
+    const [filters , setFilters] = useState<Filter[]>([]);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
 
     console.log(user)
@@ -58,7 +59,6 @@ export default function Tasks() {
             });
         });
 
-        const filters = filterRef.current?.getSelectedItems() ?? [];
         console.log(filters);
         const hasFilters = Object.values(filters).some(value => value !== null);
         if (!hasFilters) return taskElements;
@@ -87,6 +87,10 @@ export default function Tasks() {
 
     if (user === undefined) return null;
 
+    const updateStateValue = (newValue: Filter[]) => {
+        setFilters(newValue);
+    };
+
     return (
         <div className={"h-screen flex flex-col space-y-4 p-8"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
@@ -101,6 +105,7 @@ export default function Tasks() {
                     </Button>
                     <CreateTaskDialog ref={dialogRef}/>
                     <FilterContextMenu ref={filterRef}
+                                       updateStateValue={updateStateValue}
                                        onChange={() => setUpdate(update+1)}
                     />
                     <div className={"flex flex-row space-x-1"}>
