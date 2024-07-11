@@ -4,7 +4,6 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
-import {KanbanView} from "@/components/views/KanbanView";
 import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
 import {LoaderCircle, SquarePen} from "lucide-react";
 import {useUser} from "@/context/UserContext";
@@ -59,29 +58,37 @@ export default function Tasks() {
             });
         });
 
-        const filters = filterRef.current?.getSelectedItems() ?? {};
-        const hasFilters = Object.values(filters).some(value => value !== null && value !== '');
+        const filters = filterRef.current?.getSelectedItems() ?? [];
+        console.log(filters);
+        const hasFilters = Object.values(filters).some(value => value !== null);
+        if (!hasFilters) return taskElements;
 
-        if (hasFilters) {
-            taskElements = taskElements.filter((task) => {
-                if (filters["Team"] && task.team?.name !== filters["Team"]) return false;
-                if (filters["Project"] && task.project?.name !== filters["Project"]) return false;
-                if (filters["Topic"] && task.topic?.title !== filters["Topic"]) return false;
-                if (filters["Status"] && task.status !== filters["Status"]) return false;
-                if (filters["Priority"] && task.priority !== filters["Priority"]) return false;
-                if (filters["Creator"] && task.createdBy.name !== filters["Creator"]) return false;
-                return true;
+        return taskElements.filter((task) => {
+            return filters.every(filter => {
+                switch (filter.key) {
+                    case "Team":
+                        return filter.value === null || task.team?.name === filter.value;
+                    case "Project":
+                        return filter.value === null || task.project?.name === filter.value;
+                    case "Topic":
+                        return filter.value === null || task.topic?.title === filter.value;
+                    case "Status":
+                        return filter.value === null || task.status === filter.value;
+                    case "Priority":
+                        return filter.value === null || task.priority === filter.value;
+                    case "Creator":
+                        return filter.value === null || task.createdBy.name === filter.value;
+                    default:
+                        return true;
+                }
             });
-        }
-
-        return taskElements;
+        });
     }, [user]);
 
     if (user === undefined) return null;
 
     return (
         <div className={"h-screen flex flex-col space-y-4 p-8"}>
-            <CreateTaskDialog ref={dialogRef}/>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
                     <Button text={"Create Task"}
@@ -92,6 +99,7 @@ export default function Tasks() {
                     >
                         <SquarePen size={20} className={"mr-2"}/>
                     </Button>
+                    <CreateTaskDialog ref={dialogRef}/>
                     <FilterContextMenu ref={filterRef}
                                        onChange={() => setUpdate(update+1)}
                     />
@@ -107,12 +115,10 @@ export default function Tasks() {
                 />
             </div>
 
-            {viewMode ?
+            {viewMode &&
                 <div className={"border border-white border-opacity-20 rounded-lg bg-black flex flex-col h-screen overflow-hidden"}>
                     <TaskTable taskElements={taskElements}/>
                 </div>
-                :
-                <KanbanView taskElements={taskElements}/>
             }
         </div>
     );

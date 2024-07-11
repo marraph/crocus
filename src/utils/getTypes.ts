@@ -105,6 +105,20 @@ export function getAllTopics(user: User): string[] {
     return topics;
 }
 
+export function getTopicsFromTeam(user: User, teamToFind: string): string[] {
+    const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
+    const topics: string[] = [];
+    specificTeam?.projects.forEach((project: Project) => {
+        project.tasks.forEach((task: Task) => {
+            if (task.topic && !topics.includes(task.topic.title)) {
+                topics.push(task.topic.title);
+            }
+        });
+    });
+    return topics;
+
+}
+
 export function getTopicItem(user: User, topic: string): Topic | undefined {
     for (const team of user.teams ?? []) {
         for (const project of team.projects) {

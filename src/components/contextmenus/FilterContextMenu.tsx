@@ -1,4 +1,11 @@
-import {FilterButton, FilterItem, FilterRef} from "@marraph/daisy/components/filter/Filter";
+import {
+    Filter,
+    FilterButton,
+    FilterItem,
+    FilterRef,
+    getFilterFromCache,
+    putFilterInCache
+} from "@marraph/daisy/components/filter/Filter";
 import {Box, CircleAlert, LineChart, Tag, User, Users} from "lucide-react";
 import React, {forwardRef, useMemo, useState} from "react";
 import {useUser} from "@/context/UserContext";
@@ -11,30 +18,31 @@ interface FilterContextMenuProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const FilterContextMenu = forwardRef<FilterRef, FilterContextMenuProps>(({onClick, onChange, className, ...props}, ref) => {
     const [team, setTeam] = useState<string | null>(null);
-    const [filters, setFilters] = useState<{ [key: string]: string | null }>(JSON.parse(sessionStorage.getItem('filters') || "{}") || {});
+    const [filters, setFilters] = useState<Filter[]>(getFilterFromCache(sessionStorage));
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const statuses = useMemo(() => ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"], []);
     const priorities = useMemo(() => ["LOW", "MEDIUM", "HIGH"], []);
 
     if (user === undefined) return;
-    console.log(sessionStorage.getItem('filters'));
+    console.log(filters);
 
-
-    const handleFilterChange = (filters: { [key: string]: string | null }) => {
+    const handleFilterChange = (newFilter: Filter | null) => {
         if (onChange) onChange();
+        if (!newFilter) return;
 
-        setFilters(filters);
+        const newFilterList = putFilterInCache(sessionStorage, filters, newFilter?.key, newFilter?.value ?? null)
+        setFilters(newFilterList);
         sessionStorage.setItem('filters', JSON.stringify(filters));
 
-        if (filters["Team"] !== null) {
-            setTeam(filters["Team"]);
+        if (filters.some(filter => filter.key === "Team")) {
+            setTeam(filters.find(filter => filter.key === "Team")?.value ?? null);
         } else {
             setTeam(null);
         }
     }
 
     return (
-        <FilterButton onFilterChange={handleFilterChange} onResetTeamSelected={() => setTeam(null)} ref={ref}>
+        <FilterButton onFilterChange={(filter) => handleFilterChange(filter)} onResetTeamSelected={() => setTeam(null)} ref={ref}>
             <FilterItem title={"Team"} data={getAllTeams(user)} onClick={onClick} icon={<Users size={16}/>}/>
             {team &&
                 <>

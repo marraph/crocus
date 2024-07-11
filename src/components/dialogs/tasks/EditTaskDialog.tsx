@@ -18,7 +18,7 @@ import {useUser} from "@/context/UserContext";
 import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {mutateRef} from "@/utils/mutateRef";
-import {getProjects, getAllTeams, getTopicItem, getAllTopics} from "@/utils/getTypes";
+import {getProjects, getAllTeams, getTopicItem, getAllTopics, getTopicsFromTeam} from "@/utils/getTypes";
 import {updateTask} from "@/service/hooks/taskHook";
 
 
@@ -56,7 +56,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
         duration: taskElement.duration?.toString() ?? null,
     }
     const [values, setValues] = useState(initialValues);
-    const [teamSelected, setTeamSelected] = useState({isSelected: taskElement.team !== null, team: taskElement.team?.name ?? ""});
+    const [team, setTeam] = useState<string | null>(taskElement.team?.name ?? null);
     const [valid, setValid] = useState(true);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const { data:user, isLoading:userLoading, error:userError } = useUser();
@@ -95,7 +95,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
         setDialogKey(Date.now());
         setValid(true);
         setValues(initialValues);
-        setTeamSelected({isSelected: taskElement.team !== null, team: taskElement.team?.name ?? ""});
+        setTeam(taskElement.team?.name ?? null);
     };
 
     const validateInput = () => {
@@ -132,6 +132,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             <Input placeholder={"Task Title"}
                                    value={values.title}
                                    onChange={handleInputChange("title", setValues)}
+                                   className={"w-full"}
                             />
                         </div>
                         <div className={"flex flex-col space-y-1"}>
@@ -151,7 +152,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                       icon={<Users size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.team}
                                       onValueChange={(value) => {
-                                          setTeamSelected({isSelected: value !== null, team: value ?? ""});
+                                          setTeam(value);
                                           setValues((prevValues) => ({ ...prevValues, team: value }));
                                       }}
                             >
@@ -162,49 +163,49 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                 ))}
                             </Combobox>
                         </div>
-                        <div className={"flex flex-col space-y-1 z-50"}>
-                            {teamSelected && (
-                                <>
+                        {team &&
+                            <>
+                                <div className={"flex flex-col space-y-1 z-50"}>
                                     <span className={"text-gray text-xs"}>Project</span>
                                     <Combobox buttonTitle={"Project"}
                                               icon={<BookCopy size={16} className={"mr-2"}/>}
                                               preSelectedValue={values.project}
                                               onValueChange={(value) =>
-                                                  setValues((prevValues) => ({ ...prevValues, project: value }))}
+                                                  setValues((prevValues) => ({...prevValues, project: value}))}
                                     >
-                                        {getProjects(user, teamSelected.team).map((project) => (
+                                        {getProjects(user, team).map((project) => (
                                             <ComboboxItem key={project} title={project}/>
                                         ))}
                                     </Combobox>
-                                </>
-                            )}
-                        </div>
-                        <div className={"flex flex-col space-y-1 z-50"}>
+                                </div>
+                                <div className={"flex flex-col space-y-1 z-50"}>
+                                    <span className={"text-gray text-xs"}>Topic</span>
+                                    <Combobox buttonTitle={"Topic"}
+                                              icon={<Tag size={16} className={"mr-2"}/>}
+                                              preSelectedValue={values.topic}
+                                              onValueChange={(value) =>
+                                                  setValues((prevValues) => ({...prevValues, topic: value}))}
+                                    >
+                                        {getTopicsFromTeam(user, team).map((topic) => (
+                                            <ComboboxItem key={topic} title={topic}/>
+                                        ))}
+                                    </Combobox>
+                                </div>
+                            </>
+                        }
+                    </div>
+                    <div className={"flex flex-row space-x-2 px-4 py-4"}>
+                        <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Deadline</span>
                             <DatePicker size={"medium"}
                                         iconSize={16}
                                         text={"Deadline"}
                                         preSelectedValue={values.deadline}
                                         onValueChange={(value) =>
-                                            setValues((prevValues) => ({ ...prevValues, deadline: value }))}
+                                            setValues((prevValues) => ({...prevValues, deadline: value}))}
                                         closeButton={true}
                                         dayFormat={"short"}
                             />
-                        </div>
-                    </div>
-                    <div className={"flex flex-row space-x-2 px-4 py-4"}>
-                        <div className={"flex flex-col space-y-1 z-40"}>
-                            <span className={"text-gray text-xs"}>Topic</span>
-                            <Combobox buttonTitle={"Topic"}
-                                      icon={<Tag size={16} className={"mr-2"}/>}
-                                      preSelectedValue={values.topic}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, topic: value }))}
-                            >
-                                {getAllTopics(user).map((topic) => (
-                                    <ComboboxItem key={topic} title={topic}/>
-                                ))}
-                            </Combobox>
                         </div>
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Status</span>
@@ -212,7 +213,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                       icon={<CircleAlert size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.status}
                                       onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, status: value }))}
+                                          setValues((prevValues) => ({...prevValues, status: value}))}
                             >
                                 {status.map((status) => (
                                     <ComboboxItem key={status} title={status}/>
@@ -225,7 +226,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                       icon={<LineChart size={16} className={"mr-2"}/>}
                                       preSelectedValue={values.priority}
                                       onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, priority: value }))}
+                                          setValues((prevValues) => ({...prevValues, priority: value}))}
                             >
                                 {priorities.map((priority) => (
                                     <ComboboxItem key={priority} title={priority}/>

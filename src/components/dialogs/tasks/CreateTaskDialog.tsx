@@ -29,7 +29,7 @@ import {PreviewUser, Priority, Project, Status, Task, TaskCreation, Team, User} 
 import {useUser} from "@/context/UserContext";
 import {Input, InputRef} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
-import {getProject, getProjects, getAllTeams, getTopicItem, getAllTopics} from "@/utils/getTypes";
+import {getProject, getProjects, getAllTeams, getTopicItem, getAllTopics, getTopicsFromTeam} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
 
 
@@ -62,7 +62,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
         duration: null
     }
     const [values, setValues] = useState(initialValues);
-    const [teamSelected, setTeamSelected] = useState({isSelected: false, team: ""});
+    const [team, setTeam] = useState<string | null>(null);
     const [valid, setValid] = useState(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
@@ -100,7 +100,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
     const handleCloseClick = () => {
         setValues(initialValues);
         setValid(false);
-        setTeamSelected({isSelected: false, team: ""});
+        setTeam(null);
         setDialogKey(Date.now());
     }
 
@@ -144,7 +144,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                       icon={<Users size={12} className={"mr-1"}/>}
                                       onValueChange={(value) => {
                                           setValues((prevValues) => ({ ...prevValues, team: value }));
-                                          setTeamSelected({isSelected: value !== null, team: value ?? ""});
+                                          setTeam(value);
                                       }}
                             >
                                 {getAllTeams(user).map((team) => (
@@ -154,21 +154,38 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                     />
                                 ))}
                             </Combobox>
-                            {teamSelected.isSelected &&
-                                <Combobox buttonTitle={"Project"}
-                                          size={"small"}
-                                          icon={<BookCopy size={12} className={"mr-1"}/>}
-                                          onValueChange={(value) => {
-                                              setValues((prevValues) => ({ ...prevValues, project: value }))}}
-                                >
-                                    {getProjects(user, teamSelected.team).map((project) => (
-                                        <ComboboxItem title={project}
-                                                      key={project}
-                                                      size={"small"}
-                                        />
-                                    ))}
-                                </Combobox>
+                            {team &&
+                                <>
+                                    <Combobox buttonTitle={"Project"}
+                                              size={"small"}
+                                              icon={<BookCopy size={12} className={"mr-1"}/>}
+                                              onValueChange={(value) => {
+                                                  setValues((prevValues) => ({ ...prevValues, project: value }))}}
+                                    >
+                                        {getProjects(user, team).map((project) => (
+                                            <ComboboxItem title={project}
+                                                          key={project}
+                                                          size={"small"}
+                                            />
+                                        ))}
+                                    </Combobox>
+                                    <Combobox buttonTitle={"Topic"}
+                                        size={"small"}
+                                        icon={<Tag size={12} className={"mr-1"}/>}
+                                        onValueChange={(value) =>
+                                            setValues((prevValues) => ({ ...prevValues, topic: value }))}
+                                    >
+                                        {getTopicsFromTeam(user, team).map((topic) => (
+                                            <ComboboxItem title={topic}
+                                                          key={topic}
+                                                          size={"small"}
+                                            />
+                                        ))}
+                                    </Combobox>
+                                </>
                             }
+                        </div>
+                        <div className={cn("flex flex-row space-x-2", className)}>
                             <DatePicker text={"Deadline"}
                                         iconSize={12}
                                         size={"small"}
@@ -177,21 +194,6 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                         onValueChange={(value) =>
                                             setValues((prevValues) => ({ ...prevValues, deadline: value }))}
                             />
-                        </div>
-                        <div className={cn("flex flex-row space-x-2", className)}>
-                            <Combobox buttonTitle={"Topic"}
-                                      size={"small"}
-                                      icon={<Tag size={12} className={"mr-1"}/>}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, topic: value }))}
-                            >
-                                {getAllTopics(user).map((topic) => (
-                                    <ComboboxItem title={topic}
-                                                  key={topic}
-                                                  size={"small"}
-                                    />
-                                ))}
-                            </Combobox>
                             <Combobox buttonTitle={"Status"}
                                       size={"small"}
                                       icon={<CircleAlert size={12} className={"mr-1"}/>}
