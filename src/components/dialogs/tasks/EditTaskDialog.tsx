@@ -145,94 +145,89 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             />
                         </div>
                     </div>
-                    <div className={"flex flex-row space-x-2 px-4"}>
-                        <div className={"flex flex-col space-y-1 z-50"}>
-                            <span className={"text-gray text-xs"}>Team</span>
-                            <Combobox buttonTitle={"Team"}
-                                      icon={<Users size={16} className={"mr-2"}/>}
-                                      preSelectedValue={values.team}
-                                      onValueChange={(value) => {
-                                          setTeam(value);
-                                          setValues((prevValues) => ({ ...prevValues, team: value }));
-                                      }}
-                            >
-                                {getAllTeams(user).map((team) => (
-                                    <ComboboxItem key={team}
-                                                  title={team}
-                                    />
-                                ))}
-                            </Combobox>
-                        </div>
+                    <div className={"flex flex-row space-x-2 px-4 z-50"}>
+                        <Combobox buttonTitle={"Team"}
+                                  label={"Team"}
+                                  icon={<Users size={16} className={"mr-2"}/>}
+                                  preSelectedValue={values.team}
+                                  onValueChange={(value) => {
+                                      setValues((prevValues) => ({
+                                          ...prevValues,
+                                          team: value,
+                                          project: null,
+                                          topic: null
+                                      }));
+                                      setTeam(value);
+                                  }}
+                        >
+                            {getAllTeams(user).map((team) => (
+                                <ComboboxItem key={team}
+                                              title={team}
+                                />
+                            ))}
+                        </Combobox>
                         {team &&
                             <>
-                                <div className={"flex flex-col space-y-1 z-50"}>
-                                    <span className={"text-gray text-xs"}>Project</span>
-                                    <Combobox buttonTitle={"Project"}
-                                              icon={<BookCopy size={16} className={"mr-2"}/>}
-                                              preSelectedValue={values.project}
-                                              onValueChange={(value) =>
-                                                  setValues((prevValues) => ({...prevValues, project: value}))}
-                                    >
-                                        {getProjects(user, team).map((project) => (
-                                            <ComboboxItem key={project} title={project}/>
-                                        ))}
-                                    </Combobox>
-                                </div>
-                                <div className={"flex flex-col space-y-1 z-50"}>
-                                    <span className={"text-gray text-xs"}>Topic</span>
-                                    <Combobox buttonTitle={"Topic"}
-                                              icon={<Tag size={16} className={"mr-2"}/>}
-                                              preSelectedValue={values.topic}
-                                              onValueChange={(value) =>
-                                                  setValues((prevValues) => ({...prevValues, topic: value}))}
-                                    >
-                                        {getTopicsFromTeam(user, team).map((topic) => (
-                                            <ComboboxItem key={topic} title={topic}/>
-                                        ))}
-                                    </Combobox>
-                                </div>
+                                <Combobox buttonTitle={"Project"}
+                                          label={"Project"}
+                                          key={`project-${team}`}
+                                          icon={<BookCopy size={16} className={"mr-2"}/>}
+                                          preSelectedValue={values.project}
+                                          onValueChange={(value) =>
+                                              setValues((prevValues) => ({...prevValues, project: value}))}
+                                >
+                                    {getProjects(user, team).map((project) => (
+                                        <ComboboxItem key={project} title={project}/>
+                                    ))}
+                                </Combobox>
+                                <Combobox buttonTitle={"Topic"}
+                                          label={"Topic"}
+                                          key={`topic-${team}`}
+                                          icon={<Tag size={16} className={"mr-2"}/>}
+                                          preSelectedValue={values.topic}
+                                          onValueChange={(value) =>
+                                              setValues((prevValues) => ({...prevValues, topic: value}))}
+                                >
+                                    {getTopicsFromTeam(user, team).map((topic) => (
+                                        <ComboboxItem key={topic} title={topic}/>
+                                    ))}
+                                </Combobox>
                             </>
                         }
                     </div>
-                    <div className={"flex flex-row space-x-2 px-4 py-4"}>
-                        <div className={"flex flex-col space-y-1 z-40"}>
-                            <span className={"text-gray text-xs"}>Deadline</span>
-                            <DatePicker size={"medium"}
-                                        iconSize={16}
-                                        text={"Deadline"}
-                                        preSelectedValue={values.deadline}
-                                        onValueChange={(value) =>
-                                            setValues((prevValues) => ({...prevValues, deadline: value}))}
-                                        closeButton={true}
-                                        dayFormat={"short"}
-                            />
-                        </div>
-                        <div className={"flex flex-col space-y-1 z-40"}>
-                            <span className={"text-gray text-xs"}>Status</span>
-                            <Combobox buttonTitle={"Status"}
-                                      icon={<CircleAlert size={16} className={"mr-2"}/>}
-                                      preSelectedValue={values.status}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({...prevValues, status: value}))}
-                            >
-                                {status.map((status) => (
-                                    <ComboboxItem key={status} title={status}/>
-                                ))}
-                            </Combobox>
-                        </div>
-                        <div className={"flex flex-col space-y-1 z-40"}>
-                            <span className={"text-gray text-xs"}>Priority</span>
-                            <Combobox buttonTitle={"Priority"}
-                                      icon={<LineChart size={16} className={"mr-2"}/>}
-                                      preSelectedValue={values.priority}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({...prevValues, priority: value}))}
-                            >
-                                {priorities.map((priority) => (
-                                    <ComboboxItem key={priority} title={priority}/>
-                                ))}
-                            </Combobox>
-                        </div>
+                    <div className={"flex flex-row space-x-2 px-4 py-4 z-40"}>
+                        <span className={"text-gray text-xs"}>Deadline</span>
+                        <DatePicker size={"medium"}
+                                    iconSize={16}
+                                    text={"Deadline"}
+                                    preSelectedValue={values.deadline}
+                                    onValueChange={(value) =>
+                                        setValues((prevValues) => ({...prevValues, deadline: value}))}
+                                    closeButton={true}
+                                    dayFormat={"short"}
+                        />
+                        <Combobox buttonTitle={"Status"}
+                                  label={"Status"}
+                                  icon={<CircleAlert size={16} className={"mr-2"}/>}
+                                  preSelectedValue={values.status}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({...prevValues, status: value}))}
+                        >
+                            {status.map((status) => (
+                                <ComboboxItem key={status} title={status}/>
+                            ))}
+                        </Combobox>
+                        <Combobox buttonTitle={"Priority"}
+                                  label={"Priority"}
+                                  icon={<LineChart size={16} className={"mr-2"}/>}
+                                  preSelectedValue={values.priority}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({...prevValues, priority: value}))}
+                        >
+                            {priorities.map((priority) => (
+                                <ComboboxItem key={priority} title={priority}/>
+                            ))}
+                        </Combobox>
 
                         <div className={"flex flex-col space-y-1 z-40"}>
                             <span className={"text-gray text-xs"}>Duration</span>

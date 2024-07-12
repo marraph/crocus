@@ -98,7 +98,7 @@ export default function Tasks() {
                     <Button text={"Create Task"}
                             theme={"white"}
                             size={"small"}
-                            className={"w-min h-8"}
+                            className={"w-min"}
                             onClick={() => {dialogRef.current?.show(); console.log(dialogRef.current)}}
                     >
                         <SquarePen size={20} className={"mr-2"}/>
@@ -115,7 +115,7 @@ export default function Tasks() {
                 </div>
                 <SwitchButton firstTitle={"Table"}
                               secondTitle={"Card"}
-                              className={"h-8"}
+                              className={"h-9"}
                               onClick={() => setViewMode(!viewMode)}
                 />
             </div>

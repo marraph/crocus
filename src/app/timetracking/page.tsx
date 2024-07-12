@@ -226,14 +226,12 @@ export default function Timetracking() {
                         <SwitchButton firstTitle={"Day"} secondTitle={"Week"} onClick={() => setView(!view)}/>
                         <Button text={"New Absence"}
                                 theme={"dark"}
-                                className={"w-min h-8"}
                                 onClick={() => absenceDialogRef.current?.show()}
                         >
                             <TreePalm size={20} className={"mr-2"}/>
                         </Button>
                         <Button text={"New Entry"}
                                 theme={"white"}
-                                className={"w-min h-8"}
                                 onClick={() => entryDialogRef.current?.show()}
                         >
                             <AlarmClockPlus size={20} className={"mr-2"}/>

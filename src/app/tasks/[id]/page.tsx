@@ -42,36 +42,26 @@ export default function TasksID() {
                 <div className={"w-full flex flex-row justify-between"}>
                     <Breadcrump pastText={"Tasks"}
                                 nowText={taskElement.name}
-                                className={"h-8"}
+                                className={""}
                                 onClick={() => router.push("/tasks/")}
                     />
                     <div className={"flex flex-row justify-end"}>
-                        <Button text={"Message"}
-                                theme={"white"}
-                                className={"h-8 mr-2"}
-                                onClick={() => messageRef.current?.show()}
-                        >
-                            <MessageSquare size={20} className={"mr-2"}/>
-                        </Button>
-
-                        <Button text={"Edit"}
-                                className={"h-8 mr-2"}
-                                onClick={() => editRef.current?.show()}
-                        >
-                            <Pencil size={16} className={"mr-2"} />
-                        </Button>
-                        <Button text={"Close"}
-                                className={"h-8 mr-2"}
-                                onClick={() => closeRef.current?.show()}
-                        >
-                            <CheckCheck size={20} className={"mr-2"}/>
-                        </Button>
-                        <Button text={""}
-                                className={cn("w-min h-8 text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10")}
-                                onClick={() => deleteRef.current?.show()}
-                        >
-                            <Trash2 size={20}/>
-                        </Button>
+                        <div className={"flex flex-row space-x-2"}>
+                            <Button text={"Message"} theme={"white"} onClick={() => messageRef.current?.show()}>
+                                <MessageSquare size={20} className={"mr-2"}/>
+                            </Button>
+                            <Button text={"Edit"} onClick={() => editRef.current?.show()}>
+                                <Pencil size={16} className={"mr-2"} />
+                            </Button>
+                            <Button text={"Close"} onClick={() => closeRef.current?.show()}>
+                                <CheckCheck size={20} className={"mr-2"}/>
+                            </Button>
+                            <Button text={""} onClick={() => deleteRef.current?.show()}
+                                    className={cn("w-min red-button-style hover:red-button-style")}
+                            >
+                                <Trash2 size={20}/>
+                            </Button>
+                        </div>
 
                         <DeleteTaskDialog ref={deleteRef} taskElement={taskElement}/>
                         <CloseTaskDialog ref={closeRef} taskElement={taskElement}/>

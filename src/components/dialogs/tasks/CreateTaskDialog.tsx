@@ -143,7 +143,12 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                       size={"small"}
                                       icon={<Users size={12} className={"mr-1"}/>}
                                       onValueChange={(value) => {
-                                          setValues((prevValues) => ({ ...prevValues, team: value }));
+                                          setValues((prevValues) => ({
+                                              ...prevValues,
+                                              team: value,
+                                              project: null,
+                                              topic: null
+                                          }));
                                           setTeam(value);
                                       }}
                             >
@@ -158,6 +163,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                 <>
                                     <Combobox buttonTitle={"Project"}
                                               size={"small"}
+                                              key={`project-${team}`}
                                               icon={<BookCopy size={12} className={"mr-1"}/>}
                                               onValueChange={(value) => {
                                                   setValues((prevValues) => ({ ...prevValues, project: value }))}}
@@ -170,10 +176,11 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                         ))}
                                     </Combobox>
                                     <Combobox buttonTitle={"Topic"}
-                                        size={"small"}
-                                        icon={<Tag size={12} className={"mr-1"}/>}
-                                        onValueChange={(value) =>
-                                            setValues((prevValues) => ({ ...prevValues, topic: value }))}
+                                              key={`topic-${team}`}
+                                              size={"small"}
+                                              icon={<Tag size={12} className={"mr-1"}/>}
+                                              onValueChange={(value) =>
+                                                    setValues((prevValues) => ({ ...prevValues, topic: value }))}
                                     >
                                         {getTopicsFromTeam(user, team).map((topic) => (
                                             <ComboboxItem title={topic}

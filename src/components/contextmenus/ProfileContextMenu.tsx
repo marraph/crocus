@@ -30,7 +30,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                     <ContextMenuItem title={"My organisation"} className={"mx-2"} icon={<Briefcase size={18}/>}/>
                     <ContextMenuItem title={"Settings"} className={"mx-2 mb-2"} icon={<Settings size={18}/>}/>
                     <Seperator/>
-                    <ContextMenuItem className={"text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10 mx-2 mt-2"}
+                    <ContextMenuItem className={"red-button-style hover:red-button-style mx-2 mt-2"}
                                      title={"Log out"} icon={<LogOut size={18}/>}/>
                 </ContextMenu>
             }

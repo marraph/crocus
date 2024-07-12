@@ -38,6 +38,15 @@ body {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  .red-button-style {
+    color: #F55050;
+  }
+
+  .red-button-style:hover {
+    color: #F55050;
+    background-color: rgba(96, 31, 31, 0.1);
+  }
 }
 
 
