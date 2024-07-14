@@ -1,31 +1,17 @@
 "use client";
 
 import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
-import {Absence, AbsenceType, Project, Task, TimeEntry} from "@/types/types";
+import {Absence, AbsenceType} from "@/types/types";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
-import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
-import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
-import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
+import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
-import {formatTimeAMPM} from "@/utils/format";
-import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {BookCopy, ClipboardList, Clock2, Clock8, Save, TreePalm, Users} from "lucide-react";
-import {cn} from "@/utils/cn";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {DateRangePicker, DateRangePickerRef} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
+import {Save, TreePalm} from "lucide-react";
+import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
 import {DateRange} from "react-day-picker";
 import {updateAbsence} from "@/service/hooks/absenceHook";
-import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 
 type InitialValues = {
     comment: string;
@@ -105,6 +91,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
+                              label={"Comment"}
                               className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
@@ -113,7 +100,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
                         <DateRangePicker text={"Select a date"}
-                                         iconSize={16}
+                                         label={"Date Range"}
                                          size={"medium"}
                                          closeButton={false}
                                          dayFormat={"long"}
@@ -122,6 +109,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
                                              setValues((prevValues) => ({ ...prevValues, dateRange: range ?? { from: new Date(), to: new Date() } }))}
                         />
                         <Combobox buttonTitle={"Absence Type"}
+                                  label={"Absence Type"}
                                   icon={<TreePalm size={16} className={"mr-2"}/>}
                                   preSelectedValue={values.absenceType}
                                   onValueChange={(value) =>
@@ -143,13 +131,13 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Save/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Saved changes"}></AlertTitle>
-                    <AlertDescription description={"You successfully saved your absence changes."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Saved changes"}
+                   description={"You successfully saved your absence changes."}
+                   icon={<Save/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     );
 });

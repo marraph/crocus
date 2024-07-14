@@ -8,7 +8,6 @@ import {FilterContextMenu} from "@/components/contextmenus/FilterContextMenu";
 import {LoaderCircle, SquarePen} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
-import {Filter, FilterRef} from "@marraph/daisy/components/filter/Filter";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
@@ -100,17 +99,16 @@ export default function Tasks() {
                             size={"small"}
                             className={"w-min"}
                             onClick={() => {dialogRef.current?.show(); console.log(dialogRef.current)}}
-                    >
-                        <SquarePen size={20} className={"mr-2"}/>
-                    </Button>
+                            icon={<SquarePen size={20} className={"mr-2"}/>}
+                    />
                     <CreateTaskDialog ref={dialogRef}/>
                     <FilterContextMenu ref={filterRef}
                                        updateStateValue={updateStateValue}
                                        onChange={() => setUpdate(update+1)}
                     />
                     <div className={"flex flex-row space-x-1"}>
-                        <LoaderCircle size={14} className={"text-placeholder"}/>
-                        <span className={"text-xs text-placeholder"}>{`${getTaskElements().length} OPEN`}</span>
+                        <LoaderCircle size={14} className={"text-marcador"}/>
+                        <span className={"text-xs text-marcador"}>{`${getTaskElements().length} OPEN`}</span>
                     </div>
                 </div>
                 <SwitchButton firstTitle={"Table"}
@@ -121,7 +119,7 @@ export default function Tasks() {
             </div>
 
             {viewMode &&
-                <div className={"border border-white border-opacity-20 rounded-lg bg-black flex flex-col h-screen overflow-hidden"}>
+                <div className={"border border-edge rounded-lg bg-black flex flex-col h-screen overflow-hidden"}>
                     <TaskTable taskElements={taskElements}/>
                 </div>
             }

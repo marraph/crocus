@@ -21,12 +21,13 @@ export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextP
 
     return (
         <div className={"relative space-y-2"} ref={menuRef}>
-            <Button text={""} className={"h-8"} onClick={() => setShowMenu(!showMenu)}>
-                <Bell size={16}/>
-            </Button>
+            <Button text={""}
+                    onClick={() => setShowMenu(!showMenu)}
+                    icon={<Bell size={16}/>}
+            />
 
             {showMenu &&
-                <div className={"absolute right-0 bg-black rounded-lg py-1 border border-white border-opacity-20 overflow-y-scroll no-scrollbar h-[300px] w-max z-50"}>
+                <div className={"absolute right-0 bg-black rounded-lg py-1 border border-edge overflow-y-scroll no-scrollbar h-[300px] w-max z-50"}>
                     {notifications.map((n, index) => (
                         <Notification key={index} sender={n.sender} task={n.task} date={n.date} type={n.type} unread={true}/>
                     ))}

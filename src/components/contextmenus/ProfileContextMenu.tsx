@@ -30,11 +30,10 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                     <ContextMenuItem title={"My organisation"} className={"mx-2"} icon={<Briefcase size={18}/>}/>
                     <ContextMenuItem title={"Settings"} className={"mx-2 mb-2"} icon={<Settings size={18}/>}/>
                     <Seperator/>
-                    <ContextMenuItem className={"red-button-style hover:red-button-style mx-2 mt-2"}
-                                     title={"Log out"} icon={<LogOut size={18}/>}/>
+                    <ContextMenuItem className={"red-button-style hover:red-button-style mx-2 mt-2"} title={"Log out"} icon={<LogOut size={18}/>}/>
                 </ContextMenu>
             }
-            <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-white border-opacity-20 hover:bg-selected")}
+            <div className={cn("group flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-edge hover:bg-dark")}
                 onClick={() => setShowProfile(!showProfile)}>
 
                 {isLoading ?

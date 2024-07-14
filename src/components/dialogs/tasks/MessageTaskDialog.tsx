@@ -2,14 +2,7 @@ import React, {forwardRef, useRef, useState} from "react";
 import {MessageSquarePlus} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {mutateRef} from "@/utils/mutateRef";
 import {TaskElement} from "@/types/types";
 
@@ -34,14 +27,17 @@ export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskEleme
 
     return (
         <>
-            <Dialog width={600} ref={dialogRef} key={dialogKey}>
+            <Dialog width={600}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
                 <DialogHeader title={"New Message"}
                               dialogRef={dialogRef}
                               onClose={handleClose}
                 />
                 <DialogContent>
                     <Textarea placeholder={"Write your message..."}
-                              className={"h-20 w-full bg-black placeholder-placeholder"}
+                              className={"h-20 w-full bg-black placeholder-marcador"}
                     />
                 </DialogContent>
                 <DialogFooter saveButtonTitle={"Send"}
@@ -53,13 +49,13 @@ export const MessageTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskEleme
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<MessageSquarePlus />}/>
-                <AlertContent>
-                    <AlertTitle title={"Added Message"}></AlertTitle>
-                    <AlertDescription description={"You successfully added your message to the auditlog."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Added Message"}
+                   description={"You successfully added your message to the auditlog."}
+                   icon={<MessageSquarePlus />}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
 
     )

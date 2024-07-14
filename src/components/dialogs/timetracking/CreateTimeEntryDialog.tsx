@@ -1,19 +1,14 @@
 "use client";
 
 import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {cn} from "@/utils/cn";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Alert, AlertContent, AlertIcon, AlertRef, AlertTitle} from "@marraph/daisy/components/alert/Alert";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {AlarmClockPlus, BookCopy, ClipboardList, Clock2, Clock8} from "lucide-react";
-import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import { useUser } from "@/context/UserContext";
-import {PreviewUser, Project, Task, TimeEntry} from "@/types/types";
-import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
-import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
-import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
-import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
+import {useUser} from "@/context/UserContext";
+import {Project, Task, TimeEntry} from "@/types/types";
+import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
+import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
+import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
 import {mutateRef} from "@/utils/mutateRef";
@@ -137,7 +132,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
-                              className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                              className={"px-4 h-12 w-full bg-black placeholder-marcador focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
                               value={values.comment}
@@ -215,12 +210,12 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<AlarmClockPlus/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Time Entry created successfully!"}
+                   icon={<AlarmClockPlus/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     );
 })

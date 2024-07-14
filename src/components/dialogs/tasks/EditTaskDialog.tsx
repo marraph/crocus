@@ -1,24 +1,17 @@
 "use client";
 
 import React, {ChangeEvent, forwardRef, useEffect, useRef, useState} from "react";
-import {BookCopy, CircleAlert, Hourglass, LineChart, Pencil, Save, Tag, Users} from "lucide-react";
+import {BookCopy, CircleAlert, Hourglass, LineChart, Save, Tag, Users} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
-import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
-import {Priority, Project, Status, Task, TaskElement, Team} from "@/types/types";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
+import {Priority, Status, Task, TaskElement} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
-import {Input, InputRef} from "@marraph/daisy/components/input/Input";
+import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
+import {Input} from "@marraph/daisy/components/input/Input";
 import {mutateRef} from "@/utils/mutateRef";
-import {getProjects, getAllTeams, getTopicItem, getAllTopics, getTopicsFromTeam} from "@/utils/getTypes";
+import {getAllTeams, getProjects, getTopicItem, getTopicsFromTeam} from "@/utils/getTypes";
 import {updateTask} from "@/service/hooks/taskHook";
 
 
@@ -127,23 +120,19 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                 />
                 <DialogContent>
                     <div className={"flex flex-col space-y-4 p-4"}>
-                        <div className={"flex flex-col space-y-1"}>
-                            <span className={"text-gray text-xs"}>Title</span>
-                            <Input placeholder={"Task Title"}
-                                   value={values.title}
-                                   onChange={handleInputChange("title", setValues)}
-                                   className={"w-full"}
-                            />
-                        </div>
-                        <div className={"flex flex-col space-y-1"}>
-                            <span className={"text-gray text-xs"}>Description</span>
-                            <Textarea placeholder={"Add Description..."}
-                                      onChange={handleInputChange("description", setValues)}
-                                      spellCheck={false}
-                                      value={values.description ?? ""}
-                                      className={"h-20 p-2 text-sm bg-dark placeholder-placeholder border-1 border-white border-opacity-20 focus:text-gray"}
-                            />
-                        </div>
+                        <Input placeholder={"Task Title"}
+                               label={"Title"}
+                               value={values.title}
+                               onChange={handleInputChange("title", setValues)}
+                               className={"w-full"}
+                        />
+                        <Textarea placeholder={"Add Description..."}
+                                  label={"Description"}
+                                  onChange={handleInputChange("description", setValues)}
+                                  spellCheck={false}
+                                  value={values.description ?? ""}
+                                  className={"h-20 p-2 text-sm bg-dark placeholder-marcador border-1 border-edge focus:text-gray"}
+                        />
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 z-50"}>
                         <Combobox buttonTitle={"Team"}
@@ -196,10 +185,9 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                         }
                     </div>
                     <div className={"flex flex-row space-x-2 px-4 py-4 z-40"}>
-                        <span className={"text-gray text-xs"}>Deadline</span>
                         <DatePicker size={"medium"}
-                                    iconSize={16}
                                     text={"Deadline"}
+                                    label={"Deadline"}
                                     preSelectedValue={values.deadline}
                                     onValueChange={(value) =>
                                         setValues((prevValues) => ({...prevValues, deadline: value}))}
@@ -229,16 +217,14 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             ))}
                         </Combobox>
 
-                        <div className={"flex flex-col space-y-1 z-40"}>
-                            <span className={"text-gray text-xs"}>Duration</span>
-                            <Input placeholder={"Duration in hours"}
-                                   value={values.duration?.toString()}
-                                   elementSize={"medium"}
-                                   icon={<Hourglass size={16}/>}
-                                   onChange={handleInputChange("duration", setValues)}
-                                   onKeyDown={(e) => handleNumberInput(e)}
-                            />
-                        </div>
+                        <Input placeholder={"Duration in hours"}
+                               label={"Duration"}
+                               value={values.duration?.toString()}
+                               elementSize={"medium"}
+                               icon={<Hourglass size={16}/>}
+                               onChange={handleInputChange("duration", setValues)}
+                               onKeyDown={(e) => handleNumberInput(e)}
+                        />
                     </div>
                 </DialogContent>
                 <DialogFooter saveButtonTitle={"Save changes"}
@@ -251,13 +237,13 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Save/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Saved changes"}/>
-                    <AlertDescription description={"You successfully saved your task changes."}/>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Task saved"}
+                   description={"You successfully saved your task changes."}
+                   icon={<Save/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
 );
 });

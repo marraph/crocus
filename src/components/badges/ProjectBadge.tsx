@@ -14,7 +14,7 @@ export const ProjectBadge: React.FC<Props> = ({ title, className, ...props }) =>
     return (
         <Badge
             text={title}
-            className={"bg-placeholder bg-opacity-20 text-white text-xs rounded-md font-normal px-3 text-xs"}
+            className={"bg-marcador bg-opacity-20 text-white text-xs rounded-md font-normal px-3"}
             {...props}>
             <Box size={16}/>
         </Badge>

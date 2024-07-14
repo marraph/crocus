@@ -1,4 +1,4 @@
-import React, {ButtonHTMLAttributes, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
     Table,
     TableAction,
@@ -22,8 +22,6 @@ import {formatDate} from "@/utils/format";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {EllipsisVertical} from "lucide-react";
 import {getSortedTaskTable, SortState} from "@/utils/sort";
 
 interface TaskProps {
@@ -103,7 +101,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 <TableHeader>
                     <TableRow className={cn("hover:bg-black", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
                         {header.map((header) => (
-                            <TableHead className={"text-placeholder text-sm min-w-28 max-w-32 overflow-hidden"}
+                            <TableHead className={"text-marcador text-sm min-w-28 max-w-32 overflow-hidden"}
                                        key={header.key}
                                        onClick={() => handleHeaderClick(header.key)}>
                                 <span className={"flex flex-row items-center"}>

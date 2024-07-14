@@ -1,23 +1,12 @@
 "use client";
 
 import React, {DialogHTMLAttributes, forwardRef, useEffect, useRef, useState} from "react";
-import {TimeEntry} from "@/types/types";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {useUser} from "@/context/UserContext";
-import {cn} from "@/utils/cn";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {Trash2, Users} from "lucide-react";
-import {Input, InputRef} from "@marraph/daisy/components/input/Input";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
+import {Users} from "lucide-react";
+import {Input} from "@marraph/daisy/components/input/Input";
 
 export const JoinTeamDialog = forwardRef<DialogRef, DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = mutateRef(ref);
@@ -77,12 +66,12 @@ export const JoinTeamDialog = forwardRef<DialogRef, DialogHTMLAttributes<HTMLDia
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Users color="#F55050"/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Joined Team successfully!"}></AlertTitle>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Joined Team successfully!"}
+                   icon={<Users color="#F55050"/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     )
 })

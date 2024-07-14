@@ -8,7 +8,6 @@ import {
     TableHeader,
     TableRow
 } from "@marraph/daisy/components/table/Table";
-import {Caret} from "@/components/badges/Caret";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
 import {Absence, TimeEntry} from "@/types/types";
@@ -147,7 +146,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                 <TableHeader>
                     <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
                     {header.map((header) => (
-                            <TableHead className={"text-placeholder text-sm w-max min-w-28"} key={header.key}>
+                            <TableHead className={"text-marcador text-sm w-max min-w-28"} key={header.key}>
                                 <span className={"flex flex-row items-center"}>
                                     {header.label}
                                 </span>

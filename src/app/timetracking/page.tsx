@@ -175,19 +175,18 @@ export default function Timetracking() {
                         {view ?
                             <>
                                 <Button text={""}
-                                        className={"h-8 w-10 p-0 pl-1.5"}
+                                        className={"w-10 p-0 pl-1.5"}
                                         onClick={() => handleDayBefore()}
                                 >
                                     <ChevronLeft/>
                                 </Button>
                                 <Button text={""}
-                                        className={"h-8 w-10 p-0 pl-2"}
+                                        className={"w-10 p-0 pl-2"}
                                         onClick={() => handleDayAfter()}
                                 >
                                     <ChevronRight/>
                                 </Button>
                                 <DatePicker text={"Select a Date"}
-                                            iconSize={16}
                                             size={"medium"}
                                             preSelectedValue={day}
                                             ref={datepickerRef}
@@ -199,13 +198,13 @@ export default function Timetracking() {
                             :
                             <>
                                 <Button text={""}
-                                        className={"h-8 w-10 p-0 pl-1.5"}
+                                        className={"w-10 p-0 pl-1.5"}
                                         onClick={() => handleWeekBefore()}
                                 >
                                     <ChevronLeft/>
                                 </Button>
                                 <Button text={""}
-                                        className={"h-8 w-10 p-0 pl-2"}
+                                        className={"w-10 p-0 pl-2"}
                                         onClick={() => handleWeekAfter()}
                                 >
                                     <ChevronRight/>
@@ -223,26 +222,27 @@ export default function Timetracking() {
 
                     </div>
                     <div className={"flex flex-row justify-end space-x-2"}>
-                        <SwitchButton firstTitle={"Day"} secondTitle={"Week"} onClick={() => setView(!view)}/>
+                        <SwitchButton firstTitle={"Day"}
+                                      secondTitle={"Week"}
+                                      onClick={() => setView(!view)}
+                        />
                         <Button text={"New Absence"}
                                 theme={"dark"}
                                 onClick={() => absenceDialogRef.current?.show()}
-                        >
-                            <TreePalm size={20} className={"mr-2"}/>
-                        </Button>
+                                icon={<TreePalm size={20} className={"mr-2"}/>}
+                        />
                         <Button text={"New Entry"}
                                 theme={"white"}
                                 onClick={() => entryDialogRef.current?.show()}
-                        >
-                            <AlarmClockPlus size={20} className={"mr-2"}/>
-                        </Button>
+                                icon={<AlarmClockPlus size={20} className={"mr-2"}/>}
+                        />
                     </div>
                 </div>
 
                 {view ?
                     <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
                         <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                        <div className={"flex-grow bg-black border border-y-0 border-white border-opacity-20"}></div>
+                        <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
                         <TimeEntryDaySummary entries={dailyEntries}/>
                     </div>
                     :

@@ -8,28 +8,21 @@ import React, {
     HTMLAttributes,
     MutableRefObject,
     useEffect,
-    useImperativeHandle, useMemo,
+    useMemo,
     useRef,
     useState
 } from "react";
-import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, SquarePen, Tag, Users} from "lucide-react";
+import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, Tag, Users} from "lucide-react";
 import {cn} from "@/utils/cn";
-import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
-import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Priority, Project, Status, Task, TaskCreation, Team, User} from "@/types/types";
+import {Priority, Status, TaskCreation, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {Input, InputRef} from "@marraph/daisy/components/input/Input";
-import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
-import {getProject, getProjects, getAllTeams, getTopicItem, getAllTopics, getTopicsFromTeam} from "@/utils/getTypes";
+import {Input} from "@marraph/daisy/components/input/Input";
+import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {getAllTeams, getProject, getProjects, getTopicItem, getTopicsFromTeam} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
 
 
@@ -132,11 +125,11 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                     <div className={cn("flex flex-col flex-grow space-y-2", className)}>
                         <input placeholder={"Task Title"}
                                onChange={handleInputChange("title", setValues)}
-                               className={cn("rounded-lg bg-black py-2 text-white placeholder-placeholder focus-visible:ring-0 border-0 focus-visible:outline-none", className)}
+                               className={cn("rounded-lg bg-black py-2 text-white placeholder-marcador focus-visible:ring-0 border-0 focus-visible:outline-none", className)}
                         />
                         <Textarea placeholder={"Add Description..."}
                                   onChange={handleInputChange("description", setValues)}
-                                  className={cn("h-20 bg-black placeholder-placeholder focus:text-gray", className)}
+                                  className={cn("h-20 bg-black placeholder-marcador focus:text-gray", className)}
                         />
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"}
@@ -194,7 +187,6 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                         </div>
                         <div className={cn("flex flex-row space-x-2", className)}>
                             <DatePicker text={"Deadline"}
-                                        iconSize={12}
                                         size={"small"}
                                         closeButton={true}
                                         dayFormat={"short"}
@@ -248,14 +240,13 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<SquareCheckBig/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Task created successfully!"}></AlertTitle>
-                    <AlertDescription
-                        description={"You can now work with the task in your task-overview."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Task created successfully!"}
+                   description={"You can now work with the task in your task-overview."}
+                   icon={<SquareCheckBig/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     )
 })

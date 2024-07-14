@@ -24,10 +24,10 @@ export const Notification: React.FC<NotificationProps> = ({ unread, sender, type
                         <div className={"flex flex-row items-center space-x-2"}>
                             <span className={"text-sm text-white"}>{"New message"}</span>
                             {unread &&
-                                <div className={"h-2 w-2 rounded-full bg-blue bg-opacity-60 border border-white border-opacity-20"}/>
+                                <div className={"h-2 w-2 rounded-full bg-blue bg-opacity-60 border border-edge"}/>
                             }
                         </div>
-                        <span className={"text-placeholder text-xs"}>{formatTimeDifference(date, new Date())}</span>
+                        <span className={"text-marcador text-xs"}>{formatTimeDifference(date, new Date())}</span>
                     </div>
                     <span>{"by " + sender + " in " + task}</span>
                 </div>
@@ -38,10 +38,10 @@ export const Notification: React.FC<NotificationProps> = ({ unread, sender, type
                         <div className={"flex flex-row items-center space-x-2"}>
                             <span className={"text-sm text-white"}>{"New change"}</span>
                             {unread &&
-                                <div className={"h-2 w-2 rounded-full bg-blue bg-opacity-60 border border-white border-opacity-20"}/>
+                                <div className={"h-2 w-2 rounded-full bg-blue bg-opacity-60 border border-edge"}/>
                             }
                         </div>
-                        <span className={"text-placeholder text-xs"}>{formatTimeDifference(date, new Date())}</span>
+                        <span className={"text-marcador text-xs"}>{formatTimeDifference(date, new Date())}</span>
                     </div>
                     <span>{"by " + sender + " in " + task}</span>
                 </div>

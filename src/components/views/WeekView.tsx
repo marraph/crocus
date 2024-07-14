@@ -23,15 +23,15 @@ export const WeekView: React.FC<TimeEntryProps> = ({ weekDates, timeEntries }) =
     if (!timeEntries) return null;
 
     return (
-            <div className={"w-full h-full flex flex-row rounded-t-lg border border-white border-opacity-20 border-b-0"}>
+            <div className={"w-full h-full flex flex-row rounded-t-lg border border-edge border-b-0"}>
                 {days.map((day, index) => (
                     <div key={index}
-                         className={cn("h-full w-1/5 bg-black rounded-lg border-x border-white border-opacity-20",
+                         className={cn("h-full w-1/5 bg-black rounded-lg border-x border-edge",
                              day.name === "Friday" ? "border-x-0 rounded-l-none" : "border-l-0 rounded-r-none"
                          )}
                     >
-                        <div className={"w-full border-b border-white border-opacity-20 p-2"}>
-                            <span className={"text-placeholder text-sm font-medium"}>{day.name}</span>
+                        <div className={"w-full border-b border-edge p-2"}>
+                            <span className={"text-marcador text-sm font-medium"}>{day.name}</span>
                         </div>
                         <div className={"h-[full]"}>
                             {timeEntries.map((entry, index) => {
@@ -40,7 +40,7 @@ export const WeekView: React.FC<TimeEntryProps> = ({ weekDates, timeEntries }) =
 
                                 return startDate.getDay() === day.day.getDay() && (
                                     <div key={index}
-                                         className={"flex flex-col space-y-2 border-b border-white border-opacity-20 p-2"}>
+                                         className={"flex flex-col space-y-2 border-b border-edge p-2"}>
                                         <span
                                             className={"text-sm"}>{formatTime(startDate) + " - " + formatTime(endDate)}</span>
                                         {entry.project && <ProjectBadge title={entry.project.name}/>}

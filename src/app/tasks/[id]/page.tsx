@@ -12,14 +12,16 @@ import {formatDate} from "@/utils/format";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
 import {
-    BookCopy,
     Box,
-    CalendarDays, CheckCheck,
+    CalendarDays,
+    CheckCheck,
     CircleAlert,
     Hourglass,
-    LineChart, MessageSquare, Pencil,
-    SmartphoneCharging,
-    Tag, Trash2,
+    LineChart,
+    MessageSquare,
+    Pencil,
+    Tag,
+    Trash2,
     Users
 } from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
@@ -42,25 +44,28 @@ export default function TasksID() {
                 <div className={"w-full flex flex-row justify-between"}>
                     <Breadcrump pastText={"Tasks"}
                                 nowText={taskElement.name}
-                                className={""}
                                 onClick={() => router.push("/tasks/")}
                     />
                     <div className={"flex flex-row justify-end"}>
                         <div className={"flex flex-row space-x-2"}>
-                            <Button text={"Message"} theme={"white"} onClick={() => messageRef.current?.show()}>
-                                <MessageSquare size={20} className={"mr-2"}/>
-                            </Button>
-                            <Button text={"Edit"} onClick={() => editRef.current?.show()}>
-                                <Pencil size={16} className={"mr-2"} />
-                            </Button>
-                            <Button text={"Close"} onClick={() => closeRef.current?.show()}>
-                                <CheckCheck size={20} className={"mr-2"}/>
-                            </Button>
-                            <Button text={""} onClick={() => deleteRef.current?.show()}
+                            <Button text={"Message"}
+                                    theme={"white"}
+                                    onClick={() => messageRef.current?.show()}
+                                    icon={<MessageSquare size={20} className={"mr-2"}/>}
+                            />
+                            <Button text={"Edit"}
+                                    onClick={() => editRef.current?.show()}
+                                    icon={<Pencil size={16} className={"mr-2"} />}
+                            />
+                            <Button text={"Close"}
+                                    onClick={() => closeRef.current?.show()}
+                                    icon={<CheckCheck size={20} className={"mr-2"}/>}
+                            />
+                            <Button text={""}
+                                    onClick={() => deleteRef.current?.show()}
                                     className={cn("w-min red-button-style hover:red-button-style")}
-                            >
-                                <Trash2 size={20}/>
-                            </Button>
+                                    icon={<Trash2 size={20}/>}
+                            />
                         </div>
 
                         <DeleteTaskDialog ref={deleteRef} taskElement={taskElement}/>
@@ -70,11 +75,11 @@ export default function TasksID() {
                     </div>
                 </div>
 
-                <div className={"h-full flex flex-row border border-white border-opacity-20 bg-black rounded-lg"}>
+                <div className={"h-full flex flex-row border border-edge bg-black rounded-lg"}>
                     <div className={"w-full min-h-full bg-dark rounded-l-lg space-y-4 "}>
 
                     </div>
-                    <div className={"border-l border-white border-opacity-20 w-96 min-h-full bg-black rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
+                    <div className={"border-l border-edge w-96 min-h-full bg-black rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
                         <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                             <div className={"w-16 text-gray"}>Title</div>
                             <span>{taskElement.name}</span>
@@ -138,7 +143,7 @@ export default function TasksID() {
                             </span>
                         </div>
                         <Seperator className={"w-full py-4"}/>
-                        <span className={"text-xs text-placeholder px-4 py-2"}>LAST CHANGE</span>
+                        <span className={"text-xs text-marcador px-4 py-2"}>LAST CHANGE</span>
                         <div className={"flex flex-row space-x-4 px-4 py-2"}>
                             <div className={"w-24 text-gray"}>Change</div>
                             <span>{"//CHANGE FEHLT"}</span>
@@ -152,7 +157,7 @@ export default function TasksID() {
                             <span>{taskElement.lastModifiedBy.name}</span>
                         </div>
                         <Seperator className={"w-full py-4"}/>
-                        <span className={"text-xs text-placeholder px-4 py-2"}>CREATION</span>
+                        <span className={"text-xs text-marcador px-4 py-2"}>CREATION</span>
                         <div className={"flex flex-row space-x-4 px-4 py-2"}>
                             <div className={"w-24 text-gray"}>Time Created</div>
                             <span>{formatDate(taskElement.createdDate.toString())}</span>

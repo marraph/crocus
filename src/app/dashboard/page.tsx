@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import {Bell, ExternalLink, Moon, SunMedium} from "lucide-react";
+import {ExternalLink, Moon, SunMedium} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {getDashboardTasks} from "@/utils/getTypes";
-import {PriorityBadge} from "@/components/badges/PriorityBadge";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
@@ -64,54 +63,54 @@ export default function Dashboard() {
                 <NotificationContextMenu notifications={notifications}/>
             </div>
             <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-16"}>
-                <div className={"flex flex-col justify-evenly bg-black rounded-lg border border-white border-opacity-20 p-4 space-y-4 w-1/2 h-72"}>
+                <div className={"flex flex-col justify-evenly bg-black rounded-lg border border-edge p-4 space-y-4 w-1/2 h-72"}>
                     <div className={"flex flex-row space-x-4 w-full h-full"}>
-                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
                             <span className={"text-xl"}>{"40 Hours"}</span>
                             <span className={"text-gray"}>{"worked this week"}</span>
                         </div>
-                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
                             <span className={"text-xl"}>{"30%"}</span>
                             <span className={"text-gray"}>{"spend on meetings"}</span>
                         </div>
                     </div>
                     <div className={"flex flex-row space-x-4 w-full h-full"}>
-                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
                             <span className={"text-xl"}>{"50%"}</span>
                             <span className={"text-gray"}>{"spend on Project A"}</span>
                         </div>
-                        <div className={"flex flex-col items-center justify-center bg-selected rounded-lg w-1/2 h-full"}>
+                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
                             <span className={"text-xl"}>{"20%"}</span>
                             <span className={"text-gray"}>{"spend on fixing bugs"}</span>
                         </div>
                     </div>
 
                 </div>
-                <div className={"bg-black rounded-lg border border-white border-opacity-20 w-1/2 h-72"}>
+                <div className={"bg-black rounded-lg border border-edge w-1/2 h-72"}>
 
                 </div>
             </div>
 
             <div className={"bg-black rounded-lg w-full"}>
-                <div className={"flex flex-row justify-between items-center bg-badgegray border border-white border-opacity-20 rounded-t-lg"}>
+                <div className={"flex flex-row justify-between items-center bg-dark-light border border-edge rounded-t-lg"}>
                     <div className={"flex flex-row items-center"}>
                         <span className={"text-xl px-4 py-2"}>{"Tasks"}</span>
                         <Badge text={count.toString() + " OPEN"}
                                size={"small"}
-                               className={"rounded-md bg-selectwhite text-dark"}>
+                               className={"rounded-md bg-white-dark text-dark"}>
                         </Badge>
                     </div>
                     <Button text={"Open"}
-                            className={"h-8 mx-4 my-2 bg-badgegray border-none"}
+                            className={"h-8 mx-4 my-2 bg-dark-light border-none"}
                             onClick={() => router.push("/tasks")}>
                         <ExternalLink size={16} className={"mr-2"}/>
                     </Button>
                 </div>
-                <div className={"overflow-y-scroll h-[350px] no-scrollbar border border-white border-opacity-20 rounded-b-lg"}>
+                <div className={"overflow-y-scroll h-[350px] no-scrollbar border border-edge rounded-b-lg"}>
                     {tasks.map((task, index) => (
                         <div key={index}
-                             className={"group flex flex-row justify-between items-center p-2 border-b border-white border-opacity-20 " +
-                                 "hover:bg-selected hover:cursor-pointer"}
+                             className={"group flex flex-row justify-between items-center p-2 border-b border-edge " +
+                                 "hover:bg-dark hover:cursor-pointer"}
                              onClick={() => router.push(`/tasks/${task.id}`)}>
                             <div className={"flex flex-row space-x-8 items-center pl-4"}>
                                 <ProjectBadge title={task.project?.name ?? ""}/>

@@ -24,10 +24,10 @@ export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...pr
 
     return (
         <div
-            className={"bg-badgegray border border-white border-opacity-20 rounded-b-lg px-4 flex flex-row justify-between items-center"}>
+            className={"bg-dark-light border border-edge rounded-b-lg px-4 flex flex-row justify-between items-center"}>
             <Badge text={entries?.length.toString() + (entries?.length === 1 ? " ENTRY" : " ENTRIES")}
                    size={"small"}
-                   className={"rounded-md bg-selectwhite text-dark my-3"}>
+                   className={"rounded-md bg-white-dark text-dark my-3"}>
             </Badge>
             <div className={"flex flex-row items-center space-x-2"}>
                 <span className={"text-sm text-gray"}>{"Total Duration:"}</span>

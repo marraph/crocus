@@ -13,7 +13,7 @@ import {
     SquarePen,
     Timer
 } from "lucide-react";
-import {Dialog, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {Dialog, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
@@ -29,10 +29,10 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
 
     return (
         <>
-            <div className={"group flex flex-row justify-between items-center space-x-1 rounded-lg bg-black border border-white border-opacity-20 focus:text-white pr-1"}
+            <div className={"group flex flex-row justify-between items-center space-x-1 rounded-lg bg-black border border-edge focus:text-white pr-1"}
                  onClick={() => dialogRef.current?.show()}>
                 <div className={"flex flex-row items-center"}>
-                    <Search size={18} className={"group-focus:text-white text-placeholder ml-2 mr-2"}/>
+                    <Search size={18} className={"group-focus:text-white text-marcador ml-2 mr-2"}/>
                     <Input placeholder={"Search"} border={"none"} className={"w-max text-sm m-0 p-0 h-8 bg-black"}></Input>
                 </div>
                 <Shortcut text={"⌘ K"} className={"justify-end"}/>
@@ -40,16 +40,16 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
 
             <div className={"flex items-center justify-center"}>
                 <Dialog
-                    className={"border border-white border-opacity-20 w-1/2 drop-shadow-lg overflow-visible"} {...props}
+                    className={"border border-edge w-1/2 drop-shadow-lg overflow-visible"} {...props}
                     ref={dialogRef}>
                     <div ref={outsideClickRef}>
                         <div className={"flex flex-row items-center"}>
-                            <Search size={18} className={"text-placeholder ml-4 mr-2"}/>
+                            <Search size={18} className={"text-marcador ml-4 mr-2"}/>
                             <Input placeholder={"Search or type a command"} border={"none"}
                                    className={"w-full text-md m-0 mr-2 p-0 h-12 bg-black"}></Input>
                         </div>
                         <Seperator/>
-                        <div className={"text-placeholder text-sm px-4 pt-4"}>
+                        <div className={"text-marcador text-sm px-4 pt-4"}>
                             <span>{"Quick Actions"}</span>
                         </div>
                         <div className={"flex flex-col items-center px-2 py-1 font-normal cursor-pointer"}>
@@ -149,6 +149,13 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                         </div>
                     </div>
+                </Dialog>
+
+                <Dialog ref={dialogRef} width={800}>
+                    <DialogHeader title={}
+                                  dialogRef={}
+                    />
+
                 </Dialog>
             </div>
         </>

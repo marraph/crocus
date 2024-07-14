@@ -1,24 +1,15 @@
 "use client";
 
-import React, {forwardRef, MutableRefObject, useEffect, useRef, useState} from "react";
+import React, {forwardRef, useRef, useState} from "react";
 import {CheckCheck} from "lucide-react";
-import {Button} from "@marraph/daisy/components/button/Button";
-import {cn} from "@/utils/cn";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Badge} from "@marraph/daisy/components/badge/Badge";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {
     Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon, AlertRef,
-    AlertTitle
+    AlertRef
 } from "@marraph/daisy/components/alert/Alert";
 import {updateTask} from "@/service/hooks/taskHook";
-import {PreviewUser, Priority, Status, Task, TaskElement, Topic} from "@/types/types";
+import {Task, TaskElement} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {getDiffieHellman} from "node:crypto";
 import {mutateRef} from "@/utils/mutateRef";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
@@ -61,7 +52,10 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
 
     return (
         <>
-            <Dialog width={600} ref={dialogRef} key={dialogKey}>
+            <Dialog width={600}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
                 <DialogHeader title={"Close Task"}
                               dialogRef={dialogRef}
                               onClose={handleClose}
@@ -80,13 +74,13 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<CheckCheck />}/>
-                <AlertContent>
-                    <AlertTitle title={"Task closed successfully!"}></AlertTitle>
-                    <AlertDescription description={"You can no longer interact with this task."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Task closed successfully!"}
+                   description={"You can no longer interact with this task."}
+                   icon={<CheckCheck />}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     );
 })

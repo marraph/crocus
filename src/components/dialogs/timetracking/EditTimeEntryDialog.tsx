@@ -1,31 +1,14 @@
 "use client";
 
 import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
-import {
-    BookCopy,
-    ClipboardList,
-    Clock2, Clock8,
-    Save,
-} from "lucide-react";
-import {Button} from "@marraph/daisy/components/button/Button";
+import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {cn} from "@/utils/cn";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
-import {Project, Task, TimeEntry} from "@/types/types";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
+import {TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
+import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {mutateRef} from "@/utils/mutateRef";
-import {SearchSelect, SearchSelectItem, SearchSelectRef} from "@marraph/daisy/components/searchselect/SearchSelect";
+import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {formatTimeAMPM} from "@/utils/format";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {updateTimEntry} from "@/service/hooks/timeentryHook";
@@ -156,6 +139,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
+                              label={"Comment"}
                               className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
@@ -163,6 +147,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                     />
                     <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
                         <SearchSelect buttonTitle={"Project"}
+                                      label={"Project"}
                                       preSelectedValue={timeEntry.project?.name}
                                       icon={<BookCopy size={16}/>}
                                       size={"medium"}
@@ -179,6 +164,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                         </SearchSelect>
 
                         <SearchSelect buttonTitle={"Task"}
+                                      label={"Task"}
                                       preSelectedValue={timeEntry.task?.name}
                                       icon={<ClipboardList size={16}/>}
                                       size={"medium"}
@@ -197,8 +183,9 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
 
                     <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
                         <SearchSelect buttonTitle={"From"}
-                                      preSelectedValue={validateTime(values.timeTo)}
+                                      preSelectedValue={validateTime(values.timeFrom)}
                                       icon={<Clock2 size={16}/>}
+                                      label={"Date From"}
                                       size={"medium"}
                                       className={"z-40"}
                                       onValueChange={(value) =>
@@ -211,6 +198,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                         <SearchSelect buttonTitle={"To"}
                                       preSelectedValue={validateTime(values.timeTo)}
                                       icon={<Clock8 size={16}/>}
+                                      label={"Date To"}
                                       size={"medium"}
                                       className={"z-40"}
                                       onValueChange={(value) =>
@@ -233,13 +221,13 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Save/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Saved changes"}></AlertTitle>
-                    <AlertDescription description={"You successfully saved your entry changes."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Saved changes"}
+                   description={"You successfully saved your entry changes."}
+                   icon={<Save/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     );
 });

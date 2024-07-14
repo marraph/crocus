@@ -7,8 +7,6 @@ import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {usePathname, useRouter} from "next/navigation";
 import {SearchField} from "@/components/SearchField";
-import {User} from "@/types/types";
-import {useUser} from "@/context/UserContext";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {JoinTeamDialog} from "@/components/dialogs/JoinTeamDialog";
 
@@ -44,7 +42,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                     </div>
                     <SearchField/>
                     <div className={"space-y-1 pt-4"}>
-                        <span className={cn("text-placeholder text-xs px-1")}>{"MENU"}</span>
+                        <span className={cn("text-marcador text-xs px-1")}>{"MENU"}</span>
                         <NavigationItem selected={selectedItem === "Dashboard"}
                                         title={"Dashboard"}
                                         onClick={() =>  router.push("/dashboard")}
@@ -67,7 +65,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                     </div>
 
                     <div className={"py-12"}>
-                        <span className={cn("text-placeholder text-xs px-1")}>{"TEAMS"}</span>
+                        <span className={cn("text-marcador text-xs px-1")}>{"TEAMS"}</span>
                         <NavigationItem selected={false}
                                         title={"Join a team"}
                                         icon={<SquarePlus size={18}/>}

@@ -1,21 +1,12 @@
 "use client";
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Button} from "@marraph/daisy/components/button/Button";
 import {Trash2} from "lucide-react";
-import {cn} from "@/utils/cn";
-import React, {forwardRef, MutableRefObject, useEffect, useRef, useState} from "react";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
-import {Task, TaskElement} from "@/types/types";
+import React, {forwardRef, useRef, useState} from "react";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
+import {TaskElement} from "@/types/types";
 import {useUser} from "@/context/UserContext";
-import {deleteTask, updateTask} from "@/service/hooks/taskHook";
+import {deleteTask} from "@/service/hooks/taskHook";
 import {mutateRef} from "@/utils/mutateRef";
 
 interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
@@ -42,7 +33,10 @@ export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElemen
 
     return (
         <>
-            <Dialog width={600} ref={dialogRef} key={dialogKey}>
+            <Dialog width={600}
+                    ref={dialogRef}
+                    key={dialogKey}
+            >
                 <DialogHeader title={"Delete Task"}
                               dialogRef={dialogRef}
                               onClose={handleClose}
@@ -55,17 +49,17 @@ export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElemen
                               switchButton={false}
                               dialogRef={dialogRef}
                               onClick={deleteTheTask}
-                                onClose={handleClose}
+                              onClose={handleClose}
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Trash2 color="#F55050" />}/>
-                <AlertContent>
-                    <AlertTitle title={"Task deleted successfully!"}></AlertTitle>
-                    <AlertDescription description={"You can no longer interact with this task."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Task deleted successfully!"}
+                   description={"You can no longer interact with this task."}
+                   icon={<Trash2 color="#F55050" />}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     )
 })

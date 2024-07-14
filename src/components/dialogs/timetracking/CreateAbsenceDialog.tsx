@@ -1,18 +1,14 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Alert, AlertContent, AlertIcon, AlertRef, AlertTitle} from "@marraph/daisy/components/alert/Alert";
-import {Textarea, TextareaRef} from "@marraph/daisy/components/textarea/Textarea";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
+import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
-import {Button} from "@marraph/daisy/components/button/Button";
 import {CircleOff, TreePalm} from "lucide-react";
-import {cn} from "@/utils/cn";
-import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
-import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
-import {DateRangePicker, DateRangePickerRef} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
-import {Absence, AbsenceType, PreviewUser} from "@/types/types";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
+import {Absence, AbsenceType} from "@/types/types";
 import {createAbsence} from "@/service/hooks/absenceHook";
 import {DateRange} from "react-day-picker";
 import {mutateRef} from "@/utils/mutateRef";
@@ -91,7 +87,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
-                              className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                              className={"px-4 h-12 w-full bg-black placeholder-marcador focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
                               value={values.comment}
@@ -110,7 +106,6 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                             ))}
                         </Combobox>
                         <DateRangePicker text={"Select your absence time"}
-                                         iconSize={16}
                                          closeButton={false}
                                          dayFormat={"long"}
                                          onRangeChange={(value) =>
@@ -128,12 +123,12 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<TreePalm/>}/>
-                <AlertContent>
-                    <AlertTitle title={"Time Entry created successfully!"}></AlertTitle>
-                </AlertContent>
-            </Alert>
+            <Alert title={"Time Entry created successfully!"}
+                   icon={<TreePalm/>}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     );
 })

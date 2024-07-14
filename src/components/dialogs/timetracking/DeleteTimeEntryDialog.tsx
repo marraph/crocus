@@ -1,18 +1,10 @@
 "use client";
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Button} from "@marraph/daisy/components/button/Button";
 import {Trash2} from "lucide-react";
 import {cn} from "@/utils/cn";
 import React, {forwardRef, useRef} from "react";
-import {
-    Alert,
-    AlertContent,
-    AlertDescription,
-    AlertIcon,
-    AlertRef,
-    AlertTitle
-} from "@marraph/daisy/components/alert/Alert";
+import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {Absence, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
@@ -63,13 +55,13 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeE
                 />
             </Dialog>
 
-            <Alert duration={3000} ref={alertRef} closeButton={false}>
-                <AlertIcon icon={<Trash2 color="#F55050" />}/>
-                <AlertContent>
-                    <AlertTitle title={(timeEntry ? "TimeEntry" : "Absence") + " deleted successfully!"}></AlertTitle>
-                    <AlertDescription description={"You can no longer interact with this " + (timeEntry ? "TimeEntry" : "Absence") + "."}></AlertDescription>
-                </AlertContent>
-            </Alert>
+            <Alert title={(timeEntry ? "TimeEntry" : "Absence") + " deleted successfully!"}
+                   description={"You can no longer interact with this " + (timeEntry ? "TimeEntry" : "Absence") + "."}
+                   icon={<Trash2 color="#F55050" />}
+                   duration={3000}
+                   ref={alertRef}
+                   closeButton={false}
+            />
         </>
     )
 })
