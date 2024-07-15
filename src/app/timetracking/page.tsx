@@ -175,17 +175,13 @@ export default function Timetracking() {
                         {view ?
                             <>
                                 <Button text={""}
-                                        className={"w-10 p-0 pl-1.5"}
                                         onClick={() => handleDayBefore()}
-                                >
-                                    <ChevronLeft/>
-                                </Button>
+                                        icon={<ChevronLeft size={20}/>}
+                                />
                                 <Button text={""}
-                                        className={"w-10 p-0 pl-2"}
                                         onClick={() => handleDayAfter()}
-                                >
-                                    <ChevronRight/>
-                                </Button>
+                                        icon={<ChevronRight size={20}/>}
+                                />
                                 <DatePicker text={"Select a Date"}
                                             size={"medium"}
                                             preSelectedValue={day}
@@ -198,17 +194,13 @@ export default function Timetracking() {
                             :
                             <>
                                 <Button text={""}
-                                        className={"w-10 p-0 pl-1.5"}
                                         onClick={() => handleWeekBefore()}
-                                >
-                                    <ChevronLeft/>
-                                </Button>
+                                        icon={<ChevronLeft size={20}/>}
+                                />
                                 <Button text={""}
-                                        className={"w-10 p-0 pl-2"}
                                         onClick={() => handleWeekAfter()}
-                                >
-                                    <ChevronRight/>
-                                </Button>
+                                        icon={<ChevronRight size={20}/>}
+                                />
                                 <Combobox buttonTitle={"Week"}
                                           icon={<CalendarDays size={16} className={"mr-2"}/>}
                                           preSelectedValue={findCurrentWeek(weeks)?.start.toLocaleDateString() + " - " + findCurrentWeek(weeks)?.end.toLocaleDateString()}

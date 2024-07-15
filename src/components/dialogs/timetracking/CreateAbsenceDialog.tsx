@@ -87,13 +87,13 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
-                              className={"px-4 h-12 w-full bg-black placeholder-marcador focus:text-gray"}
+                              className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
                               value={values.comment}
                     >
                     </Textarea>
-                    <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
+                    <div className={"flex flex-row items-center space-x-2 py-2"}>
                         <Combobox buttonTitle={"Absence Type"}
                                   icon={<CircleOff size={14} className={"mr-2"}/>}
                                   onValueChange={(value) =>

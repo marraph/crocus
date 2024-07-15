@@ -132,12 +132,12 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
-                              className={"px-4 h-12 w-full bg-black placeholder-marcador focus:text-gray"}
+                              className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
                               value={values.comment}
                     />
-                    <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
+                    <div className={"flex flex-row items-center space-x-2 py-2"}>
                         <SearchSelect buttonTitle={"Project"}
                                       icon={<BookCopy size={16}/>}
                                       size={"medium"}
@@ -169,7 +169,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                         </SearchSelect>
                     </div>
 
-                    <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
+                    <div className={"flex flex-row items-center space-x-2 pb-2"}>
                         <SearchSelect buttonTitle={"From"}
                                       preSelectedValue={"09:00AM"}
                                       icon={<Clock2 size={16}/>}

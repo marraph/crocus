@@ -129,7 +129,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                         />
                         <Textarea placeholder={"Add Description..."}
                                   onChange={handleInputChange("description", setValues)}
-                                  className={cn("h-20 bg-black placeholder-marcador focus:text-gray", className)}
+                                  className={cn("h-20 bg-black placeholder-marcador focus:text-gray p-0", className)}
                         />
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"}

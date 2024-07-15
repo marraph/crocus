@@ -119,7 +119,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                               onClose={handleCloseClick}
                 />
                 <DialogContent>
-                    <div className={"flex flex-col space-y-4 p-4"}>
+                    <div className={"flex flex-col space-y-4 pb-2"}>
                         <Input placeholder={"Task Title"}
                                label={"Title"}
                                value={values.title}
@@ -131,10 +131,10 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                   onChange={handleInputChange("description", setValues)}
                                   spellCheck={false}
                                   value={values.description ?? ""}
-                                  className={"h-20 p-2 text-sm bg-dark placeholder-marcador border-1 border-edge focus:text-gray"}
+                                  className={"h-20 py-2 text-sm bg-dark placeholder-marcador border-1 border-edge focus:text-gray"}
                         />
                     </div>
-                    <div className={"flex flex-row space-x-2 px-4 z-50"}>
+                    <div className={"flex flex-row space-x-2 pt-2 z-50"}>
                         <Combobox buttonTitle={"Team"}
                                   label={"Team"}
                                   icon={<Users size={16} className={"mr-2"}/>}
@@ -184,7 +184,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                             </>
                         }
                     </div>
-                    <div className={"flex flex-row space-x-2 px-4 py-4 z-40"}>
+                    <div className={"flex flex-row space-x-2 py-4 z-40"}>
                         <DatePicker size={"medium"}
                                     text={"Deadline"}
                                     label={"Deadline"}

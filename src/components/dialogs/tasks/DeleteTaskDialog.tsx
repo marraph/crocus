@@ -42,7 +42,7 @@ export const DeleteTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElemen
                               onClose={handleClose}
                 />
                 <DialogContent>
-                    <span className={"text-white"}>Are you sure you want to delete this task?</span>
+                    <span className={"text-gray"}>Are you sure you want to delete this task?</span>
                 </DialogContent>
                 <DialogFooter saveButtonTitle={"Delete"}
                               cancelButton={true}

@@ -39,7 +39,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
             </div>
 
             <div className={"flex items-center justify-center"}>
-                <Dialog
+                <dialog
                     className={"border border-edge w-1/2 drop-shadow-lg overflow-visible"} {...props}
                     ref={dialogRef}>
                     <div ref={outsideClickRef}>
@@ -149,14 +149,7 @@ export const SearchField = React.forwardRef<HTMLDialogElement, React.DialogHTMLA
                             </div>
                         </div>
                     </div>
-                </Dialog>
-
-                <Dialog ref={dialogRef} width={800}>
-                    <DialogHeader title={}
-                                  dialogRef={}
-                    />
-
-                </Dialog>
+                </dialog>
             </div>
         </>
 
