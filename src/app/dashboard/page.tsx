@@ -12,6 +12,7 @@ import {useRouter} from "next/navigation";
 import {formatDate} from "@/utils/format";
 import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
+import {CustomScroll} from "react-custom-scroll";
 
 const notifications = [
     { sender: "John Doe", task: "Task 1", date: new Date("2024-06-29T08:00:00"), type: "message" },
@@ -92,7 +93,7 @@ export default function Dashboard() {
             </div>
 
             <div className={"bg-black rounded-lg w-full"}>
-                <div className={"flex flex-row justify-between items-center bg-dark-light border border-edge rounded-t-lg"}>
+                <div className={"flex flex-row justify-between items-center bg-dark-light border-t border-x border-edge rounded-t-lg"}>
                     <div className={"flex flex-row items-center"}>
                         <span className={"text-xl px-4 py-2"}>{"Tasks"}</span>
                         <Badge text={count.toString() + " OPEN"}
@@ -101,29 +102,33 @@ export default function Dashboard() {
                         </Badge>
                     </div>
                     <Button text={"Open"}
-                            className={"h-8 mx-4 my-2 bg-dark-light border-none"}
-                            onClick={() => router.push("/tasks")}>
-                        <ExternalLink size={16} className={"mr-2"}/>
-                    </Button>
+                            className={"m-2 bg-dark-light border-none"}
+                            onClick={() => router.push("/tasks")}
+                            icon={<ExternalLink size={16} className={"mr-2"}/>}
+                    />
                 </div>
-                <div className={"overflow-y-scroll h-[350px] no-scrollbar border border-edge rounded-b-lg"}>
-                    {tasks.map((task, index) => (
-                        <div key={index}
-                             className={"group flex flex-row justify-between items-center p-2 border-b border-edge " +
-                                 "hover:bg-dark hover:cursor-pointer"}
-                             onClick={() => router.push(`/tasks/${task.id}`)}>
-                            <div className={"flex flex-row space-x-8 items-center pl-4"}>
-                                <ProjectBadge title={task.project?.name ?? ""}/>
-                                <span className={"text-gray group-hover:text-white"}>{task.name}</span>
+                <CustomScroll>
+                    <div className={"h-[350px] border border-edge rounded-b-lg"}>
+                        {tasks.map((task, index) => (
+                            <div key={index}
+                                 className={"group flex flex-row justify-between items-center p-2 border-b border-edge " +
+                                     "hover:bg-dark hover:cursor-pointer"}
+                                 onClick={() => router.push(`/tasks/${task.id}`)}>
+                                <div className={"flex flex-row space-x-8 items-center pl-4"}>
+                                    <ProjectBadge title={task.project?.name ?? ""}/>
+                                    <span className={"text-gray group-hover:text-white"}>{task.name}</span>
+                                </div>
+                                <div className={"flex flex-row space-x-8 items-center pr-4"}>
+                                    <StatusBadge title={task.status?.toString()}/>
+                                    <span
+                                        className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
+                                    <ProfileBadge name={task.createdBy?.name}/>
+                                </div>
                             </div>
-                            <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                            <StatusBadge title={task.status?.toString()}/>
-                                <span className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
-                                <ProfileBadge name={task.createdBy?.name} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                </CustomScroll>
+
             </div>
         </div>
     );

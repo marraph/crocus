@@ -48,14 +48,14 @@ export const JoinTeamDialog = forwardRef<DialogRef, DialogHTMLAttributes<HTMLDia
                               onClose={handleClose}
                 />
                 <DialogContent>
-                    <span className={"text-sm text-gray px-4"}>
-                        {"You can join a team by inserting a invite link in the correct format."}
-                    </span>
-                    <Input placeholder={"app.luna.io/invite/xxxx-xxxx-xxxx"}
-                           className={"w-full px-2 pb-2"}
-                           value={link}
-                           onChange={(e) => setLink(e.target.value)}
-                    />
+                    <div className={"flex flex-col space-y-4 text-sm text-gray"}>
+                        <span>{"You can join a team by inserting a invite link in the correct format."}</span>
+                        <Input placeholder={"app.luna.io/invite/xxxx-xxxx-xxxx"}
+                               className={"w-full"}
+                               value={link}
+                               onChange={(e) => setLink(e.target.value)}
+                        />
+                    </div>
                 </DialogContent>
                 <DialogFooter saveButtonTitle={"Join"}
                               cancelButton={false}

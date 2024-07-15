@@ -24,6 +24,10 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+
+  .rcs-inner-handle {
+    background-color: #484848;
+  }
 }
 
 @layer utilities {

@@ -9,6 +9,7 @@ import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import {CustomScroll} from "react-custom-scroll";
 
 
 export default function Tasks() {
@@ -82,8 +83,12 @@ export default function Tasks() {
             </div>
 
             {viewMode &&
-                <div className={"border border-edge rounded-lg bg-black flex flex-col h-screen overflow-hidden"}>
-                    <TaskTable taskElements={taskElements}/>
+                <div className={" overflow-hidden rounded-lg border border-edge"}>
+                    <CustomScroll>
+                        <div className={"rounded-lg bg-black h-screen"}>
+                            <TaskTable taskElements={taskElements}/>
+                        </div>
+                    </CustomScroll>
                 </div>
             }
         </div>

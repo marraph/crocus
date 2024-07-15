@@ -97,7 +97,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 />
             }
 
-            <Table className={"bg-black w-full text-xs border-0 no-scrollbar rounded-b-none"}>
+            <Table className={"bg-black w-full text-xs border-0 rounded-b-none"}>
                 <TableHeader>
                     <TableRow className={cn("hover:bg-black", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
                         {header.map((header) => (
