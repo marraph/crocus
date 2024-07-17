@@ -128,7 +128,7 @@ export default function Timetracking() {
 
     const [day, setDay] = useState<Date>(new Date());
     const [week, setWeek] = useState<Date[]>(getCurrentWeekDates());
-    const [view, setView] = useState<boolean>(true);
+    const [view, setView] = useState<boolean>(false);
     const weeks = useMemo(() => getNextAndPreviousFiftyWeeks(), []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
@@ -172,51 +172,38 @@ export default function Timetracking() {
             <div className={"h-screen flex flex-col p-8"}>
                 <div className={"text-nowrap flex flex-row items-center justify-between"}>
                     <div className={"w-full flex flex-row items-center space-x-2"}>
+                        <Button text={""}
+                                onClick={view ? handleDayBefore : handleWeekBefore}
+                                icon={<ChevronLeft size={20}/>}
+                        />
+                        <Button text={""}
+                                onClick={view ? handleDayAfter: handleWeekAfter}
+                                icon={<ChevronRight size={20}/>}
+                        />
                         {view ?
-                            <>
-                                <Button text={""}
-                                        onClick={() => handleDayBefore()}
-                                        icon={<ChevronLeft size={20}/>}
-                                />
-                                <Button text={""}
-                                        onClick={() => handleDayAfter()}
-                                        icon={<ChevronRight size={20}/>}
-                                />
-                                <DatePicker text={"Select a Date"}
-                                            size={"medium"}
-                                            preSelectedValue={day}
-                                            ref={datepickerRef}
-                                            closeButton={false}
-                                            onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
-                                            dayFormat={"long"}
-                                />
-                            </>
-                            :
-                            <>
-                                <Button text={""}
-                                        onClick={() => handleWeekBefore()}
-                                        icon={<ChevronLeft size={20}/>}
-                                />
-                                <Button text={""}
-                                        onClick={() => handleWeekAfter()}
-                                        icon={<ChevronRight size={20}/>}
-                                />
-                                <Combobox buttonTitle={"Week"}
-                                          icon={<CalendarDays size={16} className={"mr-2"}/>}
-                                          preSelectedValue={findCurrentWeek(weeks)?.start.toLocaleDateString() + " - " + findCurrentWeek(weeks)?.end.toLocaleDateString()}
-                                >
-                                    {weeks.map((week, index) => (
-                                        <ComboboxItem key={index} title={week.start.toLocaleDateString() + " - " + week.end.toLocaleDateString()}/>
-                                    ))}
-                                </Combobox>
-                            </>
+                            <DatePicker text={"Select a Date"}
+                                        size={"medium"}
+                                        preSelectedValue={day}
+                                        ref={datepickerRef}
+                                        closeButton={false}
+                                        onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
+                                        dayFormat={"long"}
+                            />
+                        :
+                            <Combobox buttonTitle={"Week"}
+                                      icon={<CalendarDays size={16} className={"mr-2"}/>}
+                                      preSelectedValue={findCurrentWeek(weeks)?.start.toLocaleDateString() + " - " + findCurrentWeek(weeks)?.end.toLocaleDateString()}
+                            >
+                                {weeks.map((week, index) => (
+                                    <ComboboxItem key={index} title={week.start.toLocaleDateString() + " - " + week.end.toLocaleDateString()}/>
+                                ))}
+                            </Combobox>
                         }
-
                     </div>
                     <div className={"flex flex-row justify-end space-x-2"}>
                         <SwitchButton firstTitle={"Day"}
                                       secondTitle={"Week"}
-                                      onClick={() => setView(!view)}
+                                      onClick={() => {setView(!view); console.log(view)}}
                         />
                         <Button text={"New Absence"}
                                 theme={"dark"}
@@ -231,18 +218,20 @@ export default function Timetracking() {
                     </div>
                 </div>
 
-                {view ?
                     <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
-                        <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                        <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
-                        <TimeEntryDaySummary entries={dailyEntries}/>
+                        {view ?
+                            <>
+                                <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
+                                <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
+                                <TimeEntryDaySummary entries={dailyEntries}/>
+                            </>
+                        :
+                            <>
+                                <WeekView timeEntries={weekEntries} absences={weekAbsences} weekDates={getCurrentWeekDates()}/>
+                                <TimeEntryDaySummary entries={weekEntries}/>
+                            </>
+                        }
                     </div>
-                    :
-                    <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
-                        <WeekView timeEntries={weekEntries} absences={weekAbsences} weekDates={getCurrentWeekDates()}/>
-                        <TimeEntryDaySummary entries={weekEntries}/>
-                    </div>
-                }
             </div>
 
             <CreateAbsenceDialog ref={absenceDialogRef}/>
