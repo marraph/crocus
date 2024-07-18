@@ -26,11 +26,11 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
     if (!timeEntries) return null;
 
     return (
-            <div className={"w-full h-full flex flex-row rounded-t-lg border border-edge border-b-0"}>
+            <div className={"w-full h-full grid grid-cols-7 rounded-t-lg border border-edge border-b-0"}>
                 {days.map((day, index) => (
                     <div key={index}
-                         className={cn("h-full w-1/5 bg-black rounded-lg border-x border-edge",
-                             day.name === "Friday" ? "border-x-0 rounded-l-none" : "border-l-0 rounded-r-none"
+                         className={cn("h-full bg-black rounded-lg border-x border-edge",
+                             day.name === "Sunday" ? "border-x-0 rounded-l-none" : "border-l-0 rounded-r-none"
                          )}
                     >
                         <div className={"w-full border-b border-edge p-2"}>
@@ -43,12 +43,22 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
 
                                 return startDate.getDay() === day.day.getDay() && (
                                     <div key={index}
-                                         className={"flex flex-col space-y-2 border-b border-edge p-2"}>
-                                        <span
-                                            className={"text-sm"}>{formatTime(startDate) + " - " + formatTime(endDate)}</span>
-                                        {entry.project && <ProjectBadge title={entry.project.name}/>}
-                                        {entry.task && <EntryTitleBadge title={entry.task.name}/>}
-                                        <span className={"text-sm text-gray"}>{entry.comment}</span>
+                                         className={"border-b border-edge"}>
+                                        <div className={"rounded-lg hover:bg-dark m-1 p-1 cursor-pointer space-y-1 overflow-hidden"}>
+                                            <span className={"text-sm"}>{formatTime(startDate) + " - " + formatTime(endDate)}</span>
+                                            {entry.project &&
+                                                <ProjectBadge title={entry.project.name}
+                                                              className={"max-w-8"}
+                                                />
+                                            }
+                                            {entry.task &&
+                                                <EntryTitleBadge title={entry.task.name}
+                                                                 className={"w-min"}
+                                                                 textClassName={"truncate"}
+                                                />
+                                            }
+                                            <span className={"text-sm text-gray"}>{entry.comment}</span>
+                                        </div>
                                     </div>
                                 );
                             })}

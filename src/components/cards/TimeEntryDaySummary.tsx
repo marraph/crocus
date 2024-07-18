@@ -9,7 +9,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...props }) => {
 
     const sumDuration = () => {
-        if (entries === undefined) return 0;
+        if (!entries) return 0;
         let totalDuration = 0.0;
 
         for (const entry of entries) {
@@ -20,15 +20,18 @@ export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...pr
             const hours = parseFloat(duration.toString());
             totalDuration += hours;
         }
+        return totalDuration;
     }
 
     return (
-        <div
-            className={"bg-dark-light border border-edge rounded-b-lg px-4 flex flex-row justify-between items-center"}>
-            <Badge text={entries?.length.toString() + (entries?.length === 1 ? " ENTRY" : " ENTRIES")}
+        <div className={"bg-dark-light border border-edge rounded-b-lg px-4 flex flex-row justify-between items-center"}>
+            <Badge text={
+                entries === undefined ? "0 ENTRIES" :
+                entries?.length.toString() + (entries?.length === 1 ? " ENTRY" : " ENTRIES")
+            }
                    size={"small"}
-                   className={"rounded-md bg-white-dark text-dark my-3"}>
-            </Badge>
+                   className={"rounded-md bg-white-dark text-dark my-3"}
+            />
             <div className={"flex flex-row items-center space-x-2"}>
                 <span className={"text-sm text-gray"}>{"Total Duration:"}</span>
                 <span className={"text-base text-white"}>{sumDuration() + "h"}</span>

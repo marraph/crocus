@@ -69,25 +69,29 @@ function findCurrentWeek(weeksArray: Week[]): Week {
 
 function getFilterDayEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
     return user?.timeEntries?.filter(entry => {
-        return entry.startDate.toDateString() === day.toDateString();
+        const startDate = moment(entry.startDate);
+        return startDate.toDate() === day;
     });
 }
 
 function getFilterDayAbsences(user: User | undefined, day: Date): Absence[] | undefined {
     return user?.absences?.filter(absence => {
-        return absence.startDate.toDateString() === day.toDateString();
+        const startDate = moment(absence.startDate);
+        return startDate.toDate() === day;
     });
 }
 
 function getFilterWeekEntries(user: User | undefined, week: Week): TimeEntry[] | undefined {
     return user?.timeEntries?.filter(entry => {
-        return entry.startDate >= week.monday && entry.startDate <= week.sunday;
+        const startDate = moment(entry.startDate).toDate();
+        return startDate >= week.monday && startDate <= week.sunday;
     });
 }
 
 function getFilterWeekAbsences(user: User | undefined, week: Week): Absence[] | undefined {
     return user?.absences?.filter(absence => {
-        return absence.startDate >= week.monday && absence.startDate <= week.sunday;
+        const startDate = moment(absence.startDate).toDate();
+        return startDate >= week.monday && startDate <= week.sunday;
     });
 }
 
