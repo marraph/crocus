@@ -3,6 +3,7 @@
 import React from "react";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {ClipboardList} from "lucide-react";
+import {cn} from "@/utils/cn";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement>{
     title: string;
@@ -14,7 +15,7 @@ export const EntryTitleBadge: React.FC<Props> = ({ title, textClassName, classNa
     return (
         <Badge
             text={title}
-            className={"bg-marcador bg-opacity-20 text-white text-xs rounded-md font-normal overflow-hidden"}
+            className={cn("bg-marcador bg-opacity-20 text-white text-xs rounded-md font-normal", className)}
             textClassName={textClassName}
             {...props}>
             <ClipboardList size={16}/>

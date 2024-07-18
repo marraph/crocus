@@ -84,17 +84,20 @@ function getFilterDayAbsences(user: User | undefined, day: Date): Absence[] | un
 function getFilterWeekEntries(user: User | undefined, week: Week): TimeEntry[] | undefined {
     return user?.timeEntries?.filter(entry => {
         const startDate = moment(entry.startDate).toDate();
-        return startDate >= week.monday && startDate <= week.sunday;
+        const monday = moment(week.monday).toDate();
+        const sunday = moment(week.sunday).toDate();
+        return startDate >= monday && startDate <= sunday;
     });
 }
 
 function getFilterWeekAbsences(user: User | undefined, week: Week): Absence[] | undefined {
     return user?.absences?.filter(absence => {
         const startDate = moment(absence.startDate).toDate();
-        return startDate >= week.monday && startDate <= week.sunday;
+        const monday = moment(week.monday).toDate();
+        const sunday = moment(week.sunday).toDate();
+        return startDate >= monday && startDate <= sunday;
     });
 }
-
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
@@ -102,10 +105,10 @@ export default function Timetracking() {
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
 
-    const [day, setDay] = useState<Date>(moment().toDate());
-    const [week, setWeek] = useState<Week>(createWeek(moment()));
-    const [view, setView] = useState<boolean>(false);
     const weeks = useMemo(() => generateWeeks(), []);
+    const [day, setDay] = useState<Date>(moment().toDate());
+    const [week, setWeek] = useState<Week>(findCurrentWeek(weeks));
+    const [view, setView] = useState<boolean>(false);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterDayEntries(user, day));
@@ -124,28 +127,28 @@ export default function Timetracking() {
     if (!user) return null;
 
     const handleDayBefore = () => {
-        setDay(moment(day).add(1, 'days').toDate());
-        datepickerRef.current?.setValue(moment(day).add(1, 'days').toDate());
-    }
-
-    const handleDayAfter = () => {
         setDay(moment(day).subtract(1, 'days').toDate());
         datepickerRef.current?.setValue(moment(day).subtract(1, 'days').toDate());
     }
 
+    const handleDayAfter = () => {
+        setDay(moment(day).add(1, 'days').toDate());
+        datepickerRef.current?.setValue(moment(day).add(1, 'days').toDate());
+    }
+
     const handleWeekBefore = () => {
-        setWeek(weeks[weeks.indexOf(findCurrentWeek(weeks)) - 1]);
+        setWeek(weeks[weeks.indexOf(week) - 1]);
         comboboxRef.current?.setValue(
-            weeks[weeks.indexOf(findCurrentWeek(weeks)) - 1].monday.toLocaleDateString() + " - " +
-            weeks[weeks.indexOf(findCurrentWeek(weeks)) - 1].sunday.toLocaleDateString()
+            moment(weeks[weeks.indexOf(week) - 1].monday).format("Do MMMM YYYY") + "  -  " +
+            moment(weeks[weeks.indexOf(week) - 1].sunday).format("Do MMMM YYYY")
         );
     }
 
     const handleWeekAfter = () => {
-        setWeek(weeks[weeks.indexOf(findCurrentWeek(weeks)) + 1]);
+        setWeek(weeks[weeks.indexOf(week) + 1]);
         comboboxRef.current?.setValue(
-            weeks[weeks.indexOf(findCurrentWeek(weeks)) + 1].monday.toLocaleDateString() + " - " +
-            weeks[weeks.indexOf(findCurrentWeek(weeks)) + 1].sunday.toLocaleDateString()
+            moment(weeks[weeks.indexOf(week) + 1].monday).format("Do MMMM YYYY") + "  -  " +
+            moment(weeks[weeks.indexOf(week) + 1].sunday).format("Do MMMM YYYY")
         );
     }
 
@@ -175,12 +178,14 @@ export default function Timetracking() {
                             <Combobox buttonTitle={"Week"}
                                       icon={<CalendarDays size={16} className={"mr-2"}/>}
                                       ref={comboboxRef}
-                                      preSelectedValue={week.monday.toLocaleDateString() + " - " + week.sunday.toLocaleDateString()}
+                                      preSelectedValue={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
                                       onValueChange={(week) => setWeek(weeks.find((w) =>
-                                          w.monday.toLocaleDateString() + " - " + w.sunday.toLocaleDateString() === week) as Week)}
+                                          moment(w.monday).format("Do MMMM YYYY") + "  -  " + moment(w.sunday).format("Do MMMM YYYY") === week) as Week)}
                             >
                                 {weeks.map((week, index) => (
-                                    <ComboboxItem key={index} title={week.monday.toLocaleDateString() + " - " + week.sunday.toLocaleDateString()}/>
+                                    <ComboboxItem key={index}
+                                                  title={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
+                                    />
                                 ))}
                             </Combobox>
                         }
