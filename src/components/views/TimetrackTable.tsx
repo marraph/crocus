@@ -144,7 +144,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
             <Table className={"bg-black w-full no-scrollbar rounded-b-none text-xs border-b-0"}>
                 <TableHeader>
-                    <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
+                    <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
                     {header.map((header) => (
                             <TableHead className={"text-marcador text-sm w-max min-w-28"} key={header.key}>
                                 <span className={"flex flex-row items-center"}>

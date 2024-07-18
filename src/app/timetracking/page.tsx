@@ -13,123 +13,95 @@ import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {WeekView} from "@/components/views/WeekView";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
-import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
+import moment from "moment";
 
-interface Week {
-    start: Date;
-    end: Date;
+export interface Week {
+    monday: Date;
+    tuesday: Date;
+    wednesday: Date;
+    thursday: Date;
+    friday: Date;
+    saturday: Date;
+    sunday: Date;
 }
 
-function getStartAndEndOfWeek(date: Date): Week {
-    const start = new Date(date);
-    const day = start.getDay();
-    const diff = start.getDate() - day + (day === 0 ? -6 : 1);
 
-    start.setDate(diff);
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    end.setHours(23, 59, 59, 999);
-
-    return { start, end };
+function createWeek(weekStart: moment.Moment): Week {
+    return {
+        monday: weekStart.toDate(),
+        tuesday: weekStart.clone().add(1, 'days').toDate(),
+        wednesday: weekStart.clone().add(2, 'days').toDate(),
+        thursday: weekStart.clone().add(3, 'days').toDate(),
+        friday: weekStart.clone().add(4, 'days').toDate(),
+        saturday: weekStart.clone().add(5, 'days').toDate(),
+        sunday: weekStart.clone().add(6, 'days').toDate()
+    };
 }
 
-function getNextAndPreviousFiftyWeeks(): Week[] {
-    const weeks: Week[] = [];
-    let currentDate = new Date();
+function generateWeeks(): Week[] {
+    let weeksArray: Week[] = [];
+    let currentWeek = moment().startOf('week').add(1, 'days');
 
-    // Get the previous 50 weeks
-    for (let i = 0; i < 50; i++) {
-        currentDate.setDate(currentDate.getDate() - 7);
-        const week = getStartAndEndOfWeek(currentDate);
-        weeks.push(week);
+    for (let i = 20; i > 0; i--) {
+        let weekStart = currentWeek.clone().subtract(i, 'weeks');
+        weeksArray.push(createWeek(weekStart));
     }
 
-    // Reset the date to current date
-    currentDate = new Date();
+    weeksArray.push(createWeek(currentWeek));
 
-    // Get the next 50 weeks
-    for (let i = 0; i < 50; i++) {
-        const week = getStartAndEndOfWeek(currentDate);
-        weeks.push(week);
-        currentDate.setDate(currentDate.getDate() + 7);
+    for (let i = 1; i <= 20; i++) {
+        let weekStart = currentWeek.clone().add(i, 'weeks');
+        weeksArray.push(createWeek(weekStart));
     }
 
-    return weeks;
+    return weeksArray;
 }
 
-function compareDays(date1: Date, date2: Date) {
-    return date1.getFullYear() === date2.getFullYear() &&
-        date1.getMonth() === date2.getMonth() &&
-        date1.getDate() === date2.getDate();
-}
-
-function findCurrentWeek(weeks: Week[]): Week | undefined {
-    const currentDate = new Date();
-    return weeks.find((week) => currentDate >= week.start && currentDate <= week.end);
+function findCurrentWeek(weeksArray: Week[]): Week {
+    const today = moment().startOf('day');
+    return weeksArray.find(week => {
+        const monday = moment(week.monday);
+        const sunday = moment(week.sunday);
+        return today.isBetween(monday, sunday, null, '[]');
+    }) as Week;
 }
 
 function getFilterDayEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
-    if (user === undefined) return undefined;
-    return user.timeEntries.filter((entry) =>
-        compareDays(new Date(entry.startDate), day) &&
-        compareDays(new Date(entry.endDate), day))
-        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-    );
-}
-
-function getFilterDayAbsences(user: User | undefined, day: Date) {
-    if (user === undefined) return undefined;
-    const comparisonDay = new Date(day).setHours(0, 0, 0, 0);
-
-    return user.absences.filter((absence) => {
-        const startDate = new Date(absence.startDate).setHours(0, 0, 0, 0);
-        const endDate = new Date(absence.endDate).setHours(0, 0, 0, 0);
-
-        return startDate <= comparisonDay && endDate >= comparisonDay;
-    }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-}
-
-function getFilterWeekEntries(user: User | undefined, weekDates: Date[]): TimeEntry[] | undefined {
-    return user?.timeEntries.filter((entry) => {
-        const startDate = new Date(entry.startDate);
-        const endDate = new Date(entry.endDate);
-
-        return weekDates.some((date) => startDate <= date && endDate >= date);
-    }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-}
-
-function getFilterWeekAbsences(user: User | undefined, weekDates: Date[]) {
-    return user?.absences.filter((absence) => {
-        const startDate = new Date(absence.startDate);
-        const endDate = new Date(absence.endDate);
-
-        return weekDates.some((date) => startDate <= date && endDate >= date);
-    }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-}
-
-function getCurrentWeekDates(): Date[] {
-    const currentDate = new Date();
-    const day = currentDate.getDay();
-    const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-    const monday = new Date(currentDate.setDate(diff));
-    return Array.from({length: 5}, (_, i) => {
-        const date = new Date(monday);
-        date.setDate(monday.getDate() + i);
-        return date;
+    return user?.timeEntries?.filter(entry => {
+        return entry.startDate.toDateString() === day.toDateString();
     });
 }
 
+function getFilterDayAbsences(user: User | undefined, day: Date): Absence[] | undefined {
+    return user?.absences?.filter(absence => {
+        return absence.startDate.toDateString() === day.toDateString();
+    });
+}
+
+function getFilterWeekEntries(user: User | undefined, week: Week): TimeEntry[] | undefined {
+    return user?.timeEntries?.filter(entry => {
+        return entry.startDate >= week.monday && entry.startDate <= week.sunday;
+    });
+}
+
+function getFilterWeekAbsences(user: User | undefined, week: Week): Absence[] | undefined {
+    return user?.absences?.filter(absence => {
+        return absence.startDate >= week.monday && absence.startDate <= week.sunday;
+    });
+}
+
+
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
+    const comboboxRef = useRef<ComboboxRef>(null);
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
 
-    const [day, setDay] = useState<Date>(new Date());
-    const [week, setWeek] = useState<Date[]>(getCurrentWeekDates());
+    const [day, setDay] = useState<Date>(moment().toDate());
+    const [week, setWeek] = useState<Week>(createWeek(moment()));
     const [view, setView] = useState<boolean>(false);
-    const weeks = useMemo(() => getNextAndPreviousFiftyWeeks(), []);
+    const weeks = useMemo(() => generateWeeks(), []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterDayEntries(user, day));
@@ -148,23 +120,29 @@ export default function Timetracking() {
     if (!user) return null;
 
     const handleDayBefore = () => {
-        let newDate = new Date(day.setDate(day.getDate() - 1));
-        setDay(newDate);
-        datepickerRef.current?.setValue(newDate);
+        setDay(moment(day).add(1, 'days').toDate());
+        datepickerRef.current?.setValue(moment(day).add(1, 'days').toDate());
     }
 
     const handleDayAfter = () => {
-        let newDate = new Date(day.setDate(day.getDate() + 1));
-        setDay(newDate);
-        datepickerRef.current?.setValue(newDate);
+        setDay(moment(day).subtract(1, 'days').toDate());
+        datepickerRef.current?.setValue(moment(day).subtract(1, 'days').toDate());
     }
 
     const handleWeekBefore = () => {
-
+        setWeek(weeks[weeks.indexOf(findCurrentWeek(weeks)) - 1]);
+        comboboxRef.current?.setValue(
+            weeks[weeks.indexOf(findCurrentWeek(weeks)) - 1].monday.toLocaleDateString() + " - " +
+            weeks[weeks.indexOf(findCurrentWeek(weeks)) - 1].sunday.toLocaleDateString()
+        );
     }
 
     const handleWeekAfter = () => {
-
+        setWeek(weeks[weeks.indexOf(findCurrentWeek(weeks)) + 1]);
+        comboboxRef.current?.setValue(
+            weeks[weeks.indexOf(findCurrentWeek(weeks)) + 1].monday.toLocaleDateString() + " - " +
+            weeks[weeks.indexOf(findCurrentWeek(weeks)) + 1].sunday.toLocaleDateString()
+        );
     }
 
     return (
@@ -192,10 +170,13 @@ export default function Timetracking() {
                         :
                             <Combobox buttonTitle={"Week"}
                                       icon={<CalendarDays size={16} className={"mr-2"}/>}
-                                      preSelectedValue={findCurrentWeek(weeks)?.start.toLocaleDateString() + " - " + findCurrentWeek(weeks)?.end.toLocaleDateString()}
+                                      ref={comboboxRef}
+                                      preSelectedValue={week.monday.toLocaleDateString() + " - " + week.sunday.toLocaleDateString()}
+                                      onValueChange={(week) => setWeek(weeks.find((w) =>
+                                          w.monday.toLocaleDateString() + " - " + w.sunday.toLocaleDateString() === week) as Week)}
                             >
                                 {weeks.map((week, index) => (
-                                    <ComboboxItem key={index} title={week.start.toLocaleDateString() + " - " + week.end.toLocaleDateString()}/>
+                                    <ComboboxItem key={index} title={week.monday.toLocaleDateString() + " - " + week.sunday.toLocaleDateString()}/>
                                 ))}
                             </Combobox>
                         }
@@ -203,7 +184,7 @@ export default function Timetracking() {
                     <div className={"flex flex-row justify-end space-x-2"}>
                         <SwitchButton firstTitle={"Day"}
                                       secondTitle={"Week"}
-                                      onClick={() => {setView(!view); console.log(view)}}
+                                      onClick={() => setView(!view)}
                         />
                         <Button text={"New Absence"}
                                 theme={"dark"}
@@ -227,7 +208,7 @@ export default function Timetracking() {
                             </>
                         :
                             <>
-                                <WeekView timeEntries={weekEntries} absences={weekAbsences} weekDates={getCurrentWeekDates()}/>
+                                <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
                                 <TimeEntryDaySummary entries={weekEntries}/>
                             </>
                         }

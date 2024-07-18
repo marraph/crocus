@@ -4,21 +4,24 @@ import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
 import {formatTime} from "@/utils/format";
 import {cn} from "@/utils/cn";
+import {Week} from "@/app/timetracking/page";
 
 interface TimeEntryProps {
     timeEntries: TimeEntry[] | undefined;
     absences: Absence[] | undefined;
-    weekDates: Date[];
+    week: Week;
 }
 
-export const WeekView: React.FC<TimeEntryProps> = ({ weekDates, timeEntries }) => {
+export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
     const days = useMemo(() => [
-        {name: "Monday", day: weekDates[0]},
-        {name: "Tuesday", day: weekDates[1]},
-        {name: "Wednesday", day: weekDates[2]},
-        {name: "Thursday", day: weekDates[3]},
-        {name: "Friday", day: weekDates[4]},
-    ], [weekDates]);
+        {name: "Monday", day: week.monday},
+        {name: "Tuesday", day: week.tuesday},
+        {name: "Wednesday", day: week.wednesday},
+        {name: "Thursday", day: week.thursday},
+        {name: "Friday", day: week.friday},
+        {name: "Saturday", day: week.saturday},
+        {name: "Sunday", day: week.sunday},
+    ], [week]);
 
     if (!timeEntries) return null;
 
