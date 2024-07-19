@@ -72,7 +72,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
             deadline: values.deadline ?? null,
             isArchived: false,
             duration: Number(values.duration) ?? null,
-            bookedDuration: values.duration ? 0 : null,
+            bookedDuration: taskElement.bookedDuration,
             createdBy: taskElement.createdBy,
             createdDate: taskElement.createdDate,
             lastModifiedBy: { id: user.id, name: user.name, email: user.email },

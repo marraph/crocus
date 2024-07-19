@@ -1,5 +1,5 @@
 import {Absence, TaskElement, TimeEntry} from "@/types/types";
-import React, {useMemo, useState} from "react";
+import React, {useMemo, useRef, useState} from "react";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
 import {formatTime} from "@/utils/format";
@@ -8,6 +8,7 @@ import {Week} from "@/app/timetracking/page";
 import {Clock7} from "lucide-react";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
+import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 interface TimeEntryProps {
     timeEntries: TimeEntry[] | undefined;
@@ -26,6 +27,7 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
         {name: "Sunday", day: week.sunday},
     ], [week]);
 
+    const editRef = useRef<DialogRef>(null);
     const [focusEntry, setFocusEntry] = useState<TimeEntry | null>(null);
 
     if (!timeEntries) return null;
@@ -33,7 +35,7 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
     return (
         <>
             {focusEntry &&
-                <EditTimeEntryDialog timeEntry={focusEntry}/>
+                <EditTimeEntryDialog timeEntry={focusEntry} ref={editRef}/>
             }
 
             <div className={"w-full h-full grid grid-cols-7 rounded-t-lg border border-edge border-b-0"}>
@@ -54,7 +56,10 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                                 return startDate.getDay() === day.day.getDay() && (
                                     <div className={"flex flex-col rounded-lg bg-dark hover:bg-dark-light m-1 cursor-pointer space-y-1 overflow-hidden"}
                                          key={index}
-                                         onClick={() => setFocusEntry(entry)}
+                                         onClick={() => {
+                                             setFocusEntry(entry);
+                                             editRef.current?.show();
+                                         }}
                                     >
                                         <div className={"flex flex-row space-x-2 items-center pb-1 pt-2 px-2"}>
                                             <Clock7 size={16}/>
@@ -63,13 +68,13 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                                         <div className={"flex flex-col space-y-1 p-1 border-t border-edge"}>
                                             {entry.project &&
                                                 <ProjectBadge title={entry.project.name}
-                                                              className={"max-w-48"}
+                                                              className={"max-w-[99%]"}
                                                               textClassName={"truncate"}
                                                 />
                                             }
                                             {entry.task &&
                                                 <EntryTitleBadge title={entry.task.name}
-                                                                 className={"max-w-48"}
+                                                                 className={"max-w-[99%]"}
                                                                  textClassName={"truncate"}
                                                 />
                                             }

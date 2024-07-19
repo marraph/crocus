@@ -92,18 +92,6 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         "11:00PM", "11:15PM", "11:30PM", "11:45PM"
     ], []);
 
-    useEffect(() => {
-        validateInput();
-    }, [values]);
-
-    if (!dialogRef || user === undefined) return null;
-
-    const validateTime = (dateString: string) => {
-        const date = new Date(dateString);
-        const time = formatTimeAMPM(date);
-        if (times.includes(time)) return time;
-    }
-
     const validateInput = () => {
         if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
@@ -117,6 +105,19 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         }
         setValid(true);
     }
+
+    useEffect(() => {
+        validateInput();
+    }, [values]);
+
+    if (!dialogRef || user === undefined) return null;
+
+    const validateTime = (dateString: string) => {
+        const date = new Date(dateString);
+        const time = formatTimeAMPM(date);
+        if (times.includes(time)) return time;
+    }
+
 
     const editTimeEntry = () => {
         const entry: TimeEntry = {
