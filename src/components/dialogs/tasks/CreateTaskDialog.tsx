@@ -77,7 +77,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
             deadline: values.deadline ?? null,
             isArchived: false,
             duration: Number(values.duration) ?? null,
-            bookedDuration: values.duration ? 0 : null,
+            bookedDuration: 0,
             createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},

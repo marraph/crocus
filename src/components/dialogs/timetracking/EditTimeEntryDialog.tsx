@@ -4,7 +4,7 @@ import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} fr
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
-import {TimeEntry} from "@/types/types";
+import {Project, Task, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {mutateRef} from "@/utils/mutateRef";
@@ -15,8 +15,8 @@ import {updateTimEntry} from "@/service/hooks/timeentryHook";
 
 type InitialValues = {
     comment: string,
-    project: string,
-    task: string,
+    project: Project | null,
+    task: Task | null,
     timeFrom: string,
     timeTo: string,
 }
@@ -31,8 +31,8 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
 
     const initialValues: InitialValues = {
         comment: timeEntry.comment ?? "",
-        project: timeEntry.project?.name ?? null,
-        task: timeEntry.task?.name ?? null,
+        project: timeEntry.project ?? null,
+        task: timeEntry.task ?? null,
         timeFrom: formatTimeAMPM(timeEntry.startDate),
         timeTo: formatTimeAMPM(timeEntry.endDate),
     }
@@ -41,6 +41,29 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
     const [dialogKey, setDialogKey] = useState(Date.now());
     const [valid, setValid] = useState<boolean>(true);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+
+    const tasks = useMemo(() => {
+        if (user) {
+            if (values.project) {
+                return getTasksFromProject(user, values.project);
+            } else {
+                return getAllTasks(user);
+            }
+        }
+        return [] as Task[];
+    }, [user, values.project]);
+
+    const projects = useMemo(() => {
+        const projectArray = [];
+        if (user) {
+            if (values.task) {
+                projectArray.push(getProjectFromTask(user, values.task));
+            } else {
+                projectArray.push(getAllProjects(user));
+            }
+        }
+        return [] as Project[];
+    }, [user, values.task]);
 
     const times = useMemo(() => [
         "12:00AM", "12:15AM", "12:30AM", "12:45AM",
@@ -75,22 +98,20 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
 
     if (!dialogRef || user === undefined) return null;
 
-    const validateTime = (date: Date) => {
+    const validateTime = (dateString: string) => {
+        const date = new Date(dateString);
         const time = formatTimeAMPM(date);
         if (times.includes(time)) return time;
     }
 
     const validateInput = () => {
-        let timeFrom = timeFromRef.current?.getSelectedValue();
-        let timeTo = timeToRef.current?.getSelectedValue();
-
-        if (comment?.trim() === "" && !projectSelected && !taskSelected) {
+        if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
         }
 
-        if (!times.includes(timeFrom as string) || !times.includes(timeTo as string) ||
-            times.indexOf(timeFrom as string) >= times.indexOf(timeTo as string)) {
+        if (!times.includes(values.timeFrom as string) || !times.includes(values.timeTo as string) ||
+            times.indexOf(values.timeFrom as string) >= times.indexOf(values.timeTo as string)) {
             setValid(false);
             return;
         }
@@ -111,6 +132,9 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
             lastModifiedDate: new Date(),
         }
         const { data, isLoading, error } = updateTimEntry(timeEntry.id, entry);
+
+        //update Task
+
         alertRef.current?.show();
     };
 
@@ -153,14 +177,11 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                                       size={"medium"}
                                       className={"z-50"}
                                       onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, project: value }))}
+                                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
                         >
-                            {!values.task && getAllProjects(user).map((project) => (
+                            {projects.map((project) => (
                                 <SearchSelectItem key={project.id} title={project.name}/>
                             ))}
-                            {values.task && getProjectFromTask(user, values.task) &&
-                                <SearchSelectItem title={getProjectFromTask(user, taskSelected)?.name as string}/>
-                            }
                         </SearchSelect>
 
                         <SearchSelect buttonTitle={"Task"}
@@ -170,12 +191,9 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                                       size={"medium"}
                                       className={"z-50"}
                                       onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, task: value }))}
+                                          setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
                         >
-                            {!values.project && getAllTasks(user).map((task) => (
-                                <SearchSelectItem key={task.id} title={task.name}/>
-                            ))}
-                            {values.project && getTasksFromProject(user, projectSelected).map((task) => (
+                            {tasks.map((task) => (
                                 <SearchSelectItem key={task.id} title={task.name}/>
                             ))}
                         </SearchSelect>

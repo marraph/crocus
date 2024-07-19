@@ -81,7 +81,6 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                             })}
                         </div>
                     </div>
-
                 ))}
             </div>
         </>

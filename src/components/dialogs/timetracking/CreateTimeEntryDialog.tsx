@@ -12,6 +12,8 @@ import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
 import {mutateRef} from "@/utils/mutateRef";
+import {updateTask} from "@/service/hooks/taskHook";
+import moment from "moment";
 
 type InitialValues = {
     comment: string,
@@ -38,6 +40,29 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+
+    const tasks = useMemo(() => {
+        if (user) {
+            if (values.project) {
+                return getTasksFromProject(user, values.project);
+            } else {
+                return getAllTasks(user);
+            }
+        }
+        return [] as Task[];
+    }, [user, values.project]);
+
+    const projects = useMemo(() => {
+        const projectArray = [];
+        if (user) {
+            if (values.task) {
+                projectArray.push(getProjectFromTask(user, values.task));
+            } else {
+                projectArray.push(getAllProjects(user));
+            }
+        }
+        return [] as Project[];
+    }, [user, values.task]);
 
     const times = useMemo(() => [
         "12:00AM", "12:15AM", "12:30AM", "12:45AM",
@@ -87,6 +112,12 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         setValid(true);
     }
 
+    const getDuration = () => {
+        const from = moment(new Date(values.timeFrom))
+        const to = moment(new Date(values.timeTo))
+        return moment.duration(from.diff(to)).asHours();
+    }
+
     const createEntry = () => {
         const newEntry: TimeEntry = {
             id: 0,
@@ -101,6 +132,26 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
             lastModifiedDate: new Date(),
         }
         const { data, isLoading, error } = createTimeEntry(newEntry);
+
+        if (values.task != null) {
+            const taskUpdate: Task = {
+                id: 0,
+                name: values.task.name,
+                description: values.task.description,
+                topic: values.task.topic,
+                status: values.task.status,
+                priority: values.task.priority,
+                deadline: values.task.deadline,
+                isArchived: false,
+                duration: values.task.duration,
+                bookedDuration: values.task.bookedDuration + getDuration(),
+                createdBy: values.task.createdBy,
+                createdDate: values.task.createdDate,
+                lastModifiedBy: {id: user.id, name: user.name, email: user.email},
+                lastModifiedDate: new Date(),
+            }
+            const { data, isLoading, error } = updateTask(values.task.id, taskUpdate);
+        }
 
         handleCloseClick();
         alertRef.current?.show();
@@ -143,14 +194,11 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                                       size={"medium"}
                                       className={"z-50"}
                                       onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, project: values.task ? value : getProjectFromTask(user, values.task)}))}
+                                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null}))}
                         >
-                            {!values.task && getAllProjects(user).map((project) => (
+                            {projects?.map((project) => (
                                 <SearchSelectItem key={project.id} title={project.name}/>
                             ))}
-                            {values.task && getProjectFromTask(user, values.task) &&
-                                <SearchSelectItem title={getProjectFromTask(user, values.task)?.name as string}/>
-                            }
                         </SearchSelect>
 
                         <SearchSelect buttonTitle={"Task"}
@@ -158,12 +206,9 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                                       size={"medium"}
                                       className={"z-50"}
                                         onValueChange={(value) =>
-                                            setValues((prevValues) => ({ ...prevValues, task: value }))}
+                                            setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null}))}
                         >
-                            {!values.project && getAllTasks(user).map((task) => (
-                                <SearchSelectItem key={task.id} title={task.name}/>
-                            ))}
-                            {values.project && getTasksFromProject(user, values.project).map((task) => (
+                            {tasks.map((task) => (
                                 <SearchSelectItem key={task.id} title={task.name}/>
                             ))}
                         </SearchSelect>

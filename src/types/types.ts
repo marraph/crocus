@@ -68,7 +68,7 @@ type Task = {
     topic: Topic | null
     isArchived: boolean
     duration: number | null
-    bookedDuration: number | null
+    bookedDuration: number
     deadline: Date | null
     status: Status | null
     priority: Priority | null
@@ -85,7 +85,7 @@ type TaskElement = {
     topic: Topic | null
     isArchived: boolean
     duration: number | null
-    bookedDuration: number | null
+    bookedDuration: number
     deadline: Date | null
     status: Status | null
     priority: Priority | null
@@ -105,7 +105,7 @@ type TaskCreation = {
     topic: Topic | null
     isArchived: boolean
     duration: number | null
-    bookedDuration: number | null
+    bookedDuration: number
     deadline: Date | null
     status: Status | null
     priority: Priority | null
