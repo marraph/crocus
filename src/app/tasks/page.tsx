@@ -77,13 +77,12 @@ export default function Tasks() {
                 </div>
                 <SwitchButton firstTitle={"Table"}
                               secondTitle={"Card"}
-                              className={"h-9"}
                               onClick={() => setViewMode(!viewMode)}
                 />
             </div>
 
             {viewMode &&
-                <div className={" overflow-hidden rounded-lg border border-edge"}>
+                <div className={"overflow-hidden rounded-lg border border-edge"}>
                     <CustomScroll>
                         <div className={"rounded-lg bg-black h-screen"}>
                             <TaskTable taskElements={taskElements}/>

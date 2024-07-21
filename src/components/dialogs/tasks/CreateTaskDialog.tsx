@@ -122,14 +122,14 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                               onClose={handleCloseClick}
                 />
                 <DialogContent>
-                    <div className={cn("flex flex-col flex-grow space-y-2", className)}>
+                    <div className={cn("flex flex-col flex-grow space-y-1", className)}>
                         <input placeholder={"Task Title"}
                                onChange={handleInputChange("title", setValues)}
                                className={cn("rounded-lg bg-black py-2 text-white placeholder-marcador focus-visible:ring-0 border-0 focus-visible:outline-none", className)}
                         />
                         <Textarea placeholder={"Add Description..."}
                                   onChange={handleInputChange("description", setValues)}
-                                  className={cn("h-20 bg-black placeholder-marcador focus:text-gray p-0", className)}
+                                  className={cn("h-20 bg-black placeholder-marcador focus:text-gray px-0", className)}
                         />
                         <div className={cn("flex flex-row space-x-2 z-50", className)}>
                             <Combobox buttonTitle={"Team"}

@@ -2,7 +2,7 @@
 
 import {NavigationItem, useNavigation} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import React, {useEffect, useRef} from "react";
-import {CalendarDays, ClipboardList, LayoutDashboard, Moon, Search, SquarePlus, Timer} from "lucide-react";
+import {CalendarDays, ClipboardList, Flower, LayoutDashboard, Moon, Search, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {usePathname, useRouter} from "next/navigation";
@@ -38,22 +38,20 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
             <JoinTeamDialog ref={joinTeamDialogRef}/>
             <SearchDialog ref={searchDialogRef}/>
 
-            <div className={cn("w-min h-screen flex flex-col justify-between bg-black pt-4 pr-5 pl-4")} {...props}>
+            <div className={cn("w-max h-screen flex flex-col justify-between bg-black pt-4 px-4 pb-8")} {...props}>
                 <div className={"space-y-2"}>
                     <div className={"flex flex-row space-x-4 items-center mb-7"}>
-                        <Moon size={30}/>
-                        <span className={"text-3xl"}>Luna</span>
+                        <Flower size={30}/>
+                        <span className={"text-3xl"}>fleur</span>
                     </div>
 
-                    <div
-                        className={"group flex flex-row justify-between items-center space-x-1 rounded-lg bg-black border border-edge focus:text-white pr-1"}
+                    <div className={"h-8 group flex flex-row justify-between items-center rounded-lg bg-black border border-edge cursor-pointer pr-1"}
                         onClick={() => searchDialogRef.current?.showModal()}>
-                        <div className={"flex flex-row items-center"}>
-                            <Search size={18} className={"group-focus:text-white text-marcador ml-2 mr-2"}/>
-                            <Input placeholder={"Search"} border={"none"}
-                                   className={"w-max text-sm m-0 p-0 h-8 bg-black"}></Input>
+                        <div className={"flex flex-row items-center text-marcador text-sm space-x-2"}>
+                            <Search size={18} className={"group-focus:text-white ml-2"}/>
+                            <span>{"Search"}</span>
                         </div>
-                        <Shortcut text={"⌘ K"} className={"justify-end"}/>
+                        <Shortcut text={"⌘ K"}/>
                     </div>
 
                     <div className={"space-y-1 pt-4"}>
@@ -61,22 +59,23 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                         <NavigationItem selected={selectedItem === "Dashboard"}
                                         title={"Dashboard"}
                                         onClick={() => router.push("/dashboard")}
-                                        icon={<LayoutDashboard size={18}/>}/>
-
+                                        icon={<LayoutDashboard size={18}/>}
+                        />
                         <NavigationItem selected={selectedItem === "Tasks"}
                                         title={"Tasks"}
                                         onClick={() => router.push("/tasks")}
-                                        icon={<ClipboardList size={18}/>}/>
-
+                                        icon={<ClipboardList size={18}/>}
+                        />
                         <NavigationItem selected={selectedItem === "Timetracking"}
                                         title={"Timetracking"}
                                         onClick={() => router.push("/timetracking")}
-                                        icon={<Timer size={18}/>}/>
-
+                                        icon={<Timer size={18}/>}
+                        />
                         <NavigationItem selected={selectedItem === "Calendar"}
                                         title={"Calendar"}
                                         onClick={() => router.push("/calendar")}
-                                        icon={<CalendarDays size={18}/>}/>
+                                        icon={<CalendarDays size={18}/>}
+                        />
                     </div>
 
                     <div className={"py-12"}>
