@@ -13,12 +13,14 @@ import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} fr
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
 import {mutateRef} from "@/utils/mutateRef";
 import {updateTask} from "@/service/hooks/taskHook";
-import moment from "moment";
+import moment, {duration} from "moment";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 
 type InitialValues = {
     comment: string,
     project: Project | null,
     task: Task | null,
+    date: Date,
     timeFrom: string,
     timeTo: string,
 }
@@ -32,6 +34,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         comment: "",
         project: null,
         task: null,
+        date: new Date(),
         timeFrom: "",
         timeTo: "",
     }
@@ -43,11 +46,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
 
     const tasks = useMemo(() => {
         if (user) {
-            if (values.project) {
-                return getTasksFromProject(user, values.project);
-            } else {
-                return getAllTasks(user);
-            }
+            if (values.project) return getTasksFromProject(user, values.project);
+            else return getAllTasks(user);
         }
         return [] as Task[];
     }, [user, values.project]);
@@ -55,11 +55,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
     const projects = useMemo(() => {
         const projectArray = [];
         if (user) {
-            if (values.task) {
-                projectArray.push(getProjectFromTask(user, values.task));
-            } else {
-                projectArray.push(getAllProjects(user));
-            }
+            if (values.task) projectArray.push(getProjectFromTask(user, values.task));
+            else projectArray.push(getAllProjects(user));
         }
         return [] as Project[];
     }, [user, values.task]);
@@ -93,12 +90,11 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
 
     useEffect(() => {
         validateInput();
-    }, [values.comment, values.project, values.task, values.timeFrom, values.timeTo]);
+    }, [values]);
 
     if (!dialogRef || user === undefined) return null;
 
     const validateInput = () => {
-
         if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
@@ -113,9 +109,14 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
     }
 
     const getDuration = () => {
-        const from = moment(new Date(values.timeFrom))
-        const to = moment(new Date(values.timeTo))
-        return moment.duration(from.diff(to)).asHours();
+        const durationFrom = moment.duration(values.timeFrom);
+        const durationTo = moment.duration(values.timeTo);
+        const date = moment(values.date)
+
+        const dateFrom = date.add(durationFrom);
+        const dateTo = date.add(durationTo);
+
+        return moment.duration(dateFrom.diff(dateTo)).asHours();
     }
 
     const createEntry = () => {
@@ -124,8 +125,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
             comment: values.comment,
             project: values.project ?? null,
             task: values.task ?? null,
-            startDate: new Date(values.timeFrom),
-            endDate: new Date(values.timeTo),
+            startDate: moment(values.date).add(values.timeFrom).toDate(),
+            endDate: moment(values.date).add(values.timeTo).toDate(),
             createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
@@ -183,7 +184,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                 />
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
-                              className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
+                              className={"h-12 px-1 w-full bg-black placeholder-marcador focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
                               value={values.comment}
@@ -215,6 +216,14 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                     </div>
 
                     <div className={"flex flex-row items-center space-x-2 pb-2"}>
+                        <DatePicker text={"Date"}
+                                    preSelectedValue={new Date()}
+                                    closeButton={false}
+                                    dayFormat={"long"}
+                                    className={"z-40"}
+                                    onValueChange={(value) =>
+                                        setValues((prevValues) => ({ ...prevValues, date: value ?? new Date() }))}
+                        />
                         <SearchSelect buttonTitle={"From"}
                                       preSelectedValue={"09:00AM"}
                                       icon={<Clock2 size={16}/>}

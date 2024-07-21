@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
@@ -12,11 +12,14 @@ import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchse
 import {formatTimeAMPM} from "@/utils/format";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {updateTimEntry} from "@/service/hooks/timeentryHook";
+import moment from "moment/moment";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 
 type InitialValues = {
     comment: string,
     project: Project | null,
     task: Task | null,
+    date: Date,
     timeFrom: string,
     timeTo: string,
 }
@@ -33,6 +36,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         comment: timeEntry.comment ?? "",
         project: timeEntry.project ?? null,
         task: timeEntry.task ?? null,
+        date: timeEntry.startDate,
         timeFrom: formatTimeAMPM(timeEntry.startDate),
         timeTo: formatTimeAMPM(timeEntry.endDate),
     }
@@ -43,27 +47,23 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const tasks = useMemo(() => {
-        if (user) {
-            if (values.project) {
-                return getTasksFromProject(user, values.project);
-            } else {
-                return getAllTasks(user);
-            }
-        }
-        return [] as Task[];
+        if (!user) return [];
+        if (values.project) return getTasksFromProject(user, values.project);
+        else return getAllTasks(user);
     }, [user, values.project]);
 
     const projects = useMemo(() => {
-        const projectArray = [];
-        if (user) {
-            if (values.task) {
-                projectArray.push(getProjectFromTask(user, values.task));
-            } else {
-                projectArray.push(getAllProjects(user));
-            }
+        if (!user) return [];
+        if (values.task) {
+            const projectArray = [];
+            projectArray.push(getProjectFromTask(user, values.task) as Project);
+            return projectArray;
         }
-        return [] as Project[];
+        else return getAllProjects(user);
     }, [user, values.task]);
+
+    console.log(tasks);
+    console.log(projects);
 
     const times = useMemo(() => [
         "12:00AM", "12:15AM", "12:30AM", "12:45AM",
@@ -118,15 +118,14 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         if (times.includes(time)) return time;
     }
 
-
     const editTimeEntry = () => {
         const entry: TimeEntry = {
             id: timeEntry.id,
             comment: values.comment,
             project: values.project ?? null,
             task: values.task ?? null,
-            startDate: new Date(values.timeFrom),
-            endDate: new Date(values.timeTo),
+            startDate: moment(values.date).add(values.timeFrom).toDate(),
+            endDate: moment(values.date).add(values.timeTo).toDate(),
             createdBy: timeEntry.createdBy,
             createdDate: timeEntry.createdDate,
             lastModifiedBy: { id: user.id, name: user.name, email: user.email },
@@ -165,12 +164,12 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                 <DialogContent>
                     <Textarea placeholder={"Comment"}
                               label={"Comment"}
-                              className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                              className={"h-12 px-1 w-full bg-black placeholder-placeholder focus:text-gray"}
                               spellCheck={false}
                               onChange={handleInputChange("comment", setValues)}
                               value={values.comment}
                     />
-                    <div className={"flex flex-row items-center space-x-2 px-4 py-2"}>
+                    <div className={"flex flex-row items-center space-x-2 py-2"}>
                         <SearchSelect buttonTitle={"Project"}
                                       label={"Project"}
                                       preSelectedValue={timeEntry.project?.name}
@@ -200,7 +199,16 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                         </SearchSelect>
                     </div>
 
-                    <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
+                    <div className={"flex flex-row items-center space-x-2 pb-2"}>
+                        <DatePicker text={"Date"}
+                                    preSelectedValue={moment(values.timeFrom).toDate()}
+                                    closeButton={false}
+                                    dayFormat={"long"}
+                                    label={"Date"}
+                                    className={"z-40"}
+                                    onValueChange={(value) =>
+                                        setValues((prevValues) => ({ ...prevValues, date: value ?? new Date() }))}
+                        />
                         <SearchSelect buttonTitle={"From"}
                                       preSelectedValue={validateTime(values.timeFrom)}
                                       icon={<Clock2 size={16}/>}

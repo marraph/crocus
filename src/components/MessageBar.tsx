@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Input} from "@marraph/daisy/components/input/Input";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Send} from "lucide-react";
-import {AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {useUser} from "@/context/UserContext";
 
 interface MessageBarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -10,7 +9,6 @@ interface MessageBarProps extends React.HTMLAttributes<HTMLDivElement> {}
 export const MessageBar: React.FC<MessageBarProps> = ({ className, ...props }) => {
     const [message, setMessage] = useState<string>("");
     const [valid, setValid] = useState<boolean>(false);
-    const alertRef = useRef<AlertRef>(null);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
 
     useEffect(() => {
@@ -19,7 +17,6 @@ export const MessageBar: React.FC<MessageBarProps> = ({ className, ...props }) =
 
     const sendMessage = () => {
         setMessage("");
-        alertRef.current?.show();
     }
 
     const validate = () => {
