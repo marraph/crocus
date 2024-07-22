@@ -45,20 +45,19 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const tasks = useMemo(() => {
-        if (user) {
-            if (values.project) return getTasksFromProject(user, values.project);
-            else return getAllTasks(user);
-        }
-        return [] as Task[];
+        if (!user) return [];
+        if (values.project) return getTasksFromProject(user, values.project);
+        else return getAllTasks(user);
     }, [user, values.project]);
 
     const projects = useMemo(() => {
-        const projectArray = [];
-        if (user) {
-            if (values.task) projectArray.push(getProjectFromTask(user, values.task));
-            else projectArray.push(getAllProjects(user));
+        if (!user) return [];
+        if (values.task) {
+            const projectArray = [];
+            projectArray.push(getProjectFromTask(user, values.task) as Project);
+            return projectArray;
         }
-        return [] as Project[];
+        else return getAllProjects(user);
     }, [user, values.task]);
 
     const times = useMemo(() => [

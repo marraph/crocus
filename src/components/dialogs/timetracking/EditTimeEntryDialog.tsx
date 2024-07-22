@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
@@ -62,9 +62,6 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         else return getAllProjects(user);
     }, [user, values.task]);
 
-    console.log(tasks);
-    console.log(projects);
-
     const times = useMemo(() => [
         "12:00AM", "12:15AM", "12:30AM", "12:45AM",
         "01:00AM", "01:15AM", "01:30AM", "01:45AM",
@@ -118,6 +115,13 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         if (times.includes(time)) return time;
     }
 
+    const getDuration = (startDate: string, endDate: string) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const duration = moment.duration(moment(end).diff(moment(start)));
+        return duration.asHours();
+    }
+
     const editTimeEntry = () => {
         const entry: TimeEntry = {
             id: timeEntry.id,
@@ -134,6 +138,29 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         const { data, isLoading, error } = updateTimEntry(timeEntry.id, entry);
 
         //update Task
+
+        const currentDuration = getDuration(values.timeFrom, values.timeTo);
+        const oldDuration = getDuration(timeEntry.startDate.toString(), timeEntry.endDate.toString());
+        const diff = currentDuration - oldDuration;
+
+        if (values.task && timeEntry.task) {
+            const updatedTask: Task = {
+                id: timeEntry.task.id,
+                name: timeEntry.task.name,
+                description: timeEntry.task.description,
+                topic: timeEntry.task.topic,
+                status: timeEntry.task.status,
+                priority: timeEntry.task.priority,
+                deadline: timeEntry.task.deadline,
+                isArchived: timeEntry.task.isArchived,
+                duration: timeEntry.task.duration,
+                bookedDuration: timeEntry.task.bookedDuration + diff,
+                createdBy: timeEntry.task.createdBy,
+                createdDate: timeEntry.task.createdDate,
+                lastModifiedBy: {id: user.id, name: user.name, email: user.email},
+                lastModifiedDate: new Date(),
+            }
+        }
 
         alertRef.current?.show();
     };
@@ -201,7 +228,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
 
                     <div className={"flex flex-row items-center space-x-2 pb-2"}>
                         <DatePicker text={"Date"}
-                                    preSelectedValue={moment(values.timeFrom).toDate()}
+                                    preSelectedValue={new Date(timeEntry.startDate)}
                                     closeButton={false}
                                     dayFormat={"long"}
                                     label={"Date"}

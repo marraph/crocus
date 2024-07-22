@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, CircleAlert, Hourglass, LineChart, Save, Tag, Users} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
@@ -53,6 +53,21 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
     const [valid, setValid] = useState(true);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const { data:user, isLoading:userLoading, error:userError } = useUser();
+
+    const teams = useMemo(() =>  {
+        if (user) return getAllTeams(user);
+        else return [];
+    }, [user]);
+
+    const projects = useMemo(() => {
+        if (user && team) return getProjects(user, team);
+        else return [];
+    }, [user, team]);
+
+    const topics = useMemo(() => {
+        if (user && team) return getTopicsFromTeam(user, team);
+        else return [];
+    }, [user, team]);
 
     useEffect(() => {
         validateInput();
@@ -149,7 +164,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                       setTeam(value);
                                   }}
                         >
-                            {getAllTeams(user).map((team) => (
+                            {teams.map((team) => (
                                 <ComboboxItem key={team}
                                               title={team}
                                 />
@@ -165,7 +180,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                           onValueChange={(value) =>
                                               setValues((prevValues) => ({...prevValues, project: value}))}
                                 >
-                                    {getProjects(user, team).map((project) => (
+                                    {projects.map((project) => (
                                         <ComboboxItem key={project} title={project}/>
                                     ))}
                                 </Combobox>
@@ -177,7 +192,7 @@ export const EditTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement 
                                           onValueChange={(value) =>
                                               setValues((prevValues) => ({...prevValues, topic: value}))}
                                 >
-                                    {getTopicsFromTeam(user, team).map((topic) => (
+                                    {topics.map((topic) => (
                                         <ComboboxItem key={topic} title={topic}/>
                                     ))}
                                 </Combobox>

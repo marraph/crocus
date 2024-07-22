@@ -60,6 +60,21 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
+    const teams = useMemo(() =>  {
+        if (user) return getAllTeams(user);
+        else return [];
+    }, [user]);
+
+    const projects = useMemo(() => {
+        if (user && team) return getProjects(user, team);
+        else return [];
+    }, [user, team]);
+
+    const topics = useMemo(() => {
+        if (user && team) return getTopicsFromTeam(user, team);
+        else return [];
+    }, [user, team]);
+
     useEffect(() => {
         validateInput();
     }, [values.title]);
@@ -145,7 +160,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                           setTeam(value);
                                       }}
                             >
-                                {getAllTeams(user).map((team) => (
+                                {teams.map((team) => (
                                     <ComboboxItem title={team}
                                                   key={team}
                                                   size={"small"}
@@ -161,7 +176,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                               onValueChange={(value) => {
                                                   setValues((prevValues) => ({ ...prevValues, project: value }))}}
                                     >
-                                        {getProjects(user, team).map((project) => (
+                                        {projects.map((project) => (
                                             <ComboboxItem title={project}
                                                           key={project}
                                                           size={"small"}
@@ -175,7 +190,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
                                               onValueChange={(value) =>
                                                     setValues((prevValues) => ({ ...prevValues, topic: value }))}
                                     >
-                                        {getTopicsFromTeam(user, team).map((topic) => (
+                                        {topics.map((topic) => (
                                             <ComboboxItem title={topic}
                                                           key={topic}
                                                           size={"small"}
