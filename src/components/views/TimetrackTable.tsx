@@ -21,6 +21,7 @@ import {EllipsisVertical} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {AbsenceBadge} from "@/components/badges/AbsenceBadge";
 import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDialog";
+import moment from "moment";
 
 const header = [
     { key: "entry", label: "Entry" },
@@ -177,7 +178,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                     ))}
                     {entries?.map((entry, index) => (
                         <TableRow key={index}
-                                  className={index === entries?.length - 1 ? " border-b border-b-white" : ""}
+                                  className={index === entries?.length - 1 ? " border-b border-b-edge" : ""}
                                   onContextMenu={(event) => handleEntryContextMenu(event, entry)}
                                   onClick={() => handleTimeEntryOnClick(entry)}
                         >
@@ -189,7 +190,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                 </div>
                             </TableCell>
                             <TableCell>
-                                {formatTime(entry.startDate) + " - " + formatTime(entry.endDate)}
+                                {moment(entry.startDate).format('HH:mm') + " - " + moment(entry.endDate).format('HH:mm')}
                             </TableCell>
                             <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
                                 {calculateDifference(entry) + "h"}

@@ -9,6 +9,7 @@ import {Clock7} from "lucide-react";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
+import moment from "moment";
 
 interface TimeEntryProps {
     timeEntries: TimeEntry[] | undefined;
@@ -38,7 +39,7 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                 <EditTimeEntryDialog timeEntry={focusEntry} ref={editRef}/>
             }
 
-            <div className={"w-full h-full grid grid-cols-7 rounded-t-lg border border-edge border-b-0"}>
+            <div className={"w-full h-full grid grid-cols-7 rounded-t-lg border border-edge border-b-0 overflow-hidden"}>
                 {days.map((day, index) => (
                     <div key={index}
                          className={cn("h-full bg-black rounded-lg border-x border-edge",
@@ -63,7 +64,7 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                                     >
                                         <div className={"flex flex-row space-x-2 items-center pb-1 pt-2 px-2"}>
                                             <Clock7 size={16}/>
-                                            <span className={"text-sm"}>{formatTime(startDate) + " - " + formatTime(endDate)}</span>
+                                            <span className={"text-sm"}>{moment(startDate).format('HH:mm') + " - " + moment(endDate).format('HH:mm')}</span>
                                         </div>
                                         <div className={"flex flex-col space-y-1 p-1 border-t border-edge"}>
                                             {entry.project &&

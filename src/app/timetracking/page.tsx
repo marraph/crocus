@@ -69,33 +69,25 @@ function findCurrentWeek(weeksArray: Week[]): Week {
 
 function getFilterDayEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
     return user?.timeEntries?.filter(entry => {
-        const startDate = moment(entry.startDate);
-        return startDate.toDate() === day;
+        return moment(entry.startDate).isSame(day, 'day');
     });
 }
 
 function getFilterDayAbsences(user: User | undefined, day: Date): Absence[] | undefined {
     return user?.absences?.filter(absence => {
-        const startDate = moment(absence.startDate);
-        return startDate.toDate() === day;
+        return moment(absence.startDate).isSame(day, 'day');
     });
 }
 
 function getFilterWeekEntries(user: User | undefined, week: Week): TimeEntry[] | undefined {
     return user?.timeEntries?.filter(entry => {
-        const startDate = moment(entry.startDate).toDate();
-        const monday = moment(week.monday).toDate();
-        const sunday = moment(week.sunday).toDate();
-        return startDate >= monday && startDate <= sunday;
+        return moment(entry.startDate).isBetween(week.monday, week.sunday, null, '[]');
     });
 }
 
 function getFilterWeekAbsences(user: User | undefined, week: Week): Absence[] | undefined {
     return user?.absences?.filter(absence => {
-        const startDate = moment(absence.startDate).toDate();
-        const monday = moment(week.monday).toDate();
-        const sunday = moment(week.sunday).toDate();
-        return startDate >= monday && startDate <= sunday;
+        return moment(absence.startDate).isBetween(week.monday, week.sunday, null, '[]');
     });
 }
 
@@ -106,7 +98,7 @@ export default function Timetracking() {
     const absenceDialogRef = useRef<DialogRef>(null);
 
     const weeks = useMemo(() => generateWeeks(), []);
-    const [day, setDay] = useState<Date>(moment().toDate());
+    const [day, setDay] = useState<Date>(new Date());
     const [week, setWeek] = useState<Week>(findCurrentWeek(weeks));
     const [view, setView] = useState<boolean>(false);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
@@ -122,7 +114,7 @@ export default function Timetracking() {
         if (user?.absences) setDailyAbsences(getFilterDayAbsences(user, day));
         if (user?.absences) setWeekAbsences(getFilterWeekAbsences(user, week));
 
-    }, [user, day, week, user?.timeEntries, user?.absences]);
+    }, [user, day, week]);
 
     if (!user) return null;
 
@@ -208,7 +200,7 @@ export default function Timetracking() {
                     </div>
                 </div>
 
-                    <div className={"w-full h-screen rounded-lg flex flex-col items-stretch pt-4"}>
+                    <div className={"w-full h-full rounded-lg flex flex-col items-stretch pt-4"}>
                         {view ?
                             <>
                                 <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>

@@ -19,7 +19,7 @@ export function formatDate(dateString: string | undefined): string {
     return `${month} ${day}, ${year}`;
 }
 
-export function formatTime(date: Date): string {
+export function formatTime(date: Date, timeTo: any): string {
     const newDate = new Date(date);
     const hours = newDate.getHours();
     const minutes = newDate.getMinutes();
@@ -30,17 +30,10 @@ export function formatTime(date: Date): string {
     return `${formattedHours}:${formattedMinutes}`;
 }
 
-export function formatTimeAMPM(date: Date) {
-    const newDate = new Date(date);
-    let hours = newDate.getHours();
-    const minutes = newDate.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
-
-    return `${hours < 10 ? '0' : ''}${hours}:${minutesStr}${ampm}`;
+export function formatTimeClock(date: Date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
 }
 
 export function formatTimeDifference(startDate: Date, endDate: Date): string {
