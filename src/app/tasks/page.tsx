@@ -10,6 +10,7 @@ import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {CustomScroll} from "react-custom-scroll";
+import {Filter} from "@/components/Filter";
 
 
 export default function Tasks() {
@@ -19,7 +20,20 @@ export default function Tasks() {
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
 
-    console.log(user)
+    const filterItems = [
+        {
+            name: "Status",
+            values: ["Open", "In Progress", "Done"]
+        },
+        {
+            name: "Priority",
+            values: ["Low", "Medium", "High"]
+        },
+        {
+            name: "Deadline",
+            values: ["Today", "This Week", "This Month"]
+        }
+    ];
 
     useEffect(() => {
         if (user) {
@@ -70,6 +84,7 @@ export default function Tasks() {
                             icon={<SquarePen size={20} className={"mr-2"}/>}
                     />
                     <CreateTaskDialog ref={dialogRef}/>
+                    <Filter title={"Filter"} items={filterItems}/>
                     <div className={"flex flex-row space-x-1"}>
                         <LoaderCircle size={14} className={"text-marcador"}/>
                         <span className={"text-xs text-marcador"}>{`${getTaskElements().length} OPEN`}</span>
