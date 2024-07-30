@@ -17,7 +17,7 @@ export const TimeEntryContextMenu = forwardRef<HTMLDivElement, TimeEntryContextP
     const router = useRouter();
 
     return (
-        <ContextMenu className={"absolute z-50 text-xs w-max py-1 shadow-2xl"} style={{top: y, left: x}} {...props} ref={ref}>
+        <ContextMenu className={"absolute text-xs w-max py-1 shadow-2xl"} style={{top: y, left: x}} {...props} ref={ref}>
             <ContextMenuItem title={"Edit"}
                              className={"mt-1"}
                              onClick={() => editRef.current?.show()}
