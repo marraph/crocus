@@ -16,7 +16,6 @@ import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, Tag, Users}
 import {cn} from "@/utils/cn";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
-import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {createTask} from "@/service/hooks/taskHook";
 import {Priority, Status, TaskCreation, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
@@ -24,6 +23,7 @@ import {Input} from "@marraph/daisy/components/input/Input";
 import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllTeams, getProject, getProjects, getTopicItem, getTopicsFromTeam} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
+import {useToast} from "griller/src/component/toaster";
 
 
 type InitialValues = {
@@ -39,7 +39,6 @@ type InitialValues = {
 
 export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>(({className}, ref) => {
     const dialogRef = mutateRef(ref);
-    const alertRef = useRef<AlertRef>(null);
     const switchRef = useRef<SwitchRef>(null);
 
     const status = useMemo(() => ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"], []);
@@ -59,6 +58,7 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
     const [valid, setValid] = useState(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const {addToast} = useToast();
 
     const teams = useMemo(() =>  {
         if (user) return getAllTeams(user);
@@ -102,7 +102,11 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
         const {data:task, isLoading:taskLoading, error:taskError} = createTask(newTask);
 
         handleCloseClick();
-        alertRef.current?.show();
+        addToast({
+            title: "Task created successfully!",
+            secondTitle: "You can now work with the task in your task-overview.",
+            icon: <SquareCheckBig/>
+        });
     }
 
     const handleCloseClick = () => {
@@ -130,139 +134,129 @@ export const CreateTaskDialog = forwardRef<DialogRef, HTMLAttributes<DialogRef>>
     };
 
     return (
-        <>
-            <Dialog width={600} ref={dialogRef} key={dialogKey}>
-                <DialogHeader title={"New Task"}
-                              dialogRef={dialogRef}
-                              onClose={handleCloseClick}
-                />
-                <DialogContent>
-                    <div className={cn("flex flex-col flex-grow space-y-1", className)}>
-                        <input placeholder={"Task Title"}
-                               onChange={handleInputChange("title", setValues)}
-                               className={cn("rounded-lg bg-black py-2 text-white placeholder-marcador focus-visible:ring-0 border-0 focus-visible:outline-none", className)}
-                        />
-                        <Textarea placeholder={"Add Description..."}
-                                  onChange={handleInputChange("description", setValues)}
-                                  className={cn("h-20 bg-black placeholder-marcador focus:text-gray px-0", className)}
-                        />
-                        <div className={cn("flex flex-row space-x-2 z-50", className)}>
-                            <Combobox buttonTitle={"Team"}
-                                      size={"small"}
-                                      icon={<Users size={12} className={"mr-1"}/>}
-                                      onValueChange={(value) => {
-                                          setValues((prevValues) => ({
-                                              ...prevValues,
-                                              team: value,
-                                              project: null,
-                                              topic: null
-                                          }));
-                                          setTeam(value);
-                                      }}
-                            >
-                                {teams.map((team) => (
-                                    <ComboboxItem title={team}
-                                                  key={team}
-                                                  size={"small"}
-                                    />
-                                ))}
-                            </Combobox>
-                            {team &&
-                                <>
-                                    <Combobox buttonTitle={"Project"}
-                                              size={"small"}
-                                              key={`project-${team}`}
-                                              icon={<BookCopy size={12} className={"mr-1"}/>}
-                                              onValueChange={(value) => {
-                                                  setValues((prevValues) => ({ ...prevValues, project: value }))}}
-                                    >
-                                        {projects.map((project) => (
-                                            <ComboboxItem title={project}
-                                                          key={project}
-                                                          size={"small"}
-                                            />
-                                        ))}
-                                    </Combobox>
-                                    <Combobox buttonTitle={"Topic"}
-                                              key={`topic-${team}`}
-                                              size={"small"}
-                                              icon={<Tag size={12} className={"mr-1"}/>}
-                                              onValueChange={(value) =>
-                                                    setValues((prevValues) => ({ ...prevValues, topic: value }))}
-                                    >
-                                        {topics.map((topic) => (
-                                            <ComboboxItem title={topic}
-                                                          key={topic}
-                                                          size={"small"}
-                                            />
-                                        ))}
-                                    </Combobox>
-                                </>
-                            }
-                        </div>
-                        <div className={cn("flex flex-row space-x-2", className)}>
-                            <DatePicker text={"Deadline"}
-                                        size={"small"}
-                                        closeButton={true}
-                                        dayFormat={"short"}
-                                        onValueChange={(value) =>
-                                            setValues((prevValues) => ({ ...prevValues, deadline: value }))}
-                            />
-                            <Combobox buttonTitle={"Status"}
-                                      size={"small"}
-                                      icon={<CircleAlert size={12} className={"mr-1"}/>}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, status: value }))}
-                            >
-                                {status.map((status) => (
-                                    <ComboboxItem title={status}
-                                                  key={status}
-                                                  size={"small"}
-                                    />
-                                ))}
-                            </Combobox>
-                            <Combobox buttonTitle={"Priority"}
-                                      size={"small"}
-                                      icon={<LineChart size={12} className={"mr-1"}/>}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, priority: value }))}
-                            >
-                                {priorities.map((priority) => (
-                                    <ComboboxItem title={priority}
-                                                  key={priority}
-                                                  size={"small"}
-                                    />
-                                ))}
-                            </Combobox>
-                            <Input placeholder={"Duration in Hours"}
-                                   elementSize={"small"}
-                                   className={"w-28 placeholder-gray"}
-                                   icon={<Hourglass size={12}/>}
-                                   onChange={handleInputChange("duration", setValues)}
-                                   onKeyDown={(e) => handleNumberInput(e)}
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <DialogFooter saveButtonTitle={"Create"}
-                              cancelButton={true}
-                              switchButton={true}
-                              dialogRef={dialogRef}
-                              switchRef={switchRef as MutableRefObject<SwitchRef>}
-                              onClick={() => handleCreateClick(user)}
-                              onClose={handleCloseClick}
-                              disabledButton={!valid}
-                />
-            </Dialog>
-
-            <Alert title={"Task created successfully!"}
-                   description={"You can now work with the task in your task-overview."}
-                   icon={<SquareCheckBig/>}
-                   duration={3000}
-                   ref={alertRef}
-                   closeButton={false}
+        <Dialog width={600} ref={dialogRef} key={dialogKey}>
+            <DialogHeader title={"New Task"}
+                          dialogRef={dialogRef}
+                          onClose={handleCloseClick}
             />
-        </>
+            <DialogContent>
+                <div className={cn("flex flex-col flex-grow space-y-1", className)}>
+                    <input placeholder={"Task Title"}
+                           onChange={handleInputChange("title", setValues)}
+                           className={cn("rounded-lg bg-black py-2 text-white placeholder-marcador focus-visible:ring-0 border-0 focus-visible:outline-none", className)}
+                    />
+                    <Textarea placeholder={"Add Description..."}
+                              onChange={handleInputChange("description", setValues)}
+                              className={cn("h-20 bg-black placeholder-marcador focus:text-gray px-0", className)}
+                    />
+                    <div className={cn("flex flex-row space-x-2 z-50", className)}>
+                        <Combobox buttonTitle={"Team"}
+                                  size={"small"}
+                                  icon={<Users size={12} className={"mr-1"}/>}
+                                  onValueChange={(value) => {
+                                      setValues((prevValues) => ({
+                                          ...prevValues,
+                                          team: value,
+                                          project: null,
+                                          topic: null
+                                      }));
+                                      setTeam(value);
+                                  }}
+                        >
+                            {teams.map((team) => (
+                                <ComboboxItem title={team}
+                                              key={team}
+                                              size={"small"}
+                                />
+                            ))}
+                        </Combobox>
+                        {team &&
+                            <>
+                                <Combobox buttonTitle={"Project"}
+                                          size={"small"}
+                                          key={`project-${team}`}
+                                          icon={<BookCopy size={12} className={"mr-1"}/>}
+                                          onValueChange={(value) => {
+                                              setValues((prevValues) => ({ ...prevValues, project: value }))}}
+                                >
+                                    {projects.map((project) => (
+                                        <ComboboxItem title={project}
+                                                      key={project}
+                                                      size={"small"}
+                                        />
+                                    ))}
+                                </Combobox>
+                                <Combobox buttonTitle={"Topic"}
+                                          key={`topic-${team}`}
+                                          size={"small"}
+                                          icon={<Tag size={12} className={"mr-1"}/>}
+                                          onValueChange={(value) =>
+                                                setValues((prevValues) => ({ ...prevValues, topic: value }))}
+                                >
+                                    {topics.map((topic) => (
+                                        <ComboboxItem title={topic}
+                                                      key={topic}
+                                                      size={"small"}
+                                        />
+                                    ))}
+                                </Combobox>
+                            </>
+                        }
+                    </div>
+                    <div className={cn("flex flex-row space-x-2", className)}>
+                        <DatePicker text={"Deadline"}
+                                    size={"small"}
+                                    closeButton={true}
+                                    dayFormat={"short"}
+                                    onValueChange={(value) =>
+                                        setValues((prevValues) => ({ ...prevValues, deadline: value }))}
+                        />
+                        <Combobox buttonTitle={"Status"}
+                                  size={"small"}
+                                  icon={<CircleAlert size={12} className={"mr-1"}/>}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, status: value }))}
+                        >
+                            {status.map((status) => (
+                                <ComboboxItem title={status}
+                                              key={status}
+                                              size={"small"}
+                                />
+                            ))}
+                        </Combobox>
+                        <Combobox buttonTitle={"Priority"}
+                                  size={"small"}
+                                  icon={<LineChart size={12} className={"mr-1"}/>}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, priority: value }))}
+                        >
+                            {priorities.map((priority) => (
+                                <ComboboxItem title={priority}
+                                              key={priority}
+                                              size={"small"}
+                                />
+                            ))}
+                        </Combobox>
+                        <Input placeholder={"Duration in Hours"}
+                               elementSize={"small"}
+                               className={"w-28 placeholder-gray"}
+                               icon={<Hourglass size={12}/>}
+                               onChange={handleInputChange("duration", setValues)}
+                               onKeyDown={(e) => handleNumberInput(e)}
+                        />
+                    </div>
+                </div>
+            </DialogContent>
+            <DialogFooter saveButtonTitle={"Create"}
+                          cancelButton={true}
+                          switchButton={true}
+                          dialogRef={dialogRef}
+                          switchRef={switchRef as MutableRefObject<SwitchRef>}
+                          onClick={() => handleCreateClick(user)}
+                          onClose={handleCloseClick}
+                          disabledButton={!valid}
+            />
+        </Dialog>
     )
 })
 CreateTaskDialog.displayName = "CreateTaskDialog";

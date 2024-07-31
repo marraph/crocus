@@ -2,7 +2,6 @@
 
 import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
 import {CircleOff, TreePalm} from "lucide-react";
@@ -12,6 +11,7 @@ import {Absence, AbsenceType} from "@/types/types";
 import {createAbsence} from "@/service/hooks/absenceHook";
 import {DateRange} from "react-day-picker";
 import {mutateRef} from "@/utils/mutateRef";
+import {useToast} from "griller/src/component/toaster";
 
 type InitialValues = {
     comment: string,
@@ -21,7 +21,6 @@ type InitialValues = {
 
 export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
     const dialogRef = mutateRef(ref);
-    const alertRef = useRef<AlertRef>(null);
     const initialValues: InitialValues = {
         comment: "",
         absenceType: "",
@@ -35,6 +34,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
     const [dialogKey, setDialogKey] = useState(Date.now());
     const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const {addToast} = useToast();
 
     useEffect(() => {
         validateInput();
@@ -60,6 +60,10 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
         }
         const { data, isLoading, error } = createAbsence(newAbsence);
         handleCloseClick();
+        addToast({
+            title: "Absence created successfully!",
+            icon: <TreePalm/>,
+        })
     }
 
     const handleCloseClick = () => {
@@ -76,60 +80,51 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
     };
 
     return (
-        <>
-            <Dialog width={600}
-                    ref={dialogRef}
-                    key={dialogKey}
-            >
-                <DialogHeader title={"New absence"}
-                              dialogRef={dialogRef}
-                              onClose={handleCloseClick}
-                />
-                <DialogContent>
-                    <Textarea placeholder={"Comment"}
-                              className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
-                              spellCheck={false}
-                              onChange={handleInputChange("comment", setValues)}
-                              value={values.comment}
-                    >
-                    </Textarea>
-                    <div className={"flex flex-row items-center space-x-2 py-2"}>
-                        <Combobox buttonTitle={"Absence Type"}
-                                  icon={<CircleOff size={14} className={"mr-2"}/>}
-                                  onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, absenceType: value ?? "" }))}
-                        >
-                            {absenceTypes.map(((absence, index) =>
-                                    <ComboboxItem key={index}
-                                                  title={absence}
-                                    />
-                            ))}
-                        </Combobox>
-                        <DateRangePicker text={"Select your absence time"}
-                                         closeButton={false}
-                                         dayFormat={"long"}
-                                         onRangeChange={(value) =>
-                                             setValues((prevValues) => ({ ...prevValues, dateRange: value ?? {from: new Date(), to: new Date()} }))}
-                        />
-                    </div>
-                </DialogContent>
-                <DialogFooter saveButtonTitle={"Create"}
-                              cancelButton={true}
-                              switchButton={false}
-                              dialogRef={dialogRef}
-                              disabledButton={!valid}
-                              onClose={handleCloseClick}
-                              onClick={createNewAbsence}
-                />
-            </Dialog>
-
-            <Alert title={"Time Entry created successfully!"}
-                   icon={<TreePalm/>}
-                   duration={3000}
-                   ref={alertRef}
-                   closeButton={false}
+        <Dialog width={600}
+                ref={dialogRef}
+                key={dialogKey}
+        >
+            <DialogHeader title={"New absence"}
+                          dialogRef={dialogRef}
+                          onClose={handleCloseClick}
             />
-        </>
+            <DialogContent>
+                <Textarea placeholder={"Comment"}
+                          className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
+                          spellCheck={false}
+                          onChange={handleInputChange("comment", setValues)}
+                          value={values.comment}
+                >
+                </Textarea>
+                <div className={"flex flex-row items-center space-x-2 py-2"}>
+                    <Combobox buttonTitle={"Absence Type"}
+                              icon={<CircleOff size={14} className={"mr-2"}/>}
+                              onValueChange={(value) =>
+                                  setValues((prevValues) => ({ ...prevValues, absenceType: value ?? "" }))}
+                    >
+                        {absenceTypes.map(((absence, index) =>
+                                <ComboboxItem key={index}
+                                              title={absence}
+                                />
+                        ))}
+                    </Combobox>
+                    <DateRangePicker text={"Select your absence time"}
+                                     closeButton={false}
+                                     dayFormat={"long"}
+                                     onRangeChange={(value) =>
+                                         setValues((prevValues) => ({ ...prevValues, dateRange: value ?? {from: new Date(), to: new Date()} }))}
+                    />
+                </div>
+            </DialogContent>
+            <DialogFooter saveButtonTitle={"Create"}
+                          cancelButton={true}
+                          switchButton={false}
+                          dialogRef={dialogRef}
+                          disabledButton={!valid}
+                          onClose={handleCloseClick}
+                          onClick={createNewAbsence}
+            />
+        </Dialog>
     );
 })
 CreateAbsenceDialog.displayName = "CreateAbsenceDialog";

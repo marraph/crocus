@@ -3,7 +3,6 @@
 import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Alert, AlertRef} from "@marraph/daisy/components/alert/Alert";
 import {Project, Task, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
@@ -13,6 +12,7 @@ import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} fr
 import {updateTimEntry} from "@/service/hooks/timeentryHook";
 import moment from "moment/moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
+import {useToast} from "griller/src/component/toaster";
 
 type InitialValues = {
     comment: string,
@@ -29,7 +29,6 @@ interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
 
 export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEntry, className, ...props}, ref) => {
     const dialogRef = mutateRef(ref);
-    const alertRef = useRef<AlertRef>(null);
 
     const initialValues: InitialValues = {
         comment: timeEntry.comment ?? "",
@@ -44,6 +43,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
     const [dialogKey, setDialogKey] = useState(Date.now());
     const [valid, setValid] = useState<boolean>(true);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const {addToast} = useToast();
 
     const tasks = useMemo(() => {
         if (!user) return [];
@@ -140,7 +140,11 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
             }
         }
 
-        alertRef.current?.show();
+        addToast({
+            title: "Saved changes",
+            secondTitle: "You successfully saved your entry changes.",
+            icon: <Save/>,
+        });
     };
 
     const handleCloseClick = () => {
@@ -157,110 +161,100 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
     };
 
     return (
-        <>
-            <Dialog width={800}
-                    ref={dialogRef}
-                    key={dialogKey}
-            >
-                <DialogHeader title={"Edit entry"}
-                              dialogRef={dialogRef}
-                              onClose={handleCloseClick}
-                />
-                <DialogContent>
-                    <Textarea placeholder={"Comment"}
-                              label={"Comment"}
-                              className={"h-12 px-1 w-full bg-black placeholder-placeholder focus:text-gray"}
-                              spellCheck={false}
-                              onChange={handleInputChange("comment", setValues)}
-                              value={values.comment}
-                    />
-                    <div className={"flex flex-row items-center space-x-2 py-2"}>
-                        <SearchSelect buttonTitle={"Project"}
-                                      label={"Project"}
-                                      preSelectedValue={timeEntry.project?.name}
-                                      icon={<BookCopy size={16}/>}
-                                      size={"medium"}
-                                      className={"z-50"}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
-                        >
-                            {projects.map((project) => (
-                                <SearchSelectItem key={project.id} title={project.name}/>
-                            ))}
-                        </SearchSelect>
-
-                        <SearchSelect buttonTitle={"Task"}
-                                      label={"Task"}
-                                      preSelectedValue={timeEntry.task?.name}
-                                      icon={<ClipboardList size={16}/>}
-                                      size={"medium"}
-                                      className={"z-50"}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
-                        >
-                            {tasks.map((task) => (
-                                <SearchSelectItem key={task.id} title={task.name}/>
-                            ))}
-                        </SearchSelect>
-                    </div>
-
-                    <div className={"flex flex-row items-center space-x-2 pb-2"}>
-                        <DatePicker text={"Date"}
-                                    preSelectedValue={new Date(timeEntry.startDate)}
-                                    closeButton={false}
-                                    dayFormat={"long"}
-                                    label={"Date"}
-                                    className={"z-40"}
-                                    onValueChange={(value) =>
-                                        setValues((prevValues) => ({ ...prevValues, date: value ?? new Date() }))}
-                        />
-                        <SearchSelect buttonTitle={"From"}
-                                      preSelectedValue={values.timeFrom}
-                                      icon={<Clock2 size={16}/>}
-                                      label={"Date From"}
-                                      size={"medium"}
-                                      className={"z-40"}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, timeFrom: value }))}
-                        >
-                            {times.map((time) => (
-                                <SearchSelectItem key={time} title={time}/>
-                            ))}
-                        </SearchSelect>
-                        <SearchSelect buttonTitle={"To"}
-                                      preSelectedValue={values.timeTo}
-                                      icon={<Clock8 size={16}/>}
-                                      label={"Date To"}
-                                      size={"medium"}
-                                      className={"z-40"}
-                                      onValueChange={(value) =>
-                                          setValues((prevValues) => ({ ...prevValues, timeTo: value }))}
-                        >
-                            {times.map((time) => (
-                                <SearchSelectItem key={time} title={time}/>
-                            ))}
-                        </SearchSelect>
-                    </div>
-
-                </DialogContent>
-                <DialogFooter saveButtonTitle={"Save changes"}
-                              cancelButton={true}
-                              switchButton={false}
-                              dialogRef={dialogRef}
-                              onClick={editTimeEntry}
-                              onClose={handleCloseClick}
-                              disabledButton={!valid}
-                />
-            </Dialog>
-
-            <Alert title={"Saved changes"}
-                   description={"You successfully saved your entry changes."}
-                   icon={<Save/>}
-                   duration={3000}
-                   ref={alertRef}
-                   closeButton={false}
+        <Dialog width={800}
+                ref={dialogRef}
+                key={dialogKey}
+        >
+            <DialogHeader title={"Edit entry"}
+                          dialogRef={dialogRef}
+                          onClose={handleCloseClick}
             />
-        </>
+            <DialogContent>
+                <Textarea placeholder={"Comment"}
+                          label={"Comment"}
+                          className={"h-12 px-1 w-full bg-black placeholder-placeholder focus:text-gray"}
+                          spellCheck={false}
+                          onChange={handleInputChange("comment", setValues)}
+                          value={values.comment}
+                />
+                <div className={"flex flex-row items-center space-x-2 py-2"}>
+                    <SearchSelect buttonTitle={"Project"}
+                                  label={"Project"}
+                                  preSelectedValue={timeEntry.project?.name}
+                                  icon={<BookCopy size={16}/>}
+                                  size={"medium"}
+                                  className={"z-50"}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
+                    >
+                        {projects.map((project) => (
+                            <SearchSelectItem key={project.id} title={project.name}/>
+                        ))}
+                    </SearchSelect>
+
+                    <SearchSelect buttonTitle={"Task"}
+                                  label={"Task"}
+                                  preSelectedValue={timeEntry.task?.name}
+                                  icon={<ClipboardList size={16}/>}
+                                  size={"medium"}
+                                  className={"z-50"}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
+                    >
+                        {tasks.map((task) => (
+                            <SearchSelectItem key={task.id} title={task.name}/>
+                        ))}
+                    </SearchSelect>
+                </div>
+
+                <div className={"flex flex-row items-center space-x-2 pb-2"}>
+                    <DatePicker text={"Date"}
+                                preSelectedValue={new Date(timeEntry.startDate)}
+                                closeButton={false}
+                                dayFormat={"long"}
+                                label={"Date"}
+                                className={"z-40"}
+                                onValueChange={(value) =>
+                                    setValues((prevValues) => ({ ...prevValues, date: value ?? new Date() }))}
+                    />
+                    <SearchSelect buttonTitle={"From"}
+                                  preSelectedValue={values.timeFrom}
+                                  icon={<Clock2 size={16}/>}
+                                  label={"Date From"}
+                                  size={"medium"}
+                                  className={"z-40"}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, timeFrom: value }))}
+                    >
+                        {times.map((time) => (
+                            <SearchSelectItem key={time} title={time}/>
+                        ))}
+                    </SearchSelect>
+                    <SearchSelect buttonTitle={"To"}
+                                  preSelectedValue={values.timeTo}
+                                  icon={<Clock8 size={16}/>}
+                                  label={"Date To"}
+                                  size={"medium"}
+                                  className={"z-40"}
+                                  onValueChange={(value) =>
+                                      setValues((prevValues) => ({ ...prevValues, timeTo: value }))}
+                    >
+                        {times.map((time) => (
+                            <SearchSelectItem key={time} title={time}/>
+                        ))}
+                    </SearchSelect>
+                </div>
+
+            </DialogContent>
+            <DialogFooter saveButtonTitle={"Save changes"}
+                          cancelButton={true}
+                          switchButton={false}
+                          dialogRef={dialogRef}
+                          onClick={editTimeEntry}
+                          onClose={handleCloseClick}
+                          disabledButton={!valid}
+            />
+        </Dialog>
     );
 });
 EditTimeEntryDialog.displayName = "EditTimeEntryDialog";

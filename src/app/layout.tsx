@@ -5,6 +5,7 @@ import {Drawer} from "@/components/Drawer";
 import React from "react";
 import {UserProvider} from "@/context/UserContext";
 import {NavigationProvider} from "@marraph/daisy/components/navigationitem/NavigationItem";
+import { Toaster } from "griller/src/component/toaster";
 
 const roboto = Roboto({subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
@@ -20,12 +21,14 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             <body className={roboto.className}>
                 <NavigationProvider>
                     <UserProvider id={9}>
-                        <div className={"flex flex-row"}>
-                            <Drawer></Drawer>
-                            <div className={"w-full flex flex-col space-y-4"}>
-                                {children}
+                        <Toaster>
+                            <div className={"flex flex-row"}>
+                                <Drawer></Drawer>
+                                <div className={"w-full flex flex-col space-y-4"}>
+                                    {children}
+                                </div>
                             </div>
-                        </div>
+                        </Toaster>
                     </UserProvider>
                 </NavigationProvider>
             </body>
