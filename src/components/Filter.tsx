@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ReactNode, useState} from "react";
+import React, {forwardRef, HTMLAttributes, ReactNode, useImperativeHandle, useRef, useState} from "react";
 import {ContextMenu, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Box, CircleAlert, LineChart, ListFilter, Tag, Users} from "lucide-react";
@@ -17,13 +17,17 @@ type SelectedFilter = {
     value: string;
 }
 
-interface FilterProps {
+interface FilterProps extends HTMLAttributes<HTMLDivElement> {
     title: string;
     items: FilterItem[];
 }
 
+type FilterRef = {
+    getFilters: () => SelectedFilter[];
+}
 
-const Filter: React.FC<FilterProps> = ({ title, items, ...props }) => {
+
+const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [subMenuOpen, setSubMenuOpen] = useState<FilterItem | null>(null);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
@@ -41,6 +45,10 @@ const Filter: React.FC<FilterProps> = ({ title, items, ...props }) => {
         setSubMenuOpen(null);
     }
 
+    useImperativeHandle(ref, () => ({
+        getFilters: () => filters
+    }));
+
     return (
         <div className={"flex flex-col space-y-10"}>
             <div className={"flex flex-row space-x-2 items-center"}>
@@ -51,7 +59,6 @@ const Filter: React.FC<FilterProps> = ({ title, items, ...props }) => {
                             else setMenuOpen(!menuOpen);
                             setSubMenuOpen(null);
                         }}
-                        {...props}
                 />
                 {filters && filters.map((filter, index) => (
                     <FilterBadge
@@ -95,7 +102,8 @@ const Filter: React.FC<FilterProps> = ({ title, items, ...props }) => {
             }
         </div>
     );
-}
+});
+Filter.displayName = "Filter";
 
 interface FilterBadgeProps {
     name: string;
@@ -125,6 +133,7 @@ const FilterBadge: React.FC<FilterBadgeProps> = ({ name, value, onClick }) => {
 }
 
 export {Filter};
+export type {FilterRef};
 
 
 

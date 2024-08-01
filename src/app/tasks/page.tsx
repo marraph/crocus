@@ -10,14 +10,15 @@ import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {CustomScroll} from "react-custom-scroll";
-import {Filter} from "@/components/Filter";
+import {Filter, FilterRef} from "@/components/Filter";
 
 
 export default function Tasks() {
     const [viewMode, setViewMode] = useState(true);
-    const dialogRef = useRef<DialogRef>(null);
     const [update, setUpdate] = useState(0);
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
+    const dialogRef = useRef<DialogRef>(null);
+    const filterRef = useRef<FilterRef>(null);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
 
     const filterItems = [
@@ -84,7 +85,10 @@ export default function Tasks() {
                             icon={<SquarePen size={20} className={"mr-2"}/>}
                     />
                     <CreateTaskDialog ref={dialogRef}/>
-                    <Filter title={"Filter"} items={filterItems}/>
+                    <Filter title={"Filter"}
+                            items={filterItems}
+                            ref={filterRef}
+                    />
                     <div className={"flex flex-row space-x-1"}>
                         <LoaderCircle size={14} className={"text-marcador"}/>
                         <span className={"text-xs text-marcador"}>{`${getTaskElements().length} OPEN`}</span>

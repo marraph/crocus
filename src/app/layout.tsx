@@ -5,7 +5,7 @@ import {Drawer} from "@/components/Drawer";
 import React from "react";
 import {UserProvider} from "@/context/UserContext";
 import {NavigationProvider} from "@marraph/daisy/components/navigationitem/NavigationItem";
-import { Toaster } from "griller/src/component/toaster";
+import {Toaster} from "griller/src/component/toaster";
 
 const roboto = Roboto({subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
