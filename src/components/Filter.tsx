@@ -6,6 +6,7 @@ import {Button} from "@marraph/daisy/components/button/Button";
 import {Box, CircleAlert, LineChart, ListFilter, Tag, Users} from "lucide-react";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
+import {TaskElement} from "@/types/types";
 
 type FilterItem = {
     name: string;
@@ -13,7 +14,7 @@ type FilterItem = {
 }
 
 type SelectedFilter = {
-    name: string;
+    name: keyof TaskElement;
     value: string;
 }
 
@@ -38,7 +39,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
 
     const handleMenuClick = (value: string) => {
         if (subMenuOpen) {
-            const newFilter = { name: subMenuOpen.name, value: value };
+            const newFilter = { name: subMenuOpen.name as keyof TaskElement, value: value };
             const updatedFilters = filters.filter(f => f.name !== newFilter.name);
             setFilters([...updatedFilters, newFilter]);
         }

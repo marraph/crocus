@@ -38,10 +38,19 @@ export default function Tasks() {
 
     useEffect(() => {
         if (user) {
-            const elements = getTaskElements();
+            let elements = getTaskElements();
+            const filters = filterRef.current?.getFilters();
+
+            if (filters && filters.length > 0) {
+                elements = elements.filter(element => {
+                    return filters.every(filter => {
+                        return element[filter.name] === filter.value;
+                    });
+                });
+            }
             setTaskElements(elements);
         }
-    }, [user, update]);
+    }, [user, update, filterRef]);
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
