@@ -1,6 +1,6 @@
 "use client";
 
-import {ContextMenu, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
+import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import React, {useState} from "react";
 import {Briefcase, ChevronsUpDown, LogOut, Settings} from "lucide-react";
 import {cn} from "@/utils/cn";
@@ -26,16 +26,20 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
     return (
         <div className={"space-y-2"} ref={menuRef}>
             {showProfile &&
-                <ContextMenu className={cn("font-normal text-sm")}>
-                    <ContextMenuItem title={"My organisation"} className={"mx-2"} icon={<Briefcase size={18}/>}/>
-                    <ContextMenuItem title={"Settings"} className={"mx-2 mb-2"} icon={<Settings size={18}/>}/>
+                <ContextMenu>
+                    <ContextMenuContainer>
+                        <ContextMenuItem title={"My organisation"} icon={<Briefcase size={18}/>}/>
+                        <ContextMenuItem title={"Settings"} icon={<Settings size={18}/>}/>
+                    </ContextMenuContainer>
                     <Seperator/>
-                    <ContextMenuItem className={"red-button-style hover:red-button-style mx-2 mt-2"} title={"Log out"} icon={<LogOut size={18}/>}/>
+                    <ContextMenuContainer>
+                        <ContextMenuItem className={"red-button-style hover:red-button-style"}
+                                         title={"Log out"} icon={<LogOut size={18}/>}/>
+                    </ContextMenuContainer>
                 </ContextMenu>
             }
             <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-edge hover:bg-dark")}
                 onClick={() => setShowProfile(!showProfile)}>
-
                 {isLoading ?
                 <Skeleton className={"w-max"}>
                     <SkeletonElement className={"m-2"} width={43} height={43}/>

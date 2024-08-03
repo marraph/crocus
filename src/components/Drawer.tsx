@@ -2,14 +2,13 @@
 
 import {NavigationItem, useNavigation} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import React, {useEffect, useRef} from "react";
-import {CalendarDays, ClipboardList, Flower, LayoutDashboard, Moon, Search, SquarePlus, Timer} from "lucide-react";
+import {CalendarDays, ClipboardList, Flower, LayoutDashboard, Search, SquarePlus, Timer} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {usePathname, useRouter} from "next/navigation";
 import {SearchDialog} from "@/components/dialogs/SearchDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {JoinTeamDialog} from "@/components/dialogs/JoinTeamDialog";
-import {Input} from "@marraph/daisy/components/input/Input";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
 
 export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {

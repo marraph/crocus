@@ -1,7 +1,7 @@
 "use client";
 
 import React, {forwardRef, HTMLAttributes, ReactNode, useImperativeHandle, useRef, useState} from "react";
-import {ContextMenu, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
+import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {Box, CircleAlert, LineChart, ListFilter, Tag, Users} from "lucide-react";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
@@ -74,29 +74,33 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
             {
                 <>
                     {menuOpen &&
-                        <ContextMenu className={"fixed text-xs w-max py-1 shadow-2xl z-50"} ref={menuRef} >
-                            {items.map((item, index) => (
-                                <ContextMenuItem
-                                    key={index}
-                                    title={item.name}
-                                    onClick={() => {
-                                        setSubMenuOpen(item);
-                                        setMenuOpen(false);
-                                    }}
-                                />
-                            ))}
+                        <ContextMenu>
+                            <ContextMenuContainer>
+                                {items.map((item, index) => (
+                                    <ContextMenuItem
+                                        key={index}
+                                        title={item.name}
+                                        onClick={() => {
+                                            setSubMenuOpen(item);
+                                            setMenuOpen(false);
+                                        }}
+                                    />
+                                ))}
+                            </ContextMenuContainer>
                         </ContextMenu>
                     }
 
                     {subMenuOpen &&
-                        <ContextMenu className={"fixed text-xs w-max py-1 shadow-2xl z-50"} ref={menuRef}>
-                            {subMenuOpen.values.map((value, index) => (
-                                <ContextMenuItem
-                                    key={index}
-                                    title={value}
-                                    onClick={() => handleMenuClick(value)}
-                                />
-                            ))}
+                        <ContextMenu>
+                            <ContextMenuContainer>
+                                {subMenuOpen.values.map((value, index) => (
+                                    <ContextMenuItem
+                                        key={index}
+                                        title={value}
+                                        onClick={() => handleMenuClick(value)}
+                                    />
+                                ))}
+                            </ContextMenuContainer>
                         </ContextMenu>
                     }
                 </>

@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import {Drawer} from "@/components/Drawer";
-import React from "react";
+import React, {ReactNode} from "react";
 import {UserProvider} from "@/context/UserContext";
 import {NavigationProvider} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import {Toaster} from "griller/src/component/toaster";
 
-const roboto = Roboto({subsets: ["latin"], weight: ["400", "500", "700", "900"] });
+const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
 export const metadata: Metadata = {
   title: "marraph",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
+export default function RootLayout({children}: Readonly<{ children: ReactNode }>) {
     return (
         <html lang="en">
             <body className={roboto.className}>
