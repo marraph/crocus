@@ -20,8 +20,6 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
         validate();
     }, [link]);
 
-    if (!dialogRef || user === undefined) return null;
-
     const validate = useCallback(() => {
         setValid(link.trim() !== "");
     }, [link]);
@@ -40,15 +38,15 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
         handleCloseClick();
     }, []);
 
+    if (!dialogRef || user === undefined) return null;
+
     return (
         <Dialog width={600}
                 ref={dialogRef}
                 key={dialogKey}
+                onClose={handleCloseClick}
         >
-            <DialogHeader title={"Join a team"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"Join a team"}/>
             <DialogContent>
                 <div className={"flex flex-col space-y-4 text-sm text-gray"}>
                     <span>
@@ -63,8 +61,6 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
             </DialogContent>
             <DialogFooter saveButtonTitle={"Join"}
                           cancelButton={false}
-                          switchButton={false}
-                          dialogRef={dialogRef}
                           onClick={handleJoinClick}
                           disabledButton={!valid}
             />

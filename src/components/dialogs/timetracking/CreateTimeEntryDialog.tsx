@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {AlarmClockPlus, BookCopy, ClipboardList, Clock2, Clock8} from "lucide-react";
 import {useUser} from "@/context/UserContext";
@@ -25,18 +25,18 @@ type InitialValues = {
     timeTo: string,
 }
 
-export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
+export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
     const switchRef = useRef<SwitchRef>(null);
 
-    const initialValues: InitialValues = {
+    const initialValues: InitialValues = useMemo(() => ({
         comment: "",
         project: null,
         task: null,
         date: new Date(),
         timeFrom: "",
         timeTo: "",
-    }
+    }), []);
 
     const [values, setValues] = useState(initialValues);
     const [valid, setValid] = useState<boolean>(false);
@@ -76,9 +76,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         validateInput();
     }, [values]);
 
-    if (!dialogRef || user === undefined) return null;
-
-    const validateInput = () => {
+    const validateInput = useCallback(() => {
         if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
@@ -90,9 +88,9 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
             return;
         }
         setValid(true);
-    }
+    }, [values]);
 
-    const getDuration = () => {
+    const getDuration = useCallback(() => {
         const durationFrom = moment.duration(values.timeFrom);
         const durationTo = moment.duration(values.timeTo);
         const date = moment(values.date)
@@ -101,9 +99,10 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
         const dateTo = date.add(durationTo);
 
         return moment.duration(dateFrom.diff(dateTo)).asHours();
-    }
+    }, [values]);
 
-    const createEntry = () => {
+    const handleCreateClick = useCallback(() => {
+        if (!user) return;
         const newEntry: TimeEntry = {
             id: 0,
             comment: values.comment,
@@ -143,31 +142,59 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
             title: "Time Entry created successfully!",
             icon: <AlarmClockPlus/>,
         })
-    }
+    }, [values, user]);
 
-    const handleCloseClick = () => {
+    const handleCloseClick = useCallback(() => {
         setValues(initialValues);
         setValid(false);
         setDialogKey(Date.now());
         switchRef.current?.setValue(false);
-    }
+    }, [initialValues]);
 
-    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
             ...prevValues,
             [field]: e.target.value
         }));
-    };
+    }, []);
+
+    const projectSelect = useMemo(() => (
+        <SearchSelect buttonTitle={"Project"}
+                      icon={<BookCopy size={16} />}
+                      size={"medium"}
+                      className={"z-50"}
+                      onValueChange={(value) =>
+                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
+        >
+            {projects?.map((project) => (
+                <SearchSelectItem key={project.id} title={project.name} />
+            ))}
+        </SearchSelect>
+    ), [projects]);
+
+    const taskSelect = useMemo(() => (
+        <SearchSelect buttonTitle={"Task"}
+                      icon={<ClipboardList size={16} />}
+                      size={"medium"}
+                      className={"z-50"}
+                      onValueChange={(value) =>
+                          setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
+        >
+            {tasks.map((task) => (
+                <SearchSelectItem key={task.id} title={task.name} />
+            ))}
+        </SearchSelect>
+    ), [tasks]);
+
+    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={600}
+                onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}
         >
-            <DialogHeader title={"New entry"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"New entry"}/>
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           className={"h-12 px-1 w-full bg-black placeholder-marcador focus:text-gray"}
@@ -176,29 +203,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                           value={values.comment}
                 />
                 <div className={"flex flex-row items-center space-x-2 py-2"}>
-                    <SearchSelect buttonTitle={"Project"}
-                                  icon={<BookCopy size={16}/>}
-                                  size={"medium"}
-                                  className={"z-50"}
-                                  onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null}))}
-                    >
-                        {projects?.map((project) => (
-                            <SearchSelectItem key={project.id} title={project.name}/>
-                        ))}
-                    </SearchSelect>
-
-                    <SearchSelect buttonTitle={"Task"}
-                                  icon={<ClipboardList size={16}/>}
-                                  size={"medium"}
-                                  className={"z-50"}
-                                    onValueChange={(value) =>
-                                        setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null}))}
-                    >
-                        {tasks.map((task) => (
-                            <SearchSelectItem key={task.id} title={task.name}/>
-                        ))}
-                    </SearchSelect>
+                    {projectSelect}
+                    {taskSelect}
                 </div>
 
                 <div className={"flex flex-row items-center space-x-2 pb-2"}>
@@ -241,11 +247,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, React.DialogHTMLAttri
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          cancelButton={true}
                           switchButton={true}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-                          onClick={createEntry}
+                          onClick={handleCreateClick}
                           disabledButton={!valid}
             />
         </Dialog>

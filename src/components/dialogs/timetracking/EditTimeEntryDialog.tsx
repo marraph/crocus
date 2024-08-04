@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Project, Task, TimeEntry} from "@/types/types";
@@ -23,21 +23,17 @@ type InitialValues = {
     timeTo: string,
 }
 
-interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
-    timeEntry: TimeEntry;
-}
-
-export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEntry, className, ...props}, ref) => {
+export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry }>(({ timeEntry }, ref) => {
     const dialogRef = mutateRef(ref);
 
-    const initialValues: InitialValues = {
+    const initialValues: InitialValues = useMemo(() => ({
         comment: timeEntry.comment ?? "",
         project: timeEntry.project ?? null,
         task: timeEntry.task ?? null,
         date: timeEntry.startDate,
         timeFrom: moment(timeEntry.startDate).format('HH:mm'),
         timeTo: moment(timeEntry.endDate).format('HH:mm'),
-    }
+    }), [timeEntry]);
 
     const [values, setValues] = useState(initialValues);
     const [dialogKey, setDialogKey] = useState(Date.now());
@@ -73,7 +69,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
         return timesArray;
     }, []);
 
-    const validateInput = () => {
+    const validateInput = useCallback(() => {
         if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
@@ -85,22 +81,21 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
             return;
         }
         setValid(true);
-    }
+    }, [values]);
 
     useEffect(() => {
         validateInput();
     }, [values]);
 
-    if (!dialogRef || user === undefined) return null;
-
-    const getDuration = (startDate: string, endDate: string) => {
+    const getDuration = useCallback((startDate: string, endDate: string) => {
         const start = new Date(startDate);
         const end = new Date(endDate);
         const duration = moment.duration(moment(end).diff(moment(start)));
         return duration.asHours();
-    }
+    }, []);
 
-    const editTimeEntry = () => {
+    const handleEditClick = useCallback(() => {
+        if (!user) return;
         const entry: TimeEntry = {
             id: timeEntry.id,
             comment: values.comment,
@@ -145,30 +140,62 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
             secondTitle: "You successfully saved your entry changes.",
             icon: <Save/>,
         });
-    };
+    }, [values, user]);
 
-    const handleCloseClick = () => {
+    const handleCloseClick = useCallback(() => {
         setValid(true);
         setValues(initialValues);
         setDialogKey(Date.now());
-    };
+    }, [initialValues]);
 
-    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
             ...prevValues,
             [field]: e.target.value
         }));
-    };
+    }, []);
+
+    const projectSelect = useMemo(() => (
+        <SearchSelect buttonTitle={"Project"}
+                      label={"Project"}
+                      preSelectedValue={values?.project?.name}
+                      icon={<BookCopy size={16}/>}
+                      size={"medium"}
+                      className={"z-50"}
+                      onValueChange={(value) =>
+                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
+        >
+            {projects.map((project) => (
+                <SearchSelectItem key={project.id} title={project.name}/>
+            ))}
+        </SearchSelect>
+    ), [projects]);
+
+    const taskSelect = useMemo(() => (
+        <SearchSelect buttonTitle={"Task"}
+                      label={"Task"}
+                      preSelectedValue={values.task?.name}
+                      icon={<ClipboardList size={16}/>}
+                      size={"medium"}
+                      className={"z-50"}
+                      onValueChange={(value) =>
+                          setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
+        >
+            {tasks.map((task) => (
+                <SearchSelectItem key={task.id} title={task.name}/>
+            ))}
+        </SearchSelect>
+    ), [tasks]);
+
+    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={800}
+                onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}
         >
-            <DialogHeader title={"Edit entry"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"Edit entry"}/>
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           label={"Comment"}
@@ -178,35 +205,9 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
                           value={values.comment}
                 />
                 <div className={"flex flex-row items-center space-x-2 py-2"}>
-                    <SearchSelect buttonTitle={"Project"}
-                                  label={"Project"}
-                                  preSelectedValue={timeEntry.project?.name}
-                                  icon={<BookCopy size={16}/>}
-                                  size={"medium"}
-                                  className={"z-50"}
-                                  onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
-                    >
-                        {projects.map((project) => (
-                            <SearchSelectItem key={project.id} title={project.name}/>
-                        ))}
-                    </SearchSelect>
-
-                    <SearchSelect buttonTitle={"Task"}
-                                  label={"Task"}
-                                  preSelectedValue={timeEntry.task?.name}
-                                  icon={<ClipboardList size={16}/>}
-                                  size={"medium"}
-                                  className={"z-50"}
-                                  onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
-                    >
-                        {tasks.map((task) => (
-                            <SearchSelectItem key={task.id} title={task.name}/>
-                        ))}
-                    </SearchSelect>
+                    {projectSelect}
+                    {taskSelect}
                 </div>
-
                 <div className={"flex flex-row items-center space-x-2 pb-2"}>
                     <DatePicker text={"Date"}
                                 preSelectedValue={new Date(timeEntry.startDate)}
@@ -247,11 +248,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, DialogProps>(({ timeEnt
 
             </DialogContent>
             <DialogFooter saveButtonTitle={"Save changes"}
-                          cancelButton={true}
-                          switchButton={false}
-                          dialogRef={dialogRef}
-                          onClick={editTimeEntry}
-                          onClose={handleCloseClick}
+                          onClick={handleEditClick}
                           disabledButton={!valid}
             />
         </Dialog>

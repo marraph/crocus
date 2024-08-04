@@ -40,7 +40,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
     const switchRef = useRef<SwitchRef>(null);
 
-    const initialValues: InitialValues = {
+    const initialValues: InitialValues = useMemo(() => ({
         title: "",
         description: null,
         project: null,
@@ -49,7 +49,8 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
         priority: null,
         deadline: null,
         duration: null
-    }
+    }), []);
+
     const [values, setValues] = useState(initialValues);
     const [team, setTeam] = useState<string | null>(null);
     const [valid, setValid] = useState(false);
@@ -66,8 +67,6 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     useEffect(() => {
         validateInput();
     }, [values.title]);
-
-    if (!dialogRef || user === undefined) return null;
 
     const handleCreateClick = useCallback((user: User) => {
         const newTask: TaskCreation = {
@@ -95,14 +94,14 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             secondTitle: "You can now work with the task in your task-overview.",
             icon: <SquareCheckBig/>
         });
-    }, [values]);
+    }, [user, values]);
 
     const handleCloseClick = useCallback(() => {
         setValues(initialValues);
         setValid(false);
         setTeam(null);
         setDialogKey(Date.now());
-    }, []);
+    }, [initialValues]);
 
     const validateInput = useCallback(() => {
         setValid(values.title.trim() !== "");
@@ -192,13 +191,15 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
         </Combobox>
     ), [priorities]);
 
+    if (!dialogRef || user === undefined) return null;
 
     return (
-        <Dialog width={600} ref={dialogRef} key={dialogKey}>
-            <DialogHeader title={"New Task"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+        <Dialog width={600}
+                onClose={handleCloseClick}
+                ref={dialogRef}
+                key={dialogKey}
+        >
+            <DialogHeader title={"New Task"}/>
             <DialogContent>
                 <div className={"flex flex-col flex-grow space-y-1"}>
                     <input placeholder={"Task Title"}
@@ -239,12 +240,9 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          cancelButton={true}
                           switchButton={true}
-                          dialogRef={dialogRef}
                           switchRef={switchRef as MutableRefObject<SwitchRef>}
                           onClick={() => handleCreateClick(user)}
-                          onClose={handleCloseClick}
                           disabledButton={!valid}
             />
         </Dialog>

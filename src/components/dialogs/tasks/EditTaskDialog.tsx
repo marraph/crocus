@@ -30,7 +30,7 @@ type InitialValues = {
 export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
 
-    const initialValues: InitialValues = {
+    const initialValues: InitialValues = useMemo(() => ({
         title: taskElement.name,
         description: taskElement.description ?? null,
         team: taskElement.team?.name ?? null,
@@ -40,7 +40,8 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         priority: taskElement.priority ?? null,
         deadline: taskElement.deadline ?? null,
         duration: taskElement.duration?.toString() ?? null,
-    }
+    }), [taskElement]);
+
     const [values, setValues] = useState(initialValues);
     const [team, setTeam] = useState<string | null>(taskElement.team?.name ?? null);
     const [valid, setValid] = useState(true);
@@ -58,9 +59,9 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         validateInput();
     }, [values.title]);
 
-    if (!dialogRef || user === undefined) return null;
 
     const handleEditClick = useCallback(() => {
+        if (!user || !taskElement) return
         const task: Task = {
             id: taskElement.id,
             name: values.title,
@@ -92,7 +93,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         setValid(true);
         setValues(initialValues);
         setTeam(taskElement.team?.name ?? null);
-    }, []);
+    }, [initialValues, taskElement.team]);
 
     const validateInput = useCallback(() => {
         setValid(values.title.trim() !== "");
@@ -196,16 +197,15 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         </Combobox>
     ), [values.priority, priorities]);
 
+    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={1000}
+                onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}
         >
-            <DialogHeader title={"Edit Task"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"Edit Task"}/>
             <DialogContent>
                 <div className={"flex flex-col space-y-4 pb-2"}>
                     <Input placeholder={"Task Title"}
@@ -254,11 +254,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Save changes"}
-                          cancelButton={true}
-                          switchButton={false}
-                          dialogRef={dialogRef}
                           onClick={handleEditClick}
-                          onClose={handleCloseClick}
                           disabledButton={!valid}
             />
         </Dialog>

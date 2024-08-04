@@ -11,13 +11,11 @@ import {useToast} from "griller/src/component/toaster";
 
 export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
-    const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
 
-    if (!dialogRef || !user) return null;
-
     const handleCloseTaskClick = useCallback(() => {
+        if (!user || !taskElement) return;
         const task: Task = {
             id: taskElement.id,
             name: taskElement.name,
@@ -43,30 +41,20 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement 
         });
     }, [taskElement]);
 
-    const handleCloseClick = useCallback(() => {
-        setDialogKey(Date.now());
-    }, []);
+    if (!dialogRef || !user) return null;
 
     return (
         <Dialog width={600}
                 ref={dialogRef}
-                key={dialogKey}
         >
-            <DialogHeader title={"Close Task"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"Close Task"}/>
             <DialogContent>
                 <span className={"text-gray pb-4"}>
                     Are you sure you want to close this task?
                 </span>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Close"}
-                          cancelButton={true}
-                          switchButton={false}
-                          dialogRef={dialogRef}
                           onClick={handleCloseTaskClick}
-                          onClose={handleCloseClick}
             />
         </Dialog>
     );

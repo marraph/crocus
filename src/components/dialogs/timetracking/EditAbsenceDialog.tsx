@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useEffect, useMemo, useState} from "react";
+import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useState} from "react";
 import {Absence, AbsenceType} from "@/types/types";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
@@ -19,18 +19,14 @@ type InitialValues = {
     dateRange: DateRange;
 };
 
-interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
-    absence: Absence;
-}
-
-export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, className, ...props}, ref) => {
+export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ absence }, ref) => {
     const dialogRef = mutateRef(ref);
 
-    const initialValues: InitialValues = {
+    const initialValues: InitialValues = useMemo(() => ({
         comment: absence.comment ?? "",
         absenceType: absence.absenceType,
         dateRange: { from: absence.startDate, to: absence.endDate },
-    };
+    }), [absence]);
 
     const [values, setValues] = useState(initialValues);
     const [dialogKey, setDialogKey] = useState(Date.now());
@@ -43,9 +39,8 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
         validate();
     }, [values.absenceType]);
 
-    if (!dialogRef || user === undefined) return null;
-
-    const editAbsence = () => {
+    const handleEditClick = useCallback(() => {
+        if (!user) return;
         const newAbsence: Absence = {
             id: absence.id,
             startDate: values.dateRange.from ?? new Date(),
@@ -64,34 +59,34 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
             secondTitle: "You successfully saved your absence changes.",
             icon: <Save/>,
         });
-    };
+    }, [absence, values, user]);
 
-    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
             ...prevValues,
             [field]: e.target.value
         }));
-    };
+    }, []);
 
-    const handleCloseClick = () => {
+    const handleCloseClick = useCallback(() => {
         setValid(true);
         setDialogKey(Date.now());
         setValues(initialValues);
-    };
+    }, [initialValues]);
 
-    const validate = () => {
+    const validate = useCallback(() => {
         setValid(values.absenceType === "SICK" || values.absenceType === "VACATION");
-    }
+    }, [values.absenceType]);
+
+    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={800}
+                onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}
         >
-            <DialogHeader title={"Edit absence"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"Edit absence"}/>
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           label={"Comment"}
@@ -125,11 +120,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, DialogProps>(({ absence, 
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Save changes"}
-                          cancelButton={true}
-                          switchButton={false}
-                          dialogRef={dialogRef}
-                          onClick={editAbsence}
-                          onClose={handleCloseClick}
+                          onClick={handleEditClick}
                           disabledButton={!valid}
             />
         </Dialog>

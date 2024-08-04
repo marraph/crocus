@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useEffect, useMemo, useRef, useState} from "react";
+import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
@@ -19,34 +19,37 @@ type InitialValues = {
     dateRange: DateRange,
 }
 
-export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttributes<HTMLDialogElement>>(({ className, ...props}, ref) => {
+export const CreateAbsenceDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
-    const initialValues: InitialValues = {
+
+    const initialValues: InitialValues = useMemo(() => ({
         comment: "",
         absenceType: "",
         dateRange: {
             from: new Date(),
             to: new Date()
         }
-    };
+    }), []);
+
     const [values, setValues] = useState(initialValues);
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
-    const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
+
+    const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
 
     useEffect(() => {
         validateInput();
     }, [values.absenceType]);
 
-    if (!dialogRef || user === undefined) return null;
 
-    const validateInput = () => {
+    const validateInput = useCallback(() => {
         setValid(values.absenceType === "VACATION" || values.absenceType === "SICK");
-    }
+    }, [values.absenceType]);
 
-    const createNewAbsence = () => {
+    const handleCreateClick = useCallback(() => {
+        if (!user) return;
         const newAbsence: Absence = {
             id: 0,
             startDate: values.dateRange.from ?? new Date(),
@@ -64,30 +67,30 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
             title: "Absence created successfully!",
             icon: <TreePalm/>,
         })
-    }
+    }, [values, user]);
 
-    const handleCloseClick = () => {
+    const handleCloseClick = useCallback(() => {
         setValues(initialValues);
         setValid(false);
         setDialogKey(Date.now());
-    }
+    }, [initialValues]);
 
-    const handleInputChange = (field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
             ...prevValues,
             [field]: e.target.value
         }));
-    };
+    }, []);
+
+    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={600}
+                onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}
         >
-            <DialogHeader title={"New absence"}
-                          dialogRef={dialogRef}
-                          onClose={handleCloseClick}
-            />
+            <DialogHeader title={"New absence"}/>
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
@@ -117,12 +120,8 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, React.DialogHTMLAttribu
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          cancelButton={true}
-                          switchButton={false}
-                          dialogRef={dialogRef}
                           disabledButton={!valid}
-                          onClose={handleCloseClick}
-                          onClick={createNewAbsence}
+                          onClick={handleCreateClick}
             />
         </Dialog>
     );

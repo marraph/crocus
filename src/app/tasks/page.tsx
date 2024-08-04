@@ -51,11 +51,10 @@ export default function Tasks() {
         setTaskElements(elements);
     }, [update, filterRef]);
 
-    if (!user) return null;
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
-        user.teams?.forEach((team: Team) => {
+        user?.teams?.forEach((team: Team) => {
             team.projects?.forEach((project: Project) => {
                 project.tasks?.forEach((task: Task) => {
                     if (task.isArchived) return;
@@ -83,6 +82,7 @@ export default function Tasks() {
         return taskElements;
     }, [user]);
 
+    if (!user) return null;
 
     return (
         <div className={"h-screen flex flex-col space-y-4 p-8"}>
