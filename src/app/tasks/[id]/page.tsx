@@ -31,7 +31,6 @@ export default function TasksID() {
     const closeRef = useRef<DialogRef>(null);
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
-    const messageRef = useRef<DialogRef>(null);
     const router = useRouter();
     const id = Number(useParams().id);
     const {data:user, isLoading:userLoading, error:userError} = useUser();

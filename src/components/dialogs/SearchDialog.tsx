@@ -19,10 +19,8 @@ import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {mutateRef} from "@/utils/mutateRef";
 
-interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
-}
 
-export const SearchDialog = forwardRef<DialogRef, DialogProps>(({className, ...props}, ref) => {
+export const SearchDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
 
     const outsideClickRef = useOutsideClick(() => {
@@ -32,7 +30,7 @@ export const SearchDialog = forwardRef<DialogRef, DialogProps>(({className, ...p
     return (
         <div className={"flex items-center justify-center"}>
             <dialog
-                className={"group backdrop:bg-black/60 backdrop backdrop-opacity-20 backdrop-brightness-0 rounded-lg bg-black overflow-visible border border-edge"} {...props}
+                className={"group backdrop:bg-black/60 backdrop backdrop-opacity-20 backdrop-brightness-0 rounded-lg bg-black overflow-visible border border-edge"}
                 ref={dialogRef ?? undefined}
                 style={{width: 700}}
             >

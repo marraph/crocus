@@ -21,6 +21,7 @@ export default function Tasks() {
     const filterRef = useRef<FilterRef>(null);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
 
+
     const filterItems = [
         {
             name: "Status",
@@ -37,24 +38,24 @@ export default function Tasks() {
     ];
 
     useEffect(() => {
-        if (user) {
-            let elements = getTaskElements();
-            const filters = filterRef.current?.getFilters();
+        let elements = getTaskElements();
+        const filters = filterRef.current?.getFilters();
 
-            if (filters && filters.length > 0) {
-                elements = elements.filter(element => {
-                    return filters.every(filter => {
-                        return element[filter.name] === filter.value;
-                    });
+        if (filters && filters.length > 0) {
+            elements = elements.filter(element => {
+                return filters.every(filter => {
+                    return element[filter.name] === filter.value;
                 });
-            }
-            setTaskElements(elements);
+            });
         }
-    }, [user, update, filterRef]);
+        setTaskElements(elements);
+    }, [update, filterRef]);
+
+    if (!user) return null;
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
-        user?.teams?.forEach((team: Team) => {
+        user.teams?.forEach((team: Team) => {
             team.projects?.forEach((project: Project) => {
                 project.tasks?.forEach((task: Task) => {
                     if (task.isArchived) return;
@@ -82,7 +83,6 @@ export default function Tasks() {
         return taskElements;
     }, [user]);
 
-    if (user === undefined) return null;
 
     return (
         <div className={"h-screen flex flex-col space-y-4 p-8"}>

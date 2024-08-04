@@ -1,6 +1,6 @@
 "use client";
 
-import React, {forwardRef, useState} from "react";
+import React, {forwardRef, useCallback, useState} from "react";
 import {CheckCheck} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {updateTask} from "@/service/hooks/taskHook";
@@ -9,20 +9,15 @@ import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 
-interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
-    taskElement: TaskElement;
-}
-
-export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement }, ref) => {
+export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }>(({ taskElement }, ref) => {
     const dialogRef = mutateRef(ref);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
 
-    if (!dialogRef) return null;
-    if (!user) return null;
+    if (!dialogRef || !user) return null;
 
-    const closeTask = () => {
+    const handleCloseTaskClick = useCallback(() => {
         const task: Task = {
             id: taskElement.id,
             name: taskElement.name,
@@ -46,11 +41,11 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
             secondTitle: "You can no longer interact with this task.",
             icon: <CheckCheck />
         });
-    }
+    }, [taskElement]);
 
-    const handleClose = () => {
+    const handleCloseClick = useCallback(() => {
         setDialogKey(Date.now());
-    }
+    }, []);
 
     return (
         <Dialog width={600}
@@ -59,7 +54,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
         >
             <DialogHeader title={"Close Task"}
                           dialogRef={dialogRef}
-                          onClose={handleClose}
+                          onClose={handleCloseClick}
             />
             <DialogContent>
                 <span className={"text-gray pb-4"}>
@@ -70,8 +65,8 @@ export const CloseTaskDialog = forwardRef<DialogRef, DialogProps>(({ taskElement
                           cancelButton={true}
                           switchButton={false}
                           dialogRef={dialogRef}
-                          onClick={closeTask}
-                          onClose={handleClose}
+                          onClick={handleCloseTaskClick}
+                          onClose={handleCloseClick}
             />
         </Dialog>
     );

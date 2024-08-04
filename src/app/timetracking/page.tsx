@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {AlarmClockPlus, CalendarDays, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
@@ -118,31 +118,31 @@ export default function Timetracking() {
 
     if (!user) return null;
 
-    const handleDayBefore = () => {
+    const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());
         datepickerRef.current?.setValue(moment(day).subtract(1, 'days').toDate());
-    }
+    }, [day]);
 
-    const handleDayAfter = () => {
+    const handleDayAfter = useCallback(() => {
         setDay(moment(day).add(1, 'days').toDate());
         datepickerRef.current?.setValue(moment(day).add(1, 'days').toDate());
-    }
+    }, [day]);
 
-    const handleWeekBefore = () => {
+    const handleWeekBefore = useCallback(() => {
         setWeek(weeks[weeks.indexOf(week) - 1]);
         comboboxRef.current?.setValue(
             moment(weeks[weeks.indexOf(week) - 1].monday).format("Do MMMM YYYY") + "  -  " +
             moment(weeks[weeks.indexOf(week) - 1].sunday).format("Do MMMM YYYY")
         );
-    }
+    }, [week]);
 
-    const handleWeekAfter = () => {
+    const handleWeekAfter = useCallback(() => {
         setWeek(weeks[weeks.indexOf(week) + 1]);
         comboboxRef.current?.setValue(
             moment(weeks[weeks.indexOf(week) + 1].monday).format("Do MMMM YYYY") + "  -  " +
             moment(weeks[weeks.indexOf(week) + 1].sunday).format("Do MMMM YYYY")
         );
-    }
+    }, [week]);
 
     return (
         <>

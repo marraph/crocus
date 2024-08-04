@@ -14,7 +14,6 @@ const path = "/image.png";
 
 export const Notification: React.FC<NotificationProps> = ({ unread, sender, type, task, date }) => {
 
-    console.log(formatTimeDifference(date, new Date()));
     return (
         <div className={"flex flex-row items-center w-64 mx-2 my-1 p-2 space-x-2 rounded-lg hover:bg-selected hover:shadow-2xl cursor-pointer"}>
             <Avatar img_url={path} size={20} className={"h-max"}/>
