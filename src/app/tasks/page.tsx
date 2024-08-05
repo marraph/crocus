@@ -14,13 +14,11 @@ import {Filter, FilterRef} from "@/components/Filter";
 
 
 export default function Tasks() {
-    const [viewMode, setViewMode] = useState(true);
     const [update, setUpdate] = useState(0);
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
-
 
     const filterItems = [
         {
@@ -103,21 +101,14 @@ export default function Tasks() {
                         <span className={"text-xs text-marcador"}>{`${getTaskElements().length} OPEN`}</span>
                     </div>
                 </div>
-                <SwitchButton firstTitle={"Table"}
-                              secondTitle={"Card"}
-                              onClick={() => setViewMode(!viewMode)}
-                />
             </div>
-
-            {viewMode &&
-                <div className={"overflow-hidden rounded-lg border border-edge"}>
-                    <CustomScroll>
-                        <div className={"rounded-lg bg-black h-screen"}>
-                            <TaskTable taskElements={taskElements}/>
-                        </div>
-                    </CustomScroll>
-                </div>
-            }
+            <div className={"overflow-hidden rounded-lg border border-edge"}>
+                <CustomScroll>
+                    <div className={"rounded-lg bg-black h-screen"}>
+                        <TaskTable taskElements={taskElements}/>
+                    </div>
+                </CustomScroll>
+            </div>
         </div>
     );
 }

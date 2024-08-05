@@ -67,17 +67,21 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
         setFocusTimeEntry(timeEntry);
 
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            const buttonElement = e.currentTarget;
-            const rect = buttonElement.getBoundingClientRect();
+        if (!entryContextMenu.visible) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+                const buttonElement = e.currentTarget;
+                const rect = buttonElement.getBoundingClientRect();
 
-            const coordinates = {
-                x: rect.left - 52,
-                y: rect.top + 34
-            };
-            setEntryContextMenu({ id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true });
+                const coordinates = {
+                    x: rect.left - 52,
+                    y: rect.top + 34
+                };
+                setEntryContextMenu({id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true});
+            } else {
+                setEntryContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
+            }
         } else {
-            setEntryContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
+            setEntryContextMenu({ ...entryContextMenu, visible: false });
         }
     };
 
@@ -89,17 +93,21 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
         setFocusAbsence(absence);
 
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            const buttonElement = e.currentTarget;
-            const rect = buttonElement.getBoundingClientRect();
+        if (!absenceContextMenu.visible) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+                const buttonElement = e.currentTarget;
+                const rect = buttonElement.getBoundingClientRect();
 
-            const coordinates = {
-                x: rect.left - 52,
-                y: rect.top + 34
-            };
-            setAbsenceContextMenu({ id: absence.id, x: coordinates.x, y: coordinates.y, visible: true });
+                const coordinates = {
+                    x: rect.left - 52,
+                    y: rect.top + 34
+                };
+                setAbsenceContextMenu({ id: absence.id, x: coordinates.x, y: coordinates.y, visible: true });
+            } else {
+                setAbsenceContextMenu({id: absence.id, x: e.clientX, y: e.clientY, visible: true});
+            }
         } else {
-            setAbsenceContextMenu({id: absence.id, x: e.clientX, y: e.clientY, visible: true});
+            setAbsenceContextMenu({ ...absenceContextMenu, visible: false });
         }
     };
 

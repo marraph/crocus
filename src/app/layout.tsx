@@ -24,7 +24,7 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                         <Toaster>
                             <div className={"flex flex-row"}>
                                 <Drawer></Drawer>
-                                <div className={"w-full flex flex-col space-y-4"}>
+                                <div className={"w-full flex flex-col space-y-4 bg-black-light"}>
                                     {children}
                                 </div>
                             </div>

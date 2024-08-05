@@ -56,19 +56,23 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
 
         setFocusTaskElement(taskElement);
 
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            const buttonElement = e.currentTarget;
-            const rect = buttonElement.getBoundingClientRect();
+        if (!contextMenu.visible) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+                const buttonElement = e.currentTarget;
+                const rect = buttonElement.getBoundingClientRect();
 
-            const coordinates = {
-                x: rect.left - 52,
-                y: rect.top + 34
-            };
-            setContextMenu({ id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true });
+                const coordinates = {
+                    x: rect.left - 52,
+                    y: rect.top + 34
+                };
+                setContextMenu({id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true});
+            } else {
+                setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
+            }
         } else {
-            setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
+            setContextMenu({ ...contextMenu, visible: false });
         }
-    }, []);
+    }, [contextMenu]);
 
     const handleHeaderClick = (headerKey: string) => {
         setSort({
