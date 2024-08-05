@@ -1,4 +1,5 @@
-import {boolean, doublePrecision, pgEnum, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
+import {boolean, doublePrecision, integer, pgEnum, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
+import {relations} from "drizzle-orm/relations";
 
 /*
     Data
@@ -39,8 +40,12 @@ export const user = pgTable('users', {
 export const topic = pgTable('topics', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    hexCode: text('hex_code').notNull()
+    hexCode: text('hex_code').notNull(),
+    teamId: integer("team_id")
+        .notNull()
+        .references(() => team.id)
 })
+
 
 export const task = pgTable('tasks', {
     id: serial('id').primaryKey(),
@@ -51,7 +56,10 @@ export const task = pgTable('tasks', {
     bookedDuration: doublePrecision('booked_duration').default(0),
     deadline: timestamp('deadline'),
     state: state('state').default('planing'),
-    priority: priority('priority').default('low')
+    priority: priority('priority').default('low'),
+    projectId: integer("project_id")
+        .notNull()
+        .references(() => project.id)
 })
 
 export const project = pgTable('projects', {
@@ -59,12 +67,18 @@ export const project = pgTable('projects', {
     name: text('name').notNull(),
     description: text('description'),
     priority: priority('priority').default('low'),
-    isArchived: boolean('is_archived').default(false)
+    isArchived: boolean('is_archived').default(false),
+    teamId: integer("team_id")
+        .notNull()
+        .references(() => team.id)
 })
 
 export const team = pgTable("teams", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
+    organisationId: integer("organisation_id")
+        .notNull()
+        .references(() => organisation.id)
 })
 
 export const organisation = pgTable("organisations", {
@@ -87,4 +101,35 @@ export const entry = pgTable("entries", {
     end: timestamp("end")
 })
 
-//TODO: create relations & audit
+/*
+    Relations
+ */
+
+export const organisationRelation = relations(organisation, ({many}) => ({
+    teams: many(team)
+}))
+
+export const teamRelation = relations(team, ({one, many}) => ({
+    organisation: one(organisation, {
+        fields: [team.organisationId],
+        references: [organisation.id]
+    }),
+    topics: many(topic),
+    projects: many(project),
+    users: many(user)
+}))
+
+export const projectRelation = relations(project, ({one, many}) => ({
+    team: one(team, {
+        fields: [project.teamId],
+        references: [team.id]
+    }),
+    tasks: many(task)
+}))
+
+export const taskRelation = relations(task, ({one}) => ({
+    project: one(project, {
+        fields: [task.projectId],
+        references: [project.id]
+    })
+}))
