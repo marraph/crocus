@@ -7,7 +7,6 @@ import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 import React, {useRef} from "react";
-import {formatDate} from "@/utils/format";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
 import {
@@ -26,6 +25,7 @@ import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {cn} from "@/utils/cn";
 import {MessageBar} from "@/components/MessageBar";
+import moment from "moment";
 
 export default function TasksID() {
     const closeRef = useRef<DialogRef>(null);
@@ -127,7 +127,7 @@ export default function TasksID() {
                             <CalendarDays size={16}/>
                             <span className={"w-16"}>Deadline</span>
                         </div>
-                        <span>{formatDate(taskElement.deadline?.toString())}</span>
+                        <span>{moment(taskElement.deadline?.toString()).format('MMMM D, YYYY')}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"flex flex-row items-center space-x-2 text-gray"}>
@@ -147,7 +147,7 @@ export default function TasksID() {
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Changed</div>
-                        <span>{formatDate(taskElement.lastModifiedDate.toString())}</span>
+                        <span>{moment(taskElement.lastModifiedDate.toString()).format('MMMM D, YYYY')}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Changed By</div>
@@ -157,7 +157,7 @@ export default function TasksID() {
                     <span className={"text-xs text-marcador px-4 py-2"}>CREATION</span>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Created</div>
-                        <span>{formatDate(taskElement.createdDate.toString())}</span>
+                        <span>{moment(taskElement.createdDate.toString()).format('MMMM D YYY')}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                         <div className={"w-24 text-gray"}>Created By</div>

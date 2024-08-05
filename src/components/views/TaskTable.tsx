@@ -18,11 +18,11 @@ import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 import {TaskElement} from "@/types/types";
-import {formatDate} from "@/utils/format";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {getSortedTaskTable, SortState} from "@/utils/sort";
+import moment from "moment";
 
 interface TaskProps {
     taskElements: TaskElement[];
@@ -138,7 +138,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
-                                {formatDate(taskElement.deadline?.toString())}
+                                {moment(taskElement.deadline?.toString()).format('MMMM D YYY')}
                             </TableCell>
                             <TableAction onClick={(e) => handleContextMenu(e, taskElement)}/>
                         </TableRow>

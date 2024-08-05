@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {TimeEntry} from "@/types/types";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 
@@ -8,7 +8,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...props }) => {
 
-    const sumDuration = () => {
+    const sumDuration = useCallback(() => {
         if (!entries) return 0;
         let totalDuration = 0.0;
 
@@ -21,7 +21,7 @@ export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...pr
             totalDuration += hours;
         }
         return totalDuration;
-    }
+    }, [entries]);
 
     return (
         <div className={"bg-dark-light border border-edge rounded-b-lg px-4 flex flex-row justify-between items-center"}>

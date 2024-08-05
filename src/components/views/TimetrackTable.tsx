@@ -15,7 +15,6 @@ import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMe
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 import {cn} from "@/utils/cn";
-import {formatTime} from "@/utils/format";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {EllipsisVertical} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";

@@ -26,7 +26,6 @@ export interface Week {
     sunday: Date;
 }
 
-
 function createWeek(weekStart: moment.Moment): Week {
     return {
         monday: weekStart.toDate(),
@@ -116,8 +115,6 @@ export default function Timetracking() {
 
     }, [user, day, week]);
 
-    if (!user) return null;
-
     const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());
         datepickerRef.current?.setValue(moment(day).subtract(1, 'days').toDate());
@@ -143,6 +140,8 @@ export default function Timetracking() {
             moment(weeks[weeks.indexOf(week) + 1].sunday).format("Do MMMM YYYY")
         );
     }, [week]);
+
+    if (!user) return null;
 
     return (
         <>

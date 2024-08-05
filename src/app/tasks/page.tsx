@@ -2,7 +2,6 @@
 
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
-import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
 import {LoaderCircle, SquarePen} from "lucide-react";
 import {useUser} from "@/context/UserContext";
@@ -35,21 +34,6 @@ export default function Tasks() {
         }
     ];
 
-    useEffect(() => {
-        let elements = getTaskElements();
-        const filters = filterRef.current?.getFilters();
-
-        if (filters && filters.length > 0) {
-            elements = elements.filter(element => {
-                return filters.every(filter => {
-                    return element[filter.name] === filter.value;
-                });
-            });
-        }
-        setTaskElements(elements);
-    }, [update, filterRef]);
-
-
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
         user?.teams?.forEach((team: Team) => {
@@ -79,6 +63,20 @@ export default function Tasks() {
         });
         return taskElements;
     }, [user]);
+
+    useEffect(() => {
+        let elements = getTaskElements();
+        const filters = filterRef.current?.getFilters();
+
+        if (filters && filters.length > 0) {
+            elements = elements.filter(element => {
+                return filters.every(filter => {
+                    return element[filter.name] === filter.value;
+                });
+            });
+        }
+        setTaskElements(elements);
+    }, [update, filterRef]);
 
     if (!user) return null;
 

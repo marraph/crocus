@@ -86,7 +86,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
             icon: <Save/>
         });
 
-    }, [values, taskElement]);
+    }, [user, taskElement, values]);
 
     const handleCloseClick = useCallback(() => {
         setDialogKey(Date.now());

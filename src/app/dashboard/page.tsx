@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useCallback} from "react";
 import {ExternalLink, Moon, SunMedium} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {getDashboardTasks} from "@/utils/getTypes";
@@ -9,10 +9,10 @@ import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {useRouter} from "next/navigation";
-import {formatDate} from "@/utils/format";
 import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {CustomScroll} from "react-custom-scroll";
+import moment from "moment";
 
 const notifications = [
     { sender: "John Doe", task: "Task 1", date: new Date("2024-06-29T08:00:00"), type: "message" },
@@ -31,16 +31,12 @@ export default function Dashboard() {
     const router = useRouter();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    if (!user) return null;
-
-    const { tasks, count } = getDashboardTasks(user);
-
-    function parseDate(date: Date): string {
+    const parseDate = useCallback((date: Date): string => {
         const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
         return date.toLocaleDateString('en-US', options);
-    }
+    }, []);
 
-    function getDayText(): string {
+    const getDayText = useCallback((): string => {
         let date = new Date();
         if (date.getHours() > 5 && date.getHours() < 11)  return "Good morning, ";
         if (date.getHours() > 11 && date.getHours() < 14)  return "Good noon, ";
@@ -48,7 +44,10 @@ export default function Dashboard() {
         if (date.getHours() > 18 && date.getHours() < 22) return "Good evening, ";
         if (date.getHours() > 22 && date.getHours() < 5) return "Good night, ";
         else return "Welcome back, "
-    }
+    }, []);
+
+    if (!user) return null;
+    const { tasks, count } = getDashboardTasks(user);
 
     return (
         <div className={"h-full flex flex-col justify-between p-8 "}>
@@ -121,7 +120,7 @@ export default function Dashboard() {
                                 <div className={"flex flex-row space-x-8 items-center pr-4"}>
                                     <StatusBadge title={task.status?.toString()}/>
                                     <span
-                                        className={"text-sm text-gray group-hover:text-white"}>{formatDate(task.deadline?.toString())}</span>
+                                        className={"text-sm text-gray group-hover:text-white"}>{moment(task.deadline?.toString()).format('MMMM D YYY')}</span>
                                     <ProfileBadge name={task.createdBy?.name}/>
                                 </div>
                             </div>
