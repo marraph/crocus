@@ -21,11 +21,14 @@ export const TaskContextMenu: React.FC<TaskContextProps> = ({ deleteRef, editRef
 
     return (
         <ContextMenu xPos={x} yPos={y}>
-            <ContextMenuContainer>
+            <ContextMenuContainer size={"small"}>
                 <ContextMenuItem title={"Open"}
                                  onClick={() => router.push(`/tasks/${taskId}`)}
-                                 icon={<ExternalLink size={16}/>}/>
+                                 icon={<ExternalLink size={16}/>}
+                />
+            </ContextMenuContainer>
                 <Seperator/>
+            <ContextMenuContainer size={"small"}>
                 <ContextMenuItem title={"Edit"}
                                  onClick={() => editRef.current?.show()}
                                  icon={<Pencil size={16}/>}/>

@@ -16,7 +16,7 @@ interface TimeEntryContextProps extends React.HTMLAttributes<HTMLDivElement> {
 export const TimeEntryContextMenu: React.FC<TimeEntryContextProps> = ({ deleteRef, editRef, x, y, }) => {
     return (
         <ContextMenu xPos={x} yPos={y}>
-            <ContextMenuContainer>
+            <ContextMenuContainer size={"small"}>
                 <ContextMenuItem title={"Edit"}
                                  onClick={() => editRef.current?.show()}
                                  icon={<Pencil size={16}/>}

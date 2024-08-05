@@ -26,17 +26,21 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
     return (
         <div className={"space-y-2"} ref={menuRef}>
             {showProfile &&
-                <ContextMenu>
-                    <ContextMenuContainer>
-                        <ContextMenuItem title={"My organisation"} icon={<Briefcase size={18}/>}/>
-                        <ContextMenuItem title={"Settings"} icon={<Settings size={18}/>}/>
-                    </ContextMenuContainer>
+                <div className={"flex flex-col space-y-1 py-1 bg-black border border-edge rounded-lg"}>
+                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm rounded-lg hover:bg-dark cursor-pointer"}>
+                        <Briefcase size={18}/>
+                        <span>My organisation</span>
+                    </div>
+                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm rounded-lg hover:bg-dark cursor-pointer"}>
+                        <Settings size={18}/>
+                        <span>Settings</span>
+                    </div>
                     <Seperator/>
-                    <ContextMenuContainer>
-                        <ContextMenuItem className={"red-button-style hover:red-button-style"}
-                                         title={"Log out"} icon={<LogOut size={18}/>}/>
-                    </ContextMenuContainer>
-                </ContextMenu>
+                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm rounded-lg red-button-style hover:red-button-style cursor-pointer"}>
+                        <LogOut size={18}/>
+                        <span>Log out</span>
+                    </div>
+                </div>
             }
             <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-edge hover:bg-dark")}
                 onClick={() => setShowProfile(!showProfile)}>

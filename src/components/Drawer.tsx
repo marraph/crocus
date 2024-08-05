@@ -41,7 +41,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                 <div className={"space-y-2"}>
                     <div className={"flex flex-row space-x-4 items-center mb-7"}>
                         <Flower size={30}/>
-                        <span className={"text-3xl"}>fleur</span>
+                        <span className={"text-3xl"}>fluer</span>
                     </div>
 
                     <div className={"h-8 group flex flex-row justify-between items-center rounded-lg bg-black border border-edge cursor-pointer pr-1"}
