@@ -18,6 +18,8 @@ interface TimeEntryProps {
 }
 
 export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
+    const editRef = useRef<DialogRef>(null);
+    const [focusEntry, setFocusEntry] = useState<TimeEntry | null>(null);
     const days = useMemo(() => [
         {name: "Monday", day: week.monday},
         {name: "Tuesday", day: week.tuesday},
@@ -27,9 +29,6 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
         {name: "Saturday", day: week.saturday},
         {name: "Sunday", day: week.sunday},
     ], [week]);
-
-    const editRef = useRef<DialogRef>(null);
-    const [focusEntry, setFocusEntry] = useState<TimeEntry | null>(null);
 
     if (!timeEntries) return null;
 

@@ -74,12 +74,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         }
     }, [contextMenu]);
 
-    const handleHeaderClick = (headerKey: string) => {
+    const handleHeaderClick = useCallback((headerKey: string) => {
         setSort({
             key: headerKey,
             order: sort.key === headerKey ? (sort.order === "asc" ? "desc" : "asc") : "desc"
         })
-    }
+    }, [sort.key, sort.order]);
 
     return (
         <>
