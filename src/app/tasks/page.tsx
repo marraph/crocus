@@ -3,7 +3,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
-import {LoaderCircle, SquarePen} from "lucide-react";
+import {FolderCheck, LayoutList, LoaderCircle, SquarePen, StickyNote} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
@@ -11,6 +11,8 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {CustomScroll} from "react-custom-scroll";
 import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
 import {getAllProjects, getAllTopics} from "@/utils/getTypes";
+import { motion } from "framer-motion";
+import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 
 
 export default function Tasks() {
@@ -116,7 +118,13 @@ export default function Tasks() {
             <div className={"overflow-hidden rounded-lg border border-edge"}>
                 <CustomScroll>
                     <div className={"rounded-lg bg-black h-screen"}>
-                        <TaskTable taskElements={taskElements}/>
+                        {taskElements.length > 0 ?
+                            <TaskTable taskElements={taskElements}/>
+                            :
+                            <div className={"h-full flex flex-row items-center justify-center"}>
+                                <TaskPlaceholder dialogRef={dialogRef}/>
+                            </div>
+                        }
                     </div>
                 </CustomScroll>
             </div>
