@@ -1,8 +1,19 @@
 "use client";
 
 import {NavigationItem, useNavigation} from "@marraph/daisy/components/navigationitem/NavigationItem";
-import React, {useEffect, useRef} from "react";
-import {CalendarDays, ClipboardList, Flower, LayoutDashboard, Search, SquarePlus, Timer} from "lucide-react";
+import React, {useEffect, useRef, useState} from "react";
+import {
+    CalendarDays,
+    ChevronDown,
+    ChevronRight,
+    ClipboardList,
+    Flower,
+    LayoutDashboard,
+    Search,
+    SquarePlus,
+    Timer,
+    Users
+} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {usePathname, useRouter} from "next/navigation";
@@ -10,13 +21,16 @@ import {SearchDialog} from "@/components/dialogs/SearchDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {JoinTeamDialog} from "@/components/dialogs/JoinTeamDialog";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
+import {useUser} from "@/context/UserContext";
 
 export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const router = useRouter();
     const pathSegments = usePathname().split('/');
-    const { selectedItem, setSelectedItem } = useNavigation();
+    const [openTeamMenu, setOpenTeamMenu] = useState(false);
     const joinTeamDialogRef = useRef<DialogRef>(null);
     const searchDialogRef = useRef<DialogRef>(null);
+    const { selectedItem, setSelectedItem } = useNavigation();
+    const {data:user, error:userError, isLoading:userLoading} = useUser();
 
     useEffect(() => {
         if (pathSegments.includes('dashboard')) {
@@ -31,6 +45,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
             setSelectedItem('');
         }
     }, [pathSegments, setSelectedItem]);
+
+    if (!user) return null;
 
     return (
         <>
@@ -77,13 +93,28 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                         />
                     </div>
 
-                    <div className={"py-12"}>
-                        <span className={cn("text-marcador text-xs px-1")}>{"TEAMS"}</span>
-                        <NavigationItem selected={false}
-                                        title={"Join a team"}
-                                        icon={<SquarePlus size={18}/>}
-                                        onClick={() => joinTeamDialogRef.current?.show()}
-                        />
+                    <div className={"py-12 space-y-1"}>
+                        <div className={"flex flex-row space-x-2 items-center text-marcador hover:text-white cursor-pointer"}
+                             onClick={() => setOpenTeamMenu(!openTeamMenu)}
+                        >
+                            <span className={cn("text-xs pl-1")}>{"TEAMS"}</span>
+                            { openTeamMenu ? <ChevronDown size={14}/> : <ChevronRight size={14}/> }
+                        </div>
+
+                        {openTeamMenu && user.teams.map((team) => (
+                            <NavigationItem key={team.id}
+                                            selected={selectedItem === team.name}
+                                            title={team.name}
+                                            icon={<Users size={18}/>}
+                            />
+                        ))}
+                        {openTeamMenu &&
+                            <NavigationItem selected={false}
+                                            title={"Join a team"}
+                                            icon={<SquarePlus size={18}/>}
+                                            onClick={() => joinTeamDialogRef.current?.show()}
+                            />
+                        }
                     </div>
                 </div>
                 <ProfileContextMenu/>

@@ -6,7 +6,6 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 
 export const TaskPlaceholder: React.FC<{ dialogRef: RefObject<DialogRef>}> = ({ dialogRef }) => {
 
-
     const containerVariants = {
         initial: {},
         hover: {}

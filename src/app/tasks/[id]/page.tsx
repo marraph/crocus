@@ -127,7 +127,7 @@ export default function TasksID() {
                             <CalendarDays size={16}/>
                             <span className={"w-16"}>Deadline</span>
                         </div>
-                        <span>{moment(taskElement.deadline?.toString()).format('MMMM D, YYYY')}</span>
+                        <span>{moment(taskElement.deadline?.toString()).format('MMM D YYYY')}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"flex flex-row items-center space-x-2 text-gray"}>
@@ -147,7 +147,7 @@ export default function TasksID() {
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Changed</div>
-                        <span>{moment(taskElement.lastModifiedDate.toString()).format('MMMM D, YYYY')}</span>
+                        <span>{moment(taskElement.lastModifiedDate.toString()).format('MMM D YYYY')}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Changed By</div>
@@ -157,7 +157,7 @@ export default function TasksID() {
                     <span className={"text-xs text-marcador px-4 py-2"}>CREATION</span>
                     <div className={"flex flex-row space-x-4 px-4 py-2"}>
                         <div className={"w-24 text-gray"}>Time Created</div>
-                        <span>{moment(taskElement.createdDate.toString()).format('MMMM D YYY')}</span>
+                        <span>{moment(taskElement.createdDate.toString()).format('MMM D YYYY')}</span>
                     </div>
                     <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                         <div className={"w-24 text-gray"}>Created By</div>

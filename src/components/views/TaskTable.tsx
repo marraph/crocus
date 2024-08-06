@@ -138,7 +138,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
-                                {moment(taskElement.deadline?.toString()).format('MMMM D YYY')}
+                                {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}
                             </TableCell>
                             <TableAction onClick={(e) => handleContextMenu(e, taskElement)}/>
                         </TableRow>
