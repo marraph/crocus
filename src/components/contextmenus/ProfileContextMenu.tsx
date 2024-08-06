@@ -1,6 +1,5 @@
 "use client";
 
-import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import React, {useState} from "react";
 import {Briefcase, ChevronsUpDown, LogOut, Settings} from "lucide-react";
 import {cn} from "@/utils/cn";
@@ -24,14 +23,14 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
 
 
     return (
-        <div className={"space-y-2"} ref={menuRef}>
+        <div className={"space-y-2 px-4 pt-4"} ref={menuRef}>
             {showProfile &&
-                <div className={"flex flex-col space-y-1 py-1 bg-black border border-edge rounded-lg"}>
-                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm rounded-lg hover:bg-dark cursor-pointer"}>
+                <div className={"flex flex-col space-y-1 py-1 bg-black-light border border-edge rounded-lg"}>
+                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-gray rounded-lg hover:bg-dark-light hover:text-white cursor-pointer"}>
                         <Briefcase size={18}/>
                         <span>My organisation</span>
                     </div>
-                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm rounded-lg hover:bg-dark cursor-pointer"}>
+                    <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-gray rounded-lg hover:bg-dark-light hover:text-white cursor-pointer"}>
                         <Settings size={18}/>
                         <span>Settings</span>
                     </div>
@@ -42,7 +41,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                     </div>
                 </div>
             }
-            <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-black rounded-lg border border-edge hover:bg-dark")}
+            <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-black-light border border-edge rounded-lg hover:bg-dark-light")}
                 onClick={() => setShowProfile(!showProfile)}>
                 {isLoading ?
                 <Skeleton className={"w-max"}>

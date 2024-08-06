@@ -9,23 +9,9 @@ import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {useRouter} from "next/navigation";
-import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {CustomScroll} from "react-custom-scroll";
 import moment from "moment";
-
-const notifications = [
-    { sender: "John Doe", task: "Task 1", date: new Date("2024-06-29T08:00:00"), type: "message" },
-    { sender: "Jane Doe", task: "Task 2", date: new Date("2024-06-28T14:30:00"), type: "change" },
-    { sender: "John Doe", task: "Task 3", date: new Date("2024-06-27T09:45:00"), type: "message" },
-    { sender: "Jane Doe", task: "Task 4", date: new Date("2024-06-26T11:15:00"), type: "change" },
-    { sender: "John Doe", task: "Task 5", date: new Date("2024-06-25T16:50:00"), type: "message" },
-    { sender: "Jane Doe", task: "Task 6", date: new Date("2024-06-24T13:20:00"), type: "change" },
-    { sender: "John Doe", task: "Task 7", date: new Date("2024-06-23T10:05:00"), type: "message" },
-    { sender: "Jane Doe", task: "Task 8", date: new Date("2024-06-22T15:40:00"), type: "change" },
-    { sender: "John Doe", task: "Task 9", date: new Date("2024-06-21T08:25:00"), type: "message" },
-    { sender: "Jane Doe", task: "Task 10", date: new Date("2024-06-20T14:10:00"), type: "change" },
-];
 
 export default function Dashboard() {
     const router = useRouter();
@@ -60,7 +46,6 @@ export default function Dashboard() {
                         <span className={"text-gray"}>{parseDate(new Date())}</span>
                     </div>
                 </div>
-                <NotificationContextMenu notifications={notifications}/>
             </div>
             <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-16"}>
                 <div className={"flex flex-col justify-evenly bg-black rounded-lg border border-edge p-4 space-y-4 w-1/2 h-72"}>

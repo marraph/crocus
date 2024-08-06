@@ -12,6 +12,7 @@ import {cn} from "@/utils/cn";
 type FilterItem = {
     name: string;
     values: string[];
+    icon: ReactNode;
 }
 
 type SelectedFilter = {
@@ -85,11 +86,12 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
             {menuOpen && !subMenuOpen &&
                 <div className={"absolute z-50 bg-black border border-edge rounded-lg text-sm text-gray p-1 space-y-1"}>
                     {items.map((item, index) => (
-                        <div className={"px-2 py-1 rounded-lg hover:bg-dark hover:text-white cursor-pointer"}
+                        <div className={"flex flex-row items-center space-x-2 px-2 py-1 rounded-lg hover:bg-dark hover:text-white cursor-pointer"}
                             key={index}
                             onClick={() => handleMenuClick(item)}
                         >
-                            {item.name}
+                            {item.icon}
+                            <span>{item.name}</span>
                         </div>
                     ))}
                 </div>
