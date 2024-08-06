@@ -87,13 +87,17 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                             { openTeamMenu ? <ChevronDown size={14}/> : <ChevronRight size={14}/> }
                         </div>
 
-                        {openTeamMenu && user.teams.map((team) => (
-                            <NavigationItem key={team.id}
-                                            selected={selectedItem === team.name}
-                                            title={team.name}
-                                            icon={<Users size={18}/>}
-                            />
-                        ))}
+                        {openTeamMenu &&
+                            <div className={"ml-6 pl-4 border-l border-edge"}>
+                                {user.teams.map((team) => (
+                                    <div key={team.id}
+                                         className={cn("w-full text-gray px-2 py-2 text-sm hover:bg-dark hover:text-white rounded-lg cursor-pointer truncate")}
+                                    >
+                                        <span>{team.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        }
                         {openTeamMenu &&
                             <NavigationItem selected={false}
                                             title={"Join a team"}

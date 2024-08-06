@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useCallback} from "react";
+import React, {useCallback, useMemo} from "react";
 import {ExternalLink, Moon, SunMedium} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {getDashboardTasks} from "@/utils/getTypes";
@@ -32,11 +32,18 @@ export default function Dashboard() {
         else return "Welcome back, "
     }, []);
 
+    const timeStats = useMemo(() => [
+        { name: "40 Hours", description: "worked this week" },
+        { name: "30%", description: "spend on meetings" },
+        { name: "50%", description: "spend on Project A" },
+        { name: "20%", description: "spend on fixing bugs" },
+    ], []);
+
     if (!user) return null;
     const { tasks, count } = getDashboardTasks(user);
 
     return (
-        <div className={"h-full flex flex-col justify-between p-8 "}>
+        <div className={"h-full flex flex-col p-4"}>
             <div className={"flex flex-row justify-between items-center"}>
                 <div className={"pt-4"}>
                     <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
@@ -47,56 +54,41 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-            <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-16"}>
-                <div className={"flex flex-col justify-evenly bg-black rounded-lg border border-edge p-4 space-y-4 w-1/2 h-72"}>
-                    <div className={"flex flex-row space-x-4 w-full h-full"}>
-                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
-                            <span className={"text-xl"}>{"40 Hours"}</span>
-                            <span className={"text-gray"}>{"worked this week"}</span>
+            <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-8"}>
+                <div className={"grid grid-cols-2 gap-4 bg-dark rounded-lg border border-edge p-4 w-1/2 h-72"}>
+                    {timeStats.map((item, index) => (
+                        <div key={index} className={"flex flex-col items-center justify-center space-y-2 bg-black-light rounded-lg"}>
+                            <span className={"text-xl"}>{item.name}</span>
+                            <span className={"text-gray"}>{item.description}</span>
                         </div>
-                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
-                            <span className={"text-xl"}>{"30%"}</span>
-                            <span className={"text-gray"}>{"spend on meetings"}</span>
-                        </div>
-                    </div>
-                    <div className={"flex flex-row space-x-4 w-full h-full"}>
-                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
-                            <span className={"text-xl"}>{"50%"}</span>
-                            <span className={"text-gray"}>{"spend on Project A"}</span>
-                        </div>
-                        <div className={"flex flex-col items-center justify-center bg-dark rounded-lg w-1/2 h-full"}>
-                            <span className={"text-xl"}>{"20%"}</span>
-                            <span className={"text-gray"}>{"spend on fixing bugs"}</span>
-                        </div>
-                    </div>
-
+                    ))}
                 </div>
-                <div className={"bg-black rounded-lg border border-edge w-1/2 h-72"}>
+
+                <div className={"bg-dark rounded-lg border border-edge w-1/2 h-72"}>
 
                 </div>
             </div>
 
-            <div className={"bg-black rounded-lg w-full"}>
-                <div className={"flex flex-row justify-between items-center bg-dark-light border-t border-x border-edge rounded-t-lg"}>
+            <div className={"bg-black-light rounded-lg w-full border-x border-b border-edge"}>
+                <div className={"flex flex-row justify-between items-center bg-dark-light border-y border-edge rounded-t-lg"}>
                     <div className={"flex flex-row items-center"}>
-                        <span className={"text-xl px-4 py-2"}>{"Tasks"}</span>
+                        <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
                         <Badge text={count.toString() + " OPEN"}
                                size={"small"}
-                               className={"rounded-md bg-white-dark text-dark"}>
+                               className={"rounded-md bg-white-dark text-dark p-0.5"}>
                         </Badge>
                     </div>
                     <Button text={"Open"}
-                            className={"m-2 bg-dark-light border-none"}
+                            className={"m-1 font-normal bg-dark-light hover:bg-dark border-none"}
                             onClick={() => router.push("/tasks")}
                             icon={<ExternalLink size={16} className={"mr-2"}/>}
                     />
                 </div>
                 <CustomScroll>
-                    <div className={"h-[350px] border border-edge rounded-b-lg"}>
+                    <div className={"h-[350px] rounded-b-lg"}>
                         {tasks.map((task, index) => (
                             <div key={index}
-                                 className={"group flex flex-row justify-between items-center p-2 border-b border-edge " +
-                                     "hover:bg-dark hover:cursor-pointer"}
+                                 className={"group flex flex-row justify-between items-center p-2 border-b border-edge hover:bg-dark hover:cursor-pointer"}
                                  onClick={() => router.push(`/tasks/${task.id}`)}>
                                 <div className={"flex flex-row space-x-8 items-center pl-4"}>
                                     <ProjectBadge title={task.project?.name ?? ""}/>

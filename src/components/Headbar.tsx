@@ -46,7 +46,7 @@ export const Headbar: React.FC = ({}) => {
             <SearchDialog ref={searchDialogRef}/>
 
             <div className={"w-full flex flex-row items-center justify-between p-4 border-b border-edge"}>
-                <span className={"text-xl text-semibold"}>{getTitleForPage(path)}</span>
+                <span className={"text-xl font-normal"}>{getTitleForPage(path)}</span>
                 <div className={"flex flex-row space-x-4 items-center"}>
                     <div className={"h-8 w-56 group flex flex-row justify-between items-center rounded-lg bg-black-light border border-edge cursor-pointer pr-1"}
                          onClick={() => searchDialogRef.current?.showModal()}

@@ -37,7 +37,7 @@ export default function TasksID() {
     const {taskElement} = findTaskProps(user, id);
 
     return (
-        <div className={"h-full flex flex-col space-y-4 p-8"}>
+        <div className={"h-full flex flex-col space-y-4 p-4"}>
             <div className={"w-full flex flex-row justify-between"}>
                 <Breadcrump pastText={"Tasks"}
                             nowText={taskElement.name}
@@ -66,7 +66,7 @@ export default function TasksID() {
                 </div>
             </div>
 
-            <div className={"h-full w-full flex flex-row border border-edge bg-black rounded-lg"}>
+            <div className={"h-full w-full flex flex-row border border-edge rounded-lg"}>
 
                 <div className={"flex flex-col justify-between w-3/4 h-full bg-dark rounded-l-lg"}>
                     <div className={"h-full"}>
@@ -76,7 +76,7 @@ export default function TasksID() {
                 </div>
 
 
-                <div className={"border-l border-edge w-max min-h-full bg-black rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
+                <div className={"border-l border-edge w-1/4 min-h-full bg-black-light rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
                     <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                         <div className={"w-16 text-gray"}>Title</div>
                         <span>{taskElement.name}</span>

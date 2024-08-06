@@ -93,7 +93,7 @@ export default function Tasks() {
     if (!user) return null;
 
     return (
-        <div className={"h-screen flex flex-col space-y-4 p-8"}>
+        <div className={"h-screen flex flex-col space-y-4 p-4"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
                     <Button text={""}
