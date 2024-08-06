@@ -130,7 +130,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
             }}
         >
             {teams.map((team) => (
-                <ComboboxItem key={team} title={team} />
+                <ComboboxItem key={team} title={team}/>
             ))}
         </Combobox>
     ), [values.team, teams]);
