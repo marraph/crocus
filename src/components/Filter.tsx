@@ -3,10 +3,11 @@
 import React, {forwardRef, HTMLAttributes, ReactNode, useImperativeHandle, useState} from "react";
 import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {Box, CircleAlert, LineChart, ListFilter, Tag, Users} from "lucide-react";
+import {Box, Check, CircleAlert, LineChart, ListFilter, Tag, Users} from "lucide-react";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {TaskElement} from "@/types/types";
+import {cn} from "@/utils/cn";
 
 type FilterItem = {
     name: string;
@@ -21,6 +22,7 @@ type SelectedFilter = {
 interface FilterProps extends HTMLAttributes<HTMLDivElement> {
     title: string;
     items: FilterItem[];
+    onChange: () => void;
 }
 
 type FilterRef = {
@@ -28,22 +30,29 @@ type FilterRef = {
 }
 
 
-const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
+const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, ref) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [subMenuOpen, setSubMenuOpen] = useState<FilterItem | null>(null);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
 
     const menuRef = useOutsideClick(() => {
         setMenuOpen(false);
+        setSubMenuOpen(null);
     });
 
-    const handleMenuClick = (value: string) => {
+    const handleMenuClick = (item: FilterItem) => {
+        setSubMenuOpen(item);
+    }
+
+    const handleSubMenuClick = (value: string) => {
         if (subMenuOpen) {
             const newFilter = { name: subMenuOpen.name as keyof TaskElement, value: value };
             const updatedFilters = filters.filter(f => f.name !== newFilter.name);
             setFilters([...updatedFilters, newFilter]);
+            onChange();
         }
         setSubMenuOpen(null);
+        setMenuOpen(false);
     }
 
     useImperativeHandle(ref, () => ({
@@ -51,13 +60,12 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
     }));
 
     return (
-        <div className={"flex flex-col space-y-10"}>
+        <div className={"relative flex flex-col space-y-10"} ref={menuRef}>
             <div className={"flex flex-row space-x-2 items-center"}>
                 <Button text={title}
                         icon={<ListFilter size={16} className={"mr-2"}/>}
                         onClick={() => {
-                            if (subMenuOpen) setMenuOpen(false);
-                            else setMenuOpen(!menuOpen);
+                            setMenuOpen(!menuOpen);
                             setSubMenuOpen(null);
                         }}
                 />
@@ -66,44 +74,42 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
                         key={index}
                         name={filter.name}
                         value={filter.value}
-                        onClick={() => setFilters(filters.filter(f => f !== filter))}
+                        onClick={() => {
+                            setFilters(filters.filter(f => f !== filter));
+                            onChange();
+                        }}
                     />
                 ))}
             </div>
 
-            {
-                <>
-                    {menuOpen &&
-                        <ContextMenu>
-                            <ContextMenuContainer>
-                                {items.map((item, index) => (
-                                    <ContextMenuItem
-                                        key={index}
-                                        title={item.name}
-                                        onClick={() => {
-                                            setSubMenuOpen(item);
-                                            setMenuOpen(false);
-                                        }}
-                                    />
-                                ))}
-                            </ContextMenuContainer>
-                        </ContextMenu>
-                    }
+            {menuOpen && !subMenuOpen &&
+                <div className={"absolute z-50 bg-black border border-edge rounded-lg text-sm text-gray p-1 space-y-1"}>
+                    {items.map((item, index) => (
+                        <div className={"px-2 py-1 rounded-lg hover:bg-dark hover:text-white cursor-pointer"}
+                            key={index}
+                            onClick={() => handleMenuClick(item)}
+                        >
+                            {item.name}
+                        </div>
+                    ))}
+                </div>
+            }
 
-                    {subMenuOpen &&
-                        <ContextMenu>
-                            <ContextMenuContainer>
-                                {subMenuOpen.values.map((value, index) => (
-                                    <ContextMenuItem
-                                        key={index}
-                                        title={value}
-                                        onClick={() => handleMenuClick(value)}
-                                    />
-                                ))}
-                            </ContextMenuContainer>
-                        </ContextMenu>
-                    }
-                </>
+            {subMenuOpen &&
+                <div className={"absolute z-50 bg-black border border-edge rounded-lg text-sm text-gray p-1 space-y-1"}>
+                    {subMenuOpen.values.map((value, index) => (
+                        <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-dark hover:text-white cursor-pointer",
+                            { "bg-dark text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
+                            key={index}
+                            onClick={() => handleSubMenuClick(value)}
+                        >
+                            {filters.some(f => f.name === subMenuOpen.name && f.value === value) &&
+                                <Check size={16}/>
+                            }
+                            <span>{value}</span>
+                        </div>
+                    ))}
+                </div>
             }
         </div>
     );
@@ -138,7 +144,7 @@ const FilterBadge: React.FC<FilterBadgeProps> = ({ name, value, onClick }) => {
 }
 
 export {Filter};
-export type {FilterRef};
+export type {FilterRef, SelectedFilter};
 
 
 

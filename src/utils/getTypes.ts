@@ -64,8 +64,22 @@ export function getTopicsFromTeam(user: User, teamToFind: string): string[] {
         });
     });
     return topics;
-
 }
+
+export function getAllTopics(user: User): Topic[] {
+    const topics: Topic[] = [];
+    user?.teams.forEach((team: Team) => {
+        team.projects.forEach((project: Project) => {
+            project.tasks.forEach((task: Task) => {
+                if (task.topic && !topics.includes(task.topic)) {
+                    topics.push(task.topic);
+                }
+            });
+        });
+    });
+    return topics;
+}
+
 
 export function getTopicItem(user: User, topic: string): Topic | undefined {
     for (const team of user.teams ?? []) {

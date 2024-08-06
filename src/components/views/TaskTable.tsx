@@ -123,7 +123,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                         <TableRow key={taskElement.id}
                                   onClick={() => router.push(`/tasks/${taskElement.id}`)}
                                   onContextMenu={(event) => handleContextMenu(event, taskElement)}
-                                  className={index === getSortedTaskTable(taskElements, sort).length - 1 ? " border-b border-b-white" : ""}>
+                                  className={index === getSortedTaskTable(taskElements, sort).length - 1 ? " border-b border-b-edge" : ""}>
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
                                     {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
