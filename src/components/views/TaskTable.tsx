@@ -101,11 +101,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 />
             }
 
-            <Table className={"w-full text-xs bg-black border-0 rounded-b-none"}>
+            <Table className={"w-full text-xs border-0 rounded-b-none"}>
                 <TableHeader>
-                    <TableRow className={cn("hover:bg-black", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
+                    <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
                         {header.map((header) => (
-                            <TableHead className={"text-marcador text-sm min-w-28 max-w-32 overflow-hidden"}
+                            <TableHead className={"min-w-28 max-w-32 overflow-hidden"}
                                        key={header.key}
                                        onClick={() => handleHeaderClick(header.key)}>
                                 <span className={"flex flex-row items-center"}>
@@ -126,9 +126,9 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                   className={cn({"border-b border-b-edge": index === getSortedTaskTable(taskElements, sort).length - 1})}>
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
-                                    {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
                                     {taskElement.project && <ProjectBadge title={taskElement.project?.name}/>}
                                     {taskElement.topic && <TopicBadge title={taskElement.topic?.title} color={"error"}/>}
+                                    {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
                                 </div>
                             </TableCell>
                             <TableCell className={"text-white truncate"}>

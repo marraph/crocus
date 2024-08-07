@@ -27,17 +27,16 @@ export const Headbar: React.FC = ({}) => {
 
 
     const getTitleForPage = (path: string) => {
-        switch(path) {
-            case '/dashboard':
-                return 'Dashboard';
-            case '/tasks':
-                return 'Tasks';
-            case '/timetracking':
-                return 'Timetracking';
-            case '/calendar':
-                return 'Calendar';
-            default:
-                return '';
+        if (path.includes('/dashboard')) {
+            return 'Dashboard';
+        } else if (path.includes('/tasks')) {
+            return 'Tasks';
+        } else if (path.includes('/timetracking')) {
+            return 'Timetracking';
+        } else if (path.includes('/calendar')) {
+            return 'Calendar';
+        } else {
+            return '';
         }
     };
 

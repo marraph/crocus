@@ -117,7 +117,8 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         <Combobox
             buttonTitle={"Team"}
             label={"Team"}
-            icon={<Users size={16} className={"mr-2"} />}
+            size={"medium"}
+            icon={<Users size={16} className={"mr-2"}/>}
             preSelectedValue={values.team}
             onValueChange={(value) => {
                 setValues((prevValues) => ({
@@ -139,6 +140,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         <Combobox
             buttonTitle={"Project"}
             label={"Project"}
+            size={"medium"}
             key={`project-${team}`}
             icon={<BookCopy size={16} className={"mr-2"} />}
             preSelectedValue={values.project}
@@ -155,6 +157,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         <Combobox
             buttonTitle={"Topic"}
             label={"Topic"}
+            size={"medium"}
             key={`topic-${team}`}
             icon={<Tag size={16} className={"mr-2"} />}
             preSelectedValue={values.topic}
@@ -171,6 +174,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         <Combobox
             buttonTitle={"Status"}
             label={"Status"}
+            size={"medium"}
             icon={<CircleAlert size={16} className={"mr-2"} />}
             preSelectedValue={values.status}
             onValueChange={(value) =>
@@ -186,6 +190,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         <Combobox
             buttonTitle={"Priority"}
             label={"Priority"}
+            size={"medium"}
             icon={<LineChart size={16} className={"mr-2"} />}
             preSelectedValue={values.priority}
             onValueChange={(value) =>

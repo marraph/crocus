@@ -93,7 +93,7 @@ export default function Tasks() {
     if (!user) return null;
 
     return (
-        <div className={"h-screen flex flex-col space-y-4 p-4"}>
+        <div className={"h-full flex flex-col space-y-4 p-4"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
                     <Button text={""}
@@ -114,9 +114,9 @@ export default function Tasks() {
                     </div>
                 </div>
             </div>
-            <div className={"overflow-hidden rounded-lg border border-edge"}>
+            <div className={"h-full overflow-hidden rounded-lg border border-edge"}>
                 <CustomScroll>
-                    <div className={"rounded-lg bg-black h-screen"}>
+                    <div className={"rounded-lg bg-black-light h-[800px]"}>
                         {taskElements.length > 0 ?
                             <TaskTable taskElements={taskElements}/>
                             :
