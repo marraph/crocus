@@ -1,12 +1,11 @@
-import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import type {Metadata} from "next";
+import {Roboto} from "next/font/google";
 import "./globals.css";
 import {Drawer} from "@/components/Drawer";
 import React, {ReactNode} from "react";
 import {UserProvider} from "@/context/UserContext";
 import {Toaster} from "griller/src/component/toaster";
 import {NavigationProvider} from "@/components/NavigationItem";
-import {Headbar} from "@/components/Headbar";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
@@ -25,12 +24,7 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                         <Toaster>
                             <div className={"flex flex-row h-screen"}>
                                 <Drawer/>
-                                <div className={"w-screen flex flex-col bg-black-light overflow-hidden"}>
-                                    <Headbar/>
-                                    <div className={"flex-grow overflow-hidden"}>
-                                        {children}
-                                    </div>
-                                </div>
+                                {children}
                             </div>
                         </Toaster>
                     </UserProvider>

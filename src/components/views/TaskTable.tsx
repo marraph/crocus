@@ -101,7 +101,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 />
             }
 
-            <Table className={"w-full text-xs border-0 rounded-b-none"}>
+            <Table className={"w-full text-xs border-0"}>
                 <TableHeader>
                     <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
                         {header.map((header) => (

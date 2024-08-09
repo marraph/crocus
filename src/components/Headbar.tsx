@@ -2,13 +2,13 @@
 
 import {Search} from "lucide-react";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
-import React, {useRef} from "react";
+import React, {forwardRef, HTMLAttributes, ReactNode, useRef} from "react";
 import {SearchDialog} from "@/components/dialogs/SearchDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 import {usePathname, useRouter} from "next/navigation";
 
-export const Headbar: React.FC = ({}) => {
+export const Headbar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(({ ...props }, ref) => {
     const searchDialogRef = useRef<DialogRef>(null);
     const path = usePathname();
 
@@ -44,8 +44,9 @@ export const Headbar: React.FC = ({}) => {
         <>
             <SearchDialog ref={searchDialogRef}/>
 
-            <div className={"w-full flex flex-row items-center justify-between p-4 border-b border-edge"}>
+            <div className={"w-full flex flex-row items-center justify-between p-4 border-b border-edge"} ref={ref}>
                 <span className={"text-xl font-normal"}>{getTitleForPage(path)}</span>
+                {props.children}
                 <div className={"flex flex-row space-x-4 items-center"}>
                     <div className={"h-8 w-56 group flex flex-row justify-between items-center rounded-lg bg-black-light border border-edge cursor-pointer pr-1"}
                          onClick={() => searchDialogRef.current?.showModal()}
@@ -61,4 +62,4 @@ export const Headbar: React.FC = ({}) => {
             </div>
         </>
     );
-}
+});
