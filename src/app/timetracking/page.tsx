@@ -26,7 +26,6 @@ export interface Week {
     sunday: Date;
 }
 
-
 function createWeek(weekStart: moment.Moment): Week {
     return {
         monday: weekStart.toDate(),
@@ -116,8 +115,6 @@ export default function Timetracking() {
 
     }, [user, day, week]);
 
-    if (!user) return null;
-
     const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());
         datepickerRef.current?.setValue(moment(day).subtract(1, 'days').toDate());
@@ -144,17 +141,36 @@ export default function Timetracking() {
         );
     }, [week]);
 
+    if (!user) return null;
+
     return (
         <>
-            <div className={"h-screen flex flex-col p-8"}>
-                <div className={"text-nowrap flex flex-row items-center justify-between"}>
-                    <div className={"w-full flex flex-row items-center space-x-2"}>
+            <div className={"h-screen flex flex-col p-4"}>
+                <div className={"text-nowrap flex flex-row items-center"}>
+                    <div className={"flex flex-row space-x-2"}>
+                        <Button text={""}
+                                theme={"white"}
+                                onClick={() => entryDialogRef.current?.show()}
+                                icon={<AlarmClockPlus size={20}/>}
+                                className={"px-2"}
+                        />
+                        <Button text={"New Absence"}
+                                theme={"dark"}
+                                onClick={() => absenceDialogRef.current?.show()}
+                                icon={<TreePalm size={20} className={"mr-2"}/>}
+                        />
+                        <SwitchButton firstTitle={"Day"}
+                                      secondTitle={"Week"}
+                                      onClick={() => setView(!view)}
+                        />
+                    </div>
+                    <div className={"w-full flex flex-row items-center justify-end space-x-2"}>
                         <Button text={""}
                                 onClick={view ? handleDayBefore : handleWeekBefore}
                                 icon={<ChevronLeft size={20}/>}
                         />
                         <Button text={""}
-                                onClick={view ? handleDayAfter: handleWeekAfter}
+                                onClick={view ? handleDayAfter : handleWeekAfter}
                                 icon={<ChevronRight size={20}/>}
                         />
                         {view ?
@@ -166,7 +182,7 @@ export default function Timetracking() {
                                         onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
                                         dayFormat={"long"}
                             />
-                        :
+                            :
                             <Combobox buttonTitle={"Week"}
                                       icon={<CalendarDays size={16} className={"mr-2"}/>}
                                       ref={comboboxRef}
@@ -182,38 +198,22 @@ export default function Timetracking() {
                             </Combobox>
                         }
                     </div>
-                    <div className={"flex flex-row justify-end space-x-2"}>
-                        <SwitchButton firstTitle={"Day"}
-                                      secondTitle={"Week"}
-                                      onClick={() => setView(!view)}
-                        />
-                        <Button text={"New Absence"}
-                                theme={"dark"}
-                                onClick={() => absenceDialogRef.current?.show()}
-                                icon={<TreePalm size={20} className={"mr-2"}/>}
-                        />
-                        <Button text={"New Entry"}
-                                theme={"white"}
-                                onClick={() => entryDialogRef.current?.show()}
-                                icon={<AlarmClockPlus size={20} className={"mr-2"}/>}
-                        />
-                    </div>
                 </div>
 
-                    <div className={"w-full h-full rounded-lg flex flex-col items-stretch pt-4"}>
-                        {view ?
-                            <>
-                                <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                                <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
-                                <TimeEntryDaySummary entries={dailyEntries}/>
-                            </>
+                <div className={"w-full h-full rounded-lg flex flex-col items-stretch pt-4"}>
+                    {view ?
+                        <>
+                            <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
+                            <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
+                            <TimeEntryDaySummary entries={dailyEntries}/>
+                        </>
                         :
-                            <>
-                                <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
-                                <TimeEntryDaySummary entries={weekEntries}/>
-                            </>
-                        }
-                    </div>
+                        <>
+                            <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
+                            <TimeEntryDaySummary entries={weekEntries}/>
+                        </>
+                    }
+                </div>
             </div>
 
             <CreateAbsenceDialog ref={absenceDialogRef}/>

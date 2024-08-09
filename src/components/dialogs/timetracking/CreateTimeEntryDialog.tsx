@@ -162,7 +162,6 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
         <SearchSelect buttonTitle={"Project"}
                       icon={<BookCopy size={16} />}
                       size={"medium"}
-                      className={"z-50"}
                       onValueChange={(value) =>
                           setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
         >
@@ -176,7 +175,6 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
         <SearchSelect buttonTitle={"Task"}
                       icon={<ClipboardList size={16} />}
                       size={"medium"}
-                      className={"z-50"}
                       onValueChange={(value) =>
                           setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
         >
@@ -220,7 +218,6 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                                   preSelectedValue={"09:00"}
                                   icon={<Clock2 size={16}/>}
                                   size={"medium"}
-                                  className={"z-40"}
                                   onValueChange={(value) =>
                                       setValues((prevValues) => ({ ...prevValues, timeFrom: value }))}
                     >
@@ -234,7 +231,6 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                                   preSelectedValue={"09:00"}
                                   icon={<Clock8 size={16}/>}
                                   size={"medium"}
-                                  className={"z-40"}
                                   onValueChange={(value) =>
                                       setValues((prevValues) => ({ ...prevValues, timeTo: value }))}
                     >

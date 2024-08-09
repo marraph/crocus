@@ -136,7 +136,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                   }}
         >
             {teams.map((team) => (
-                <ComboboxItem title={team} key={team} size={"small"} />
+                <ComboboxItem title={team} key={team}/>
             ))}
         </Combobox>
     ), [teams]);
@@ -149,7 +149,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                   onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, project: value }))}
         >
             {projects.map((project) => (
-                <ComboboxItem title={project} key={project} size={"small"} />
+                <ComboboxItem title={project} key={project}/>
             ))}
         </Combobox>
     ), [projects, team]);
@@ -162,7 +162,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                   onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, topic: value }))}
         >
             {topics.map((topic) => (
-                <ComboboxItem title={topic} key={topic} size={"small"} />
+                <ComboboxItem title={topic} key={topic}/>
             ))}
         </Combobox>
     ), [topics, team]);
@@ -174,7 +174,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                   onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, status: value }))}
         >
             {statuses.map((status) => (
-                <ComboboxItem title={status} key={status} size={"small"} />
+                <ComboboxItem title={status} key={status}/>
             ))}
         </Combobox>
     ), [statuses]);
@@ -186,7 +186,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                   onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, priority: value }))}
         >
             {priorities.map((priority) => (
-                <ComboboxItem title={priority} key={priority} size={"small"} />
+                <ComboboxItem title={priority} key={priority}/>
             ))}
         </Combobox>
     ), [priorities]);

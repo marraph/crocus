@@ -24,6 +24,7 @@ export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextP
             <Button text={""}
                     onClick={() => setShowMenu(!showMenu)}
                     icon={<Bell size={16}/>}
+                    className={"px-2"}
             />
 
             {showMenu &&

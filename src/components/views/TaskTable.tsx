@@ -18,11 +18,11 @@ import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 import {TaskElement} from "@/types/types";
-import {formatDate} from "@/utils/format";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {getSortedTaskTable, SortState} from "@/utils/sort";
+import moment from "moment";
 
 interface TaskProps {
     taskElements: TaskElement[];
@@ -56,26 +56,30 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
 
         setFocusTaskElement(taskElement);
 
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            const buttonElement = e.currentTarget;
-            const rect = buttonElement.getBoundingClientRect();
+        if (!contextMenu.visible) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+                const buttonElement = e.currentTarget;
+                const rect = buttonElement.getBoundingClientRect();
 
-            const coordinates = {
-                x: rect.left - 52,
-                y: rect.top + 34
-            };
-            setContextMenu({ id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true });
+                const coordinates = {
+                    x: rect.left - 52,
+                    y: rect.top + 34
+                };
+                setContextMenu({id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true});
+            } else {
+                setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
+            }
         } else {
-            setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
+            setContextMenu({ ...contextMenu, visible: false });
         }
-    }, []);
+    }, [contextMenu]);
 
-    const handleHeaderClick = (headerKey: string) => {
+    const handleHeaderClick = useCallback((headerKey: string) => {
         setSort({
             key: headerKey,
             order: sort.key === headerKey ? (sort.order === "asc" ? "desc" : "asc") : "desc"
         })
-    }
+    }, [sort.key, sort.order]);
 
     return (
         <>
@@ -97,11 +101,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 />
             }
 
-            <Table className={"bg-black w-full text-xs border-0 rounded-b-none"}>
+            <Table className={"w-full text-xs border-0 rounded-b-none"}>
                 <TableHeader>
-                    <TableRow className={cn("hover:bg-black", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-white" : "border-none")}>
+                    <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
                         {header.map((header) => (
-                            <TableHead className={"text-marcador text-sm min-w-28 max-w-32 overflow-hidden"}
+                            <TableHead className={"min-w-28 max-w-32 overflow-hidden"}
                                        key={header.key}
                                        onClick={() => handleHeaderClick(header.key)}>
                                 <span className={"flex flex-row items-center"}>
@@ -119,12 +123,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                         <TableRow key={taskElement.id}
                                   onClick={() => router.push(`/tasks/${taskElement.id}`)}
                                   onContextMenu={(event) => handleContextMenu(event, taskElement)}
-                                  className={index === getSortedTaskTable(taskElements, sort).length - 1 ? " border-b border-b-white" : ""}>
+                                  className={cn({"border-b border-b-edge": index === getSortedTaskTable(taskElements, sort).length - 1})}>
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
-                                    {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
                                     {taskElement.project && <ProjectBadge title={taskElement.project?.name}/>}
                                     {taskElement.topic && <TopicBadge title={taskElement.topic?.title} color={"error"}/>}
+                                    {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
                                 </div>
                             </TableCell>
                             <TableCell className={"text-white truncate"}>
@@ -134,7 +138,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
-                                {formatDate(taskElement.deadline?.toString())}
+                                {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}
                             </TableCell>
                             <TableAction onClick={(e) => handleContextMenu(e, taskElement)}/>
                         </TableRow>

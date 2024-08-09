@@ -1,12 +1,10 @@
-import {Absence, TaskElement, TimeEntry} from "@/types/types";
+import {Absence, TimeEntry} from "@/types/types";
 import React, {useMemo, useRef, useState} from "react";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
-import {formatTime} from "@/utils/format";
 import {cn} from "@/utils/cn";
 import {Week} from "@/app/timetracking/page";
 import {Clock7} from "lucide-react";
-import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import moment from "moment";
@@ -18,6 +16,8 @@ interface TimeEntryProps {
 }
 
 export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
+    const editRef = useRef<DialogRef>(null);
+    const [focusEntry, setFocusEntry] = useState<TimeEntry | null>(null);
     const days = useMemo(() => [
         {name: "Monday", day: week.monday},
         {name: "Tuesday", day: week.tuesday},
@@ -27,9 +27,6 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
         {name: "Saturday", day: week.saturday},
         {name: "Sunday", day: week.sunday},
     ], [week]);
-
-    const editRef = useRef<DialogRef>(null);
-    const [focusEntry, setFocusEntry] = useState<TimeEntry | null>(null);
 
     if (!timeEntries) return null;
 

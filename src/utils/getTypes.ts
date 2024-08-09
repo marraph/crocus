@@ -1,4 +1,4 @@
-import {Priority, Project, Status, Task, TaskElement, Team, Topic, User} from "@/types/types";
+import {Project, Task, TaskElement, Team, Topic, User} from "@/types/types";
 
 export function getAllTeams(user: User): string[] {
     const teams: string[] = [];
@@ -8,35 +8,11 @@ export function getAllTeams(user: User): string[] {
     return teams;
 }
 
-export function getAllCreators(user: User): string[] {
-    const creators: string[] = [];
-    user.teams.forEach(team => {
-        team.projects.forEach(project => {
-            project.tasks.forEach(task => {
-                if (!creators.includes(task.createdBy.name))
-                    creators.push(task.createdBy.name);
-            });
-        });
-    });
-    return creators;
-
-}
-
 export function getProjects(user: User, teamToFind: string): string[] {
     const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
     const projects: string[] = [];
     specificTeam?.projects.forEach((project: Project) => {
         projects.push(project.name);
-    });
-    return projects;
-}
-
-export function getAllProjectsString(user: User): string[] {
-    const projects: string[] = [];
-    user?.teams.forEach((team: Team) => {
-        team.projects.forEach((project: Project) => {
-            projects.push(project.name);
-        });
     });
     return projects;
 }
@@ -62,20 +38,6 @@ export function getProject(user: User, projectName: string | null | undefined): 
     return null;
 }
 
-export function getProjectFromTaskString(user: User, task: string): string {
-    let project: string = "";
-    user.teams.forEach((team: Team) => {
-        team.projects.forEach((proj: Project) => {
-            proj.tasks.forEach((tsk: Task) => {
-                if (tsk.name === task) {
-                    project = proj.name;
-                }
-            });
-        });
-    });
-    return project;
-}
-
 export function getProjectFromTask(user: User, task: Task | null): Project | null {
     if (!task) return null;
     let project: Project | null = null;
@@ -91,20 +53,6 @@ export function getProjectFromTask(user: User, task: Task | null): Project | nul
     return project;
 }
 
-export function getAllTopics(user: User): string[] {
-    const topics: string[] = [];
-    user.teams.forEach(team => {
-        team.projects.forEach(project => {
-            project.tasks.forEach(task => {
-                if (task.topic && !topics.includes(task.topic.title)) {
-                    topics.push(task.topic.title);
-                }
-            });
-        });
-    });
-    return topics;
-}
-
 export function getTopicsFromTeam(user: User, teamToFind: string): string[] {
     const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
     const topics: string[] = [];
@@ -116,8 +64,22 @@ export function getTopicsFromTeam(user: User, teamToFind: string): string[] {
         });
     });
     return topics;
-
 }
+
+export function getAllTopics(user: User): Topic[] {
+    const topics: Topic[] = [];
+    user?.teams.forEach((team: Team) => {
+        team.projects.forEach((project: Project) => {
+            project.tasks.forEach((task: Task) => {
+                if (task.topic && !topics.includes(task.topic)) {
+                    topics.push(task.topic);
+                }
+            });
+        });
+    });
+    return topics;
+}
+
 
 export function getTopicItem(user: User, topic: string): Topic | undefined {
     for (const team of user.teams ?? []) {
@@ -132,18 +94,6 @@ export function getTopicItem(user: User, topic: string): Topic | undefined {
     return undefined;
 }
 
-export function getAllTasksString(user: User): string[] {
-    const tasks: string[] = [];
-    user?.teams.forEach((team: Team) => {
-        team.projects.forEach((project: Project) => {
-            project.tasks.forEach((task: Task) => {
-                tasks.push(task.name);
-            });
-        });
-    });
-    return tasks;
-}
-
 export function getAllTasks(user: User): Task[] {
     const tasks: Task[] = [];
     user?.teams.forEach((team: Team) => {
@@ -151,20 +101,6 @@ export function getAllTasks(user: User): Task[] {
             project.tasks.forEach((task: Task) => {
                 tasks.push(task);
             });
-        });
-    });
-    return tasks;
-}
-
-export function getTasksFromProjectString(user: User, projectToFind: string): string[] {
-    const tasks: string[] = [];
-    user?.teams.forEach((team: Team) => {
-        team.projects.forEach((project: Project) => {
-            if (project.name === projectToFind) {
-                project.tasks.forEach((task: Task) => {
-                    tasks.push(task.name);
-                });
-            }
         });
     });
     return tasks;

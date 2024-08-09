@@ -4,8 +4,9 @@ import "./globals.css";
 import {Drawer} from "@/components/Drawer";
 import React, {ReactNode} from "react";
 import {UserProvider} from "@/context/UserContext";
-import {NavigationProvider} from "@marraph/daisy/components/navigationitem/NavigationItem";
 import {Toaster} from "griller/src/component/toaster";
+import {NavigationProvider} from "@/components/NavigationItem";
+import {Headbar} from "@/components/Headbar";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
@@ -24,7 +25,8 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                         <Toaster>
                             <div className={"flex flex-row"}>
                                 <Drawer></Drawer>
-                                <div className={"w-full flex flex-col space-y-4"}>
+                                <div className={"w-full flex flex-col bg-black-light"}>
+                                    <Headbar></Headbar>
                                     {children}
                                 </div>
                             </div>

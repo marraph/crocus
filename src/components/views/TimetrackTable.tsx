@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
     Table,
     TableAction,
@@ -15,7 +15,6 @@ import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMe
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 import {cn} from "@/utils/cn";
-import {formatTime} from "@/utils/format";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {EllipsisVertical} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
@@ -23,11 +22,6 @@ import {AbsenceBadge} from "@/components/badges/AbsenceBadge";
 import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDialog";
 import moment from "moment";
 
-const header = [
-    { key: "entry", label: "Entry" },
-    { key: "time", label: "Time" },
-    { key: "duration", label: "Duration" },
-];
 
 interface TimetrackProps {
     entries: TimeEntry[] | undefined;
@@ -42,6 +36,12 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     const [focusTimeEntry, setFocusTimeEntry] = useState<TimeEntry | null>(null);
     const [focusAbsence, setFocusAbsence] = useState<Absence | null>(null);
 
+    const header = useMemo(() => [
+        { key: "entry", label: "Entry" },
+        { key: "time", label: "Time" },
+        { key: "duration", label: "Duration" },
+    ], []);
+
     useEffect(() => {
         const handleClick = () => {
             setEntryContextMenu({ ...entryContextMenu, visible: false});
@@ -51,14 +51,14 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
         return () => document.removeEventListener('click', handleClick);
     }, [entryContextMenu, absenceContextMenu]);
 
-    const getElementLength = () => {
+    const getElementLength = useCallback(() => {
         if (!entries && absences) return absences?.length;
         if (!absences && entries) return entries?.length;
         if (entries && absences) return entries?.length + absences?.length;
         return 0;
-    }
+    }, [absences, entries]);
 
-    const handleEntryContextMenu = (e: React.MouseEvent<HTMLElement>, timeEntry: TimeEntry) => {
+    const handleEntryContextMenu = useCallback((e: React.MouseEvent<HTMLElement>, timeEntry: TimeEntry) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -67,21 +67,25 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
         setFocusTimeEntry(timeEntry);
 
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            const buttonElement = e.currentTarget;
-            const rect = buttonElement.getBoundingClientRect();
+        if (!entryContextMenu.visible) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+                const buttonElement = e.currentTarget;
+                const rect = buttonElement.getBoundingClientRect();
 
-            const coordinates = {
-                x: rect.left - 52,
-                y: rect.top + 34
-            };
-            setEntryContextMenu({ id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true });
+                const coordinates = {
+                    x: rect.left - 52,
+                    y: rect.top + 34
+                };
+                setEntryContextMenu({id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true});
+            } else {
+                setEntryContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
+            }
         } else {
-            setEntryContextMenu({id: timeEntry.id, x: e.clientX, y: e.clientY, visible: true});
+            setEntryContextMenu({ ...entryContextMenu, visible: false });
         }
-    };
+    }, [absenceContextMenu, entryContextMenu]);
 
-    const handleAbsenceContextMenu = (e: React.MouseEvent<HTMLElement>, absence: Absence) => {
+    const handleAbsenceContextMenu = useCallback((e: React.MouseEvent<HTMLElement>, absence: Absence) => {
         e.preventDefault();
         e.stopPropagation();
         setFocusTimeEntry(null);
@@ -89,36 +93,40 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
         setFocusAbsence(absence);
 
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            const buttonElement = e.currentTarget;
-            const rect = buttonElement.getBoundingClientRect();
+        if (!absenceContextMenu.visible) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+                const buttonElement = e.currentTarget;
+                const rect = buttonElement.getBoundingClientRect();
 
-            const coordinates = {
-                x: rect.left - 52,
-                y: rect.top + 34
-            };
-            setAbsenceContextMenu({ id: absence.id, x: coordinates.x, y: coordinates.y, visible: true });
+                const coordinates = {
+                    x: rect.left - 52,
+                    y: rect.top + 34
+                };
+                setAbsenceContextMenu({ id: absence.id, x: coordinates.x, y: coordinates.y, visible: true });
+            } else {
+                setAbsenceContextMenu({id: absence.id, x: e.clientX, y: e.clientY, visible: true});
+            }
         } else {
-            setAbsenceContextMenu({id: absence.id, x: e.clientX, y: e.clientY, visible: true});
+            setAbsenceContextMenu({ ...absenceContextMenu, visible: false });
         }
-    };
+    }, [absenceContextMenu, entryContextMenu]);
 
-    const handleTimeEntryOnClick = (timeEntry: TimeEntry) => {
+    const handleTimeEntryOnClick = useCallback((timeEntry: TimeEntry) => {
         setFocusTimeEntry(timeEntry);
         editRef.current?.show();
-    }
+    }, []);
 
-    const handleAbsenceOnClick = (absence: Absence) => {
+    const handleAbsenceOnClick = useCallback((absence: Absence) => {
         setFocusAbsence(absence);
         editRef.current?.show();
-    }
+    }, []);
 
-    const calculateDifference = (entry: TimeEntry) => {
+    const calculateDifference = useCallback((entry: TimeEntry) => {
         const endDate = new Date(entry.endDate);
         const startDate = new Date(entry.startDate);
 
         return endDate.getHours() - startDate.getHours();
-    }
+    }, []);
 
     return (
         <>

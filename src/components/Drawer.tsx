@@ -1,22 +1,32 @@
 "use client";
 
-import {NavigationItem, useNavigation} from "@marraph/daisy/components/navigationitem/NavigationItem";
-import React, {useEffect, useRef} from "react";
-import {CalendarDays, ClipboardList, Flower, LayoutDashboard, Search, SquarePlus, Timer} from "lucide-react";
+import React, {useEffect, useRef, useState} from "react";
+import {
+    CalendarDays,
+    ChevronDown,
+    ChevronRight,
+    ClipboardList,
+    Flower,
+    LayoutDashboard,
+    SquarePlus,
+    Timer,
+    Users
+} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
 import {usePathname, useRouter} from "next/navigation";
-import {SearchDialog} from "@/components/dialogs/SearchDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {JoinTeamDialog} from "@/components/dialogs/JoinTeamDialog";
-import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
+import {useUser} from "@/context/UserContext";
+import {NavigationItem, useNavigation} from "@/components/NavigationItem";
 
 export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const router = useRouter();
     const pathSegments = usePathname().split('/');
-    const { selectedItem, setSelectedItem } = useNavigation();
+    const [openTeamMenu, setOpenTeamMenu] = useState(false);
     const joinTeamDialogRef = useRef<DialogRef>(null);
-    const searchDialogRef = useRef<DialogRef>(null);
+    const { selectedItem, setSelectedItem } = useNavigation();
+    const { data:user, error:userError, isLoading:userLoading } = useUser();
 
     useEffect(() => {
         if (pathSegments.includes('dashboard')) {
@@ -32,28 +42,20 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
         }
     }, [pathSegments, setSelectedItem]);
 
+    if (!user) return null;
+
     return (
         <>
             <JoinTeamDialog ref={joinTeamDialogRef}/>
-            <SearchDialog ref={searchDialogRef}/>
 
-            <div className={cn("w-max h-screen flex flex-col justify-between bg-black pt-4 px-4 pb-8")} {...props}>
+            <div className={cn("w-max h-screen flex flex-col justify-between bg-black-light border-r border-edge py-4")} {...props}>
                 <div className={"space-y-2"}>
-                    <div className={"flex flex-row space-x-4 items-center mb-7"}>
+                    <div className={"flex flex-row space-x-4 items-center mb-7 border-b border-edge px-4 pb-3"}>
                         <Flower size={30}/>
-                        <span className={"text-3xl"}>fleur</span>
+                        <span className={"text-3xl"}>fluer</span>
                     </div>
 
-                    <div className={"h-8 group flex flex-row justify-between items-center rounded-lg bg-black border border-edge cursor-pointer pr-1"}
-                        onClick={() => searchDialogRef.current?.showModal()}>
-                        <div className={"flex flex-row items-center text-marcador text-sm space-x-2"}>
-                            <Search size={18} className={"group-focus:text-white ml-2"}/>
-                            <span>{"Search"}</span>
-                        </div>
-                        <Shortcut text={"⌘ K"}/>
-                    </div>
-
-                    <div className={"space-y-1 pt-4"}>
+                    <div className={"space-y-1 pt-4 px-4"}>
                         <span className={cn("text-marcador text-xs px-1")}>{"MENU"}</span>
                         <NavigationItem selected={selectedItem === "Dashboard"}
                                         title={"Dashboard"}
@@ -77,13 +79,32 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                         />
                     </div>
 
-                    <div className={"py-12"}>
-                        <span className={cn("text-marcador text-xs px-1")}>{"TEAMS"}</span>
-                        <NavigationItem selected={false}
-                                        title={"Join a team"}
-                                        icon={<SquarePlus size={18}/>}
-                                        onClick={() => joinTeamDialogRef.current?.show()}
-                        />
+                    <div className={"py-12 px-4 space-y-1"}>
+                        <div className={"flex flex-row space-x-2 items-center text-marcador hover:text-white cursor-pointer"}
+                             onClick={() => setOpenTeamMenu(!openTeamMenu)}
+                        >
+                            <span className={cn("text-xs pl-1")}>{"TEAMS"}</span>
+                            { openTeamMenu ? <ChevronDown size={14}/> : <ChevronRight size={14}/> }
+                        </div>
+
+                        {openTeamMenu &&
+                            <div className={"ml-6 pl-4 border-l border-edge"}>
+                                {user.teams.map((team) => (
+                                    <div key={team.id}
+                                         className={cn("w-full text-gray px-2 py-2 text-sm hover:bg-dark hover:text-white rounded-lg cursor-pointer truncate")}
+                                    >
+                                        <span>{team.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        }
+                        {openTeamMenu &&
+                            <NavigationItem selected={false}
+                                            title={"Join a team"}
+                                            icon={<SquarePlus size={18}/>}
+                                            onClick={() => joinTeamDialogRef.current?.show()}
+                            />
+                        }
                     </div>
                 </div>
                 <ProfileContextMenu/>

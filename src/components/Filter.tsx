@@ -1,16 +1,31 @@
 "use client";
 
-import React, {forwardRef, HTMLAttributes, ReactNode, useImperativeHandle, useState} from "react";
+import React, {forwardRef, HTMLAttributes, ReactNode, useCallback, useImperativeHandle, useMemo, useState} from "react";
 import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {Box, CircleAlert, LineChart, ListFilter, Tag, Users} from "lucide-react";
+import {
+    Box,
+    Check,
+    CircleAlert,
+    LineChart,
+    ListFilter,
+    Search, SignalHigh,
+    SignalLow,
+    SignalMedium,
+    Tag,
+    Users
+} from "lucide-react";
 import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {TaskElement} from "@/types/types";
+import {cn} from "@/utils/cn";
+import {CustomScroll} from "react-custom-scroll";
+import {Input} from "@marraph/daisy/components/input/Input";
 
 type FilterItem = {
     name: string;
     values: string[];
+    icon: ReactNode;
 }
 
 type SelectedFilter = {
@@ -21,6 +36,7 @@ type SelectedFilter = {
 interface FilterProps extends HTMLAttributes<HTMLDivElement> {
     title: string;
     items: FilterItem[];
+    onChange: () => void;
 }
 
 type FilterRef = {
@@ -28,37 +44,63 @@ type FilterRef = {
 }
 
 
-const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
+const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, ref) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [subMenuOpen, setSubMenuOpen] = useState<FilterItem | null>(null);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const menuRef = useOutsideClick(() => {
         setMenuOpen(false);
+        setSubMenuOpen(null);
+        setSearchTerm("");
     });
 
-    const handleMenuClick = (value: string) => {
+    const handleMenuClick = (item: FilterItem) => {
+        setSubMenuOpen(item);
+    }
+
+    const handleSubMenuClick = (value: string) => {
         if (subMenuOpen) {
             const newFilter = { name: subMenuOpen.name as keyof TaskElement, value: value };
-            const updatedFilters = filters.filter(f => f.name !== newFilter.name);
-            setFilters([...updatedFilters, newFilter]);
+            if (filters.some(f => f.name === newFilter.name && f.value === newFilter.value)) {
+                const updatedFilters = filters.filter(f => f.name !== newFilter.name || f.value !== newFilter.value);
+                setFilters(updatedFilters);
+            } else {
+                const updatedFilters = filters.filter(f => f.name !== newFilter.name);
+                setFilters([...updatedFilters, newFilter]);
+            }
+            onChange();
         }
         setSubMenuOpen(null);
+        setMenuOpen(false);
+        setSearchTerm("");
     }
+
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+    }, []);
+
+    const filteredValues = useMemo(() => {
+        if (!subMenuOpen) return [];
+        return subMenuOpen.values.filter(value =>
+            value.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [subMenuOpen, searchTerm]);
 
     useImperativeHandle(ref, () => ({
         getFilters: () => filters
     }));
 
     return (
-        <div className={"flex flex-col space-y-10"}>
+        <div className={"relative flex flex-col space-y-10"} ref={menuRef}>
             <div className={"flex flex-row space-x-2 items-center"}>
                 <Button text={title}
                         icon={<ListFilter size={16} className={"mr-2"}/>}
                         onClick={() => {
-                            if (subMenuOpen) setMenuOpen(false);
-                            else setMenuOpen(!menuOpen);
+                            setMenuOpen(!menuOpen);
                             setSubMenuOpen(null);
+                            setSearchTerm("");
                         }}
                 />
                 {filters && filters.map((filter, index) => (
@@ -66,44 +108,97 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items }, ref) => {
                         key={index}
                         name={filter.name}
                         value={filter.value}
-                        onClick={() => setFilters(filters.filter(f => f !== filter))}
+                        onClick={() => {
+                            setFilters(filters.filter(f => f !== filter));
+                            onChange();
+                        }}
                     />
                 ))}
             </div>
 
-            {
-                <>
-                    {menuOpen &&
-                        <ContextMenu>
-                            <ContextMenuContainer>
-                                {items.map((item, index) => (
-                                    <ContextMenuItem
-                                        key={index}
-                                        title={item.name}
-                                        onClick={() => {
-                                            setSubMenuOpen(item);
-                                            setMenuOpen(false);
-                                        }}
-                                    />
-                                ))}
-                            </ContextMenuContainer>
-                        </ContextMenu>
-                    }
+            {menuOpen && !subMenuOpen &&
+                <div className={"absolute z-50 bg-black-light border border-edge rounded-lg text-sm text-gray p-1 space-y-1 shadow-2xl"}>
+                    {items.map((item, index) => (
+                        <div className={"flex flex-row items-center space-x-2 px-2 py-1 rounded-lg hover:bg-dark-light hover:text-white cursor-pointer"}
+                            key={index}
+                            onClick={() => handleMenuClick(item)}
+                        >
+                            {item.icon}
+                            <span>{item.name}</span>
+                        </div>
+                    ))}
+                </div>
+            }
 
-                    {subMenuOpen &&
-                        <ContextMenu>
-                            <ContextMenuContainer>
-                                {subMenuOpen.values.map((value, index) => (
-                                    <ContextMenuItem
-                                        key={index}
-                                        title={value}
-                                        onClick={() => handleMenuClick(value)}
-                                    />
-                                ))}
-                            </ContextMenuContainer>
-                        </ContextMenu>
+            {subMenuOpen &&
+                <div className={"absolute z-50 max-h-48 w-max flex flex-col bg-black-light rounded-lg border border-edge overflow-hidden shadow-2xl"}>
+                    <div className={"w-full flex flex-row items-center space-x-2 py-1 border-b border-edge rounded-t-lg"}>
+                        <Search size={16} className={"text-gray ml-2"}/>
+                        <input placeholder={"Search"}
+                               value={searchTerm}
+                               onChange={handleInputChange}
+                               className={"w-full bg-black-light text-white-dark p-1 focus:outline-0 placeholder-marcador text-sm"}
+                        />
+                    </div>
+                    {filteredValues.length === 0 &&
+                        <div className={"text-center text-sm text-marcador pt-2"}>
+                            No results found
+                        </div>
                     }
-                </>
+                    {filteredValues.length > 5 ?
+                        <CustomScroll>
+                            <div className={"flex flex-col max-h-48 text-sm text-gray p-1 space-y-1"}>
+                                {filteredValues.map((value, index) => (
+                                    <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-dark-light hover:text-white cursor-pointer",
+                                        { "bg-dark-light text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
+                                         key={index}
+                                         onClick={() => handleSubMenuClick(value)}
+                                    >
+                                        {filters.some(f => f.name === subMenuOpen.name && f.value === value) &&
+                                            <Check size={16}/>
+                                        }
+                                        <span>{value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CustomScroll>
+                        :
+                        <div className={"flex flex-col text-sm text-gray p-1 space-y-1"}>
+                            {filteredValues.map((value, index) => (
+                                <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-dark hover:text-white cursor-pointer",
+                                    { "bg-dark text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
+                                     key={index}
+                                     onClick={() => handleSubMenuClick(value)}
+                                >
+                                    {filters.some(f => f.name === subMenuOpen.name && f.value === value) &&
+                                        <Check size={16}/>
+                                    }
+                                    {subMenuOpen.name === "Status" &&
+                                        value === "PENDING" &&
+                                        <div className={"size-1 rounded-full bg-topicblue"}/> ||
+                                        value === "PLANING" &&
+                                        <div className={"size-1 rounded-full bg-topicred"}/> ||
+                                        value === "STARTED" &&
+                                        <div className={"size-1 rounded-full bg-topicgreen"}/> ||
+                                        value === "TESTED" &&
+                                        <div className={"size-1 rounded-full bg-topicyellow"}/> ||
+                                        value === "FINISHED" &&
+                                        <div className={"size-1 rounded-full bg-topicpurple"}/>
+                                    }
+                                    {subMenuOpen.name === "Priority" &&
+                                        value === "LOW" &&
+                                        <SignalLow strokeWidth={3} size={16}/> ||
+                                        value === "MEDIUM" &&
+                                        <SignalMedium strokeWidth={3} size={16}/> ||
+                                        value === "HIGH" &&
+                                        <SignalHigh strokeWidth={3} size={16}/>
+                                    }
+                                    <span>{value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    }
+                </div>
             }
         </div>
     );
@@ -138,7 +233,7 @@ const FilterBadge: React.FC<FilterBadgeProps> = ({ name, value, onClick }) => {
 }
 
 export {Filter};
-export type {FilterRef};
+export type {FilterRef, SelectedFilter};
 
 
 

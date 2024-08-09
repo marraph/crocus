@@ -1,56 +1,34 @@
 "use client";
 
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
-import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
-import {LoaderCircle, SquarePen} from "lucide-react";
+import {Box, CircleAlert, LineChart, LoaderCircle, SquarePen, Tag, Users} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {CustomScroll} from "react-custom-scroll";
-import {Filter, FilterRef} from "@/components/Filter";
+import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
+import {getAllProjects, getAllTopics} from "@/utils/getTypes";
+import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 
 
 export default function Tasks() {
-    const [viewMode, setViewMode] = useState(true);
-    const [update, setUpdate] = useState(0);
-    const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
+    const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
+    const [filters, setFilters] = useState<SelectedFilter[]>([]);
+    const [update, setUpdate] = useState(0);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
 
-
-    const filterItems = [
-        {
-            name: "Status",
-            values: ["Open", "In Progress", "Done"]
-        },
-        {
-            name: "Priority",
-            values: ["Low", "Medium", "High"]
-        },
-        {
-            name: "Deadline",
-            values: ["Today", "This Week", "This Month"]
-        }
-    ];
-
-    useEffect(() => {
-        let elements = getTaskElements();
-        const filters = filterRef.current?.getFilters();
-
-        if (filters && filters.length > 0) {
-            elements = elements.filter(element => {
-                return filters.every(filter => {
-                    return element[filter.name] === filter.value;
-                });
-            });
-        }
-        setTaskElements(elements);
-    }, [update, filterRef]);
-
+    const filterItems = useMemo(() => [
+        { name: "Team", values: user?.teams?.map(team => team.name) || [], icon: <Users size={16}/> },
+        { name: "Project", values: user && getAllProjects(user).map(project => project.name) || [], icon: <Box size={16}/> },
+        { name: "Topic", values:  user && getAllTopics(user).map(topic => topic.title) || [], icon: <Tag size={16}/> },
+        { name: "Status", values: ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"] || [], icon: <CircleAlert size={16}/> },
+        { name: "Priority", values: ["LOW", "MEDIUM", "HIGH"]  || [], icon: <LineChart size={16}/> },
+    ], [user]);
 
     const getTaskElements = useCallback((): TaskElement[] => {
         let taskElements: TaskElement[] = [];
@@ -82,42 +60,73 @@ export default function Tasks() {
         return taskElements;
     }, [user]);
 
+    useEffect(() => {
+        setFilters(filterRef.current?.getFilters() || []);
+    }, [update]);
+
+    useEffect(() => {
+        let elements = getTaskElements();
+        if (filters.length > 0) {
+            elements = elements.filter(element => {
+                return filters.every(filter => {
+                    switch (filter.name) {
+                        case 'Team' as keyof TaskElement:
+                            return element.team?.name === filter.value;
+                        case 'Project' as keyof TaskElement:
+                            return element.project?.name === filter.value;
+                        case 'Topic' as keyof TaskElement:
+                            return element.topic?.title === filter.value;
+                        case 'Status' as keyof TaskElement:
+                            return element.status === filter.value;
+                        case 'Priority' as keyof TaskElement:
+                            return element.priority === filter.value;
+                        default:
+                            return false;
+                    }
+                });
+            });
+        }
+
+        setTaskElements(elements);
+    }, [filters, getTaskElements]);
+
     if (!user) return null;
 
     return (
-        <div className={"h-screen flex flex-col space-y-4 p-8"}>
+        <div className={"h-full flex flex-col space-y-4 p-4"}>
             <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                 <div className={"flex flex-row items-center space-x-2 z-10"}>
-                    <Button text={"Create Task"}
+                    <Button text={""}
                             theme={"white"}
-                            onClick={() => {dialogRef.current?.show(); console.log(dialogRef.current)}}
-                            icon={<SquarePen size={20} className={"mr-2"}/>}
+                            onClick={() => dialogRef.current?.show()}
+                            icon={<SquarePen size={20}/>}
+                            className={"px-2"}
                     />
                     <CreateTaskDialog ref={dialogRef}/>
                     <Filter title={"Filter"}
                             items={filterItems}
                             ref={filterRef}
+                            onChange={() => setUpdate(update + 1)}
                     />
                     <div className={"flex flex-row space-x-1"}>
                         <LoaderCircle size={14} className={"text-marcador"}/>
-                        <span className={"text-xs text-marcador"}>{`${getTaskElements().length} OPEN`}</span>
+                        <span className={"text-xs text-marcador"}>{taskElements.length + " OPEN"}</span>
                     </div>
                 </div>
-                <SwitchButton firstTitle={"Table"}
-                              secondTitle={"Card"}
-                              onClick={() => setViewMode(!viewMode)}
-                />
             </div>
-
-            {viewMode &&
-                <div className={"overflow-hidden rounded-lg border border-edge"}>
-                    <CustomScroll>
-                        <div className={"rounded-lg bg-black h-screen"}>
+            <div className={"h-full overflow-hidden rounded-lg border border-edge"}>
+                <CustomScroll>
+                    <div className={"rounded-lg bg-black-light h-[800px]"}>
+                        {taskElements.length > 0 ?
                             <TaskTable taskElements={taskElements}/>
-                        </div>
-                    </CustomScroll>
-                </div>
-            }
+                            :
+                            <div className={"h-full flex flex-row items-center justify-center"}>
+                                <TaskPlaceholder dialogRef={dialogRef}/>
+                            </div>
+                        }
+                    </div>
+                </CustomScroll>
+            </div>
         </div>
     );
 }
