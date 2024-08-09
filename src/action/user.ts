@@ -3,16 +3,22 @@ import {eq} from "drizzle-orm";
 import {db} from "@/database/drizzle";
 
 export const createUser = async (name: string, email: string) => {
-    return db.insert(user).values({
-        email: email,
-        name: name
-    }).returning();
+    const [createdUser] = await db
+        .insert(user)
+        .values({email: email, name: name})
+        .returning()
+
+    return createdUser
 }
 
 export const updateUser = async (id: number, name: string) => {
-    await db.update(user).set({
-        name: name
-    }).where(eq(user.id, id))
+    const [updatedUser] = await db
+        .update(user)
+        .set({name: name})
+        .where(eq(user.id, id))
+        .returning()
+
+    return updatedUser
 }
 
 export const deleteUser = async (id: number) => {
@@ -20,5 +26,10 @@ export const deleteUser = async (id: number) => {
 }
 
 export const getUser = async (id: number) => {
-    await db.select().from(user).where(eq(user.id, id))
+    const [foundUser] = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, id))
+
+    return foundUser
 }
