@@ -23,11 +23,13 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                 <NavigationProvider>
                     <UserProvider id={9}>
                         <Toaster>
-                            <div className={"flex flex-row"}>
-                                <Drawer></Drawer>
-                                <div className={"w-full flex flex-col bg-black-light"}>
-                                    <Headbar></Headbar>
-                                    {children}
+                            <div className={"flex flex-row h-screen"}>
+                                <Drawer/>
+                                <div className={"w-screen flex flex-col bg-black-light overflow-hidden"}>
+                                    <Headbar/>
+                                    <div className={"flex-grow overflow-hidden"}>
+                                        {children}
+                                    </div>
                                 </div>
                             </div>
                         </Toaster>
