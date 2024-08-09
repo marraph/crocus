@@ -39,11 +39,11 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
             <div className={"w-full h-full grid grid-cols-7 rounded-t-lg border border-edge border-b-0 overflow-hidden"}>
                 {days.map((day, index) => (
                     <div key={index}
-                         className={cn("h-full bg-black rounded-lg border-x border-edge",
+                         className={cn("h-full bg-black-light rounded-lg border-x border-edge",
                              day.name === "Sunday" ? "border-x-0 rounded-l-none" : "border-l-0 rounded-r-none"
                          )}
                     >
-                        <div className={"w-full border-b border-edge p-3"}>
+                        <div className={"w-full border-b border-edge p-3 bg-dark"}>
                             <span className={"text-marcador text-sm font-medium"}>{day.name}</span>
                         </div>
                         <div className={"h-[full] space-y-2"}>
@@ -52,7 +52,7 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                                 const endDate = new Date(entry.endDate);
 
                                 return startDate.getDay() === day.day.getDay() && (
-                                    <div className={"flex flex-col rounded-lg bg-dark hover:bg-dark-light m-1 cursor-pointer space-y-1 overflow-hidden"}
+                                    <div className={"flex flex-col rounded-lg bg-dark-light hover:bg-dark-light m-1 cursor-pointer space-y-1 overflow-hidden"}
                                          key={index}
                                          onClick={() => {
                                              setFocusEntry(entry);

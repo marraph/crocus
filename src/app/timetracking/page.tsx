@@ -208,7 +208,7 @@ export default function Timetracking() {
                         {view ?
                             <>
                                 <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                                <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
+                                <div className={"flex-grow bg-black-light border border-y-0 border-edge"}></div>
                                 <TimeEntryDaySummary entries={dailyEntries}/>
                             </>
                             :

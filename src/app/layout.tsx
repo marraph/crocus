@@ -22,7 +22,7 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                 <NavigationProvider>
                     <UserProvider id={9}>
                         <Toaster>
-                            <div className={"flex flex-row h-screen"}>
+                            <div className={"flex flex-row h-screen bg-black-light"}>
                                 <Drawer/>
                                 {children}
                             </div>

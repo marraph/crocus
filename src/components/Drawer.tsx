@@ -52,7 +52,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                 <div className={"space-y-2"}>
                     <div className={"flex flex-row space-x-4 items-center mb-7 border-b border-edge px-4 pb-3"}>
                         <Flower size={30}/>
-                        <span className={"text-3xl"}>fluer</span>
+                        <span className={"text-3xl"}>Calla</span>
                     </div>
 
                     <div className={"space-y-1 pt-4 px-4"}>
