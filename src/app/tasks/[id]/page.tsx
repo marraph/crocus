@@ -39,14 +39,17 @@ export default function TasksID() {
 
     return (
         <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
-            <Headbar>
+            <Headbar className={"pt-3.5"}>
+                <Breadcrump pastText={"Tasks"}
+                            nowText={taskElement.name}
+                            onClick={() => router.push("/tasks/")}
+                />
             </Headbar>
+
             <div className={"h-full flex flex-col space-y-4 p-4"}>
                 <div className={"w-full flex flex-row justify-between"}>
-                    <Breadcrump pastText={"Tasks"}
-                                nowText={taskElement.name}
-                                onClick={() => router.push("/tasks/")}
-                    />
+
+
                     <div className={"flex flex-row justify-end"}>
                         <div className={"flex flex-row space-x-2"}>
                             <Button text={"Edit"}

@@ -147,8 +147,8 @@ export default function Timetracking() {
     return (
         <>
             <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
-                <Headbar>
-                </Headbar>
+                <Headbar title={"Timetracking"}/>
+
                 <div className={"h-full flex flex-col p-4"}>
                     <div className={"text-nowrap flex flex-row items-center"}>
                         <div className={"flex flex-row space-x-2"}>

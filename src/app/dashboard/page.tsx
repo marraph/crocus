@@ -44,11 +44,10 @@ export default function Dashboard() {
     const { tasks, count } = getDashboardTasks(user);
 
     return (
-        <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
-            <Headbar>
-            </Headbar>
+        <div className={"h-screen w-screen flex flex-col"}>
+            <Headbar title={"Dashboard"}/>
 
-            <div className={"h-full flex flex-col p-4"}>
+            <div className={"flex-grow flex flex-col p-4 overflow-hidden"}>
                 <div className={"flex flex-row justify-between items-center"}>
                     <div className={"pt-4"}>
                         <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
@@ -74,7 +73,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className={"bg-black-light rounded-lg w-full border-x border-b border-edge"}>
+                <div className={"flex-grow flex flex-col bg-black-light rounded-lg w-full border-x border-b border-edge overflow-hidden"}>
                     <div className={"flex flex-row justify-between items-center bg-dark-light border-y border-edge rounded-t-lg"}>
                         <div className={"flex flex-row items-center"}>
                             <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
@@ -89,26 +88,24 @@ export default function Dashboard() {
                                 icon={<ExternalLink size={16} className={"mr-2"}/>}
                         />
                     </div>
-                    <CustomScroll>
-                        <div className={"h-[350px] rounded-b-lg"}>
-                            {tasks.map((task, index) => (
-                                <div key={index}
-                                     className={"group flex flex-row justify-between items-center p-2 border-b border-edge hover:bg-dark hover:cursor-pointer"}
-                                     onClick={() => router.push(`/tasks/${task.id}`)}>
-                                    <div className={"flex flex-row space-x-8 items-center pl-4"}>
-                                        <ProjectBadge title={task.project?.name ?? ""}/>
-                                        <span className={"text-gray group-hover:text-white"}>{task.name}</span>
-                                    </div>
-                                    <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                                        <StatusBadge title={task.status?.toString()}/>
-                                        <span
-                                            className={"text-sm text-gray group-hover:text-white"}>{moment(task.deadline?.toString()).format('MMMM D YYY')}</span>
-                                        <ProfileBadge name={task.createdBy?.name}/>
-                                    </div>
+                    <div className={"flex-grow overflow-auto no-scrollbar rounded-b-lg"}>
+                        {tasks.map((task, index) => (
+                            <div key={index}
+                                 className={"group flex flex-row justify-between items-center p-2 border-b border-edge hover:bg-dark hover:cursor-pointer"}
+                                 onClick={() => router.push(`/tasks/${task.id}`)}>
+                                <div className={"flex flex-row space-x-8 items-center pl-4"}>
+                                    <ProjectBadge title={task.project?.name ?? ""}/>
+                                    <span className={"text-gray group-hover:text-white"}>{task.name}</span>
                                 </div>
-                            ))}
-                        </div>
-                    </CustomScroll>
+                                <div className={"flex flex-row space-x-8 items-center pr-4"}>
+                                    <StatusBadge title={task.status?.toString()}/>
+                                    <span
+                                        className={"text-sm text-gray group-hover:text-white"}>{moment(task.deadline?.toString()).format('MMMM D YYY')}</span>
+                                    <ProfileBadge name={task.createdBy?.name}/>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
                 </div>
             </div>

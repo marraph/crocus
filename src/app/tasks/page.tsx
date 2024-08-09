@@ -8,7 +8,6 @@ import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {CustomScroll} from "react-custom-scroll";
 import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
 import {getAllProjects, getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
@@ -18,7 +17,6 @@ import {Headbar} from "@/components/Headbar";
 export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
-    const headbarRef = useRef<HTMLDivElement>(null);
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
@@ -95,11 +93,10 @@ export default function Tasks() {
     if (!user) return null;
 
     return (
-        <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
-            <Headbar ref={headbarRef}>
-            </Headbar>
+        <div className={"h-screen w-screen flex flex-col"}>
+            <Headbar title={"Tasks"}/>
 
-            <div className={`flex-col space-y-4 p-4`}>
+            <div className={"flex-grow flex flex-col space-y-4 p-4 overflow-hidden"}>
                 <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                     <div className={"flex flex-row items-center space-x-2 z-10"}>
                         <Button text={""}
@@ -120,18 +117,15 @@ export default function Tasks() {
                         </div>
                     </div>
                 </div>
-                <div className={"h-max rounded-lg border border-edge"}>
-                    <CustomScroll>
-                        <div className={`rounded-lg bg-black-light h-[776px]`}>
-                            {taskElements.length > 0 ?
-                                <TaskTable taskElements={taskElements}/>
-                                :
-                                <div className={"h-full flex flex-row items-center justify-center"}>
-                                    <TaskPlaceholder dialogRef={dialogRef}/>
-                                </div>
-                            }
+
+                <div className={"flex-grow rounded-lg bg-black-light overflow-auto no-scrollbar border border-edge"}>
+                    {taskElements.length > 0 ?
+                        <TaskTable taskElements={taskElements}/>
+                        :
+                        <div className={"max-h-full flex flex-row items-center justify-center"}>
+                            <TaskPlaceholder dialogRef={dialogRef}/>
                         </div>
-                    </CustomScroll>
+                    }
                 </div>
             </div>
         </div>
