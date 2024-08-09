@@ -57,12 +57,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         setFocusTaskElement(taskElement);
 
         if (!contextMenu.visible) {
-            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            if (e.target instanceof HTMLButtonElement) {
                 const buttonElement = e.currentTarget;
                 const rect = buttonElement.getBoundingClientRect();
 
                 const coordinates = {
-                    x: rect.left - 52,
+                    x: rect.left - 66,
                     y: rect.top + 34
                 };
                 setContextMenu({id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true});

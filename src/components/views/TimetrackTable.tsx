@@ -16,8 +16,6 @@ import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTim
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {EllipsisVertical} from "lucide-react";
-import {Button} from "@marraph/daisy/components/button/Button";
 import {AbsenceBadge} from "@/components/badges/AbsenceBadge";
 import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDialog";
 import moment from "moment";
@@ -30,7 +28,8 @@ interface TimetrackProps {
 
 export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) => {
     const deleteRef = useRef<DialogRef>(null);
-    const editRef = useRef<DialogRef>(null);
+    const editEntryRef = useRef<DialogRef>(null);
+    const editAbsenceRef = useRef<DialogRef>(null);
     const [entryContextMenu, setEntryContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [absenceContextMenu, setAbsenceContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTimeEntry, setFocusTimeEntry] = useState<TimeEntry | null>(null);
@@ -68,12 +67,12 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
         setFocusTimeEntry(timeEntry);
 
         if (!entryContextMenu.visible) {
-            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            if (e.target instanceof HTMLButtonElement) {
                 const buttonElement = e.currentTarget;
                 const rect = buttonElement.getBoundingClientRect();
 
                 const coordinates = {
-                    x: rect.left - 52,
+                    x: rect.left - 66,
                     y: rect.top + 34
                 };
                 setEntryContextMenu({id: timeEntry.id, x: coordinates.x, y: coordinates.y, visible: true});
@@ -94,12 +93,12 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
         setFocusAbsence(absence);
 
         if (!absenceContextMenu.visible) {
-            if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            if (e.target instanceof HTMLButtonElement) {
                 const buttonElement = e.currentTarget;
                 const rect = buttonElement.getBoundingClientRect();
 
                 const coordinates = {
-                    x: rect.left - 52,
+                    x: rect.left - 66,
                     y: rect.top + 34
                 };
                 setAbsenceContextMenu({ id: absence.id, x: coordinates.x, y: coordinates.y, visible: true });
@@ -113,12 +112,12 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
     const handleTimeEntryOnClick = useCallback((timeEntry: TimeEntry) => {
         setFocusTimeEntry(timeEntry);
-        editRef.current?.show();
+        editEntryRef.current?.show();
     }, []);
 
     const handleAbsenceOnClick = useCallback((absence: Absence) => {
         setFocusAbsence(absence);
-        editRef.current?.show();
+        editAbsenceRef.current?.show();
     }, []);
 
     const calculateDifference = useCallback((entry: TimeEntry) => {
@@ -133,22 +132,22 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
             {focusTimeEntry &&
                 <>
                     <DeleteTimeEntryDialog ref={deleteRef} timeEntry={focusTimeEntry}/>
-                    <EditTimeEntryDialog ref={editRef} timeEntry={focusTimeEntry}/>
+                    <EditTimeEntryDialog ref={editEntryRef} timeEntry={focusTimeEntry}/>
                 </>
             }
 
             {focusAbsence &&
                 <>
                     <DeleteTimeEntryDialog ref={deleteRef} absence={focusAbsence}/>
-                    <EditAbsenceDialog ref={editRef} absence={focusAbsence}/>
+                    <EditAbsenceDialog ref={editAbsenceRef} absence={focusAbsence}/>
                 </>
             }
 
             {entryContextMenu.visible &&
-                <TimeEntryContextMenu x={entryContextMenu.x} y={entryContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
+                <TimeEntryContextMenu x={entryContextMenu.x} y={entryContextMenu.y} deleteRef={deleteRef} editRef={editEntryRef}/>
             }
             {absenceContextMenu.visible &&
-                <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef} editRef={editRef}/>
+                <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef} editRef={editAbsenceRef}/>
             }
 
             <Table className={"bg-dark w-full no-scrollbar rounded-b-none text-xs border-b-0"}>
@@ -176,12 +175,9 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                     <span>{absence.comment}</span>
                                 </div>
                             </TableCell>
-                            <TableCell>{}</TableCell>
-                            <TableCell className={ "flex flex-row space-x-4 items-center justify-end"}>
-                                <Button text={""} className={"p-1.5 mx-2"} onClick={(e) => {e.stopPropagation(); handleAbsenceContextMenu(e, absence);}}>
-                                    <EllipsisVertical size={16}/>
-                                </Button>
-                            </TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableAction onClick={(e) => handleAbsenceContextMenu(e, absence)}/>
                         </TableRow>
                     ))}
                     {entries?.map((entry, index) => (

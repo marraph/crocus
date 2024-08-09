@@ -8,9 +8,8 @@ import {
     ClipboardList,
     Flower,
     LayoutDashboard,
-    SquarePlus,
-    Timer,
-    Users
+    Plus,
+    Timer
 } from "lucide-react";
 import {cn} from "@/utils/cn";
 import {ProfileContextMenu} from "@/components/contextmenus/ProfileContextMenu";
@@ -52,7 +51,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                 <div className={"space-y-2"}>
                     <div className={"flex flex-row space-x-4 items-center mb-7 border-b border-edge px-4 pb-3"}>
                         <Flower size={30}/>
-                        <span className={"text-3xl"}>Calla</span>
+                        <span className={"text-3xl"}>calla</span>
                     </div>
 
                     <div className={"space-y-1 pt-4 px-4"}>
@@ -79,16 +78,26 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                         />
                     </div>
 
-                    <div className={"py-12 px-4 space-y-1"}>
-                        <div className={"flex flex-row space-x-2 items-center text-marcador hover:text-white cursor-pointer"}
-                             onClick={() => setOpenTeamMenu(!openTeamMenu)}
-                        >
-                            <span className={cn("text-xs pl-1")}>{"TEAMS"}</span>
-                            { openTeamMenu ? <ChevronDown size={14}/> : <ChevronRight size={14}/> }
+                    <div className={"py-10 px-2 space-y-1"}>
+                        <div className={"w-full flex flex-row items-center"}>
+                            <div
+                                className={"w-full flex flex-row items-center justify-between p-2 pr-4 text-marcador rounded-lg hover:text-white hover:bg-dark cursor-pointer"}
+                                onClick={() => setOpenTeamMenu(!openTeamMenu)}
+                            >
+                                <div className={"flex flex-row space-x-2"}>
+                                    <span className={cn("text-xs pl-1")}>{"TEAMS"}</span>
+                                    {openTeamMenu ? <ChevronDown size={14}/> : <ChevronRight size={14}/>}
+                                </div>
+                            </div>
+                            <div className={"p-2 text-marcador hover:text-white hover:bg-dark rounded-lg cursor-pointer"}
+                                 onClick={() => joinTeamDialogRef.current?.show()}
+                            >
+                                <Plus size={16}/>
+                            </div>
                         </div>
 
                         {openTeamMenu &&
-                            <div className={"ml-6 pl-4 border-l border-edge"}>
+                            <div className={"ml-6 pl-4 border-l border-edge border-opacity-50"}>
                                 {user.teams.map((team) => (
                                     <div key={team.id}
                                          className={cn("w-full text-gray px-2 py-2 text-sm hover:bg-dark hover:text-white rounded-lg cursor-pointer truncate")}
@@ -97,13 +106,6 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
                                     </div>
                                 ))}
                             </div>
-                        }
-                        {openTeamMenu &&
-                            <NavigationItem selected={false}
-                                            title={"Join a team"}
-                                            icon={<SquarePlus size={18}/>}
-                                            onClick={() => joinTeamDialogRef.current?.show()}
-                            />
                         }
                     </div>
                 </div>
