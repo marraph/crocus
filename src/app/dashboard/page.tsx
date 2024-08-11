@@ -83,7 +83,7 @@ export default function Dashboard() {
                             </Badge>
                         </div>
                         <Button text={"Open"}
-                                className={"m-1 font-normal bg-dark-light hover:bg-dark border-none"}
+                                className={"m-1 font-normal dark:bg-dark-light dark:hover:bg-dark border-none"}
                                 onClick={() => router.push("/tasks")}
                                 icon={<ExternalLink size={16} className={"mr-2"}/>}
                         />

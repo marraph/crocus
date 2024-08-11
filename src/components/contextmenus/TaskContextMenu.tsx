@@ -37,7 +37,7 @@ export const TaskContextMenu: React.FC<TaskContextProps> = ({ deleteRef, editRef
                                  icon={<CheckCheck size={16}/>}/>
                 <ContextMenuItem title={"Delete"}
                                  onClick={() => deleteRef.current?.show()}
-                                 className={"text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}
+                                 className={"dark:text-lightred dark:hover:text-lightred dark:hover:bg-lightred dark:hover:bg-opacity-10"}
                                  icon={<Trash2 size={16}/>}/>
             </ContextMenuContainer>
         </ContextMenu>

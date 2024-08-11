@@ -33,7 +33,7 @@ export const MessageBar: React.FC<MessageBarProps> = ({ className, ...props }) =
             />
             <Button text={""}
                     icon={<Send size={20}/>}
-                    theme={"white"}
+                    theme={"primary"}
                     disabled={!valid}
                     onClick={sendMessage}
             />

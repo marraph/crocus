@@ -100,7 +100,7 @@ export default function Tasks() {
                 <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
                     <div className={"flex flex-row items-center space-x-2 z-10"}>
                         <Button text={""}
-                                theme={"white"}
+                                theme={"primary"}
                                 onClick={() => dialogRef.current?.show()}
                                 icon={<SquarePen size={20}/>}
                                 className={"px-2"}

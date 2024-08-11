@@ -153,13 +153,12 @@ export default function Timetracking() {
                     <div className={"text-nowrap flex flex-row items-center"}>
                         <div className={"flex flex-row space-x-2"}>
                             <Button text={""}
-                                    theme={"white"}
+                                    theme={"primary"}
                                     onClick={() => entryDialogRef.current?.show()}
                                     icon={<AlarmClockPlus size={20}/>}
                                     className={"px-2"}
                             />
                             <Button text={"New Absence"}
-                                    theme={"dark"}
                                     onClick={() => absenceDialogRef.current?.show()}
                                     icon={<TreePalm size={20} className={"mr-2"}/>}
                             />

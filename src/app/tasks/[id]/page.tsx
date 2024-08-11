@@ -1,6 +1,6 @@
 "use client";
 
-import {Breadcrump} from "@marraph/daisy/components/breadcrump/Breadcrump";
+import {Breadcrumb} from "@marraph/daisy/components/breadcrumb/Breadcrumb";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {useParams, useRouter} from "next/navigation";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
@@ -40,7 +40,7 @@ export default function TasksID() {
     return (
         <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
             <Headbar className={"pt-3.5"}>
-                <Breadcrump pastText={"Tasks"}
+                <Breadcrumb pastText={"Tasks"}
                             nowText={taskElement.name}
                             onClick={() => router.push("/tasks/")}
                 />
