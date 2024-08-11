@@ -19,7 +19,7 @@ import {createTask} from "@/service/hooks/taskHook";
 import {Priority, Status, TaskCreation, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Input} from "@marraph/daisy/components/input/Input";
-import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllTeams, getProject, getProjects, getTopicItem, getTopicsFromTeam} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
@@ -240,11 +240,14 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          switchButton={true}
-                          switchRef={switchRef as MutableRefObject<SwitchRef>}
                           onClick={() => handleCreateClick(user)}
                           disabledButton={!valid}
-            />
+            >
+                <div className={"flex flex-row items-center space-x-2 text-zinc-700 dark:text-gray text-xs mr-16"}>
+                    <span>{"Create more"}</span>
+                    <Switch ref={switchRef}/>
+                </div>
+            </DialogFooter>
         </Dialog>
     )
 })

@@ -60,7 +60,6 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     const handleEntryContextMenu = useCallback((e: React.MouseEvent<HTMLElement>, timeEntry: TimeEntry) => {
         e.preventDefault();
         e.stopPropagation();
-
         setFocusAbsence(null);
         setAbsenceContextMenu({ ...absenceContextMenu, visible: false});
 

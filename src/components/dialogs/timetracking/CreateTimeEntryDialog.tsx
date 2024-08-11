@@ -7,7 +7,7 @@ import {useUser} from "@/context/UserContext";
 import {Project, Task, TimeEntry} from "@/types/types";
 import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
 import {mutateRef} from "@/utils/mutateRef";
@@ -221,14 +221,14 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                                 dayFormat={"long"}
                                 className={"z-40"}
                                 onValueChange={(value) =>
-                                    setValues((prevValues) => ({ ...prevValues, date: value ?? new Date() }))}
+                                    setValues((prevValues) => ({...prevValues, date: value ?? new Date()}))}
                     />
                     <SearchSelect buttonTitle={"From"}
                                   preSelectedValue={values.timeFrom}
                                   icon={<Clock2 size={16}/>}
                                   size={"medium"}
                                   onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, timeFrom: value }))}
+                                      setValues((prevValues) => ({...prevValues, timeFrom: value}))}
                     >
                         {times.map((time) =>
                             <SearchSelectItem key={time} title={time}/>
@@ -239,7 +239,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                                   icon={<Clock8 size={16}/>}
                                   size={"medium"}
                                   onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, timeTo: value }))}
+                                      setValues((prevValues) => ({...prevValues, timeTo: value}))}
                     >
                         {times.map((time) =>
                             <SearchSelectItem key={time} title={time}/>
@@ -248,11 +248,15 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          switchButton={true}
                           onClick={handleCreateClick}
                           disabledButton={!valid}
-            />
+            >
+                <div className={"flex flex-row items-center space-x-2 text-zinc-700 dark:text-gray text-xs mr-16"}>
+                    <span>{"Create more"}</span>
+                    <Switch ref={switchRef}/>
+                </div>
+            </DialogFooter>
         </Dialog>
-    );
+);
 })
 CreateTimeEntryDialog.displayName = "CreateTimeEntryDialog";
