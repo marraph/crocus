@@ -194,7 +194,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     if (!dialogRef || user === undefined) return null;
 
     return (
-        <Dialog width={600}
+        <Dialog width={800}
                 onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}

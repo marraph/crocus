@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {HTMLAttributes, useEffect, useRef, useState} from "react";
 import {
     CalendarDays,
     ChevronDown,
@@ -19,7 +19,7 @@ import {JoinTeamDialog} from "@/components/dialogs/JoinTeamDialog";
 import {useUser} from "@/context/UserContext";
 import {NavigationItem, useNavigation} from "@/components/NavigationItem";
 
-export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
+export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...props}) => {
     const router = useRouter();
     const pathSegments = usePathname().split('/');
     const [openTeamMenu, setOpenTeamMenu] = useState(false);
@@ -113,5 +113,4 @@ export const Drawer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
             </div>
         </>
     );
-});
-Drawer.displayName = "Drawer";
+}

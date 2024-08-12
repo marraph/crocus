@@ -35,6 +35,7 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
             title: "Joined Team successfully!",
             icon: <Users/>,
             theme: "dark",
+            position: "br"
         });
         handleCloseClick();
     }, [addToast, handleCloseClick]);

@@ -12,6 +12,7 @@ import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
 import {getAllProjects, getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
+import {useToast} from "griller/src/component/toaster";
 
 
 export default function Tasks() {
@@ -21,6 +22,8 @@ export default function Tasks() {
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
+
+    const {addToast} = useToast();
 
     const filterItems = useMemo(() => [
         { name: "Team", values: user?.teams?.map(team => team.name) || [], icon: <Users size={16}/> },
