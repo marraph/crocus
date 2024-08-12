@@ -205,16 +205,9 @@ export default function Timetracking() {
 
                     <div className={"w-full h-full rounded-lg flex flex-col items-stretch pt-4"}>
                         {view ?
-                            <>
-                                <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                                <div className={"flex-grow bg-black-light border border-y-0 border-edge"}></div>
-                                <TimeEntryDaySummary entries={dailyEntries}/>
-                            </>
+                            <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
                             :
-                            <>
-                                <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
-                                <TimeEntryDaySummary entries={weekEntries}/>
-                            </>
+                            <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
                         }
                     </div>
                 </div>

@@ -9,7 +9,7 @@ import {
     TableRow
 } from "@marraph/daisy/components/table/Table";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
-import {EntryTitleBadge} from "@/components/badges/EntryTaskBadge";
+import {EntryTaskBadge} from "@/components/badges/EntryTaskBadge";
 import {Absence, TimeEntry} from "@/types/types";
 import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
@@ -19,6 +19,7 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {AbsenceBadge} from "@/components/badges/AbsenceBadge";
 import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDialog";
 import moment from "moment";
+import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 
 
 interface TimetrackProps {
@@ -143,66 +144,73 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
             }
 
             {entryContextMenu.visible &&
-                <TimeEntryContextMenu x={entryContextMenu.x} y={entryContextMenu.y} deleteRef={deleteRef} editRef={editEntryRef}/>
+                <TimeEntryContextMenu x={entryContextMenu.x} y={entryContextMenu.y} deleteRef={deleteRef}
+                                      editRef={editEntryRef}/>
             }
             {absenceContextMenu.visible &&
-                <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef} editRef={editAbsenceRef}/>
+                <TimeEntryContextMenu x={absenceContextMenu.x} y={absenceContextMenu.y} deleteRef={deleteRef}
+                                      editRef={editAbsenceRef}/>
             }
 
-            <Table className={"bg-dark w-full no-scrollbar rounded-b-none text-xs border-b-0"}>
-                <TableHeader>
-                    <TableRow className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
-                    {header.map((header) => (
-                            <TableHead className={"text-marcador text-sm w-max min-w-28"} key={header.key}>
-                                <span className={"flex flex-row items-center"}>
-                                    {header.label}
-                                </span>
-                            </TableHead>
+            <div className={"h-full flex flex-col"}>
+                <Table className={"bg-dark w-full no-scrollbar rounded-b-none text-xs border-b-0"}>
+                    <TableHeader>
+                        <TableRow
+                            className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
+                            {header.map((header) => (
+                                <TableHead className={"text-marcador text-sm w-max min-w-28"} key={header.key}>
+                                    <span className={"flex flex-row items-center"}>
+                                        {header.label}
+                                    </span>
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody className={"text-sm"}>
+                        {absences?.map((absence, index) => (
+                            <TableRow key={index}
+                                      className={cn("h-min", index === getElementLength() - 1 ? " border-b border-b-white" : "")}
+                                      onContextMenu={(event) => handleAbsenceContextMenu(event, absence)}
+                                      onClick={() => handleAbsenceOnClick(absence)}
+                            >
+                                <TableCell>
+                                    <div className={"flex flex-row items-center space-x-2"}>
+                                        <AbsenceBadge title={"Absence: " + absence.absenceType.toString()}/>
+                                        <span>{absence.comment}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                                <TableAction onClick={(e) => handleAbsenceContextMenu(e, absence)}/>
+                            </TableRow>
                         ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody className={"text-sm"}>
-                    {absences?.map((absence, index) => (
-                        <TableRow key={index}
-                                  className={cn("h-min", index === getElementLength() - 1 ? " border-b border-b-white" : "")}
-                                  onContextMenu={(event) => handleAbsenceContextMenu(event, absence)}
-                                  onClick={() => handleAbsenceOnClick(absence)}
-                        >
-                            <TableCell>
-                                <div className={"flex flex-row items-center space-x-2"}>
-                                    <AbsenceBadge title={"Absence: " + absence.absenceType.toString()}/>
-                                    <span>{absence.comment}</span>
-                                </div>
-                            </TableCell>
-                            <TableCell></TableCell>
-                            <TableCell></TableCell>
-                            <TableAction onClick={(e) => handleAbsenceContextMenu(e, absence)}/>
-                        </TableRow>
-                    ))}
-                    {entries?.map((entry, index) => (
-                        <TableRow key={index}
-                                  className={index === entries?.length - 1 ? " border-b border-b-edge" : ""}
-                                  onContextMenu={(event) => handleEntryContextMenu(event, entry)}
-                                  onClick={() => handleTimeEntryOnClick(entry)}
-                        >
-                            <TableCell>
-                                <div className={"flex flex-row items-center space-x-2"}>
-                                    {entry.project && <ProjectBadge title={entry.project.name}/>}
-                                    {entry.task && <EntryTitleBadge title={entry.task.name}/>}
-                                    <span>{entry.comment}</span>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                {moment(entry.startDate).format('HH:mm') + " - " + moment(entry.endDate).format('HH:mm')}
-                            </TableCell>
-                            <TableCell className={ "flex flex-row space-x-4 items-center justify-between"}>
-                                {calculateDifference(entry) + "h"}
-                            </TableCell>
-                            <TableAction onClick={(e) => handleEntryContextMenu(e, entry)}/>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                        {entries?.map((entry, index) => (
+                            <TableRow key={index}
+                                      className={index === entries?.length - 1 ? " border-b border-b-edge" : ""}
+                                      onContextMenu={(event) => handleEntryContextMenu(event, entry)}
+                                      onClick={() => handleTimeEntryOnClick(entry)}
+                            >
+                                <TableCell>
+                                    <div className={"flex flex-row items-center space-x-2"}>
+                                        {entry.project && <ProjectBadge title={entry.project.name}/>}
+                                        {entry.task && <EntryTaskBadge title={entry.task.name}/>}
+                                        <span>{entry.comment}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    {moment(entry.startDate).format('HH:mm') + " - " + moment(entry.endDate).format('HH:mm')}
+                                </TableCell>
+                                <TableCell className={"flex flex-row space-x-4 items-center justify-between"}>
+                                    {calculateDifference(entry) + "h"}
+                                </TableCell>
+                                <TableAction onClick={(e) => handleEntryContextMenu(e, entry)}/>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <div className={"flex-grow bg-black-light border border-y-0 border-edge"}></div>
+                <TimeEntryDaySummary entries={entries}/>
+            </div>
         </>
     );
 }

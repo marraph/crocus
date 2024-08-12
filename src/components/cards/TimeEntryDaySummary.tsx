@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useCallback } from "react";
 import {TimeEntry} from "@/types/types";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
