@@ -9,6 +9,7 @@ import { ProjectBadge } from "../badges/ProjectBadge";
 import {EntryTaskBadge} from "@/components/badges/EntryTaskBadge";
 import {cn} from "@/utils/cn";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
+import {CustomScroll} from "react-custom-scroll";
 
 interface TimeEntryProps {
     timeEntries: TimeEntry[] | undefined;
@@ -27,12 +28,13 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
 
     if (!timeEntries) return null;
 
-    const renderTimeEntry = (entry: TimeEntry) => {
+    const renderTimeEntry = (entry: TimeEntry, index: number) => {
         const startDate = moment(entry.startDate);
         const endDate = moment(entry.endDate);
 
         return (
-            <div className={"flex flex-col rounded-lg bg-dark hover:bg-gray-700 m-1 cursor-pointer space-y-1 overflow-hidden"}
+            <div className={"flex flex-col rounded-lg bg-dark-light m-1 cursor-pointer space-y-1"}
+                 key={index}
                  onClick={() => setFocusEntry(entry)}
             >
                 <div className={"flex flex-row space-x-2 items-center pb-1 pt-2 px-2"}>
@@ -42,8 +44,20 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                     </span>
                 </div>
                 <div className={"flex flex-col space-y-1 p-1 border-t border-edge"}>
-                    {entry.project && <ProjectBadge title={entry.project.name}/>}
-                    {entry.task && <EntryTaskBadge title={entry.task.name}/>}
+                    {entry.project &&
+                        <ProjectBadge
+                            title={entry.project.name}
+                            className={"max-w-[99%]"}
+                            textClassName={"truncate"}
+                        />
+                    }
+                    {entry.task &&
+                        <EntryTaskBadge
+                            title={entry.task.name}
+                            className={"max-w-[99%]"}
+                            textClassName={"truncate"}
+                        />
+                    }
                     <span className={"text-sm text-gray-400"}>{entry.comment}</span>
                 </div>
             </div>
@@ -57,20 +71,22 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
             }
 
             <div className={"h-full flex flex-col bg-black-light text-white rounded-lg"}>
-                <div className={"flex-grow grid grid-cols-7 rounded-t-lg border border-edge"}>
+                <div className={"flex-grow grid grid-cols-7 rounded-t-lg border-x border-t border-edge overflow-hidden"}>
                     {days.map((day, index) => (
-                        <div key={index} className={"border-r border-edge last:border-r-0"}>
+                        <div key={index} className={"h-full border-r border-edge last:border-r-0"}>
                             <div className={cn("sticky top-0 bg-dark border-b border-edge p-2",
                                 {"rounded-tl-lg": day.name === "Monday"},
                                 {"rounded-tr-lg": day.name === "Sunday"})}
                             >
                                 <span className={"text-gray text-sm font-normal"}>{day.name}</span>
                             </div>
-                            <div className={"h-full space-y-2 overflow-y-auto"}>
-                                {timeEntries
-                                    .filter(entry => moment(entry.startDate).day() === day.date.day())
-                                    .map((entry) => renderTimeEntry(entry))}
-                            </div>
+                            <CustomScroll>
+                                <div className={"h-[712px] flex flex-col space-y-2"}>
+                                    {timeEntries.filter(entry => moment(entry.startDate).day() === day.date.day())
+                                        .map((entry, index) => renderTimeEntry(entry, index))
+                                    }
+                                </div>
+                            </CustomScroll>
                         </div>
                     ))}
                 </div>

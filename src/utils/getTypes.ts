@@ -38,13 +38,13 @@ export function getProject(user: User, projectName: string | null | undefined): 
     return null;
 }
 
-export function getProjectFromTask(user: User, task: Task | null): Project | null {
+export function getProjectFromTask(user: User, task: Task): Project | null {
     if (!task) return null;
     let project: Project | null = null;
     user.teams.forEach((team: Team) => {
         team.projects.forEach((proj: Project) => {
             proj.tasks.forEach((tsk: Task) => {
-                if (tsk.name === task.name) {
+                if (tsk.id === task.id) {
                     project = proj;
                 }
             });

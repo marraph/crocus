@@ -146,6 +146,9 @@ export default function Timetracking() {
 
     return (
         <>
+            <CreateAbsenceDialog ref={absenceDialogRef}/>
+            <CreateTimeEntryDialog ref={entryDialogRef}/>
+
             <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
                 <Headbar title={"Timetracking"}/>
 
@@ -203,7 +206,7 @@ export default function Timetracking() {
                         </div>
                     </div>
 
-                    <div className={"w-full h-full rounded-lg flex flex-col items-stretch pt-4"}>
+                    <div className={"w-full h-full flex flex-col items-stretch pt-4"}>
                         {view ?
                             <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
                             :
@@ -212,9 +215,6 @@ export default function Timetracking() {
                     </div>
                 </div>
             </div>
-
-            <CreateAbsenceDialog ref={absenceDialogRef}/>
-            <CreateTimeEntryDialog ref={entryDialogRef}/>
         </>
     );
 }

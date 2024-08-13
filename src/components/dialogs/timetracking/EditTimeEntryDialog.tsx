@@ -3,16 +3,17 @@
 import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Project, Task, TimeEntry} from "@/types/types";
+import {Priority, Project, Status, Task, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {mutateRef} from "@/utils/mutateRef";
 import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
-import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
+import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject, getTopicItem} from "@/utils/getTypes";
 import {updateTimEntry} from "@/service/hooks/timeentryHook";
 import moment from "moment/moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useToast} from "griller/src/component/toaster";
+import {updateTask} from "@/service/hooks/taskHook";
 
 type InitialValues = {
     comment: string,
@@ -51,7 +52,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
         if (!user) return [];
         if (values.task) {
             const projectArray = [];
-            projectArray.push(getProjectFromTask(user, values.task) as Project);
+            projectArray.push(getProjectFromTask(user, values.task) ?? null);
             return projectArray;
         }
         else return getAllProjects(user);
@@ -81,11 +82,11 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
             return;
         }
         setValid(true);
-    }, [values]);
+    }, [times, values.comment, values.project, values.task, values.timeFrom, values.timeTo]);
 
     useEffect(() => {
         validateInput();
-    }, [values]);
+    }, [validateInput, values]);
 
     const getDuration = useCallback((startDate: string, endDate: string) => {
         const start = new Date(startDate);
@@ -96,6 +97,12 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
 
     const handleEditClick = useCallback(() => {
         if (!user) return;
+
+        const currentDuration = moment.duration(moment(values.timeFrom).diff(moment(values.timeTo))).asHours();
+        const oldDuration = moment.duration(moment(timeEntry.startDate).diff(moment(timeEntry.endDate))).asHours();
+        const durationDifference = currentDuration - oldDuration;
+
+        //update entry
         const entry: TimeEntry = {
             id: timeEntry.id,
             comment: values.comment,
@@ -110,29 +117,25 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
         }
         const { data, isLoading, error } = updateTimEntry(timeEntry.id, entry);
 
-        //update Task
-
-        const currentDuration = getDuration(values.timeFrom, values.timeTo);
-        const oldDuration = getDuration(timeEntry.startDate.toString(), timeEntry.endDate.toString());
-        const diff = currentDuration - oldDuration;
-
-        if (values.task && timeEntry.task) {
-            const updatedTask: Task = {
+        //update task duration
+        if (timeEntry.task && timeEntry.task.duration && values.task != timeEntry.task) {
+            const oldTask: Task = {
                 id: timeEntry.task.id,
                 name: timeEntry.task.name,
                 description: timeEntry.task.description,
-                topic: timeEntry.task.topic,
-                status: timeEntry.task.status,
-                priority: timeEntry.task.priority,
-                deadline: timeEntry.task.deadline,
-                isArchived: timeEntry.task.isArchived,
-                duration: timeEntry.task.duration,
-                bookedDuration: timeEntry.task.bookedDuration + diff,
+                topic: getTopicItem(user, timeEntry.task.topic?.title as string) ?? null,
+                status: timeEntry.task.status as Status ?? null,
+                priority: timeEntry.task.priority as Priority ?? null,
+                deadline: timeEntry.task.deadline ?? null,
+                isArchived: false,
+                duration: Number(timeEntry.task.duration + durationDifference) ?? null,
+                bookedDuration: timeEntry.task.bookedDuration,
                 createdBy: timeEntry.task.createdBy,
                 createdDate: timeEntry.task.createdDate,
-                lastModifiedBy: {id: user.id, name: user.name, email: user.email},
+                lastModifiedBy: { id: user.id, name: user.name, email: user.email },
                 lastModifiedDate: new Date(),
             }
+            const { data, isLoading, error } = updateTask(timeEntry.task.id, oldTask);
         }
 
         addToast({
@@ -140,7 +143,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
             secondTitle: "You successfully saved your entry changes.",
             icon: <Save/>,
         });
-    }, [values, user]);
+    }, [user, values.timeFrom, values.timeTo, values.comment, values.project, values.task, values.date, timeEntry.startDate, timeEntry.endDate, timeEntry.id, timeEntry.createdBy, timeEntry.createdDate, timeEntry.task, addToast]);
 
     const handleCloseClick = useCallback(() => {
         setValid(true);
@@ -162,13 +165,13 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                       icon={<BookCopy size={16}/>}
                       size={"medium"}
                       onValueChange={(value) =>
-                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
+                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item?.name === value) ?? null }))}
         >
-            {projects.map((project) => (
+            {projects.map((project) => ( project &&
                 <SearchSelectItem key={project.id} title={project.name}/>
             ))}
         </SearchSelect>
-    ), [projects]);
+    ), [projects, values?.project?.name]);
 
     const taskSelect = useMemo(() => (
         <SearchSelect buttonTitle={"Task"}
@@ -183,7 +186,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                 <SearchSelectItem key={task.id} title={task.name}/>
             ))}
         </SearchSelect>
-    ), [tasks]);
+    ), [tasks, values.task?.name]);
 
     if (!dialogRef || user === undefined) return null;
 

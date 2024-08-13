@@ -121,10 +121,10 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     }, []);
 
     const calculateDifference = useCallback((entry: TimeEntry) => {
-        const endDate = new Date(entry.endDate);
-        const startDate = new Date(entry.startDate);
+        const startDate = moment(entry.startDate);
+        const endDate = moment(entry.endDate);
 
-        return endDate.getHours() - startDate.getHours();
+        return moment.duration(endDate.diff(startDate)).asHours();
     }, []);
 
     return (
