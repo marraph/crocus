@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import colors from "tailwindcss/colors";
 
 const config: Config = {
   content: [
@@ -9,6 +10,7 @@ const config: Config = {
   ],
   theme: {
     colors: {
+      ...colors,
       "black": "#090909",
       "black-light": "#111111",
       "dark": "#171717",

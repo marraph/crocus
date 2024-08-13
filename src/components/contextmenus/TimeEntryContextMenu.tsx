@@ -16,14 +16,14 @@ interface TimeEntryContextProps extends React.HTMLAttributes<HTMLDivElement> {
 export const TimeEntryContextMenu: React.FC<TimeEntryContextProps> = ({ deleteRef, editRef, x, y, }) => {
     return (
         <ContextMenu xPos={x} yPos={y}>
-            <ContextMenuContainer size={"small"}>
+            <ContextMenuContainer size={"medium"}>
                 <ContextMenuItem title={"Edit"}
                                  onClick={() => editRef.current?.show()}
                                  icon={<Pencil size={16}/>}
                 />
                 <ContextMenuItem title={"Delete"}
                                  onClick={() => deleteRef.current?.show()}
-                                 className={"text-lightred hover:text-lightred hover:bg-lightred hover:bg-opacity-10"}
+                                 className={"dark:text-lightred dark:hover:text-lightred dark:hover:bg-lightred dark:hover:bg-opacity-10"}
                                  icon={<Trash2 size={16}/>}
                 />
             </ContextMenuContainer>

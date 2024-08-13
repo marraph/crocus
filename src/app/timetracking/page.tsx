@@ -15,6 +15,7 @@ import {WeekView} from "@/components/views/WeekView";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import moment from "moment";
+import {Headbar} from "@/components/Headbar";
 
 export interface Week {
     monday: Date;
@@ -145,79 +146,75 @@ export default function Timetracking() {
 
     return (
         <>
-            <div className={"h-screen flex flex-col p-4"}>
-                <div className={"text-nowrap flex flex-row items-center"}>
-                    <div className={"flex flex-row space-x-2"}>
-                        <Button text={""}
-                                theme={"white"}
-                                onClick={() => entryDialogRef.current?.show()}
-                                icon={<AlarmClockPlus size={20}/>}
-                                className={"px-2"}
-                        />
-                        <Button text={"New Absence"}
-                                theme={"dark"}
-                                onClick={() => absenceDialogRef.current?.show()}
-                                icon={<TreePalm size={20} className={"mr-2"}/>}
-                        />
-                        <SwitchButton firstTitle={"Day"}
-                                      secondTitle={"Week"}
-                                      onClick={() => setView(!view)}
-                        />
-                    </div>
-                    <div className={"w-full flex flex-row items-center justify-end space-x-2"}>
-                        <Button text={""}
-                                onClick={view ? handleDayBefore : handleWeekBefore}
-                                icon={<ChevronLeft size={20}/>}
-                        />
-                        <Button text={""}
-                                onClick={view ? handleDayAfter : handleWeekAfter}
-                                icon={<ChevronRight size={20}/>}
-                        />
-                        {view ?
-                            <DatePicker text={"Select a Date"}
-                                        size={"medium"}
-                                        preSelectedValue={day}
-                                        ref={datepickerRef}
-                                        closeButton={false}
-                                        onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
-                                        dayFormat={"long"}
+            <CreateAbsenceDialog ref={absenceDialogRef}/>
+            <CreateTimeEntryDialog ref={entryDialogRef}/>
+
+            <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
+                <Headbar title={"Timetracking"}/>
+
+                <div className={"h-full flex flex-col p-4"}>
+                    <div className={"text-nowrap flex flex-row items-center"}>
+                        <div className={"flex flex-row space-x-2"}>
+                            <Button text={""}
+                                    theme={"primary"}
+                                    onClick={() => entryDialogRef.current?.show()}
+                                    icon={<AlarmClockPlus size={20}/>}
+                                    className={"px-2"}
                             />
+                            <Button text={"New Absence"}
+                                    onClick={() => absenceDialogRef.current?.show()}
+                                    icon={<TreePalm size={20} className={"mr-2"}/>}
+                            />
+                            <SwitchButton firstTitle={"Day"}
+                                          secondTitle={"Week"}
+                                          onClick={() => setView(!view)}
+                            />
+                        </div>
+                        <div className={"w-full flex flex-row items-center justify-end space-x-2"}>
+                            <Button text={""}
+                                    onClick={view ? handleDayBefore : handleWeekBefore}
+                                    icon={<ChevronLeft size={20}/>}
+                            />
+                            <Button text={""}
+                                    onClick={view ? handleDayAfter : handleWeekAfter}
+                                    icon={<ChevronRight size={20}/>}
+                            />
+                            {view ?
+                                <DatePicker text={"Select a Date"}
+                                            size={"medium"}
+                                            preSelectedValue={day}
+                                            ref={datepickerRef}
+                                            closeButton={false}
+                                            onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
+                                            dayFormat={"long"}
+                                />
+                                :
+                                <Combobox buttonTitle={"Week"}
+                                          icon={<CalendarDays size={16} className={"mr-2"}/>}
+                                          ref={comboboxRef}
+                                          preSelectedValue={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
+                                          onValueChange={(week) => setWeek(weeks.find((w) =>
+                                              moment(w.monday).format("Do MMMM YYYY") + "  -  " + moment(w.sunday).format("Do MMMM YYYY") === week) as Week)}
+                                >
+                                    {weeks.map((week, index) => (
+                                        <ComboboxItem key={index}
+                                                      title={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
+                                        />
+                                    ))}
+                                </Combobox>
+                            }
+                        </div>
+                    </div>
+
+                    <div className={"w-full h-full flex flex-col items-stretch pt-4"}>
+                        {view ?
+                            <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
                             :
-                            <Combobox buttonTitle={"Week"}
-                                      icon={<CalendarDays size={16} className={"mr-2"}/>}
-                                      ref={comboboxRef}
-                                      preSelectedValue={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
-                                      onValueChange={(week) => setWeek(weeks.find((w) =>
-                                          moment(w.monday).format("Do MMMM YYYY") + "  -  " + moment(w.sunday).format("Do MMMM YYYY") === week) as Week)}
-                            >
-                                {weeks.map((week, index) => (
-                                    <ComboboxItem key={index}
-                                                  title={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
-                                    />
-                                ))}
-                            </Combobox>
+                            <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
                         }
                     </div>
                 </div>
-
-                <div className={"w-full h-full rounded-lg flex flex-col items-stretch pt-4"}>
-                    {view ?
-                        <>
-                            <TimetrackTable entries={dailyEntries} absences={dailyAbsences}/>
-                            <div className={"flex-grow bg-black border border-y-0 border-edge"}></div>
-                            <TimeEntryDaySummary entries={dailyEntries}/>
-                        </>
-                        :
-                        <>
-                            <WeekView timeEntries={weekEntries} absences={weekAbsences} week={week}/>
-                            <TimeEntryDaySummary entries={weekEntries}/>
-                        </>
-                    }
-                </div>
             </div>
-
-            <CreateAbsenceDialog ref={absenceDialogRef}/>
-            <CreateTimeEntryDialog ref={entryDialogRef}/>
         </>
     );
 }

@@ -55,10 +55,25 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
     const projects = useMemo(() => (user && team) ? getProjects(user, team) : [], [user, team]);
     const topics = useMemo(() => (user && team) ? getTopicsFromTeam(user, team) : [], [user, team]);
 
+    const validateInput = useCallback(() => {
+        if (values === initialValues) {
+            setValid(false);
+            return;
+        }
+        
+        setValid(values.title.trim() !== "");
+    }, [initialValues, values]);
+    
     useEffect(() => {
         validateInput();
-    }, [values.title]);
+    }, [validateInput, values]);
 
+    const handleCloseClick = useCallback(() => {
+        setDialogKey(Date.now());
+        setValid(true);
+        setValues(initialValues);
+        setTeam(taskElement.team?.name ?? null);
+    }, [initialValues, taskElement.team]);
 
     const handleEditClick = useCallback(() => {
         if (!user || !taskElement) return
@@ -86,18 +101,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
             icon: <Save/>
         });
 
-    }, [user, taskElement, values]);
-
-    const handleCloseClick = useCallback(() => {
-        setDialogKey(Date.now());
-        setValid(true);
-        setValues(initialValues);
-        setTeam(taskElement.team?.name ?? null);
-    }, [initialValues, taskElement.team]);
-
-    const validateInput = useCallback(() => {
-        setValid(values.title.trim() !== "");
-    }, [values.title]);
+    }, [user, taskElement, values.title, values.description, values.topic, values.status, values.priority, values.deadline, values.duration, handleCloseClick, addToast]);
 
     const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
@@ -111,8 +115,8 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
             e.preventDefault();
         }
     }, []);
-
-
+    
+    
     const teamCombobox = useMemo(() => (
         <Combobox
             buttonTitle={"Team"}

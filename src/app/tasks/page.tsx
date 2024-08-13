@@ -8,10 +8,11 @@ import {useUser} from "@/context/UserContext";
 import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {CustomScroll} from "react-custom-scroll";
 import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
 import {getAllProjects, getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
+import {Headbar} from "@/components/Headbar";
+import {useToast} from "griller/src/component/toaster";
 
 
 export default function Tasks() {
@@ -21,6 +22,8 @@ export default function Tasks() {
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
+
+    const {addToast} = useToast();
 
     const filterItems = useMemo(() => [
         { name: "Team", values: user?.teams?.map(team => team.name) || [], icon: <Users size={16}/> },
@@ -93,39 +96,40 @@ export default function Tasks() {
     if (!user) return null;
 
     return (
-        <div className={"h-full flex flex-col space-y-4 p-4"}>
-            <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
-                <div className={"flex flex-row items-center space-x-2 z-10"}>
-                    <Button text={""}
-                            theme={"white"}
-                            onClick={() => dialogRef.current?.show()}
-                            icon={<SquarePen size={20}/>}
-                            className={"px-2"}
-                    />
-                    <CreateTaskDialog ref={dialogRef}/>
-                    <Filter title={"Filter"}
-                            items={filterItems}
-                            ref={filterRef}
-                            onChange={() => setUpdate(update + 1)}
-                    />
-                    <div className={"flex flex-row space-x-1"}>
-                        <LoaderCircle size={14} className={"text-marcador"}/>
-                        <span className={"text-xs text-marcador"}>{taskElements.length + " OPEN"}</span>
+        <div className={"h-screen w-screen flex flex-col"}>
+            <Headbar title={"Tasks"}/>
+
+            <div className={"flex-grow flex flex-col space-y-4 p-4 overflow-hidden"}>
+                <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
+                    <div className={"flex flex-row items-center space-x-2 z-10"}>
+                        <Button text={""}
+                                theme={"primary"}
+                                onClick={() => dialogRef.current?.show()}
+                                icon={<SquarePen size={20}/>}
+                                className={"px-2"}
+                        />
+                        <CreateTaskDialog ref={dialogRef}/>
+                        <Filter title={"Filter"}
+                                items={filterItems}
+                                ref={filterRef}
+                                onChange={() => setUpdate(update + 1)}
+                        />
+                        <div className={"flex flex-row space-x-1"}>
+                            <LoaderCircle size={14} className={"text-marcador"}/>
+                            <span className={"text-xs text-marcador"}>{taskElements.length + " OPEN"}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className={"h-full overflow-hidden rounded-lg border border-edge"}>
-                <CustomScroll>
-                    <div className={"rounded-lg bg-black-light h-[800px]"}>
-                        {taskElements.length > 0 ?
-                            <TaskTable taskElements={taskElements}/>
-                            :
-                            <div className={"h-full flex flex-row items-center justify-center"}>
-                                <TaskPlaceholder dialogRef={dialogRef}/>
-                            </div>
-                        }
-                    </div>
-                </CustomScroll>
+
+                <div className={"flex-grow rounded-lg bg-black-light overflow-auto no-scrollbar border border-edge"}>
+                    {taskElements.length > 0 ?
+                        <TaskTable taskElements={taskElements}/>
+                        :
+                        <div className={"max-h-full flex flex-row items-center justify-center"}>
+                            <TaskPlaceholder dialogRef={dialogRef}/>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     );

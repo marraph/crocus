@@ -19,7 +19,7 @@ import {createTask} from "@/service/hooks/taskHook";
 import {Priority, Status, TaskCreation, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Input} from "@marraph/daisy/components/input/Input";
-import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllTeams, getProject, getProjects, getTopicItem, getTopicsFromTeam} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
@@ -64,9 +64,20 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     const projects = useMemo(() => (user && team) ? getProjects(user, team) : [], [user, team]);
     const topics = useMemo(() => (user && team) ? getTopicsFromTeam(user, team) : [], [user, team]);
 
+    const validateInput = useCallback(() => {
+        setValid(values.title.trim() !== "");
+    }, [values.title]);
+
     useEffect(() => {
         validateInput();
-    }, [values.title]);
+    }, [validateInput, values.title]);
+
+    const handleCloseClick = useCallback(() => {
+        setValues(initialValues);
+        setValid(false);
+        setTeam(null);
+        setDialogKey(Date.now());
+    }, [initialValues]);
 
     const handleCreateClick = useCallback((user: User) => {
         const newTask: TaskCreation = {
@@ -94,18 +105,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             secondTitle: "You can now work with the task in your task-overview.",
             icon: <SquareCheckBig/>
         });
-    }, [user, values]);
-
-    const handleCloseClick = useCallback(() => {
-        setValues(initialValues);
-        setValid(false);
-        setTeam(null);
-        setDialogKey(Date.now());
-    }, [initialValues]);
-
-    const validateInput = useCallback(() => {
-        setValid(values.title.trim() !== "");
-    }, [values.title]);
+    }, [addToast, handleCloseClick, values.deadline, values.description, values.duration, values.priority, values.project, values.status, values.title, values.topic]);
 
     const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
@@ -194,7 +194,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     if (!dialogRef || user === undefined) return null;
 
     return (
-        <Dialog width={600}
+        <Dialog width={800}
                 onClose={handleCloseClick}
                 ref={dialogRef}
                 key={dialogKey}
@@ -208,7 +208,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                     />
                     <Textarea placeholder={"Add Description..."}
                               onChange={handleInputChange("description", setValues)}
-                              className={"h-20 bg-black placeholder-marcador focus:text-gray px-0"}
+                              className={"h-20 dark:bg-black focus:text-gray px-0"}
                     />
                     <div className={"flex flex-row space-x-2 z-50"}>
                         {teamCombobox}
@@ -240,11 +240,14 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          switchButton={true}
-                          switchRef={switchRef as MutableRefObject<SwitchRef>}
                           onClick={() => handleCreateClick(user)}
                           disabledButton={!valid}
-            />
+            >
+                <div className={"flex flex-row items-center space-x-2 text-zinc-700 dark:text-gray text-xs mr-16"}>
+                    <span>{"Create more"}</span>
+                    <Switch ref={switchRef}/>
+                </div>
+            </DialogFooter>
         </Dialog>
     )
 })

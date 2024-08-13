@@ -16,13 +16,13 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
 
-    useEffect(() => {
-        validate();
-    }, [link]);
-
     const validate = useCallback(() => {
         setValid(link.trim() !== "");
     }, [link]);
+
+    useEffect(() => {
+        validate();
+    }, [link, validate]);
 
     const handleCloseClick = useCallback(() => {
         setValid(false);
@@ -33,10 +33,12 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
     const handleJoinClick = useCallback(() => {
         addToast({
             title: "Joined Team successfully!",
-            icon: <Users color="#F55050"/>,
+            icon: <Users/>,
+            theme: "dark",
+            position: "br"
         });
         handleCloseClick();
-    }, []);
+    }, [addToast, handleCloseClick]);
 
     if (!dialogRef || user === undefined) return null;
 

@@ -41,7 +41,7 @@ export const SearchDialog = forwardRef<DialogRef>(({}, ref) => {
                         />
                         <Input placeholder={"Search or type a command"}
                                border={"none"}
-                               className={"w-full text-md m-0 mr-2 p-0 h-12 bg-black"}
+                               className={"w-full text-md m-0 mr-2 p-0 h-12 dark:bg-black"}
                         />
                     </div>
                     <Seperator/>
@@ -90,7 +90,7 @@ export const SearchDialog = forwardRef<DialogRef>(({}, ref) => {
                         </div>
                     </div>
                     <Seperator/>
-                    <div className={"text-placeholder text-sm px-4 pt-4"}>
+                    <div className={"text-marcador text-sm px-4 pt-4"}>
                         <span>{"Recent"}</span>
                     </div>
                     <div className={"flex flex-col items-center px-2 py-1 font-normal cursor-pointer"}>

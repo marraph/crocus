@@ -12,6 +12,7 @@ import {useRouter} from "next/navigation";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {CustomScroll} from "react-custom-scroll";
 import moment from "moment";
+import {Headbar} from "@/components/Headbar";
 
 export default function Dashboard() {
     const router = useRouter();
@@ -43,49 +44,51 @@ export default function Dashboard() {
     const { tasks, count } = getDashboardTasks(user);
 
     return (
-        <div className={"h-full flex flex-col p-4"}>
-            <div className={"flex flex-row justify-between items-center"}>
-                <div className={"pt-4"}>
-                    <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
-                    <div className={"flex flex-row items-center space-x-2"}>
-                        {new Date().getHours() < 18 && <SunMedium size={18} color={"#fff04d"}/>}
-                        {new Date().getHours() >= 18 && <Moon size={18} color={"#c9c9c9"}/>}
-                        <span className={"text-gray"}>{parseDate(new Date())}</span>
-                    </div>
-                </div>
-            </div>
-            <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-8"}>
-                <div className={"grid grid-cols-2 gap-4 bg-dark rounded-lg border border-edge p-4 w-1/2 h-72"}>
-                    {timeStats.map((item, index) => (
-                        <div key={index} className={"flex flex-col items-center justify-center space-y-2 bg-black-light rounded-lg"}>
-                            <span className={"text-xl"}>{item.name}</span>
-                            <span className={"text-gray"}>{item.description}</span>
+        <div className={"h-screen w-screen flex flex-col"}>
+            <Headbar title={"Dashboard"}/>
+
+            <div className={"flex-grow flex flex-col p-4 overflow-hidden"}>
+                <div className={"flex flex-row justify-between items-center"}>
+                    <div className={"pt-4"}>
+                        <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
+                        <div className={"flex flex-row items-center space-x-2"}>
+                            {new Date().getHours() < 18 && <SunMedium size={18} color={"#fff04d"}/>}
+                            {new Date().getHours() >= 18 && <Moon size={18} color={"#c9c9c9"}/>}
+                            <span className={"text-gray"}>{parseDate(new Date())}</span>
                         </div>
-                    ))}
-                </div>
-
-                <div className={"bg-dark rounded-lg border border-edge w-1/2 h-72"}>
-
-                </div>
-            </div>
-
-            <div className={"bg-black-light rounded-lg w-full border-x border-b border-edge"}>
-                <div className={"flex flex-row justify-between items-center bg-dark-light border-y border-edge rounded-t-lg"}>
-                    <div className={"flex flex-row items-center"}>
-                        <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
-                        <Badge text={count.toString() + " OPEN"}
-                               size={"small"}
-                               className={"rounded-md bg-white-dark text-dark p-0.5"}>
-                        </Badge>
                     </div>
-                    <Button text={"Open"}
-                            className={"m-1 font-normal bg-dark-light hover:bg-dark border-none"}
-                            onClick={() => router.push("/tasks")}
-                            icon={<ExternalLink size={16} className={"mr-2"}/>}
-                    />
                 </div>
-                <CustomScroll>
-                    <div className={"h-[350px] rounded-b-lg"}>
+                <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-8"}>
+                    <div className={"grid grid-cols-2 gap-4 bg-dark rounded-lg border border-edge p-4 w-1/2 h-72"}>
+                        {timeStats.map((item, index) => (
+                            <div key={index} className={"flex flex-col items-center justify-center space-y-2 bg-black-light rounded-lg"}>
+                                <span className={"text-xl"}>{item.name}</span>
+                                <span className={"text-gray"}>{item.description}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className={"bg-dark rounded-lg border border-edge w-1/2 h-72"}>
+
+                    </div>
+                </div>
+
+                <div className={"flex-grow flex flex-col bg-black-light rounded-lg w-full border-x border-b border-edge overflow-hidden"}>
+                    <div className={"flex flex-row justify-between items-center bg-dark-light border-y border-edge rounded-t-lg"}>
+                        <div className={"flex flex-row items-center"}>
+                            <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
+                            <Badge text={count.toString() + " OPEN"}
+                                   size={"small"}
+                                   className={"rounded-md bg-white-dark text-dark p-0.5"}>
+                            </Badge>
+                        </div>
+                        <Button text={"Open"}
+                                className={"m-1 font-normal dark:bg-dark-light dark:hover:bg-dark border-none"}
+                                onClick={() => router.push("/tasks")}
+                                icon={<ExternalLink size={16} className={"mr-2"}/>}
+                        />
+                    </div>
+                    <div className={"flex-grow overflow-auto no-scrollbar rounded-b-lg"}>
                         {tasks.map((task, index) => (
                             <div key={index}
                                  className={"group flex flex-row justify-between items-center p-2 border-b border-edge hover:bg-dark hover:cursor-pointer"}
@@ -103,8 +106,8 @@ export default function Dashboard() {
                             </div>
                         ))}
                     </div>
-                </CustomScroll>
 
+                </div>
             </div>
         </div>
     );

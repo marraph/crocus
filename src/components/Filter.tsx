@@ -1,6 +1,15 @@
 "use client";
 
-import React, {forwardRef, HTMLAttributes, ReactNode, useCallback, useImperativeHandle, useMemo, useState} from "react";
+import React, {
+    forwardRef,
+    HTMLAttributes,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useState
+} from "react";
 import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {
@@ -50,6 +59,26 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const saveFilters = (filters: SelectedFilter[]) => {
+        sessionStorage.setItem('taskFilters', JSON.stringify(filters));
+    };
+
+    const getStoredFilters = (): SelectedFilter[] | null => {
+        if (typeof window !== 'undefined') {
+            const storedFilters = sessionStorage.getItem('taskFilters');
+            return storedFilters ? JSON.parse(storedFilters) : null;
+        }
+        return null;
+    };
+
+    useEffect(() => {
+        const storedFilters = getStoredFilters();
+        if (storedFilters) {
+            setFilters(storedFilters);
+        }
+    }, []);
+
+
     const menuRef = useOutsideClick(() => {
         setMenuOpen(false);
         setSubMenuOpen(null);
@@ -66,12 +95,15 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
             if (filters.some(f => f.name === newFilter.name && f.value === newFilter.value)) {
                 const updatedFilters = filters.filter(f => f.name !== newFilter.name || f.value !== newFilter.value);
                 setFilters(updatedFilters);
+                saveFilters(updatedFilters);
             } else {
                 const updatedFilters = filters.filter(f => f.name !== newFilter.name);
                 setFilters([...updatedFilters, newFilter]);
+                saveFilters([...updatedFilters, newFilter]);
             }
             onChange();
         }
+        console.log(filters)
         setSubMenuOpen(null);
         setMenuOpen(false);
         setSearchTerm("");
@@ -83,7 +115,9 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
 
     const filteredValues = useMemo(() => {
         if (!subMenuOpen) return [];
-        return subMenuOpen.values.filter(value =>
+        const uniqueValues = new Set(subMenuOpen.values);
+
+        return Array.from(uniqueValues).filter(value =>
             value.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [subMenuOpen, searchTerm]);
@@ -110,6 +144,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
                         value={filter.value}
                         onClick={() => {
                             setFilters(filters.filter(f => f !== filter));
+                            saveFilters(filters.filter(f => f !== filter));
                             onChange();
                         }}
                     />
@@ -145,9 +180,9 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
                             No results found
                         </div>
                     }
-                    {filteredValues.length > 5 ?
+                    {filteredValues.length > 4 ?
                         <CustomScroll>
-                            <div className={"flex flex-col max-h-48 text-sm text-gray p-1 space-y-1"}>
+                            <div className={"max-h-[150px] flex flex-col text-sm text-gray p-1 space-y-1"}>
                                 {filteredValues.map((value, index) => (
                                     <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-dark-light hover:text-white cursor-pointer",
                                         { "bg-dark-light text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}

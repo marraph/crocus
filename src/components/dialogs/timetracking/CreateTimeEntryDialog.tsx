@@ -7,7 +7,7 @@ import {useUser} from "@/context/UserContext";
 import {Project, Task, TimeEntry} from "@/types/types";
 import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
-import {SwitchRef} from "@marraph/daisy/components/switch/Switch";
+import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
 import {mutateRef} from "@/utils/mutateRef";
@@ -34,8 +34,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
         project: null,
         task: null,
         date: new Date(),
-        timeFrom: "",
-        timeTo: "",
+        timeFrom: "09:00",
+        timeTo: "09:00",
     }), []);
 
     const [values, setValues] = useState(initialValues);
@@ -72,23 +72,32 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
         return timesArray;
     }, []);
 
-    useEffect(() => {
-        validateInput();
-    }, [values]);
-
     const validateInput = useCallback(() => {
         if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
         }
 
-        if (!times.includes(values.timeFrom as string) || !times.includes(values.timeTo as string) ||
-            times.indexOf(values.timeFrom as string) >= times.indexOf(values.timeTo as string)) {
+        if (!times.includes(values.timeFrom)) {
             setValid(false);
             return;
         }
+        if (!times.includes(values.timeTo)) {
+            setValid(false);
+            return;
+        }
+        if (times.indexOf(values.timeFrom) >= times.indexOf(values.timeTo)) {
+            setValid(false);
+            return;
+        }
+
         setValid(true);
-    }, [values]);
+        return;
+    }, [times, values]);
+
+    useEffect(() => {
+        validateInput();
+    }, [validateInput, values]);
 
     const getDuration = useCallback(() => {
         const durationFrom = moment.duration(values.timeFrom);
@@ -165,9 +174,9 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                       onValueChange={(value) =>
                           setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
         >
-            {projects?.map((project) => (
-                <SearchSelectItem key={project.id} title={project.name} />
-            ))}
+            {projects?.map((project) =>
+                <SearchSelectItem key={project.id} title={project.name}/>
+            )}
         </SearchSelect>
     ), [projects]);
 
@@ -178,9 +187,9 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                       onValueChange={(value) =>
                           setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
         >
-            {tasks.map((task) => (
-                <SearchSelectItem key={task.id} title={task.name} />
-            ))}
+            {tasks.map((task) =>
+                <SearchSelectItem key={task.id} title={task.name}/>
+            )}
         </SearchSelect>
     ), [tasks]);
 
@@ -212,42 +221,42 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
                                 dayFormat={"long"}
                                 className={"z-40"}
                                 onValueChange={(value) =>
-                                    setValues((prevValues) => ({ ...prevValues, date: value ?? new Date() }))}
+                                    setValues((prevValues) => ({...prevValues, date: value ?? new Date()}))}
                     />
                     <SearchSelect buttonTitle={"From"}
-                                  preSelectedValue={"09:00"}
+                                  preSelectedValue={values.timeFrom}
                                   icon={<Clock2 size={16}/>}
                                   size={"medium"}
                                   onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, timeFrom: value }))}
+                                      setValues((prevValues) => ({...prevValues, timeFrom: value}))}
                     >
-                        {times.map((time) => (
-                            <SearchSelectItem key={time}
-                                              title={time}
-                            />
-                        ))}
+                        {times.map((time) =>
+                            <SearchSelectItem key={time} title={time}/>
+                        )}
                     </SearchSelect>
                     <SearchSelect buttonTitle={"To"}
-                                  preSelectedValue={"09:00"}
+                                  preSelectedValue={values.timeTo}
                                   icon={<Clock8 size={16}/>}
                                   size={"medium"}
                                   onValueChange={(value) =>
-                                      setValues((prevValues) => ({ ...prevValues, timeTo: value }))}
+                                      setValues((prevValues) => ({...prevValues, timeTo: value}))}
                     >
-                        {times.map((time) => (
-                            <SearchSelectItem key={time}
-                                              title={time}
-                            />
-                        ))}
+                        {times.map((time) =>
+                            <SearchSelectItem key={time} title={time}/>
+                        )}
                     </SearchSelect>
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}
-                          switchButton={true}
                           onClick={handleCreateClick}
                           disabledButton={!valid}
-            />
+            >
+                <div className={"flex flex-row items-center space-x-2 text-zinc-700 dark:text-gray text-xs mr-16"}>
+                    <span>{"Create more"}</span>
+                    <Switch ref={switchRef}/>
+                </div>
+            </DialogFooter>
         </Dialog>
-    );
+);
 })
 CreateTimeEntryDialog.displayName = "CreateTimeEntryDialog";

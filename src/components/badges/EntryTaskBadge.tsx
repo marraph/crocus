@@ -10,7 +10,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement>{
     textClassName?: string;
 }
 
-export const EntryTitleBadge: React.FC<Props> = ({ title, textClassName, className, ...props }) => {
+export const EntryTaskBadge: React.FC<Props> = ({ title, textClassName, className, ...props }) => {
 
     return (
         <Badge
