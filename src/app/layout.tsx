@@ -6,6 +6,7 @@ import React, {ReactNode} from "react";
 import {UserProvider} from "@/context/UserContext";
 import {Toaster} from "griller/src/component/toaster";
 import {NavigationProvider} from "@/components/NavigationItem";
+import {TooltipProvider} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700", "900"] });
 
@@ -22,10 +23,12 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                     <NavigationProvider>
                         <UserProvider id={9}>
                             <Toaster>
-                                <div className={"w-screen h-screen flex flex-row bg-black-light"}>
-                                    <Drawer/>
-                                    {children}
-                                </div>
+                                <TooltipProvider>
+                                    <div className={"w-screen h-screen flex flex-row bg-black-light"}>
+                                        <Drawer/>
+                                        {children}
+                                    </div>
+                                </TooltipProvider>
                             </Toaster>
                         </UserProvider>
                     </NavigationProvider>

@@ -13,6 +13,8 @@ import {getAllProjects, getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useToast} from "griller/src/component/toaster";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {TooltipAnchor} from "@marraph/daisy/components/tooltip/Tooltip";
 
 
 export default function Tasks() {
@@ -22,7 +24,7 @@ export default function Tasks() {
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
-
+    const { addTooltip, removeTooltip } = useTooltip();
     const {addToast} = useToast();
 
     const filterItems = useMemo(() => [
@@ -100,13 +102,20 @@ export default function Tasks() {
             <Headbar title={"Tasks"}/>
 
             <div className={"flex-grow flex flex-col space-y-4 p-4 overflow-hidden"}>
-                <div className={"w-full flex flex-row items-center text-nowrap justify-between"}>
-                    <div className={"flex flex-row items-center space-x-2 z-10"}>
+                <div className={"w-full flex flex-row items-center justify-between"}>
+                    <div className={"flex flex-row items-center space-x-2"}>
                         <Button text={""}
                                 theme={"primary"}
                                 onClick={() => dialogRef.current?.show()}
                                 icon={<SquarePen size={20}/>}
                                 className={"px-2"}
+                                onMouseEnter={(e) => {
+                                    addTooltip({
+                                        message: "Create a new task",
+                                        trigger: { current: e.currentTarget }
+                                    });
+                                }}
+                                onMouseLeave={() => removeTooltip()}
                         />
                         <CreateTaskDialog ref={dialogRef}/>
                         <Filter title={"Filter"}

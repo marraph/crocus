@@ -7,6 +7,7 @@ import {SearchDialog} from "@/components/dialogs/SearchDialog";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 import {cn} from "@/utils/cn";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 interface HeadbarProps extends HTMLAttributes<HTMLDivElement> {
     title?: string;
@@ -14,6 +15,8 @@ interface HeadbarProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) => {
     const searchDialogRef = useRef<DialogRef>(null);
+    const { addTooltip, removeTooltip } = useTooltip();
+
 
     const notifications = [
         { sender: "John Doe", task: "Task 1", date: new Date("2024-06-29T08:00:00"), type: "message" },
@@ -38,6 +41,14 @@ export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) 
                 <div className={"flex flex-row space-x-4 items-center"}>
                     <div className={"h-8 w-56 group flex flex-row justify-between items-center rounded-lg bg-black-light border border-edge cursor-pointer pr-1"}
                          onClick={() => searchDialogRef.current?.showModal()}
+                         onMouseEnter={(e) => {
+                             addTooltip({
+                                 message: "Create a new task",
+                                 anchor: "bottom",
+                                 trigger: { current: e.currentTarget }
+                             });
+                         }}
+                         onMouseLeave={() => removeTooltip()}
                     >
                         <div className={"flex flex-row items-center text-marcador text-sm space-x-2"}>
                             <Search size={18} className={"group-focus:text-white ml-2"}/>

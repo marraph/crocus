@@ -209,6 +209,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
                     <Textarea placeholder={"Add Description..."}
                               onChange={handleInputChange("description", setValues)}
                               className={"h-20 dark:bg-black focus:text-gray px-0"}
+                              value={values.description ?? ""}
                     />
                     <div className={"flex flex-row space-x-2 z-50"}>
                         {teamCombobox}

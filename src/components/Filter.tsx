@@ -30,6 +30,7 @@ import {TaskElement} from "@/types/types";
 import {cn} from "@/utils/cn";
 import {CustomScroll} from "react-custom-scroll";
 import {Input} from "@marraph/daisy/components/input/Input";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 type FilterItem = {
     name: string;
@@ -58,6 +59,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
     const [subMenuOpen, setSubMenuOpen] = useState<FilterItem | null>(null);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const { addTooltip, removeTooltip } = useTooltip();
 
     const saveFilters = (filters: SelectedFilter[]) => {
         sessionStorage.setItem('taskFilters', JSON.stringify(filters));
@@ -136,6 +138,13 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
                             setSubMenuOpen(null);
                             setSearchTerm("");
                         }}
+                        onMouseEnter={(e) => {
+                            addTooltip({
+                                message: "Filter your tasks",
+                                trigger: { current: e.currentTarget }
+                            });
+                        }}
+                        onMouseLeave={() => removeTooltip()}
                 />
                 {filters && filters.map((filter, index) => (
                     <FilterBadge
