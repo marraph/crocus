@@ -43,9 +43,9 @@ export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) 
                          onClick={() => searchDialogRef.current?.showModal()}
                          onMouseEnter={(e) => {
                              addTooltip({
-                                 message: "Create a new task",
+                                 message: "Search your workspace",
                                  anchor: "bottom",
-                                 trigger: { current: e.currentTarget }
+                                 trigger: e.currentTarget.getBoundingClientRect()
                              });
                          }}
                          onMouseLeave={() => removeTooltip()}

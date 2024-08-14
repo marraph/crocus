@@ -14,7 +14,6 @@ import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useToast} from "griller/src/component/toaster";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {TooltipAnchor} from "@marraph/daisy/components/tooltip/Tooltip";
 
 
 export default function Tasks() {
@@ -101,8 +100,8 @@ export default function Tasks() {
         <div className={"h-screen w-screen flex flex-col"}>
             <Headbar title={"Tasks"}/>
 
-            <div className={"flex-grow flex flex-col space-y-4 p-4 overflow-hidden"}>
-                <div className={"w-full flex flex-row items-center justify-between"}>
+            <div className={"flex flex-col space-y-4 p-4 overflow-hidden"}>
+                <div className={"flex flex-row items-center justify-between"}>
                     <div className={"flex flex-row items-center space-x-2"}>
                         <Button text={""}
                                 theme={"primary"}
@@ -112,7 +111,7 @@ export default function Tasks() {
                                 onMouseEnter={(e) => {
                                     addTooltip({
                                         message: "Create a new task",
-                                        trigger: { current: e.currentTarget }
+                                        trigger: e.currentTarget.getBoundingClientRect()
                                     });
                                 }}
                                 onMouseLeave={() => removeTooltip()}
