@@ -10,6 +10,7 @@ import {EntryTaskBadge} from "@/components/badges/EntryTaskBadge";
 import {cn} from "@/utils/cn";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 import {CustomScroll} from "react-custom-scroll";
+import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 interface TimeEntryProps {
     timeEntries: TimeEntry[] | undefined;
@@ -19,6 +20,7 @@ interface TimeEntryProps {
 
 export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
     const editRef = useRef<DialogRef>(null);
+    const { addTooltip, removeTooltip } = useTooltip();
 
     const [focusEntry, setFocusEntry] = useState<TimeEntry | null>(null);
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => ({
@@ -49,6 +51,14 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                             title={entry.project.name}
                             className={"max-w-[99%]"}
                             textClassName={"truncate"}
+                            onMouseEnter={(e) => {
+                                addTooltip({
+                                    message: "Project: " + entry.project?.name,
+                                    anchor: "tl",
+                                    trigger: e.currentTarget.getBoundingClientRect()
+                                });
+                            }}
+                            onMouseLeave={() => removeTooltip()}
                         />
                     }
                     {entry.task &&
@@ -56,6 +66,14 @@ export const WeekView: React.FC<TimeEntryProps> = ({ week, timeEntries }) => {
                             title={entry.task.name}
                             className={"max-w-[99%]"}
                             textClassName={"truncate"}
+                            onMouseEnter={(e) => {
+                                addTooltip({
+                                    message: "Task: " + entry.task?.name,
+                                    anchor: "tl",
+                                    trigger: e.currentTarget.getBoundingClientRect()
+                                });
+                            }}
+                            onMouseLeave={() => removeTooltip()}
                         />
                     }
                     <span className={"text-sm text-gray-400"}>{entry.comment}</span>

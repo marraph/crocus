@@ -13,9 +13,11 @@ import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {CustomScroll} from "react-custom-scroll";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
+import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 export default function Dashboard() {
     const router = useRouter();
+    const {addTooltip, removeTooltip} = useTooltip();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
     const parseDate = useCallback((date: Date): string => {
@@ -86,6 +88,14 @@ export default function Dashboard() {
                                 className={"m-1 font-normal dark:bg-dark-light dark:hover:bg-dark border-none"}
                                 onClick={() => router.push("/tasks")}
                                 icon={<ExternalLink size={16} className={"mr-2"}/>}
+                                onMouseEnter={(e) => {
+                                    addTooltip({
+                                        message: "Open full view",
+                                        anchor: "tr",
+                                        trigger: e.currentTarget.getBoundingClientRect()
+                                    });
+                                }}
+                                onMouseLeave={() => removeTooltip()}
                         />
                     </div>
                     <div className={"flex-grow overflow-auto no-scrollbar rounded-b-lg"}>
@@ -94,13 +104,37 @@ export default function Dashboard() {
                                  className={"group flex flex-row justify-between items-center p-2 border-b border-edge hover:bg-dark hover:cursor-pointer"}
                                  onClick={() => router.push(`/tasks/${task.id}`)}>
                                 <div className={"flex flex-row space-x-8 items-center pl-4"}>
-                                    <ProjectBadge title={task.project?.name ?? ""}/>
-                                    <span className={"text-gray group-hover:text-white"}>{task.name}</span>
+                                    {task.project &&
+                                        <ProjectBadge
+                                            title={task.project?.name ?? ""}
+                                            onMouseEnter={(e) => {
+                                                addTooltip({
+                                                    message: "Project: " + task.project?.name,
+                                                    anchor: "tl",
+                                                    trigger: e.currentTarget.getBoundingClientRect()
+                                                });
+                                            }}
+                                            onMouseLeave={() => removeTooltip()}
+                                        />
+                                    }
+                                    <span className={"text-gray text-sm group-hover:text-white"}>{task.name}</span>
                                 </div>
                                 <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                                    <StatusBadge title={task.status?.toString()}/>
-                                    <span
-                                        className={"text-sm text-gray group-hover:text-white"}>{moment(task.deadline?.toString()).format('MMMM D YYY')}</span>
+                                    {task.status && <StatusBadge title={task.status?.toString()}/>}
+                                    {task.deadline &&
+                                        <span className={"text-xs text-gray group-hover:text-white"}
+                                            onMouseEnter={(e) => {
+                                                addTooltip({
+                                                    message: "Deadline: " + moment(task.deadline?.toString()).format('MMM D YYYY'),
+                                                    anchor: "tl",
+                                                    trigger: e.currentTarget.getBoundingClientRect()
+                                                });
+                                            }}
+                                            onMouseLeave={() => removeTooltip()}
+                                        >
+                                            {moment(task.deadline?.toString()).format('MMM D YYYY')}
+                                        </span>
+                                    }
                                     <ProfileBadge name={task.createdBy?.name}/>
                                 </div>
                             </div>

@@ -18,6 +18,7 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {JoinTeamDialog} from "@/components/dialogs/JoinTeamDialog";
 import {useUser} from "@/context/UserContext";
 import {NavigationItem, useNavigation} from "@/components/NavigationItem";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...props}) => {
     const router = useRouter();
@@ -25,6 +26,7 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
     const [openTeamMenu, setOpenTeamMenu] = useState(false);
     const joinTeamDialogRef = useRef<DialogRef>(null);
     const { selectedItem, setSelectedItem } = useNavigation();
+    const { addTooltip, removeTooltip } = useTooltip();
     const { data:user, error:userError, isLoading:userLoading } = useUser();
 
     useEffect(() => {
@@ -91,6 +93,14 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
                             </div>
                             <div className={"p-2 text-marcador hover:text-white hover:bg-dark rounded-lg cursor-pointer"}
                                  onClick={() => joinTeamDialogRef.current?.show()}
+                                 onMouseEnter={(e) => {
+                                     addTooltip({
+                                         message: "Join a team",
+                                         anchor: "rc",
+                                         trigger: e.currentTarget.getBoundingClientRect()
+                                     });
+                                 }}
+                                 onMouseLeave={() => removeTooltip()}
                             >
                                 <Plus size={16}/>
                             </div>

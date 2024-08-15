@@ -7,6 +7,7 @@ import {Notification} from "@/components/Notification";
 import {Bell} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {CustomScroll} from "react-custom-scroll";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 interface ContextProps extends React.HTMLAttributes<HTMLDivElement> {
     notifications: { sender: string, task: string, date: Date, type: string}[];
@@ -14,6 +15,7 @@ interface ContextProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextProps>(({notifications, className, ...props}, ref) => {
     const [showMenu, setShowMenu] = useState(false);
+    const {addTooltip, removeTooltip} = useTooltip();
     const {data, isLoading, error} = useUser();
 
     const menuRef = useOutsideClick(() => {
@@ -26,6 +28,14 @@ export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextP
                     onClick={() => setShowMenu(!showMenu)}
                     icon={<Bell size={16}/>}
                     className={"px-2"}
+                    onMouseEnter={(e) => {
+                        addTooltip({
+                            message: "View your notifications",
+                            anchor: "br",
+                            trigger: e.currentTarget.getBoundingClientRect()
+                        });
+                    }}
+                    onMouseLeave={() => removeTooltip()}
             />
 
             {showMenu &&

@@ -111,6 +111,7 @@ export default function Tasks() {
                                 onMouseEnter={(e) => {
                                     addTooltip({
                                         message: "Create a new task",
+                                        anchor: "tl",
                                         trigger: e.currentTarget.getBoundingClientRect()
                                     });
                                 }}

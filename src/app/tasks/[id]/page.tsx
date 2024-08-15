@@ -27,6 +27,7 @@ import {cn} from "@/utils/cn";
 import {MessageBar} from "@/components/MessageBar";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
+import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 export default function TasksID() {
     const closeRef = useRef<DialogRef>(null);
@@ -34,12 +35,13 @@ export default function TasksID() {
     const editRef = useRef<DialogRef>(null);
     const router = useRouter();
     const id = Number(useParams().id);
+    const { addTooltip, removeTooltip } = useTooltip();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {taskElement} = findTaskProps(user, id);
 
     return (
         <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
-            <Headbar className={"pt-3.5"}>
+            <Headbar>
                 <Breadcrumb pastText={"Tasks"}
                             nowText={taskElement.name}
                             onClick={() => router.push("/tasks/")}
@@ -55,15 +57,39 @@ export default function TasksID() {
                             <Button text={"Edit"}
                                     onClick={() => editRef.current?.show()}
                                     icon={<Pencil size={16} className={"mr-2"} />}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Edit Task",
+                                            anchor: "tl",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                             <Button text={"Close"}
                                     onClick={() => closeRef.current?.show()}
                                     icon={<CheckCheck size={20} className={"mr-2"}/>}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Close Task",
+                                            anchor: "tl",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                             <Button text={""}
                                     onClick={() => deleteRef.current?.show()}
                                     className={cn("w-min red-button-style hover:red-button-style")}
                                     icon={<Trash2 size={20}/>}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Delete Task",
+                                            anchor: "tl",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                         </div>
 

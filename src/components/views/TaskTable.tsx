@@ -23,6 +23,7 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {getSortedTaskTable, SortState} from "@/utils/sort";
 import moment from "moment";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 interface TaskProps {
     taskElements: TaskElement[];
@@ -36,6 +37,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
+    const { addTooltip, removeTooltip } = useTooltip();
 
     const header = useMemo(() => [
         { key: 'project', label: 'Project' },
@@ -57,7 +59,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         setFocusTaskElement(taskElement);
 
         if (!contextMenu.visible) {
-            if (e.target instanceof HTMLButtonElement) {
+            if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLDivElement) {
                 const buttonElement = e.currentTarget;
                 const rect = buttonElement.getBoundingClientRect();
 
@@ -123,12 +125,51 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                         <TableRow key={taskElement.id}
                                   onClick={() => router.push(`/tasks/${taskElement.id}`)}
                                   onContextMenu={(event) => handleContextMenu(event, taskElement)}
-                                  className={cn({"border-b border-b-edge": index === getSortedTaskTable(taskElements, sort).length - 1})}>
+                                  className={cn({"border-b border-b-edge": index === getSortedTaskTable(taskElements, sort).length - 1})}
+                        >
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
-                                    {taskElement.project && <ProjectBadge title={taskElement.project?.name}/>}
-                                    {taskElement.topic && <TopicBadge title={taskElement.topic?.title} color={"error"}/>}
-                                    {taskElement.priority && <PriorityBadge priority={taskElement.priority}/>}
+                                    {taskElement.project &&
+                                        <ProjectBadge
+                                            title={taskElement.project.name}
+                                            onMouseEnter={(e) => {
+                                                addTooltip({
+                                                    message: "Project: " + taskElement.project?.name,
+                                                    anchor: "tl",
+                                                    trigger: e.currentTarget.getBoundingClientRect()
+                                                });
+                                            }}
+                                            onMouseLeave={() => removeTooltip()}
+                                        />
+
+                                    }
+                                    {taskElement.topic &&
+                                        <TopicBadge
+                                            title={taskElement.topic.title}
+                                            color={"error"}
+                                            onMouseEnter={(e) => {
+                                                addTooltip({
+                                                    message: "Topic: " + taskElement.topic?.title,
+                                                    anchor: "tl",
+                                                    trigger: e.currentTarget.getBoundingClientRect()
+                                                });
+                                            }}
+                                            onMouseLeave={() => removeTooltip()}
+                                        />
+                                    }
+                                    {taskElement.priority &&
+                                        <PriorityBadge
+                                            priority={taskElement.priority}
+                                            onMouseEnter={(e) => {
+                                                addTooltip({
+                                                    message: "Priority: " + taskElement.priority,
+                                                    anchor: "tl",
+                                                    trigger: e.currentTarget.getBoundingClientRect()
+                                                });
+                                            }}
+                                            onMouseLeave={() => removeTooltip()}
+                                        />
+                                    }
                                 </div>
                             </TableCell>
                             <TableCell className={"text-white truncate"}>

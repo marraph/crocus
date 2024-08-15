@@ -8,14 +8,14 @@ import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTim
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
 import {CreateAbsenceDialog} from "@/components/dialogs/timetracking/CreateAbsenceDialog";
-import {Absence, TimeEntry, User} from "@/types/types";
-import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
+import {Absence, TimeEntry} from "@/types/types";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {WeekView} from "@/components/views/WeekView";
 import {SwitchButton} from "@marraph/daisy/components/switchbutton/SwitchButton";
 import {Combobox, ComboboxItem, ComboboxRef} from "@marraph/daisy/components/combobox/Combobox";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 export interface Week {
     monday: Date;
@@ -27,94 +27,63 @@ export interface Week {
     sunday: Date;
 }
 
-function createWeek(weekStart: moment.Moment): Week {
-    return {
-        monday: weekStart.toDate(),
-        tuesday: weekStart.clone().add(1, 'days').toDate(),
-        wednesday: weekStart.clone().add(2, 'days').toDate(),
-        thursday: weekStart.clone().add(3, 'days').toDate(),
-        friday: weekStart.clone().add(4, 'days').toDate(),
-        saturday: weekStart.clone().add(5, 'days').toDate(),
-        sunday: weekStart.clone().add(6, 'days').toDate()
-    };
-}
-
-function generateWeeks(): Week[] {
-    let weeksArray: Week[] = [];
-    let currentWeek = moment().startOf('week').add(1, 'days');
-
-    for (let i = 20; i > 0; i--) {
-        let weekStart = currentWeek.clone().subtract(i, 'weeks');
-        weeksArray.push(createWeek(weekStart));
-    }
-
-    weeksArray.push(createWeek(currentWeek));
-
-    for (let i = 1; i <= 20; i++) {
-        let weekStart = currentWeek.clone().add(i, 'weeks');
-        weeksArray.push(createWeek(weekStart));
-    }
-
-    return weeksArray;
-}
-
-function findCurrentWeek(weeksArray: Week[]): Week {
-    const today = moment().startOf('day');
-    return weeksArray.find(week => {
-        const monday = moment(week.monday);
-        const sunday = moment(week.sunday);
-        return today.isBetween(monday, sunday, null, '[]');
-    }) as Week;
-}
-
-function getFilterDayEntries(user: User | undefined, day: Date): TimeEntry[] | undefined {
-    return user?.timeEntries?.filter(entry => {
-        return moment(entry.startDate).isSame(day, 'day');
-    });
-}
-
-function getFilterDayAbsences(user: User | undefined, day: Date): Absence[] | undefined {
-    return user?.absences?.filter(absence => {
-        return moment(absence.startDate).isSame(day, 'day');
-    });
-}
-
-function getFilterWeekEntries(user: User | undefined, week: Week): TimeEntry[] | undefined {
-    return user?.timeEntries?.filter(entry => {
-        return moment(entry.startDate).isBetween(week.monday, week.sunday, null, '[]');
-    });
-}
-
-function getFilterWeekAbsences(user: User | undefined, week: Week): Absence[] | undefined {
-    return user?.absences?.filter(absence => {
-        return moment(absence.startDate).isBetween(week.monday, week.sunday, null, '[]');
-    });
-}
-
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
     const comboboxRef = useRef<ComboboxRef>(null);
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
+    
+    const createWeek = useCallback((weekStart: moment.Moment): Week => {
+        return {
+            monday: weekStart.toDate(),
+            tuesday: weekStart.clone().add(1, 'days').toDate(),
+            wednesday: weekStart.clone().add(2, 'days').toDate(),
+            thursday: weekStart.clone().add(3, 'days').toDate(),
+            friday: weekStart.clone().add(4, 'days').toDate(),
+            saturday: weekStart.clone().add(5, 'days').toDate(),
+            sunday: weekStart.clone().add(6, 'days').toDate()
+        };
+    }, []);
 
-    const weeks = useMemo(() => generateWeeks(), []);
+    const findCurrentWeek = useCallback((weeksArray: Week[]): Week => {
+        const today = moment().startOf('day');
+        return weeksArray.find(week => {
+            const monday = moment(week.monday);
+            const sunday = moment(week.sunday);
+            return today.isBetween(monday, sunday, null, '[]');
+        }) as Week;
+    }, []);
+
+    const weeks = useMemo(() => {
+        let weeksArray: Week[] = [];
+        let currentWeek = moment().startOf('week').add(1, 'days');
+
+        for (let i = 20; i > 0; i--) {
+            let weekStart = currentWeek.clone().subtract(i, 'weeks');
+            weeksArray.push(createWeek(weekStart));
+        }
+
+        weeksArray.push(createWeek(currentWeek));
+
+        for (let i = 1; i <= 20; i++) {
+            let weekStart = currentWeek.clone().add(i, 'weeks');
+            weeksArray.push(createWeek(weekStart));
+        }
+
+        return weeksArray;
+    }, [createWeek]);
     const [day, setDay] = useState<Date>(new Date());
     const [week, setWeek] = useState<Week>(findCurrentWeek(weeks));
     const [view, setView] = useState<boolean>(false);
+    const {addTooltip, removeTooltip} = useTooltip();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    const [dailyEntries, setDailyEntries] = useState<TimeEntry[] | undefined>(getFilterDayEntries(user, day));
-    const [weekEntries, setWeekEntries] = useState<TimeEntry[] | undefined>(getFilterWeekEntries(user, week));
-    const [dailyAbsences, setDailyAbsences] = useState<Absence[] | undefined>(getFilterDayAbsences(user, day));
-    const [weekAbsences, setWeekAbsences] = useState<Absence[] | undefined>(getFilterWeekAbsences(user, week));
-
-    useEffect(() => {
-        if (user?.timeEntries) setDailyEntries(getFilterDayEntries(user, day));
-        if (user?.timeEntries) setWeekEntries(getFilterWeekEntries(user, week));
-        if (user?.absences) setDailyAbsences(getFilterDayAbsences(user, day));
-        if (user?.absences) setWeekAbsences(getFilterWeekAbsences(user, week));
-
-    }, [user, day, week]);
+    const { dailyEntries, weekEntries, dailyAbsences, weekAbsences } = useMemo(() => ({
+        dailyEntries: user?.timeEntries?.filter(entry => moment(entry.startDate).isSame(day, 'day')),
+        weekEntries: user?.timeEntries?.filter(entry => moment(entry.startDate).isBetween(week.monday, week.sunday, null, '[]')),
+        dailyAbsences: user?.absences?.filter(absence => moment(absence.startDate).isSame(day, 'day')),
+        weekAbsences: user?.absences?.filter(absence => moment(absence.startDate).isBetween(week.monday, week.sunday, null, '[]'))
+    }), [user, day, week]);
 
     const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());
@@ -132,7 +101,7 @@ export default function Timetracking() {
             moment(weeks[weeks.indexOf(week) - 1].monday).format("Do MMMM YYYY") + "  -  " +
             moment(weeks[weeks.indexOf(week) - 1].sunday).format("Do MMMM YYYY")
         );
-    }, [week]);
+    }, [week, weeks]);
 
     const handleWeekAfter = useCallback(() => {
         setWeek(weeks[weeks.indexOf(week) + 1]);
@@ -140,7 +109,7 @@ export default function Timetracking() {
             moment(weeks[weeks.indexOf(week) + 1].monday).format("Do MMMM YYYY") + "  -  " +
             moment(weeks[weeks.indexOf(week) + 1].sunday).format("Do MMMM YYYY")
         );
-    }, [week]);
+    }, [week, weeks]);
 
     if (!user) return null;
 
@@ -160,24 +129,64 @@ export default function Timetracking() {
                                     onClick={() => entryDialogRef.current?.show()}
                                     icon={<AlarmClockPlus size={20}/>}
                                     className={"px-2"}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Create a new entry",
+                                            anchor: "tl",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                             <Button text={"New Absence"}
                                     onClick={() => absenceDialogRef.current?.show()}
                                     icon={<TreePalm size={20} className={"mr-2"}/>}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Create a new absence",
+                                            anchor: "tl",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                             <SwitchButton firstTitle={"Day"}
                                           secondTitle={"Week"}
                                           onClick={() => setView(!view)}
+                                          onMouseEnter={(e) => {
+                                              addTooltip({
+                                                  message: "Change View",
+                                                  anchor: "tl",
+                                                  trigger: e.currentTarget.getBoundingClientRect()
+                                              });
+                                          }}
+                                          onMouseLeave={() => removeTooltip()}
                             />
                         </div>
                         <div className={"w-full flex flex-row items-center justify-end space-x-2"}>
                             <Button text={""}
                                     onClick={view ? handleDayBefore : handleWeekBefore}
                                     icon={<ChevronLeft size={20}/>}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Go back",
+                                            anchor: "tr",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                             <Button text={""}
                                     onClick={view ? handleDayAfter : handleWeekAfter}
                                     icon={<ChevronRight size={20}/>}
+                                    onMouseEnter={(e) => {
+                                        addTooltip({
+                                            message: "Go forward",
+                                            anchor: "tr",
+                                            trigger: e.currentTarget.getBoundingClientRect()
+                                        });
+                                    }}
+                                    onMouseLeave={() => removeTooltip()}
                             />
                             {view ?
                                 <DatePicker text={"Select a Date"}
@@ -187,6 +196,14 @@ export default function Timetracking() {
                                             closeButton={false}
                                             onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
                                             dayFormat={"long"}
+                                            onMouseEnter={(e) => {
+                                                addTooltip({
+                                                    message: "Change Date",
+                                                    anchor: "tr",
+                                                    trigger: e.currentTarget.getBoundingClientRect()
+                                                });
+                                            }}
+                                            onMouseLeave={() => removeTooltip()}
                                 />
                                 :
                                 <Combobox buttonTitle={"Week"}
@@ -195,6 +212,14 @@ export default function Timetracking() {
                                           preSelectedValue={moment(week.monday).format("Do MMMM YYYY") + "  -  " + moment(week.sunday).format("Do MMMM YYYY")}
                                           onValueChange={(week) => setWeek(weeks.find((w) =>
                                               moment(w.monday).format("Do MMMM YYYY") + "  -  " + moment(w.sunday).format("Do MMMM YYYY") === week) as Week)}
+                                          onMouseEnter={(e) => {
+                                              addTooltip({
+                                                  message: "Change week",
+                                                  anchor: "tr",
+                                                  trigger: e.currentTarget.getBoundingClientRect()
+                                              });
+                                          }}
+                                          onMouseLeave={() => removeTooltip()}
                                 >
                                     {weeks.map((week, index) => (
                                         <ComboboxItem key={index}

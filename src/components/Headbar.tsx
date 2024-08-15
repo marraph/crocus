@@ -44,7 +44,7 @@ export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) 
                          onMouseEnter={(e) => {
                              addTooltip({
                                  message: "Search your workspace",
-                                 anchor: "bottom",
+                                 anchor: "br",
                                  trigger: e.currentTarget.getBoundingClientRect()
                              });
                          }}

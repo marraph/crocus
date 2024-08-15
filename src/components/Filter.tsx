@@ -141,6 +141,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
                         onMouseEnter={(e) => {
                             addTooltip({
                                 message: "Filter your tasks",
+                                anchor: "tl",
                                 trigger: e.currentTarget.getBoundingClientRect()
                             });
                         }}

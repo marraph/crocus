@@ -20,6 +20,7 @@ import {AbsenceBadge} from "@/components/badges/AbsenceBadge";
 import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDialog";
 import moment from "moment";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
+import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
 
 
 interface TimetrackProps {
@@ -35,6 +36,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     const [absenceContextMenu, setAbsenceContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTimeEntry, setFocusTimeEntry] = useState<TimeEntry | null>(null);
     const [focusAbsence, setFocusAbsence] = useState<Absence | null>(null);
+    const { addTooltip, removeTooltip } = useTooltip();
 
     const header = useMemo(() => [
         { key: "entry", label: "Entry" },
@@ -192,8 +194,32 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                             >
                                 <TableCell>
                                     <div className={"flex flex-row items-center space-x-2"}>
-                                        {entry.project && <ProjectBadge title={entry.project.name}/>}
-                                        {entry.task && <EntryTaskBadge title={entry.task.name}/>}
+                                        {entry.project &&
+                                            <ProjectBadge
+                                                title={entry.project.name}
+                                                onMouseEnter={(e) => {
+                                                    addTooltip({
+                                                        message: "Project: " + entry.project?.name,
+                                                        anchor: "tl",
+                                                        trigger: e.currentTarget.getBoundingClientRect()
+                                                    });
+                                                }}
+                                                onMouseLeave={() => removeTooltip()}
+                                            />
+                                        }
+                                        {entry.task &&
+                                            <EntryTaskBadge
+                                                title={entry.task.name}
+                                                onMouseEnter={(e) => {
+                                                    addTooltip({
+                                                        message: "Task: " + entry.task?.name,
+                                                        anchor: "tl",
+                                                        trigger: e.currentTarget.getBoundingClientRect()
+                                                    });
+                                                }}
+                                                onMouseLeave={() => removeTooltip()}
+                                            />
+                                        }
                                         <span>{entry.comment}</span>
                                     </div>
                                 </TableCell>
