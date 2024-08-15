@@ -17,13 +17,14 @@ import {Caret} from "@/components/badges/Caret";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
-import {TaskElement} from "@/types/types";
+import {Absence, Task, TaskElement} from "@/types/types";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {getSortedTaskTable, SortState} from "@/utils/sort";
 import moment from "moment";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useContextMenu} from "@/hooks/useContextMenu";
 
 interface TaskProps {
     taskElements: TaskElement[];
@@ -34,10 +35,10 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
     const closeRef = useRef<DialogRef>(null);
-    const [contextMenu, setContextMenu] = useState({ id: -1 , x: 0, y: 0, visible: false });
     const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
     const { addTooltip, removeTooltip } = useTooltip();
+    const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu<TaskElement>();
 
     const header = useMemo(() => [
         { key: 'project', label: 'Project' },
@@ -45,36 +46,6 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
         { key: 'status', label: 'Status' },
         { key: 'deadline', label: 'Deadline' }
     ], []);
-
-    useEffect(() => {
-        const handleClick = () => setContextMenu({ ...contextMenu, visible: false});
-        document.addEventListener('click', handleClick);
-        return () => document.removeEventListener('click', handleClick);
-    }, [contextMenu]);
-
-    const handleContextMenu = useCallback((e: React.MouseEvent<HTMLElement>, taskElement: TaskElement) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        setFocusTaskElement(taskElement);
-
-        if (!contextMenu.visible) {
-            if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLDivElement) {
-                const buttonElement = e.currentTarget;
-                const rect = buttonElement.getBoundingClientRect();
-
-                const coordinates = {
-                    x: rect.left - 66,
-                    y: rect.top + 34
-                };
-                setContextMenu({id: taskElement.id, x: coordinates.x, y: coordinates.y, visible: true});
-            } else {
-                setContextMenu({id: taskElement.id, x: e.clientX, y: e.clientY, visible: true});
-            }
-        } else {
-            setContextMenu({ ...contextMenu, visible: false });
-        }
-    }, [contextMenu]);
 
     const handleHeaderClick = useCallback((headerKey: string) => {
         setSort({
@@ -93,13 +64,14 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 </>
             }
 
-            {contextMenu.visible &&
-                <TaskContextMenu taskId={contextMenu.id}
-                                 x={contextMenu.x}
-                                 y={contextMenu.y}
-                                 deleteRef={deleteRef}
-                                 closeRef={closeRef}
-                                 editRef={editRef}
+            {contextMenu.visible && contextMenu.item &&
+                <TaskContextMenu
+                    taskId={contextMenu.item.id}
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    deleteRef={deleteRef}
+                    closeRef={closeRef}
+                    editRef={editRef}
                 />
             }
 
@@ -123,9 +95,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 <TableBody className={"text-sm"}>
                     {getSortedTaskTable(taskElements, sort).map((taskElement, index) => (
                         <TableRow key={taskElement.id}
-                                  onClick={() => router.push(`/tasks/${taskElement.id}`)}
-                                  onContextMenu={(event) => handleContextMenu(event, taskElement)}
                                   className={cn({"border-b border-b-edge": index === getSortedTaskTable(taskElements, sort).length - 1})}
+                                  onClick={() => router.push(`/tasks/${taskElement.id}`)}
+                                  onContextMenu={(e) => {
+                                      handleContextMenu(e, taskElement);
+                                      setFocusTaskElement(taskElement);
+                                  }}
                         >
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
@@ -181,7 +156,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                             <TableCell className={"text-xs"}>
                                 {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}
                             </TableCell>
-                            <TableAction onClick={(e) => handleContextMenu(e, taskElement)}/>
+                            <TableAction onClick={(e) => {
+                                handleContextMenu(e, taskElement);
+                                setFocusTaskElement(taskElement);
+                            }}
+                            />
                         </TableRow>
                     ))}
                 </TableBody>
