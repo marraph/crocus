@@ -5,7 +5,7 @@ import {BookCopy, CircleAlert, Hourglass, LineChart, Save, Tag, Users} from "luc
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
-import {Priority, Status, Task, TaskElement} from "@/types/types";
+import {Priority, State, Task, TaskElement} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {Input} from "@marraph/daisy/components/input/Input";
@@ -82,7 +82,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
             name: values.title,
             description: values.description,
             topic: getTopicItem(user, values.topic as string) ?? null,
-            status: values.status as Status ?? null,
+            status: values.status as State ?? null,
             priority: values.priority as Priority ?? null,
             deadline: values.deadline ?? null,
             isArchived: false,
