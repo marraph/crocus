@@ -1,39 +1,10 @@
-import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
 import {organisation} from "@/schema";
-import {db} from "@/database/drizzle";
+import {createEntry, deleteEntity, getEntity, NewEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
-export type Organisation = InferSelectModel<typeof organisation>
-export type NewOrganisation = InferInsertModel<typeof organisation>
-export type UpdateOrganisation = Partial<NewOrganisation>
+export type NewOrganisation = NewEntity<typeof organisation>
+export type UpdateOrganisation = UpdateEntity<typeof organisation>
 
-export const createOrganisation = async (newOrganisation: NewOrganisation): Promise<Organisation> => {
-    const [createdOrganisation] = await db
-        .insert(organisation)
-        .values(newOrganisation)
-        .returning();
-
-    return createdOrganisation
-}
-
-export const updateOrganisation = async (id: number, updateOrganisation: UpdateOrganisation): Promise<Organisation> => {
-    const [updatedOrganisation] = await db
-        .update(organisation)
-        .set(updateOrganisation)
-        .where(eq(organisation.id, id))
-        .returning()
-
-    return updatedOrganisation
-}
-
-export const deleteOrganisation = async (id: number) => {
-    await db.delete(organisation).where(eq(organisation.id, id))
-}
-
-export const getOrganisation = async (organisationId: number): Promise<Organisation> => {
-    const [foundOrganisation] = await db
-        .select()
-        .from(organisation)
-        .where(eq(organisation.id, organisationId))
-
-    return foundOrganisation
-}
+export const createOrganisation = (newOrganisation: NewOrganisation) => createEntry(organisation, newOrganisation)
+export const updateOrganisation = (id: number, updateOrganisation: UpdateOrganisation) => updateEntry(organisation, updateOrganisation, id, organisation.id)
+export const deleteOrganisation = (id: number) => deleteEntity(organisation, id, organisation.id)
+export const getOrganisation = (id: number) => getEntity(organisation, id, organisation.id)

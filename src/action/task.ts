@@ -1,29 +1,15 @@
 import {db} from "@/database/drizzle";
 import {project, task, team} from "@/schema";
 import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
+import {createEntry, deleteEntity, Entity, NewEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
-export type Task = InferSelectModel<typeof task>
-export type NewTask = InferInsertModel<typeof task>
-export type UpdateTask = Partial<NewTask>
+export type Task = Entity<typeof task>
+export type NewTask = NewEntity<typeof task>
+export type UpdateTask = UpdateEntity<typeof task>
 
-export const createTask = async (newTask: NewTask): Promise<Task> => {
-    const [createdTask] = await db
-        .insert(task)
-        .values(newTask)
-        .returning();
-
-    return createdTask
-}
-
-export const updateTask = async (id: number, updateTask: UpdateTask): Promise<Task> => {
-    const [updatedTask] = await db
-        .update(task)
-        .set(updateTask)
-        .where(eq(task.id, id))
-        .returning()
-
-    return updatedTask
-}
+export const createTask = (newTask: NewTask) => createEntry(task, newTask)
+export const updateTask = (id: number, updateTask: UpdateTask) => updateEntry(task, updateTask, id, task.id)
+export const deleteTask = async (id: number) => deleteEntity(task, id, task.id)
 
 export const deleteTask = async (id: number) => {
     await db.delete(task).where(eq(task.id, id))

@@ -1,37 +1,35 @@
-import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
+import {eq} from "drizzle-orm";
 import {project} from "@/schema";
 import {db} from "@/database/drizzle";
+import {ActionResult, createEntry, deleteEntity, Entity, NewEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
-export type Project = InferSelectModel<typeof project>
-export type NewProject = InferInsertModel<typeof project>
-export type UpdateProject = Partial<NewProject>
+export type Project = Entity<typeof project>
+export type NewProject = NewEntity<typeof project>
+export type UpdateProject = UpdateEntity<typeof project>
 
-export const createProject = async (newProject: NewProject): Promise<Project> => {
-    const [createdProject] = await db
-        .insert(project)
-        .values(newProject)
-        .returning();
+export const createProject = (newProject: NewProject) => createEntry(project, newProject)
+export const updateProject = (id: number, updateProject: UpdateProject) => updateEntry(project, updateProject, id, project.id)
+export const deleteProject = (id: number) => deleteEntity(project, id, project.id)
 
-    return createdProject
-}
+export const getProjectsFromTeam = async (teamId: number, limit: number = 100): Promise<ActionResult<Project[]>> => {
+    try {
+        const projects = await db
+            .select()
+            .from(project)
+            .where(eq(project.teamId, teamId))
+            .limit(limit)
 
-export const updateProject = async (id: number, updateProject: UpdateProject): Promise<Project> => {
-    const [updatedProject] = await db
-        .update(project)
-        .set(updateProject)
-        .where(eq(project.id, id))
-        .returning()
+        if (!projects) {
+            return {success: false, error: 'Failed to get projects'}
+        }
 
-    return updatedProject
-}
+        if (!projects) {
+            return {success: false, error: 'Found no teams'}
+        }
 
-export const deleteProject = async (id: number) => {
-    await db.delete(project).where(eq(project.id, id))
-}
-
-export const getProjectsFromTeam = async (teamId: number): Promise<Project[]> => {
-    return db
-        .select()
-        .from(project)
-        .where(eq(project.teamId, teamId));
+        return {success: true, data: projects}
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
 }
