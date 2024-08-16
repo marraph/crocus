@@ -3,7 +3,7 @@
 import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Priority, Project, Status, Task, TimeEntry} from "@/types/types";
+import {Priority, Project, State, Task, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {mutateRef} from "@/utils/mutateRef";
@@ -122,7 +122,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                 name: timeEntry.task.name,
                 description: timeEntry.task.description,
                 topic: getTopicItem(user, timeEntry.task.topic?.title as string) ?? null,
-                status: timeEntry.task.status as Status ?? null,
+                status: timeEntry.task.status as State ?? null,
                 priority: timeEntry.task.priority as Priority ?? null,
                 deadline: timeEntry.task.deadline ?? null,
                 isArchived: false,

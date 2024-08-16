@@ -1,20 +1,24 @@
 import {user} from "@/schema";
-import {eq} from "drizzle-orm";
+import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
 import {db} from "@/database/drizzle";
 
-export const createUser = async (name: string, email: string) => {
+export type User = InferSelectModel<typeof user>
+export type NewUser = InferInsertModel<typeof user>
+export type UpdateUser = Partial<NewUser>
+
+export const createUser = async (newUser: NewUser): Promise<User> => {
     const [createdUser] = await db
         .insert(user)
-        .values({email: email, name: name})
+        .values({email: newUser.name, name: newUser.name})
         .returning()
 
     return createdUser
 }
 
-export const updateUser = async (id: number, name: string) => {
+export const updateUser = async (id: number, updateUser: UpdateUser): Promise<User> => {
     const [updatedUser] = await db
         .update(user)
-        .set({name: name})
+        .set(updateUser)
         .where(eq(user.id, id))
         .returning()
 
@@ -25,7 +29,7 @@ export const deleteUser = async (id: number) => {
     await db.delete(user).where(eq(user.id, id))
 }
 
-export const getUser = async (id: number) => {
+export const getUser = async (id: number): Promise<User> => {
     const [foundUser] = await db
         .select()
         .from(user)

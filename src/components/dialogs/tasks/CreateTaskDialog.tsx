@@ -16,7 +16,7 @@ import {BookCopy, CircleAlert, Hourglass, LineChart, SquareCheckBig, Tag, Users}
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {createTask} from "@/service/hooks/taskHook";
-import {Priority, Status, TaskCreation, User} from "@/types/types";
+import {Priority, State, TaskCreation, User} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Input} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
@@ -85,7 +85,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             name: values.title,
             description: values.description,
             topic: getTopicItem(user, values.topic as string) ?? null,
-            status: values.status as Status ?? null,
+            status: values.status as State ?? null,
             priority: values.priority as Priority ?? null,
             deadline: values.deadline ?? null,
             isArchived: false,

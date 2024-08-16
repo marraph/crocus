@@ -1,5 +1,5 @@
 type Priority = "LOW" | "MEDIUM" | "HIGH"
-type Status = "PENDING" | "PLANING" | "STARTED" | "TESTED" | "FINISHED"
+type State = "PENDING" | "PLANING" | "STARTED" | "TESTED" | "FINISHED"
 export type AbsenceType = "VACATION" | "SICK"
 
 type PreviewUser = {
@@ -70,7 +70,7 @@ type Task = {
     duration: number | null
     bookedDuration: number
     deadline: Date | null
-    status: Status | null
+    status: State | null
     priority: Priority | null
     createdBy: PreviewUser
     createdDate: Date
@@ -87,7 +87,7 @@ type TaskElement = {
     duration: number | null
     bookedDuration: number
     deadline: Date | null
-    status: Status | null
+    status: State | null
     priority: Priority | null
     createdBy: PreviewUser
     createdDate: Date
@@ -107,7 +107,7 @@ type TaskCreation = {
     duration: number | null
     bookedDuration: number
     deadline: Date | null
-    status: Status | null
+    status: State | null
     priority: Priority | null
     createdBy: PreviewUser
     createdDate: Date
@@ -159,7 +159,7 @@ type Acceptable = User | Organisation | Team | Project | Topic | Task  | TimeEnt
 export type {
     PreviewUser,
     Priority,
-    Status,
+    State,
     User,
     Organisation,
     Team,
