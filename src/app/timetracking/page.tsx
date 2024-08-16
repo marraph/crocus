@@ -104,7 +104,7 @@ export default function Timetracking() {
                             />
                             <DatePicker text={"Select a Date"}
                                         size={"medium"}
-                                        className={"w-56"}
+                                        className={"min-w-56"}
                                         preSelectedValue={day}
                                         ref={datepickerRef}
                                         closeButton={false}

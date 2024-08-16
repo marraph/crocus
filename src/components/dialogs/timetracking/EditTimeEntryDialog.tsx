@@ -71,6 +71,11 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
     }, []);
 
     const validateInput = useCallback(() => {
+        if (values === initialValues) {
+            setValid(false);
+            return;
+        }
+        
         if (values.comment.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
@@ -82,18 +87,11 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
             return;
         }
         setValid(true);
-    }, [times, values.comment, values.project, values.task, values.timeFrom, values.timeTo]);
+    }, [initialValues, times, values]);
 
     useEffect(() => {
         validateInput();
     }, [validateInput, values]);
-
-    const getDuration = useCallback((startDate: string, endDate: string) => {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const duration = moment.duration(moment(end).diff(moment(start)));
-        return duration.asHours();
-    }, []);
 
     const handleEditClick = useCallback(() => {
         if (!user) return;

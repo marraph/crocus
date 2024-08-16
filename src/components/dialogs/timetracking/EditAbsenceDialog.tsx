@@ -35,9 +35,18 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
 
+    const validate = useCallback(() => {
+        if (values === initialValues) {
+            setValid(false);
+            return;
+        }
+        
+        setValid(values.absenceType === "SICK" || values.absenceType === "VACATION");
+    }, [initialValues, values]);
+
     useEffect(() => {
         validate();
-    }, [values.absenceType]);
+    }, [validate, values.absenceType]);
 
     const handleEditClick = useCallback(() => {
         if (!user) return;
@@ -59,7 +68,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
             secondTitle: "You successfully saved your absence changes.",
             icon: <Save/>,
         });
-    }, [absence, values, user]);
+    }, [user, absence.id, absence.createdBy, absence.createdDate, values.dateRange.from, values.dateRange.to, values.comment, values.absenceType, addToast]);
 
     const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
@@ -74,10 +83,6 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
         setValues(initialValues);
     }, [initialValues]);
 
-    const validate = useCallback(() => {
-        setValid(values.absenceType === "SICK" || values.absenceType === "VACATION");
-    }, [values.absenceType]);
-
     if (!dialogRef || user === undefined) return null;
 
     return (
@@ -90,13 +95,13 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           label={"Comment"}
-                          className={"px-4 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                          className={"px-2 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
                           spellCheck={false}
                           onChange={handleInputChange("comment", setValues)}
                           value={values.comment}
                 />
 
-                <div className={"flex flex-row items-center space-x-2 px-4 pb-2"}>
+                <div className={"flex flex-row items-center space-x-2 py-4"}>
                     <DateRangePicker text={"Select a date"}
                                      label={"Date Range"}
                                      size={"medium"}
