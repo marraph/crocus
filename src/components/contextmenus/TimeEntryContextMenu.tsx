@@ -9,13 +9,14 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 interface TimeEntryContextProps extends React.HTMLAttributes<HTMLDivElement> {
     x: number;
     y: number;
+    contextRef: React.RefObject<HTMLDivElement>;
     deleteRef: React.RefObject<DialogRef>;
     editRef: React.RefObject<DialogRef>;
 }
 
-export const TimeEntryContextMenu: React.FC<TimeEntryContextProps> = ({ deleteRef, editRef, x, y, }) => {
+export const TimeEntryContextMenu: React.FC<TimeEntryContextProps> = ({ contextRef, deleteRef, editRef, x, y, }) => {
     return (
-        <ContextMenu xPos={x} yPos={y}>
+        <ContextMenu xPos={x} yPos={y} ref={contextRef}>
             <ContextMenuContainer size={"medium"}>
                 <ContextMenuItem title={"Edit"}
                                  onClick={() => editRef.current?.show()}

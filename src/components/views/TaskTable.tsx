@@ -25,6 +25,7 @@ import {getSortedTaskTable, SortState} from "@/utils/sort";
 import moment from "moment";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useContextMenu} from "@/hooks/useContextMenu";
+import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 
 interface TaskProps {
     taskElements: TaskElement[];
@@ -37,8 +38,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     const closeRef = useRef<DialogRef>(null);
     const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
-    const { addTooltip, removeTooltip } = useTooltip();
+    const {addTooltip, removeTooltip} = useTooltip();
     const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu<TaskElement>();
+
+    const contextRef = useOutsideClick(() => {
+        closeContextMenu();
+    })
 
     const header = useMemo(() => [
         { key: 'project', label: 'Project' },
@@ -69,6 +74,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                     taskId={contextMenu.item.id}
                     x={contextMenu.x}
                     y={contextMenu.y}
+                    contextRef={contextRef}
                     deleteRef={deleteRef}
                     closeRef={closeRef}
                     editRef={editRef}
@@ -157,8 +163,8 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}
                             </TableCell>
                             <TableAction onClick={(e) => {
-                                handleContextMenu(e, taskElement);
                                 setFocusTaskElement(taskElement);
+                                handleContextMenu(e, taskElement);
                             }}
                             />
                         </TableRow>

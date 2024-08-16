@@ -22,6 +22,7 @@ import moment from "moment";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useContextMenu} from "@/hooks/useContextMenu";
+import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 
 
 interface TimetrackProps {
@@ -39,6 +40,14 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     const {addTooltip, removeTooltip} = useTooltip();
     const {contextMenu: entryContextMenu, handleContextMenu: handleEntryContextMenu, closeContextMenu: closeEntryContextMenu} = useContextMenu<TimeEntry>();
     const {contextMenu: absenceContextMenu, handleContextMenu: handleAbsenceContextMenu, closeContextMenu: closeAbsenceContextMenu} = useContextMenu<Absence>();
+
+    const entryContextRef = useOutsideClick(() => {
+        closeEntryContextMenu();
+    });
+
+    const absenceContextRef = useOutsideClick(() => {
+        closeAbsenceContextMenu();
+    });
 
     const header = useMemo(() => [
         { key: "entry", label: "Entry" },
@@ -102,6 +111,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
             {entryContextMenu.visible && (
                 <TimeEntryContextMenu
+                    contextRef={entryContextRef}
                     editRef={editEntryRef}
                     deleteRef={deleteRef}
                     x={entryContextMenu.x}
@@ -111,6 +121,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
             {absenceContextMenu.visible && (
                 <TimeEntryContextMenu
+                    contextRef={absenceContextRef}
                     editRef={editAbsenceRef}
                     deleteRef={deleteRef}
                     x={absenceContextMenu.x}
@@ -166,6 +177,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                         {entry.project &&
                                             <ProjectBadge
                                                 title={entry.project.name}
+                                                textClassName={"truncate"}
                                                 onMouseEnter={(e) => {
                                                     addTooltip({
                                                         message: "Project: " + entry.project?.name,
@@ -179,6 +191,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                         {entry.task &&
                                             <EntryTaskBadge
                                                 title={entry.task.name}
+                                                textClassName={"truncate"}
                                                 onMouseEnter={(e) => {
                                                     addTooltip({
                                                         message: "Task: " + entry.task?.name,
@@ -189,14 +202,16 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                                 onMouseLeave={() => removeTooltip()}
                                             />
                                         }
-                                        <span>{entry.comment}</span>
+                                        <span className={"text-nowrap"}>{entry.comment}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    {moment(entry.startDate).format('HH:mm') + " - " + moment(entry.endDate).format('HH:mm')}
+                                    <span className={"text-nowrap"}>
+                                        {moment(entry.startDate).format('HH:mm') + " - " + moment(entry.endDate).format('HH:mm')}
+                                    </span>
                                 </TableCell>
                                 <TableCell className={"flex flex-row space-x-4 items-center justify-between"}>
-                                    {calculateDifference(entry) + "h"}
+                                    <span>{calculateDifference(entry) + "h"}</span>
                                 </TableCell>
                                 <TableAction onClick={(e) => {
                                     handleEntryContextMenu(e, entry);

@@ -11,16 +11,17 @@ interface TaskContextProps extends React.HTMLAttributes<HTMLDivElement> {
     taskId: number;
     x: number;
     y: number;
+    contextRef: React.RefObject<HTMLDivElement>;
     deleteRef: React.RefObject<DialogRef>;
     editRef: React.RefObject<DialogRef>;
     closeRef: React.RefObject<DialogRef>;
 }
 
-export const TaskContextMenu: React.FC<TaskContextProps> = ({ deleteRef, editRef, closeRef, taskId, x, y }) => {
+export const TaskContextMenu: React.FC<TaskContextProps> = ({ contextRef, deleteRef, editRef, closeRef, taskId, x, y }) => {
     const router = useRouter();
 
     return (
-        <ContextMenu xPos={x} yPos={y}>
+        <ContextMenu xPos={x} yPos={y} ref={contextRef}>
             <ContextMenuContainer size={"medium"}>
                 <ContextMenuItem title={"Open"}
                                  onClick={() => router.push(`/tasks/${taskId}`)}
