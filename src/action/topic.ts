@@ -29,7 +29,7 @@ export const deleteTopic = async (id: number) => {
     await db.delete(topic).where(eq(topic.id, id))
 }
 
-export const getTopicFromTeam = async (teamId: number): Promise<Topic[]> => {
+export const getTopicsFromTeam = async (teamId: number): Promise<Topic[]> => {
     return db
         .select()
         .from(topic)
