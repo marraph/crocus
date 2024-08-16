@@ -35,3 +35,22 @@ export const getTasksFromProject = async (projectId: number): Promise<Task[]> =>
         .from(task)
         .where(eq(task.projectId, projectId));
 }
+
+export const getTasksFromTeam = async (teamId: number): Promise<Task[]> => {
+    const result: Task[] = []
+    const projects = await db
+        .select()
+        .from(team)
+        .where(eq(team.id, teamId));
+
+    for (const currentProject of projects) {
+        const tasks = await db
+            .select()
+            .from(task)
+            .where(eq(project.id, currentProject.id))
+
+        for (const task of tasks) result.push(task)
+    }
+
+    return result
+}
