@@ -25,7 +25,7 @@ type InitialValues = {
     timeTo: string,
 }
 
-export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
+export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void }>(({onClose}, ref) => {
     const dialogRef = mutateRef(ref);
     const switchRef = useRef<SwitchRef>(null);
 
@@ -110,6 +110,14 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
         return moment.duration(dateFrom.diff(dateTo)).asHours();
     }, [values]);
 
+    const handleCloseClick = useCallback(() => {
+        setValues(initialValues);
+        setValid(false);
+        setDialogKey(Date.now());
+        switchRef.current?.setValue(false);
+        onClose();
+    }, [initialValues, onClose]);
+
     const handleCreateClick = useCallback(() => {
         if (!user) return;
         const newEntry: TimeEntry = {
@@ -151,14 +159,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef>(({}, ref) => {
             title: "Time Entry created successfully!",
             icon: <AlarmClockPlus/>,
         })
-    }, [values, user]);
-
-    const handleCloseClick = useCallback(() => {
-        setValues(initialValues);
-        setValid(false);
-        setDialogKey(Date.now());
-        switchRef.current?.setValue(false);
-    }, [initialValues]);
+    }, [user, values.comment, values.project, values.task, values.date, values.timeFrom, values.timeTo, handleCloseClick, addToast, getDuration]);
 
     const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({

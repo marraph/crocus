@@ -14,6 +14,7 @@ import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useToast} from "griller/src/component/toaster";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useHotkeys} from "react-hotkeys-hook";
 
 
 export default function Tasks() {
@@ -25,6 +26,8 @@ export default function Tasks() {
     const { data:user, isLoading:userLoading, error:userError } = useUser();
     const { addTooltip, removeTooltip } = useTooltip();
     const {addToast} = useToast();
+
+    useHotkeys('t', () => dialogRef.current?.show());
 
     const filterItems = useMemo(() => [
         { name: "Team", values: user?.teams?.map(team => team.name) || [], icon: <Users size={16}/> },
@@ -111,6 +114,7 @@ export default function Tasks() {
                                 onMouseEnter={(e) => {
                                     addTooltip({
                                         message: "Create a new task",
+                                        shortcut: "T",
                                         anchor: "tl",
                                         trigger: e.currentTarget.getBoundingClientRect()
                                     });

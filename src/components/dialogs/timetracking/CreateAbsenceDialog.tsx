@@ -19,7 +19,7 @@ type InitialValues = {
     dateRange: DateRange,
 }
 
-export const CreateAbsenceDialog = forwardRef<DialogRef>(({}, ref) => {
+export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }>(({onClose}, ref) => {
     const dialogRef = mutateRef(ref);
 
     const initialValues: InitialValues = useMemo(() => ({
@@ -39,14 +39,20 @@ export const CreateAbsenceDialog = forwardRef<DialogRef>(({}, ref) => {
 
     const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
 
-    useEffect(() => {
-        validateInput();
-    }, [values.absenceType]);
-
-
     const validateInput = useCallback(() => {
         setValid(values.absenceType === "VACATION" || values.absenceType === "SICK");
     }, [values.absenceType]);
+
+    useEffect(() => {
+        validateInput();
+    }, [validateInput, values.absenceType]);
+
+    const handleCloseClick = useCallback(() => {
+        setValues(initialValues);
+        setValid(false);
+        setDialogKey(Date.now());
+        onClose();
+    }, [initialValues, onClose]);
 
     const handleCreateClick = useCallback(() => {
         if (!user) return;
@@ -67,13 +73,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef>(({}, ref) => {
             title: "Absence created successfully!",
             icon: <TreePalm/>,
         })
-    }, [values, user]);
-
-    const handleCloseClick = useCallback(() => {
-        setValues(initialValues);
-        setValid(false);
-        setDialogKey(Date.now());
-    }, [initialValues]);
+    }, [user, values.dateRange.from, values.dateRange.to, values.comment, values.absenceType, handleCloseClick, addToast]);
 
     const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({

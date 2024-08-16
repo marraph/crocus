@@ -80,7 +80,7 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
                         />
                     </div>
 
-                    <div className={"py-10 px-2 space-y-1"}>
+                    <div className={"py-10 pl-2 pr-4 space-y-1"}>
                         <div className={"w-full flex flex-row items-center"}>
                             <div
                                 className={"w-full flex flex-row items-center justify-between p-2 pr-4 text-marcador rounded-lg hover:text-white hover:bg-dark cursor-pointer"}

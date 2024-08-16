@@ -27,6 +27,7 @@
     "react-custom-scrollbars-2": "^4.5.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
+    "react-hotkeys-hook": "^4.5.0",
     "react-perfect-scrollbar": "^1.5.8",
     "react-scrollbars-custom": "^4.1.1",
     "tailwind-merge": "^2.3.0"

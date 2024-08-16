@@ -12,6 +12,7 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useHotkeys} from "react-hotkeys-hook";
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
@@ -21,6 +22,17 @@ export default function Timetracking() {
     const [day, setDay] = useState<Date>(new Date());
     const {addTooltip, removeTooltip} = useTooltip();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
+
+    const [enabled, setEnabled] = useState(true);
+
+    useHotkeys('t', () => {
+        entryDialogRef.current?.show();
+        setEnabled(false);
+    }, { enabled: enabled });
+    useHotkeys('a', () => {
+        absenceDialogRef.current?.show();
+        setEnabled(false);
+    }, { enabled: enabled });
 
     const { entries, absences } = useMemo(() => ({
         entries: user?.timeEntries?.filter(entry => moment(entry.startDate).isSame(day, 'day')),
@@ -41,8 +53,8 @@ export default function Timetracking() {
 
     return (
         <>
-            <CreateAbsenceDialog ref={absenceDialogRef}/>
-            <CreateTimeEntryDialog ref={entryDialogRef}/>
+            <CreateAbsenceDialog ref={absenceDialogRef} onClose={() => setEnabled(true)}/>
+            <CreateTimeEntryDialog ref={entryDialogRef} onClose={() => setEnabled(true)}/>
 
             <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
                 <Headbar title={"Timetracking"}/>
@@ -58,6 +70,7 @@ export default function Timetracking() {
                                     onMouseEnter={(e) => {
                                         addTooltip({
                                             message: "Create a new entry",
+                                            shortcut: "T",
                                             anchor: "tl",
                                             trigger: e.currentTarget.getBoundingClientRect()
                                         });
@@ -70,6 +83,7 @@ export default function Timetracking() {
                                     onMouseEnter={(e) => {
                                         addTooltip({
                                             message: "Create a new absence",
+                                            shortcut: "A",
                                             anchor: "tl",
                                             trigger: e.currentTarget.getBoundingClientRect()
                                         });

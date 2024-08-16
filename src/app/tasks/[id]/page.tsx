@@ -6,7 +6,7 @@ import {useParams, useRouter} from "next/navigation";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
-import React, {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
 import {
@@ -28,6 +28,7 @@ import {MessageBar} from "@/components/MessageBar";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useHotkeys} from "react-hotkeys-hook";
 
 export default function TasksID() {
     const closeRef = useRef<DialogRef>(null);
@@ -38,6 +39,21 @@ export default function TasksID() {
     const { addTooltip, removeTooltip } = useTooltip();
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {taskElement} = findTaskProps(user, id);
+
+    const [enabled, setEnabled] = useState(true);
+
+    useHotkeys('e', () => {
+        editRef.current?.show();
+        setEnabled(false);
+    }, { enabled: enabled });
+    useHotkeys('c', () => {
+        closeRef.current?.show();
+        setEnabled(false);
+    }, { enabled: enabled });
+    useHotkeys('d', () => {
+        deleteRef.current?.show();
+        setEnabled(false);
+    }, { enabled: enabled });
 
     return (
         <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
@@ -60,6 +76,7 @@ export default function TasksID() {
                                     onMouseEnter={(e) => {
                                         addTooltip({
                                             message: "Edit Task",
+                                            shortcut: "E",
                                             anchor: "tl",
                                             trigger: e.currentTarget.getBoundingClientRect()
                                         });
@@ -72,6 +89,7 @@ export default function TasksID() {
                                     onMouseEnter={(e) => {
                                         addTooltip({
                                             message: "Close Task",
+                                            shortcut: "C",
                                             anchor: "tl",
                                             trigger: e.currentTarget.getBoundingClientRect()
                                         });
@@ -85,6 +103,7 @@ export default function TasksID() {
                                     onMouseEnter={(e) => {
                                         addTooltip({
                                             message: "Delete Task",
+                                            shortcut: "D",
                                             anchor: "tl",
                                             trigger: e.currentTarget.getBoundingClientRect()
                                         });
@@ -93,9 +112,9 @@ export default function TasksID() {
                             />
                         </div>
 
-                        <DeleteTaskDialog ref={deleteRef} taskElement={taskElement}/>
-                        <CloseTaskDialog ref={closeRef} taskElement={taskElement}/>
-                        <EditTaskDialog ref={editRef} taskElement={taskElement}/>
+                        <DeleteTaskDialog ref={deleteRef} taskElement={taskElement} onClose={() => setEnabled(true)}/>
+                        <CloseTaskDialog ref={closeRef} taskElement={taskElement} onClose={() => setEnabled(true)}/>
+                        <EditTaskDialog ref={editRef} taskElement={taskElement} onClose={() => setEnabled(true)}/>
                     </div>
                 </div>
 

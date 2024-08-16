@@ -8,6 +8,7 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {NotificationContextMenu} from "@/components/contextmenus/NotificationContextMenu";
 import {cn} from "@/utils/cn";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useHotkeys} from "react-hotkeys-hook";
 
 interface HeadbarProps extends HTMLAttributes<HTMLDivElement> {
     title?: string;
@@ -16,6 +17,7 @@ interface HeadbarProps extends HTMLAttributes<HTMLDivElement> {
 export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) => {
     const searchDialogRef = useRef<DialogRef>(null);
     const { addTooltip, removeTooltip } = useTooltip();
+    useHotkeys('mod+k', () => searchDialogRef.current?.showModal(), { preventDefault: true });
 
 
     const notifications = [

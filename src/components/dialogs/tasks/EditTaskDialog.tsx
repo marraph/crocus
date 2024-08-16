@@ -27,7 +27,9 @@ type InitialValues = {
     duration: string | null;
 }
 
-export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }>(({ taskElement }, ref) => {
+export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose: () => void }>
+    (({ taskElement, onClose }, ref) => {
+        
     const dialogRef = mutateRef(ref);
 
     const initialValues: InitialValues = useMemo(() => ({
@@ -73,7 +75,8 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
         setValid(true);
         setValues(initialValues);
         setTeam(taskElement.team?.name ?? null);
-    }, [initialValues, taskElement.team]);
+        onClose();
+    }, [initialValues, onClose, taskElement.team?.name]);
 
     const handleEditClick = useCallback(() => {
         if (!user || !taskElement) return
@@ -100,7 +103,6 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement }
             secondTitle: "You successfully saved your task changes.",
             icon: <Save/>
         });
-
     }, [user, taskElement, values.title, values.description, values.topic, values.status, values.priority, values.deadline, values.duration, handleCloseClick, addToast]);
 
     const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
