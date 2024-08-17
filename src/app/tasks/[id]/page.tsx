@@ -30,7 +30,7 @@ import {Headbar} from "@/components/Headbar";
 import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
 
-export default function TasksID() {
+export default function Page() {
     const closeRef = useRef<DialogRef>(null);
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);

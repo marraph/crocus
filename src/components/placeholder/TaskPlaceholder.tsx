@@ -19,8 +19,7 @@ export const TaskPlaceholder: React.FC<{ dialogRef: RefObject<DialogRef>}> = ({ 
 
     return (
         <motion.div
-            className={"flex flex-col space-y-4 items-center justify-center w-1/2 h-1/3 bg-black-light rounded-lg border border-edge " +
-                "hover:bg-dark"}
+            className={"flex flex-col space-y-4 items-center justify-center w-1/2 h-1/3 rounded-lg"}
             variants={containerVariants}
             initial="initial"
             whileHover="hover"
