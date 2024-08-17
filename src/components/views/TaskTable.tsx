@@ -41,9 +41,13 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
     const {addTooltip, removeTooltip} = useTooltip();
     const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu<TaskElement>();
 
-    const contextRef = useOutsideClick(() => {
+    const contextRef = useOutsideClick((e) => {
+        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            return;
+        }
         closeContextMenu();
-    })
+        setFocusTaskElement(null);
+    });
 
     const header = useMemo(() => [
         { key: 'project', label: 'Project' },
@@ -81,7 +85,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 />
             }
 
-            <Table className={"w-full text-xs border-0"}>
+            <Table className={"w-full text-xs border-0 rounded-b-none"}>
                 <TableHeader>
                     <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
                         {header.map((header) => (
@@ -163,8 +167,13 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}
                             </TableCell>
                             <TableAction onClick={(e) => {
-                                setFocusTaskElement(taskElement);
-                                handleContextMenu(e, taskElement);
+                                if (!contextMenu.visible) {
+                                    setFocusTaskElement(taskElement);
+                                    handleContextMenu(e, taskElement);
+                                } else {
+                                    closeContextMenu();
+                                    setFocusTaskElement(null);
+                                }
                             }}
                             />
                         </TableRow>

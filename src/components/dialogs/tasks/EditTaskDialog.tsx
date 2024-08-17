@@ -27,7 +27,7 @@ type InitialValues = {
     duration: string | null;
 }
 
-export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose: () => void }>
+export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>
     (({ taskElement, onClose }, ref) => {
         
     const dialogRef = mutateRef(ref);
@@ -75,7 +75,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
         setValid(true);
         setValues(initialValues);
         setTeam(taskElement.team?.name ?? null);
-        onClose();
+        onClose && onClose();
     }, [initialValues, onClose, taskElement.team?.name]);
 
     const handleEditClick = useCallback(() => {

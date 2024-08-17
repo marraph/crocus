@@ -9,7 +9,7 @@ import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 
-export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose: () => void }>
+export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>
     (({ taskElement, onClose }, ref) => {
 
     const dialogRef = mutateRef(ref);
@@ -41,7 +41,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
             secondTitle: "You can no longer interact with this task.",
             icon: <CheckCheck />
         });
-        onClose();
+        onClose && onClose();
     }, [addToast, onClose, taskElement, user]);
 
     if (!dialogRef || !user) return null;

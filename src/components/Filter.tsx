@@ -270,7 +270,7 @@ const FilterBadge: React.FC<FilterBadgeProps> = ({ name, value, onClick }) => {
             {icons[name]}
             <span className={"text-xs text-white"}>{name + ":"}</span>
             <span className={"text-xs text-white-dark"}>{value}</span>
-            <CloseButton className={"bg-edge hover:bg-edge"}
+            <CloseButton className={"dark:bg-edge hover:bg-edge"}
                          onClick={onClick}
             />
         </div>

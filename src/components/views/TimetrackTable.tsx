@@ -42,9 +42,13 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     const {contextMenu: entryContextMenu, handleContextMenu: handleEntryContextMenu, closeContextMenu: closeEntryContextMenu} = useContextMenu<TimeEntry>();
     const {contextMenu: absenceContextMenu, handleContextMenu: handleAbsenceContextMenu, closeContextMenu: closeAbsenceContextMenu} = useContextMenu<Absence>();
 
-    const contextRef = useOutsideClick(() => {
+    const contextRef = useOutsideClick((e) => {
+        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
+            return;
+        }
         closeEntryContextMenu();
         closeAbsenceContextMenu();
+        setFocusItem(null);
     });
 
     const header = useMemo(() => [
@@ -109,7 +113,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
             )}
 
             <div className={"h-full flex flex-col"}>
-                <Table className={"bg-dark w-full no-scrollbar rounded-b-none text-xs border-b-0"}>
+                <Table className={"bg-dark w-full no-scrollbar border-none rounded-b-none text-xs border-b-0"}>
                     <TableHeader>
                         <TableRow
                             className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
@@ -138,8 +142,13 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
                                 <TableAction onClick={(e) => {
-                                    handleAbsenceContextMenu(e, absence);
-                                    setFocusItem({type: "absence", item:absence});
+                                    if (!absenceContextMenu.visible) {
+                                        setFocusItem({type: "absence", item:absence});
+                                        handleAbsenceContextMenu(e, absence);
+                                    } else {
+                                        closeAbsenceContextMenu();
+                                        setFocusItem(null);
+                                    }
                                 }}
                                 />
                             </TableRow>
@@ -192,15 +201,20 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                                     <span>{calculateDifference(entry) + "h"}</span>
                                 </TableCell>
                                 <TableAction onClick={(e) => {
-                                    handleEntryContextMenu(e, entry);
-                                    setFocusItem({type: "timeEntry", item:entry});
+                                    if (!entryContextMenu.visible) {
+                                        setFocusItem({type: "timeEntry", item:entry});
+                                        handleEntryContextMenu(e, entry);
+                                    } else {
+                                        closeEntryContextMenu();
+                                        setFocusItem(null);
+                                    }
                                 }}
                                 />
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                <div className={"flex-grow bg-black-light border border-y-0 border-edge"}></div>
+                <div className={"flex-grow bg-black-light"}></div>
                 <TimeEntryDaySummary entries={entries}/>
             </div>
         </>

@@ -13,6 +13,7 @@ import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
+import {EntryPlaceholder} from "@/components/placeholder/EntryPlaceholder";
 
 export default function Timetracking() {
     const datepickerRef = useRef<DatepickerRef>(null);
@@ -28,11 +29,11 @@ export default function Timetracking() {
     useHotkeys('t', () => {
         entryDialogRef.current?.show();
         setEnabled(false);
-    }, { enabled: enabled });
+    }, { enabled });
     useHotkeys('a', () => {
         absenceDialogRef.current?.show();
         setEnabled(false);
-    }, { enabled: enabled });
+    }, { enabled });
 
     const { entries, absences } = useMemo(() => ({
         entries: user?.timeEntries?.filter(entry => moment(entry.startDate).isSame(day, 'day')),
@@ -59,7 +60,7 @@ export default function Timetracking() {
             <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
                 <Headbar title={"Timetracking"}/>
 
-                <div className={"h-full flex flex-col p-4"}>
+                <div className={"h-full flex flex-col p-4 space-y-4"}>
                     <div className={"text-nowrap flex flex-row items-center"}>
                         <div className={"flex flex-row space-x-2"}>
                             <Button text={""}
@@ -135,8 +136,14 @@ export default function Timetracking() {
                             />
                         </div>
                     </div>
-                    <div className={"w-full h-full flex flex-col items-stretch pt-4"}>
-                        <TimetrackTable entries={entries} absences={absences}/>
+                    <div className={"w-full h-full flex flex-col items-stretch bg-black-light border border-edge rounded-lg"}>
+                        {(entries && entries.length > 0) || (absences && absences.length > 0) ?
+                            <TimetrackTable entries={entries} absences={absences}/>
+                        :
+                            <div className={"h-full flex flex-row items-center justify-center"}>
+                                <EntryPlaceholder dialogRef={entryDialogRef}/>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

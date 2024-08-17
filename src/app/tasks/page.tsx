@@ -134,11 +134,11 @@ export default function Tasks() {
                     </div>
                 </div>
 
-                <div className={"flex-grow rounded-lg bg-black-light overflow-auto no-scrollbar border border-edge"}>
+                <div className={"h-screen rounded-lg bg-black-light overflow-auto no-scrollbar border border-edge"}>
                     {taskElements.length > 0 ?
                         <TaskTable taskElements={taskElements}/>
                         :
-                        <div className={"max-h-full flex flex-row items-center justify-center"}>
+                        <div className={"h-full flex flex-row items-center justify-center"}>
                             <TaskPlaceholder dialogRef={dialogRef}/>
                         </div>
                     }
