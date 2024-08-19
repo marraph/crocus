@@ -109,12 +109,43 @@ const getEntities = async <Table extends PgTable>(
     }
 }
 
+const queryEntity = async <Table extends PgTable>(
+    table: Table,
+    field: number | string,
+    fieldType: PgColumn,
+    limit: number = 100
+): Promise<ActionResult<Entity<Table>[]>> => {
+
+    try {
+        const entities = await db
+            .select()
+            .from(table)
+            .where(eq(fieldType, field))
+            .limit(limit);
+
+        if (!entities) {
+            return {success: false, error: "Failed to get all entities"}
+        }
+
+        if (entities.length == 0) {
+            return {success: false, error: "Found no entities"}
+        }
+
+        return {success: true, data: entities}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
+
 export {
     createEntry,
     updateEntry,
     deleteEntity,
     getEntity,
-    getEntities
+    getEntities,
+    queryEntity
 }
 
 export type {
