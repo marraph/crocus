@@ -18,23 +18,12 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
 
     const handleCloseTaskClick = useCallback(() => {
         if (!user || !taskElement) return;
-        const task: Task = {
-            id: taskElement.id,
-            name: taskElement.name,
-            description: taskElement.description,
-            topic: taskElement.topic,
+        const task: Partial<Task> = {
             isArchived: true,
-            duration: taskElement.duration,
-            bookedDuration: taskElement.bookedDuration,
-            deadline: taskElement.deadline,
-            status: taskElement.status,
-            priority: taskElement.priority,
-            createdBy: taskElement.createdBy,
-            createdDate: taskElement.createdDate,
-            lastModifiedBy: {id: user.id, name: user.name, email: user.email },
+            lastModifiedBy: { id: user.id, name: user.name, email: user.email },
             lastModifiedDate: new Date()
-        }
-        const {data, isLoading, error} = updateTask(task.id, task);
+        };
+        const {data, isLoading, error} = updateTask(taskElement.id, { ...taskElement, ...task });
 
         addToast({
             title: "Task closed successfully!",

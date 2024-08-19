@@ -151,7 +151,6 @@ type Absence = {
     createdDate: Date
     lastModifiedBy: PreviewUser
     lastModifiedDate: Date
-
 }
 
 type Acceptable = User | Organisation | Team | Project | Topic | Task  | TimeEntry | DailyEntry | Absence

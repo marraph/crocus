@@ -8,11 +8,28 @@ export function getAllTeams(user: User): string[] {
     return teams;
 }
 
+export function getTeamItems(user: User): Team[] {
+    const teams: Team[] = [];
+    user.teams.forEach((team: Team) => {
+        teams.push(team);
+    });
+    return teams;
+}
+
 export function getProjects(user: User, teamToFind: string): string[] {
     const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
     const projects: string[] = [];
     specificTeam?.projects.forEach((project: Project) => {
         projects.push(project.name);
+    });
+    return projects;
+}
+
+export function getProjectItemsFromTeam(user: User, teamToFind: string): Project[] {
+    const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
+    const projects: Project[] = [];
+    specificTeam?.projects.forEach((project: Project) => {
+        projects.push(project);
     });
     return projects;
 }
@@ -60,6 +77,19 @@ export function getTopicsFromTeam(user: User, teamToFind: string): string[] {
         project.tasks.forEach((task: Task) => {
             if (task.topic && !topics.includes(task.topic.title)) {
                 topics.push(task.topic.title);
+            }
+        });
+    });
+    return topics;
+}
+
+export function getTopicItemsFromTeam(user: User, teamToFind: string): Topic[] {
+    const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
+    const topics: Topic[] = [];
+    specificTeam?.projects.forEach((project: Project) => {
+        project.tasks.forEach((task: Task) => {
+            if (task.topic && !topics.includes(task.topic)) {
+                topics.push(task.topic);
             }
         });
     });

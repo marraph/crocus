@@ -13,25 +13,11 @@ import {DateRange} from "react-day-picker";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 
-type InitialValues = {
-    comment: string,
-    absenceType: string,
-    dateRange: DateRange,
-}
+type CreateProps = Pick<Absence, 'comment' | 'absenceType' | 'startDate' | 'endDate'>;
 
 export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }>(({onClose}, ref) => {
     const dialogRef = mutateRef(ref);
-
-    const initialValues: InitialValues = useMemo(() => ({
-        comment: "",
-        absenceType: "",
-        dateRange: {
-            from: new Date(),
-            to: new Date()
-        }
-    }), []);
-
-    const [values, setValues] = useState(initialValues);
+    const [values, setValues] = useState<CreateProps>({comment: "", absenceType: "VACATION", startDate: new Date(), endDate: new Date()});
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
@@ -48,18 +34,18 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
     }, [validateInput, values.absenceType]);
 
     const handleCloseClick = useCallback(() => {
-        setValues(initialValues);
+        setValues({comment: "", absenceType: "VACATION", startDate: new Date(), endDate: new Date()});
         setValid(false);
         setDialogKey(Date.now());
         onClose();
-    }, [initialValues, onClose]);
+    }, [onClose]);
 
     const handleCreateClick = useCallback(() => {
         if (!user) return;
         const newAbsence: Absence = {
             id: 0,
-            startDate: values.dateRange.from ?? new Date(),
-            endDate: values.dateRange.to ?? new Date(),
+            startDate: values.startDate ?? new Date(),
+            endDate: values.endDate ?? new Date(),
             comment: values.comment,
             absenceType: values.absenceType as AbsenceType,
             createdBy: {id: user.id, name: user.name, email: user.email},
@@ -73,9 +59,9 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
             title: "Absence created successfully!",
             icon: <TreePalm/>,
         })
-    }, [user, values.dateRange.from, values.dateRange.to, values.comment, values.absenceType, handleCloseClick, addToast]);
+    }, [user, values.startDate, values.endDate, values.comment, values.absenceType, handleCloseClick, addToast]);
 
-    const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((field: keyof CreateProps, setValues: React.Dispatch<React.SetStateAction<CreateProps>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValues((prevValues) => ({
             ...prevValues,
             [field]: e.target.value
@@ -96,14 +82,14 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
                           className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
                           spellCheck={false}
                           onChange={handleInputChange("comment", setValues)}
-                          value={values.comment}
+                          value={values.comment ?? ""}
                 >
                 </Textarea>
                 <div className={"flex flex-row items-center space-x-2 py-2"}>
                     <Combobox buttonTitle={"Absence Type"}
                               icon={<CircleOff size={14} className={"mr-2"}/>}
                               onValueChange={(value) =>
-                                  setValues((prevValues) => ({ ...prevValues, absenceType: value ?? "" }))}
+                                  setValues((prevValues) => ({ ...prevValues, absenceType: value as AbsenceType ?? "" }))}
                     >
                         {absenceTypes.map(((absence, index) =>
                                 <ComboboxItem key={index}
@@ -115,7 +101,10 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
                                      closeButton={false}
                                      dayFormat={"long"}
                                      onRangeChange={(value) =>
-                                         setValues((prevValues) => ({ ...prevValues, dateRange: value ?? {from: new Date(), to: new Date()} }))}
+                                         setValues((prevValues) => ({ ...prevValues,
+                                             startDate: value?.from ?? new Date(),
+                                             endDate: value?.to ?? new Date()
+                                         }))}
                     />
                 </div>
             </DialogContent>
