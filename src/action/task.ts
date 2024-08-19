@@ -1,42 +1,83 @@
 import {db} from "@/database/drizzle";
-import {project, task, team} from "@/schema";
-import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
-import {createEntry, deleteEntity, Entity, NewEntity, UpdateEntity, updateEntry} from "@/action/actions";
+import {task, team} from "@/schema";
+import {eq} from "drizzle-orm";
+import {
+    ActionResult,
+    createEntry,
+    deleteEntity,
+    Entity,
+    NewEntity,
+    queryEntity,
+    UpdateEntity,
+    updateEntry
+} from "@/action/actions";
 
-export type Task = Entity<typeof task>
-export type NewTask = NewEntity<typeof task>
-export type UpdateTask = UpdateEntity<typeof task>
+type Task = Entity<typeof task>
+type NewTask = NewEntity<typeof task>
+type UpdateTask = UpdateEntity<typeof task>
 
-export const createTask = (newTask: NewTask) => createEntry(task, newTask)
-export const updateTask = (id: number, updateTask: UpdateTask) => updateEntry(task, updateTask, id, task.id)
-export const deleteTask = async (id: number) => deleteEntity(task, id, task.id)
+const createTask = async (newTask: NewTask) => createEntry(task, newTask)
+const deleteTask = async (id: number) => deleteEntity(task, id, task.id)
 
-export const deleteTask = async (id: number) => {
-    await db.delete(task).where(eq(task.id, id))
-}
+const updateTask = async (
+    id: number,
+    updateTask: UpdateTask
+) => updateEntry(task, updateTask, id, task.id)
 
-export const getTasksFromProject = async (projectId: number): Promise<Task[]> => {
-    return db
-        .select()
-        .from(task)
-        .where(eq(task.projectId, projectId));
-}
+const getTasksFromProject = async (
+    projectId: number,
+    limit: number
+) => queryEntity(task, projectId, task.projectId, limit)
 
-export const getTasksFromTeam = async (teamId: number): Promise<Task[]> => {
-    const result: Task[] = []
-    const projects = await db
-        .select()
-        .from(team)
-        .where(eq(team.id, teamId));
-
-    for (const currentProject of projects) {
-        const tasks = await db
+const getTasksFromTeam = async (
+    teamId: number,
+    projectLimit: number,
+    taskPerProjectLimit: number
+): Promise<ActionResult<Task[]>> => {
+    try {
+        const results: Task[] = []
+        const projects = await db
             .select()
-            .from(task)
-            .where(eq(project.id, currentProject.id))
+            .from(team)
+            .where(eq(team.id, teamId))
+            .limit(projectLimit);
 
-        for (const task of tasks) result.push(task)
+        if (projects.length == 0) {
+            return {success: false, error: 'Found no projects with this id'}
+        }
+
+        for (const project of projects) {
+            const tasks = await getTasksFromProject(project.id, taskPerProjectLimit)
+
+            if (!tasks.success) {
+                return {success: false, error: tasks.error}
+            }
+
+            results.push(...tasks.data)
+        }
+
+        if (results.length == 0) {
+            return {success: false, error: 'Found no tasks'}
+        }
+
+        return {success: true, data: results}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
     }
+}
 
-    return result
+export type {
+    Task,
+    NewTask,
+    UpdateTask
+}
+
+export {
+    createTask,
+    updateTask,
+    deleteTask,
+    getTasksFromProject,
+    getTasksFromTeam
 }
