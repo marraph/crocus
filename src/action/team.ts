@@ -1,37 +1,32 @@
-import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
 import {team} from "@/schema";
-import {db} from "@/database/drizzle";
+import {createEntry, deleteEntity, Entity, NewEntity, queryEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
-export type Team = InferSelectModel<typeof team>
-export type NewTeam = InferInsertModel<typeof team>
-export type UpdateTeam = Partial<NewTeam>
+type Team = Entity<typeof team>
+type NewTeam = NewEntity<typeof team>
+type UpdateTeam = UpdateEntity<typeof team>
 
-export const createTeam = async (newTeam: NewTeam): Promise<Team> => {
-    const [createdTeam] = await db
-        .insert(team)
-        .values(newTeam)
-        .returning();
+const createTeam = async (newTeam: NewTeam) => createEntry(team, newTeam)
+const deleteTeam = async (id: number) => deleteEntity(team, id, team.id)
 
-    return createdTeam
+const updateTeam = async (
+    id: number,
+    updateTeam: UpdateTeam
+) => updateEntry(team, updateTeam, id, team.id)
+
+const getTeamsFromOrganisation = async (
+    organisationId: number,
+    limit: number
+) => queryEntity(team, organisationId, team.organisationId, limit)
+
+export type {
+    Team,
+    NewTeam,
+    UpdateTeam
 }
 
-export const updateTeam = async (id: number, updateTeam: UpdateTeam): Promise<Team> => {
-    const [updatedTeam] = await db
-        .update(team)
-        .set(updateTeam)
-        .where(eq(team.id, id))
-        .returning()
-
-    return updatedTeam
-}
-
-export const deleteTeam = async (id: number) => {
-    await db.delete(team).where(eq(team.id, id))
-}
-
-export const getTeamsFromOrganisation = async (organisationId: number): Promise<Team[]> => {
-    return db
-        .select()
-        .from(team)
-        .where(eq(team.organisationId, organisationId));
+export {
+    createTeam,
+    updateTeam,
+    deleteTeam,
+    getTeamsFromOrganisation
 }
