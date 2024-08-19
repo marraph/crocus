@@ -11,19 +11,11 @@ import {Breadcrumb} from "@marraph/daisy/components/breadcrumb/Breadcrumb";
 import React from "react";
 import {RegionChart} from "@marraph/daisy/components/regionchart/RegionChart";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
+import {TasksGraphCard} from "@/components/cards/TasksGraphCard";
 
 export default function Page() {
     const router = useRouter();
     const id = Number(useParams().id);
-
-    const data = [
-        { day: 5, tasks: 100 },
-        { day: 10, tasks: 70 },
-        { day: 15, tasks: 120 },
-        { day: 20, tasks: 150 },
-        { day: 25, tasks: 45 },
-        { day: 30, tasks: 80 },
-    ]
 
     return (
         <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
@@ -42,20 +34,7 @@ export default function Page() {
                 />
             </div>
 
-            <div className={"flex-grow h-80 flex flex-col rounded-lg border border-edge mx-4 mb-4"}>
-                <div className={"flex flex-row items-center justify-between p-4 bg-dark rounded-lg"}>
-                    <span>Task's completed</span>
-                    <Combobox buttonTitle={"Select a range"} icon={<CalendarSearch size={16} className={"mr-2"}/>}>
-                        <ComboboxItem title={"Last 7 Days"}/>
-                        <ComboboxItem title={"Last 30 Days"}/>
-                        <ComboboxItem title={"Last 365 Days"}/>
-                    </Combobox>
-                </div>
-                <Seperator/>
-                <div className={"h-full w-full p-4"}>
-                    <RegionChart data={data} xAxis_dataKey={"day"} yAxis_dataKey={"tasks"} gradient={true}/>
-                </div>
-            </div>
+            <TasksGraphCard/>
 
             <Seperator/>
 

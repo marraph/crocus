@@ -220,15 +220,15 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
                                     }
                                     {subMenuOpen.name === "Status" &&
                                         value === "PENDING" &&
-                                        <div className={"size-1 rounded-full bg-topicblue"}/> ||
+                                        <div className={"size-1 rounded-full bg-topicblue dark:bg-topicblue"}/> ||
                                         value === "PLANING" &&
-                                        <div className={"size-1 rounded-full bg-topicred"}/> ||
+                                        <div className={"size-1 rounded-full bg-topicred dark:bg-topicred"}/> ||
                                         value === "STARTED" &&
-                                        <div className={"size-1 rounded-full bg-topicgreen"}/> ||
+                                        <div className={"size-1 rounded-full bg-topicgreen dark:bg-topicgreen"}/> ||
                                         value === "TESTED" &&
-                                        <div className={"size-1 rounded-full bg-topicyellow"}/> ||
+                                        <div className={"size-1 rounded-full bg-topicyellow dark:bg-topicyellow"}/> ||
                                         value === "FINISHED" &&
-                                        <div className={"size-1 rounded-full bg-topicpurple"}/>
+                                        <div className={"size-1 rounded-full bg-topicpurple dark:bg-topicpurple"}/>
                                     }
                                     {subMenuOpen.name === "Priority" &&
                                         value === "LOW" &&

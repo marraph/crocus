@@ -26,7 +26,7 @@ export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...pr
     }, [entries]);
 
     return (
-        <div className={"bg-dark-light border border-edge rounded-b-lg px-4 flex flex-row justify-between items-center"}>
+        <div className={"bg-dark-light border-t border-edge rounded-b-lg px-4 flex flex-row justify-between items-center"}>
             <Badge text={
                 entries === undefined ? "0 ENTRIES" :
                 entries?.length.toString() + (entries?.length === 1 ? " ENTRY" : " ENTRIES")
