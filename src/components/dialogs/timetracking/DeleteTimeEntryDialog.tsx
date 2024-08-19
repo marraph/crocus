@@ -29,7 +29,7 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, { timeEntry?: TimeEnt
             secondTitle: "Deleting " + (timeEntry ? "TimeEntry" : "Absence") + "...",
             icon: <Trash2 color="#F55050" />
         })
-    }, [timeEntry, absence]);
+    }, [timeEntry, absence, addToast]);
 
     if (!timeEntry && !absence) return null;
     if (!dialogRef || user === undefined) return null;

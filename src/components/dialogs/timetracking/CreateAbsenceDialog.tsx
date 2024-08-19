@@ -9,7 +9,6 @@ import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobo
 import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
 import {Absence, AbsenceType} from "@/types/types";
 import {createAbsence} from "@/service/hooks/absenceHook";
-import {DateRange} from "react-day-picker";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 
@@ -17,7 +16,12 @@ type CreateProps = Pick<Absence, 'comment' | 'absenceType' | 'startDate' | 'endD
 
 export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }>(({onClose}, ref) => {
     const dialogRef = mutateRef(ref);
-    const [values, setValues] = useState<CreateProps>({comment: "", absenceType: "VACATION", startDate: new Date(), endDate: new Date()});
+    const [values, setValues] = useState<CreateProps>({
+        comment: "",
+        absenceType: "VACATION",
+        startDate: new Date(),
+        endDate: new Date()
+    });
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
@@ -42,6 +46,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
 
     const handleCreateClick = useCallback(() => {
         if (!user) return;
+
         const newAbsence: Absence = {
             id: 0,
             startDate: values.startDate ?? new Date(),
@@ -53,20 +58,16 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
             lastModifiedDate: new Date(),
         }
+
         const { data, isLoading, error } = createAbsence(newAbsence);
-        handleCloseClick();
+
         addToast({
             title: "Absence created successfully!",
             icon: <TreePalm/>,
         })
-    }, [user, values.startDate, values.endDate, values.comment, values.absenceType, handleCloseClick, addToast]);
 
-    const handleInputChange = useCallback((field: keyof CreateProps, setValues: React.Dispatch<React.SetStateAction<CreateProps>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setValues((prevValues) => ({
-            ...prevValues,
-            [field]: e.target.value
-        }));
-    }, []);
+        handleCloseClick();
+    }, [user, values.startDate, values.endDate, values.comment, values.absenceType, handleCloseClick, addToast]);
 
     if (!dialogRef || user === undefined) return null;
 
@@ -81,20 +82,19 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
                 <Textarea placeholder={"Comment"}
                           className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
                           spellCheck={false}
-                          onChange={handleInputChange("comment", setValues)}
+                          onChange={(e) => setValues((prevValues) => ({ ...prevValues, comment: e.target.value }))}
                           value={values.comment ?? ""}
                 >
                 </Textarea>
                 <div className={"flex flex-row items-center space-x-2 py-2"}>
-                    <Combobox buttonTitle={"Absence Type"}
-                              icon={<CircleOff size={14} className={"mr-2"}/>}
-                              onValueChange={(value) =>
-                                  setValues((prevValues) => ({ ...prevValues, absenceType: value as AbsenceType ?? "" }))}
+                    <Combobox
+                        buttonTitle={"Absence Type"}
+                        icon={<CircleOff size={14} className={"mr-2"}/>}
+                        getItemTitle={(item) => item as string}
+                        onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, absenceType: value as AbsenceType }))}
                     >
                         {absenceTypes.map(((absence, index) =>
-                                <ComboboxItem key={index}
-                                              title={absence}
-                                />
+                                <ComboboxItem key={index} title={absence} value={absence}/>
                         ))}
                     </Combobox>
                     <DateRangePicker text={"Select your absence time"}

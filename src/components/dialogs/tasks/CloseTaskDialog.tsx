@@ -9,20 +9,20 @@ import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 
-export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>
-    (({ taskElement, onClose }, ref) => {
-
+export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
 
     const handleCloseTaskClick = useCallback(() => {
         if (!user || !taskElement) return;
+
         const task: Partial<Task> = {
             isArchived: true,
             lastModifiedBy: { id: user.id, name: user.name, email: user.email },
             lastModifiedDate: new Date()
         };
+
         const {data, isLoading, error} = updateTask(taskElement.id, { ...taskElement, ...task });
 
         addToast({
@@ -30,6 +30,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
             secondTitle: "You can no longer interact with this task.",
             icon: <CheckCheck />
         });
+
         onClose && onClose();
     }, [addToast, onClose, taskElement, user]);
 

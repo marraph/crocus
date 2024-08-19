@@ -19,11 +19,13 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement
 
     const handleDeleteClick = useCallback(() => {
         const {isLoading, error} = deleteTask(taskElement.id);
+
         addToast({
             title: "Task deleted successfully!",
             secondTitle: "You can no longer interact with this task.",
             icon: <Trash2 color="#F55050" />
         });
+
         onClose && onClose();
     }, [addToast, onClose, taskElement.id]);
 

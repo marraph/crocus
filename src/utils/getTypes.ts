@@ -25,8 +25,8 @@ export function getProjects(user: User, teamToFind: string): string[] {
     return projects;
 }
 
-export function getProjectItemsFromTeam(user: User, teamToFind: string): Project[] {
-    const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
+export function getProjectItemsFromTeam(user: User, teamToFind: Team): Project[] {
+    const specificTeam = user.teams.find((team: Team) => team === teamToFind);
     const projects: Project[] = [];
     specificTeam?.projects.forEach((project: Project) => {
         projects.push(project);
@@ -83,8 +83,8 @@ export function getTopicsFromTeam(user: User, teamToFind: string): string[] {
     return topics;
 }
 
-export function getTopicItemsFromTeam(user: User, teamToFind: string): Topic[] {
-    const specificTeam = user.teams.find((team: Team) => team.name === teamToFind);
+export function getTopicItemsFromTeam(user: User, teamToFind: Team): Topic[] {
+    const specificTeam = user.teams.find((team: Team) => team === teamToFind);
     const topics: Topic[] = [];
     specificTeam?.projects.forEach((project: Project) => {
         project.tasks.forEach((task: Task) => {

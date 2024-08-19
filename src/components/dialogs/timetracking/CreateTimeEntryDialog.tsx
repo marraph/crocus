@@ -16,50 +16,26 @@ import moment, {duration} from "moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useToast} from "griller/src/component/toaster";
 
-type InitialValues = {
-    comment: string,
-    project: Project | null,
-    task: Task | null,
-    date: Date,
-    timeFrom: string,
-    timeTo: string,
-}
+type CreateProps = Pick<TimeEntry, "comment" | "project" | "task" | "startDate" | "endDate">;
 
 export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void }>(({onClose}, ref) => {
     const dialogRef = mutateRef(ref);
     const switchRef = useRef<SwitchRef>(null);
 
-    const initialValues: InitialValues = useMemo(() => ({
+    const [values, setValues] = useState<CreateProps>({
         comment: "",
         project: null,
         task: null,
-        date: new Date(),
-        timeFrom: "09:00",
-        timeTo: "09:00",
-    }), []);
-
-    const [values, setValues] = useState(initialValues);
+        startDate: moment().hour(9).minute(0).toDate(),
+        endDate:  moment().hour(9).minute(0).toDate()
+    });
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const {data:user, isLoading:userLoading, error:userError} = useUser();
     const {addToast} = useToast();
 
-    const tasks = useMemo(() => {
-        if (!user) return [];
-        if (values.project) return getTasksFromProject(user, values.project);
-        else return getAllTasks(user);
-    }, [user, values.project]);
-
-    const projects = useMemo(() => {
-        if (!user) return [];
-        if (values.task) {
-            const projectArray = [];
-            projectArray.push(getProjectFromTask(user, values.task) as Project);
-            return projectArray;
-        }
-        else return getAllProjects(user);
-    }, [user, values.task]);
-
+    const tasks = useMemo(() => !user ? [] : values.project ? getTasksFromProject(user, values.project) : getAllTasks(user), [user, values.project]);
+    const projects = useMemo(() => !user ? [] : values.task ? [getProjectFromTask(user, values.task) as Project] : getAllProjects(user), [user, values.task]);
     const times = useMemo(() => {
         const timesArray = [];
         for (let hour = 0; hour < 24; hour++) {
@@ -73,20 +49,23 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
     }, []);
 
     const validateInput = useCallback(() => {
-        if (values.comment.trim() === "" && !values.project && !values.task) {
+        if (values.comment?.trim() === "" && !values.project && !values.task) {
             setValid(false);
             return;
         }
 
-        if (!times.includes(values.timeFrom)) {
+        let start = moment(values.startDate).format('HH:mm');
+        let end = moment(values.endDate).format('HH:mm');
+
+        if (!times.includes(start)) {
             setValid(false);
             return;
         }
-        if (!times.includes(values.timeTo)) {
+        if (!times.includes(end)) {
             setValid(false);
             return;
         }
-        if (times.indexOf(values.timeFrom) >= times.indexOf(values.timeTo)) {
+        if (times.indexOf(start) >= times.indexOf(end)) {
             setValid(false);
             return;
         }
@@ -100,33 +79,29 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
     }, [validateInput, values]);
 
     const getDuration = useCallback(() => {
-        const durationFrom = moment.duration(values.timeFrom);
-        const durationTo = moment.duration(values.timeTo);
-        const date = moment(values.date)
-
-        const dateFrom = date.add(durationFrom);
-        const dateTo = date.add(durationTo);
-
-        return moment.duration(dateFrom.diff(dateTo)).asHours();
+        return moment.duration(moment(values.startDate)
+            .diff(moment(values.endDate)))
+            .asHours();
     }, [values]);
 
     const handleCloseClick = useCallback(() => {
-        setValues(initialValues);
+        setValues({comment: "", project: null, task: null, startDate: moment().hour(9).minute(0).toDate(), endDate:  moment().hour(9).minute(0).toDate()});
         setValid(false);
         setDialogKey(Date.now());
         switchRef.current?.setValue(false);
         onClose();
-    }, [initialValues, onClose]);
+    }, [onClose]);
 
     const handleCreateClick = useCallback(() => {
         if (!user) return;
+        
         const newEntry: TimeEntry = {
             id: 0,
             comment: values.comment,
             project: values.project ?? null,
             task: values.task ?? null,
-            startDate: moment(values.date).add(values.timeFrom).toDate(),
-            endDate: moment(values.date).add(values.timeTo).toDate(),
+            startDate: values.startDate,
+            endDate: values.endDate,
             createdBy: {id: user.id, name: user.name, email: user.email},
             createdDate: new Date(),
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
@@ -135,23 +110,12 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
         const { data, isLoading, error } = createTimeEntry(newEntry);
 
         if (values.task != null) {
-            const taskUpdate: Task = {
-                id: 0,
-                name: values.task.name,
-                description: values.task.description,
-                topic: values.task.topic,
-                status: values.task.status,
-                priority: values.task.priority,
-                deadline: values.task.deadline,
-                isArchived: false,
-                duration: values.task.duration,
+            const taskUpdate: Partial<Task> = {
                 bookedDuration: values.task.bookedDuration + getDuration(),
-                createdBy: values.task.createdBy,
-                createdDate: values.task.createdDate,
                 lastModifiedBy: {id: user.id, name: user.name, email: user.email},
                 lastModifiedDate: new Date(),
             }
-            const { data, isLoading, error } = updateTask(values.task.id, taskUpdate);
+            const { data, isLoading, error } = updateTask(values.task.id, { ...values.task, ...taskUpdate });
         }
 
         handleCloseClick();
@@ -159,40 +123,50 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
             title: "Time Entry created successfully!",
             icon: <AlarmClockPlus/>,
         })
-    }, [user, values.comment, values.project, values.task, values.date, values.timeFrom, values.timeTo, handleCloseClick, addToast, getDuration]);
-
-    const handleInputChange = useCallback((field: keyof InitialValues, setValues: React.Dispatch<React.SetStateAction<InitialValues>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setValues((prevValues) => ({
-            ...prevValues,
-            [field]: e.target.value
-        }));
-    }, []);
+    }, [user, values.comment, values.project, values.task, values.startDate, values.endDate, handleCloseClick, addToast, getDuration]);
 
     const projectSelect = useMemo(() => (
-        <SearchSelect buttonTitle={"Project"}
-                      icon={<BookCopy size={16} />}
-                      size={"medium"}
-                      onValueChange={(value) =>
-                          setValues((prevValues) => ({ ...prevValues, project: projects.find(item => item.name === value) ?? null }))}
+        <SearchSelect
+            buttonTitle={"Project"}
+            icon={<BookCopy size={16} />}
+            size={"medium"}
+            getItemTitle={(item) => (item as Project).name}
+            onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, project: value as Project || null }))}
         >
             {projects?.map((project) =>
-                <SearchSelectItem key={project.id} title={project.name}/>
+                <SearchSelectItem key={project.id} title={project.name} value={project}/>
             )}
         </SearchSelect>
     ), [projects]);
 
     const taskSelect = useMemo(() => (
-        <SearchSelect buttonTitle={"Task"}
-                      icon={<ClipboardList size={16} />}
-                      size={"medium"}
-                      onValueChange={(value) =>
-                          setValues((prevValues) => ({ ...prevValues, task: tasks.find(item => item.name === value) ?? null }))}
+        <SearchSelect
+            buttonTitle={"Task"}
+            icon={<ClipboardList size={16} />}
+            size={"medium"}
+            getItemTitle={(item) => (item as Task).name}
+            onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, task: value as Task || null }))}
         >
             {tasks.map((task) =>
-                <SearchSelectItem key={task.id} title={task.name}/>
+                <SearchSelectItem key={task.id} title={task.name} value={task}/>
             )}
         </SearchSelect>
     ), [tasks]);
+
+    const handleDateChange = useCallback((date: Date | null) => {
+        setValues(prevValues => ({
+            ...prevValues,
+            startDate: moment(date).hour(moment(prevValues.startDate).hour()).minute(moment(prevValues.startDate).minute()).toDate(),
+            endDate: moment(date).hour(moment(prevValues.endDate).hour()).minute(moment(prevValues.endDate).minute()).toDate()
+        }));
+    }, []);
+
+    const handleTimeChange = useCallback((field: 'startDate' | 'endDate', time: string) => {
+        setValues(prevValues => ({
+            ...prevValues,
+            [field]: moment(prevValues[field]).hour(parseInt(time.split(':')[0])).minute(parseInt(time.split(':')[1])).toDate()
+        }));
+    }, []);
 
     if (!dialogRef || user === undefined) return null;
 
@@ -207,8 +181,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
                 <Textarea placeholder={"Comment"}
                           className={"h-12 px-1 w-full bg-black placeholder-marcador focus:text-gray"}
                           spellCheck={false}
-                          onChange={handleInputChange("comment", setValues)}
-                          value={values.comment}
+                          onChange={(e) => setValues((prevValues) => ({...prevValues, comment: e.target.value}))}
+                          value={values.comment ?? ""}
                 />
                 <div className={"flex flex-row items-center space-x-2 py-2"}>
                     {projectSelect}
@@ -216,34 +190,36 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
                 </div>
 
                 <div className={"flex flex-row items-center space-x-2 pb-2"}>
-                    <DatePicker text={"Date"}
-                                preSelectedValue={new Date()}
-                                closeButton={false}
-                                dayFormat={"long"}
-                                className={"z-40"}
-                                onValueChange={(value) =>
-                                    setValues((prevValues) => ({...prevValues, date: value ?? new Date()}))}
+                    <DatePicker
+                        text={"Date"}
+                        preSelectedValue={new Date()}
+                        closeButton={false}
+                        dayFormat={"long"}
+                        className={"z-40"}
+                        onValueChange={handleDateChange}
                     />
-                    <SearchSelect buttonTitle={"From"}
-                                  preSelectedValue={values.timeFrom}
-                                  icon={<Clock2 size={16}/>}
-                                  size={"medium"}
-                                  onValueChange={(value) =>
-                                      setValues((prevValues) => ({...prevValues, timeFrom: value}))}
+                    <SearchSelect
+                        buttonTitle={"From"}
+                        preSelectedValue={moment(values.startDate).format('HH:mm')}
+                        icon={<Clock2 size={16}/>}
+                        size={"medium"}
+                        getItemTitle={(item) => item as string}
+                        onValueChange={(value) => handleTimeChange('startDate', value as string)}
                     >
                         {times.map((time) =>
-                            <SearchSelectItem key={time} title={time}/>
+                            <SearchSelectItem key={time} title={time} value={time}/>
                         )}
                     </SearchSelect>
-                    <SearchSelect buttonTitle={"To"}
-                                  preSelectedValue={values.timeTo}
-                                  icon={<Clock8 size={16}/>}
-                                  size={"medium"}
-                                  onValueChange={(value) =>
-                                      setValues((prevValues) => ({...prevValues, timeTo: value}))}
+                    <SearchSelect
+                        buttonTitle={"To"}
+                        preSelectedValue={moment(values.endDate).format('HH:mm')}
+                        icon={<Clock8 size={16}/>}
+                        size={"medium"}
+                        getItemTitle={(item) => item as string}
+                        onValueChange={(value) => handleTimeChange('endDate', value as string)}
                     >
                         {times.map((time) =>
-                            <SearchSelectItem key={time} title={time}/>
+                            <SearchSelectItem key={time} title={time} value={time}/>
                         )}
                     </SearchSelect>
                 </div>

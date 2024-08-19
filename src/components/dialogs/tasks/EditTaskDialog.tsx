@@ -24,11 +24,8 @@ import {useToast} from "griller/src/component/toaster";
 
 type EditProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topic' | 'status' | 'priority' | 'deadline' | 'duration'>;
 
-export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>
-    (({ taskElement, onClose }, ref) => {
-        
+export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
-
     const [values, setValues] = useState<EditProps>({
         name: taskElement.name,
         description: taskElement.description ?? null,
@@ -40,7 +37,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
         deadline: taskElement.deadline ?? null,
         duration: taskElement.duration ?? null,
     });
-    const [team, setTeam] = useState<string | null>(taskElement.team?.name ?? null);
+    const [team, setTeam] = useState<Team | null>(taskElement.team ?? null);
     const [valid, setValid] = useState(true);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const { data:user, isLoading:userLoading, error:userError } = useUser();
@@ -70,9 +67,9 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
         setDialogKey(Date.now());
         setValid(true);
         setValues(initialValues);
-        setTeam(taskElement.team?.name ?? null);
+        setTeam(taskElement.team ?? null);
         onClose && onClose();
-    }, [initialValues, onClose, taskElement.team?.name]);
+    }, [initialValues, onClose, taskElement.team]);
 
     const handleEditClick = useCallback(() => {
         if (!user || !taskElement) return
@@ -88,55 +85,15 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             lastModifiedDate: new Date(),
         };
         const { data, isLoading, error } = updateTask(taskElement.id, {...taskElement, ...task});
-        handleCloseClick();
+        
         addToast({
             title: "Task saved",
             secondTitle: "You successfully saved your task changes.",
             icon: <Save/>
         });
+
+        handleCloseClick();
     }, [user, taskElement, values.name, values.description, values.topic, values.status, values.priority, values.deadline, values.duration, handleCloseClick, addToast]);
-
-    const handleInputChange = useCallback((field: keyof EditProps, setValues: React.Dispatch<React.SetStateAction<EditProps>>) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setValues((prevValues) => ({
-            ...prevValues,
-            [field]: e.target.value
-        }));
-    }, []);
-
-    const handleNumberInput = useCallback((e: React.KeyboardEvent) => {
-        if (!/\d/.test(e.key) && e.key !== 'Backspace') {
-            e.preventDefault();
-        }
-    }, []);
-
-        const handleValueChange = useCallback(
-            (field: keyof EditProps, value: string | null) => {
-                let updatedValue: Team | Project | Topic | string | null = value;
-
-                if (field === 'team') {
-                    const team = teams.find(t => t.name === value);
-                    updatedValue = team ?? null;
-                }else if (field === 'project') {
-                    const project = projects.find(p => p.name === value);
-                    updatedValue = project ?? null;
-                } else if (field === 'topic') {
-                    const topic = topics.find(t => t.title === value);
-                    updatedValue = topic ?? null;
-                } else if (field === 'status') {
-                    const status = statuses.find(s => s === value);
-                    updatedValue = status ?? null;
-                } else if (field === 'priority') {
-                    const priority = priorities.find(p => p === value);
-                    updatedValue = priority ?? null;
-                }
-
-                setValues((prevValues) => ({
-                    ...prevValues,
-                    [field]: updatedValue,
-                }));
-            },
-            [teams, projects, topics, statuses, priorities]
-        );
 
     const teamCombobox = useMemo(() => (
         <Combobox
@@ -144,54 +101,54 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             label={"Team"}
             size={"medium"}
             icon={<Users size={16} className={"mr-2"}/>}
-            preSelectedValue={values.team?.name}
+            preSelectedValue={values.team}
+            getItemTitle={(item) => (item as Team).name}
             onValueChange={(value) => {
-                handleValueChange('team', value);
                 setValues((prevValues) => ({
                     ...prevValues,
                     project: null,
                     topic: null
                 }));
-                setTeam(value);
+                setTeam(value as Team || null);
             }}
         >
             {teams.map((team) => (
-                <ComboboxItem key={team.name} title={team.name}/>
+                <ComboboxItem key={team.name} title={team.name} value={team}/>
             ))}
         </Combobox>
-    ), [values.team?.name, teams, handleValueChange]);
+    ), [values.team, teams]);
 
     const projectCombobox = useMemo(() => team && (
         <Combobox
             buttonTitle={"Project"}
             label={"Project"}
             size={"medium"}
-            key={`project-${team}`}
             icon={<BookCopy size={16} className={"mr-2"} />}
-            preSelectedValue={values.project?.name}
-            onValueChange={(value) => handleValueChange('project', value)}
+            preSelectedValue={values.project}
+            getItemTitle={(item) => (item as Project).name}
+            onValueChange={(value) => setValues((prevValues) => ({...prevValues, project: value as Project || null }))}
         >
             {projects.map((project) => (
-                <ComboboxItem key={project.name} title={project.name} />
+                <ComboboxItem key={project.name} title={project.name} value={project}/>
             ))}
         </Combobox>
-    ), [team, values.project?.name, projects, handleValueChange]);
+    ), [team, values.project, projects]);
 
     const topicCombobox = useMemo(() => team && (
         <Combobox
             buttonTitle={"Topic"}
             label={"Topic"}
             size={"medium"}
-            key={`topic-${team}`}
             icon={<Tag size={16} className={"mr-2"} />}
-            preSelectedValue={values.topic?.title}
-            onValueChange={(value) => handleValueChange('topic', value)}
+            preSelectedValue={values.topic}
+            getItemTitle={(item) => (item as Topic).title}
+            onValueChange={(value) => setValues((prevValues) => ({...prevValues, topic: value as Topic || null }))}
         >
             {topics.map((topic) => (
-                <ComboboxItem key={topic.title} title={topic.title} />
+                <ComboboxItem key={topic.title} title={topic.title} value={topic}/>
             ))}
         </Combobox>
-    ), [team, values.topic?.title, topics, handleValueChange]);
+    ), [team, values.topic, topics]);
 
     const statusCombobox = useMemo(() => (
         <Combobox
@@ -200,14 +157,15 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             size={"medium"}
             icon={<CircleAlert size={16} className={"mr-2"} />}
             preSelectedValue={values.status}
-            onValueChange={(value) => handleValueChange('status', value)}
+            getItemTitle={(item) => item as string}
+            onValueChange={(value) => setValues((prevValues) => ({...prevValues, status: value as State || null }))}
 
         >
             {statuses.map((status) => (
-                <ComboboxItem key={status} title={status} />
+                <ComboboxItem key={status} title={status} value={status}/>
             ))}
         </Combobox>
-    ), [values.status, statuses, handleValueChange]);
+    ), [values.status, statuses]);
 
     const priorityCombobox = useMemo(() => (
         <Combobox
@@ -216,13 +174,14 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             size={"medium"}
             icon={<LineChart size={16} className={"mr-2"} />}
             preSelectedValue={values.priority}
-            onValueChange={(value) => handleValueChange('priority', value)}
+            getItemTitle={(item) => item as string}
+            onValueChange={(value) => setValues((prevValues) => ({...prevValues, priority: value as Priority || null }))}
         >
             {priorities.map((priority) => (
-                <ComboboxItem key={priority} title={priority} />
+                <ComboboxItem key={priority} title={priority} value={priority}/>
             ))}
         </Combobox>
-    ), [values.priority, priorities, handleValueChange]);
+    ), [values.priority, priorities]);
 
     if (!dialogRef || user === undefined) return null;
 
@@ -238,12 +197,12 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
                     <Input placeholder={"Task Title"}
                            label={"Title"}
                            value={values.name}
-                           onChange={handleInputChange("name", setValues)}
+                           onChange={(e) => setValues((prevValues) => ({...prevValues, name: e.target.value}))}
                            className={"w-full"}
                     />
                     <Textarea placeholder={"Add Description..."}
                               label={"Description"}
-                              onChange={handleInputChange("description", setValues)}
+                              onChange={(e) => setValues((prevValues) => ({...prevValues, description: e.target.value}))}
                               spellCheck={false}
                               value={values.description ?? ""}
                               className={"h-20 py-2 text-sm bg-dark placeholder-marcador border-1 border-edge focus:text-gray"}
@@ -275,8 +234,8 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
                            value={values.duration?.toString()}
                            elementSize={"medium"}
                            icon={<Hourglass size={16}/>}
-                           onChange={handleInputChange("duration", setValues)}
-                           onKeyDown={(e) => handleNumberInput(e)}
+                           onChange={(e) => setValues((prevValues) => ({...prevValues, duration: Number(e.target.value)}))}
+                           onKeyDown={(e) => { if (!/\d/.test(e.key) && e.key !== 'Backspace') e.preventDefault(); }}
                     />
                 </div>
             </DialogContent>
