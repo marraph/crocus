@@ -54,38 +54,38 @@ export default function Dashboard() {
                     <div className={"pt-4"}>
                         <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
                         <div className={"flex flex-row items-center space-x-2"}>
-                            {new Date().getHours() < 18 && <SunMedium size={18} color={"#fff04d"}/>}
+                            {new Date().getHours() < 18 && <SunMedium size={18} color={"#bfb439"}/>}
                             {new Date().getHours() >= 18 && <Moon size={18} color={"#c9c9c9"}/>}
                             <span className={"text-gray"}>{parseDate(new Date())}</span>
                         </div>
                     </div>
                 </div>
                 <div className={"flex flex-row items-center space-x-16 w-full h-1/2 pt-8 pb-8"}>
-                    <div className={"grid grid-cols-2 gap-4 bg-dark rounded-lg border border-edge p-4 w-1/2 h-72"}>
+                    <div className={"grid grid-cols-2 gap-4 bg-zinc-200 dark:bg-dark rounded-lg border border-zinc-300 dark:border-edge p-4 w-1/2 h-72"}>
                         {timeStats.map((item, index) => (
-                            <div key={index} className={"flex flex-col items-center justify-center space-y-2 bg-black-light rounded-lg"}>
+                            <div key={index} className={"flex flex-col items-center justify-center space-y-2 bg-zinc-100 dark:bg-black-light rounded-lg"}>
                                 <span className={"text-xl"}>{item.name}</span>
-                                <span className={"text-gray"}>{item.description}</span>
+                                <span className={"text-zinc-500 dark:text-gray"}>{item.description}</span>
                             </div>
                         ))}
                     </div>
 
-                    <div className={"bg-dark rounded-lg border border-edge w-1/2 h-72"}>
+                    <div className={"bg-zinc-200 dark:bg-dark rounded-lg border border-zinc-300 dark:border-edge w-1/2 h-72"}>
 
                     </div>
                 </div>
 
-                <div className={"flex-grow flex flex-col bg-black-light rounded-lg w-full border-x border-b border-edge overflow-hidden"}>
-                    <div className={"flex flex-row justify-between items-center bg-dark-light border-y border-edge rounded-t-lg"}>
+                <div className={"flex-grow flex flex-col bg-zinc-100 dark:bg-black-light rounded-lg w-full border-x border-b border-zinc-300 dark:border-edge overflow-hidden"}>
+                    <div className={"flex flex-row justify-between items-center bg-zinc-200 dark:bg-dark-light border-y border-zinc-300 dark:border-edge rounded-t-lg"}>
                         <div className={"flex flex-row items-center"}>
                             <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
                             <Badge text={count.toString() + " OPEN"}
                                    size={"small"}
-                                   className={"rounded-md bg-white-dark text-dark p-0.5"}>
+                                   className={"rounded-md bg-zinc-700 dark:bg-white-dark text-zinc-200 dark:text-dark py-0.5 px-1.5"}>
                             </Badge>
                         </div>
                         <Button text={"Open"}
-                                className={"m-1 font-normal dark:bg-dark-light dark:hover:bg-dark border-none"}
+                                className={"m-1 font-normal bg-zinc-200 dark:bg-dark-light hover:bg-zinc-200 dark:hover:bg-dark border-none"}
                                 onClick={() => router.push("/tasks")}
                                 icon={<ExternalLink size={16} className={"mr-2"}/>}
                                 onMouseEnter={(e) => {
@@ -101,7 +101,8 @@ export default function Dashboard() {
                     <div className={"flex-grow overflow-auto no-scrollbar rounded-b-lg"}>
                         {tasks.map((task, index) => (
                             <div key={index}
-                                 className={"group flex flex-row justify-between items-center p-2 border-b border-edge hover:bg-dark hover:cursor-pointer"}
+                                 className={"group flex flex-row justify-between items-center p-2 border-b border-zinc-300 dark:border-edge " +
+                                     "hover:bg-zinc-200 dark:hover:bg-dark hover:cursor-pointer"}
                                  onClick={() => router.push(`/tasks/${task.id}`)}>
                                 <div className={"flex flex-row space-x-8 items-center pl-4"}>
                                     {task.project &&
@@ -117,12 +118,12 @@ export default function Dashboard() {
                                             onMouseLeave={() => removeTooltip()}
                                         />
                                     }
-                                    <span className={"text-gray text-sm group-hover:text-white"}>{task.name}</span>
+                                    <span className={"text-zinc-500 dark:text-gray text-sm group-hover:text-zinc-800 dark:group-hover:text-white"}>{task.name}</span>
                                 </div>
                                 <div className={"flex flex-row space-x-8 items-center pr-4"}>
                                     {task.status && <StatusBadge title={task.status?.toString()}/>}
                                     {task.deadline &&
-                                        <span className={"text-xs text-gray group-hover:text-white"}
+                                        <span className={"text-xs text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white"}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
                                                     message: "Deadline: " + moment(task.deadline?.toString()).format('MMM D YYYY'),

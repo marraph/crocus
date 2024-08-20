@@ -16,7 +16,7 @@ export const ProfileBadge: React.FC<Props> = ({ name, className, ...props }) => 
     return (
         <Badge
             text={name}
-            className={"bg-dark-light border border-edge text-gray rounded-md font-normal px-3 text-xs"}
+            className={"bg-zinc-200 dark:bg-dark-light border border-zinc-300 dark:border-edge text-zinc-500 dark:text-gray rounded-md font-normal px-3 text-xs"}
             {...props}>
             <Avatar img_url={path} size={20} className={"p-0"}/>
         </Badge>

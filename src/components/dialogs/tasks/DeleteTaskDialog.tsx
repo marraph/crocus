@@ -39,7 +39,7 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement
         >
             <DialogHeader title={"Delete Task"}/>
             <DialogContent>
-                <span className={"text-gray"}>
+                <span className={"text-zinc-500 dark:text-gray"}>
                     Are you sure you want to delete this task?
                 </span>
             </DialogContent>

@@ -33,8 +33,9 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
 
             <div className={"space-y-2 px-4 pt-4"} ref={menuRef}>
                 {showProfile &&
-                    <div className={"flex flex-col space-y-1 py-1 bg-black-light border border-edge rounded-lg"}>
-                        <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-gray rounded-lg hover:bg-dark-light hover:text-white cursor-pointer"}
+                    <div className={"flex flex-col space-y-1 py-1 bg-zinc-100 dark:bg-black-light border border-zinc-300 dark:border-edge rounded-lg"}>
+                        <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-zinc-500 dark:text-gray rounded-lg " +
+                            "hover:bg-zinc-200 dark:hover:bg-dark-light hover:text-zinc-800 dark:hover:text-white cursor-pointer"}
                              onClick={() => {
                                  setShowProfile(false);
                                  router.push(`/organisation/${user?.teams[0].organisation.id}`);
@@ -43,7 +44,9 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                             <Briefcase size={18}/>
                             <span>My organisation</span>
                         </div>
-                        <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-gray rounded-lg hover:bg-dark-light hover:text-white cursor-pointer"}>
+                        <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-zinc-500 dark:text-gray rounded-lg " +
+                            "hover:bg-zinc-200 dark:hover:bg-dark-light hover:text-zinc-800 dark:hover:text-white cursor-pointer"}
+                        >
                             <Settings size={18}/>
                             <span>Settings</span>
                         </div>
@@ -59,7 +62,8 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                         </div>
                     </div>
                 }
-                <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-black-light border border-edge rounded-lg hover:bg-dark-light")}
+                <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-zinc-100 dark:bg-black-light " +
+                    "border border-zinc-300 dark:border-edge rounded-lg hover:bg-zinc-200 dark:hover:bg-dark-light")}
                     onClick={() => setShowProfile(!showProfile)}>
                     {userLoading ?
                     <Skeleton className={"w-max"}>
@@ -74,12 +78,12 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                         <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
                         <div className={cn("flex flex-col items-start overflow-hidden")}>
                             <span className={"text-sm truncate w-full"}>{user?.name}</span>
-                            <span className={cn("text-gray text-xs truncate w-full")}>{user?.teams[0].organisation.name}</span>
+                            <span className={cn("text-zinc-500 dark:text-gray text-xs truncate w-full")}>{user?.teams[0].organisation.name}</span>
                         </div>
                     </div>
                     }
 
-                    <ChevronsUpDown className={cn("m-4 text-gray group-hover:text-white")}></ChevronsUpDown>
+                    <ChevronsUpDown className={cn("m-4 text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white")}></ChevronsUpDown>
                 </div>
             </div>
         </>

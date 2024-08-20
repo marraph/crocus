@@ -179,7 +179,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
             <DialogHeader title={"New entry"}/>
             <DialogContent>
                 <Textarea placeholder={"Comment"}
-                          className={"h-12 px-1 w-full bg-black placeholder-marcador focus:text-gray"}
+                          className={"h-12 px-1 w-full bg-zinc-100 dark:bg-black placeholder-zinc-400 dark:placeholder-marcador focus:text-zinc-800 dark:focus:text-white"}
                           spellCheck={false}
                           onChange={(e) => setValues((prevValues) => ({...prevValues, comment: e.target.value}))}
                           value={values.comment ?? ""}

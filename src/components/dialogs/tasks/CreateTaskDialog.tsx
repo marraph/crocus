@@ -192,11 +192,12 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             <DialogContent>
                 <div className={"flex flex-col flex-grow space-y-1"}>
                     <input placeholder={"Task Title"}
-                           className={"rounded-lg bg-black py-2 text-white placeholder-marcador focus-visible:ring-0 border-0 focus-visible:outline-none"}
+                           className={"rounded-lg bg-zinc-100 dark:bg-black py-2 text-zinc-800 dark:text-white placeholder-zinc-400 dark:placeholder-marcador " +
+                               "focus-visible:ring-0 border-0 focus-visible:outline-none"}
                            onChange={(e) => setValues((prevValues) => ({ ...prevValues, name: e.target.value }))}
                     />
                     <Textarea placeholder={"Add Description..."}
-                              className={"h-20 dark:bg-black focus:text-gray px-0"}
+                              className={"h-20 bg-zinc-100 dark:bg-black focus:text-zinc-500 dark:focus:text-gray px-0"}
                               value={values.description ?? ""}
                               onChange={(e) => setValues((prevValues) => ({ ...prevValues, description: e.target.value }))}
                     />

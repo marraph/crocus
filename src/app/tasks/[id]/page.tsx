@@ -118,9 +118,9 @@ export default function Page() {
                         </div>
                     </div>
 
-                    <div className={"h-full w-full flex flex-row border border-edge rounded-lg"}>
+                    <div className={"h-full w-full flex flex-row border border-zinc-300 dark:border-edge rounded-lg"}>
 
-                        <div className={"flex flex-col justify-between w-3/4 h-full bg-dark rounded-l-lg"}>
+                        <div className={"flex flex-col justify-between w-3/4 h-full bg-zinc-200 dark:bg-dark rounded-l-lg"}>
                             <div className={"h-full"}>
 
                             </div>
@@ -128,61 +128,61 @@ export default function Page() {
                         </div>
 
 
-                        <div className={"border-l border-edge w-1/4 min-h-full bg-black-light rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
+                        <div className={"border-l border-zinc-300 dark:border-edge w-1/4 min-h-full bg-zinc-100 dark:bg-black-light rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
                             <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
-                                <div className={"w-16 text-gray"}>Title</div>
+                                <div className={"w-16 text-zinc-500 dark:text-gray"}>Title</div>
                                 <span>{taskElement.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <div className={"flex flex-row space-x-4 px-4 py-2 h-20"}>
-                                <div className={"w-16 text-gray"}>Description</div>
+                                <div className={"w-16 text-zinc-500 dark:text-gray"}>Description</div>
                                 <span className={"flex-1 break-words"}>{taskElement.description}</span>
                             </div>
                             <Seperator className={"w-full"}/>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Users size={16}/>
                                     <span className={"w-16"}>Team</span>
                                 </div>
                                 <span>{taskElement.team?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Box size={16}/>
                                     <span className={"w-16"}>Project</span>
                                 </div>
                                 <span>{taskElement.project?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <LineChart size={16}/>
                                     <span className={"w-16"}>Priority</span>
                                 </div>
                                 <span>{taskElement.priority}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Tag size={16}/>
                                     <span className={"w-16"}>Topic</span>
                                 </div>
                                 <span>{taskElement.topic?.title}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CircleAlert size={16}/>
                                     <span className={"w-16"}>Status</span>
                                 </div>
                                 <span>{taskElement.status}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CalendarDays size={16}/>
                                     <span className={"w-16"}>Deadline</span>
                                 </div>
                                 <span>{moment(taskElement.deadline?.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"flex flex-row items-center space-x-2 text-gray"}>
+                                <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Hourglass size={16}/>
                                     <span className={"w-16"}>Duration</span>
                                 </div>
@@ -192,27 +192,27 @@ export default function Page() {
                                 </span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
-                            <span className={"text-xs text-marcador px-4 py-2"}>LAST CHANGE</span>
+                            <span className={"text-xs text-zinc-400 dark:text-marcador px-4 py-2"}>LAST CHANGE</span>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"w-24 text-gray"}>Change</div>
+                                <div className={"w-24 text-zinc-500 dark:text-gray"}>Change</div>
                                 <span>{"//CHANGE FEHLT"}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"w-24 text-gray"}>Time Changed</div>
+                                <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Changed</div>
                                 <span>{moment(taskElement.lastModifiedDate.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"w-24 text-gray"}>Changed By</div>
+                                <div className={"w-24 text-zinc-500 dark:text-gray"}>Changed By</div>
                                 <span>{taskElement.lastModifiedBy.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
-                            <span className={"text-xs text-marcador px-4 py-2"}>CREATION</span>
+                            <span className={"text-xs text-zinc-400 dark:text-marcador px-4 py-2"}>CREATION</span>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
-                                <div className={"w-24 text-gray"}>Time Created</div>
+                                <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Created</div>
                                 <span>{moment(taskElement.createdDate.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
-                                <div className={"w-24 text-gray"}>Created By</div>
+                                <div className={"w-24 text-zinc-500 dark:text-gray"}>Created By</div>
                                 <span>{taskElement.createdBy.name}</span>
                             </div>
                         </div>

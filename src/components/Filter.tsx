@@ -162,9 +162,11 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
             </div>
 
             {menuOpen && !subMenuOpen &&
-                <div className={"absolute z-50 bg-black-light border border-edge rounded-lg text-sm text-gray p-1 space-y-1 shadow-2xl"}>
+                <div className={"absolute z-50 bg-zinc-100 dark:bg-black-light border border-zinc-300 dark:border-edge rounded-lg text-sm text-zinc-500 " +
+                    "dark:text-gray p-1 space-y-1 shadow-2xl"}>
                     {items.map((item, index) => (
-                        <div className={"flex flex-row items-center space-x-2 px-2 py-1 rounded-lg hover:bg-dark-light hover:text-white cursor-pointer"}
+                        <div className={"flex flex-row items-center space-x-2 px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-dark-light " +
+                            "hover:text-zinc-800 dark:hover:text-white cursor-pointer"}
                             key={index}
                             onClick={() => handleMenuClick(item)}
                         >
@@ -176,26 +178,29 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
             }
 
             {subMenuOpen &&
-                <div className={"absolute z-50 max-h-48 w-max flex flex-col bg-black-light rounded-lg border border-edge overflow-hidden shadow-2xl"}>
-                    <div className={"w-full flex flex-row items-center space-x-2 py-1 border-b border-edge rounded-t-lg"}>
-                        <Search size={16} className={"text-gray ml-2"}/>
+                <div className={"absolute z-50 max-h-48 w-max flex flex-col bg-zinc-100 dark:bg-black-light rounded-lg border border-zinc-300 dark:border-edge " +
+                    "overflow-hidden shadow-2xl"}>
+                    <div className={"w-full flex flex-row items-center space-x-2 py-1 border-b border-zinc-300 dark:border-edge rounded-t-lg"}>
+                        <Search size={16} className={"text-zinc-500 dark:text-gray ml-2"}/>
                         <input placeholder={"Search"}
                                value={searchTerm}
                                onChange={handleInputChange}
-                               className={"w-full bg-black-light text-white-dark p-1 focus:outline-0 placeholder-marcador text-sm"}
+                               className={"w-full bg-zinc-100 dark:bg-black-light text-zinc-800 dark:text-white p-1 focus:outline-0 " +
+                                   "placeholder-zinc-400 dark:placeholder-marcador text-sm"}
                         />
                     </div>
                     {filteredValues.length === 0 &&
-                        <div className={"text-center text-sm text-marcador pt-2"}>
+                        <div className={"text-center text-sm text-zinc-400 dark:text-marcador pt-2"}>
                             No results found
                         </div>
                     }
                     {filteredValues.length > 4 ?
                         <CustomScroll>
-                            <div className={"max-h-[150px] flex flex-col text-sm text-gray p-1 space-y-1"}>
+                            <div className={"max-h-[150px] flex flex-col text-sm text-zinc-500 dark:text-gray p-1 space-y-1"}>
                                 {filteredValues.map((value, index) => (
-                                    <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-dark-light hover:text-white cursor-pointer",
-                                        { "bg-dark-light text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
+                                    <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-dark-light " +
+                                        "hover:text-zinc-800 dark:hover:text-white cursor-pointer",
+                                        {"bg-zinc-200 dark:bg-dark-light text-zinc-800 dark:text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
                                          key={index}
                                          onClick={() => handleSubMenuClick(value)}
                                     >
@@ -208,10 +213,11 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
                             </div>
                         </CustomScroll>
                         :
-                        <div className={"flex flex-col text-sm text-gray p-1 space-y-1"}>
+                        <div className={"flex flex-col text-sm text-zinc-500 dark:text-gray p-1 space-y-1"}>
                             {filteredValues.map((value, index) => (
-                                <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-dark hover:text-white cursor-pointer",
-                                    { "bg-dark text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
+                                <div className={cn("flex flex-row space-x-2 items-center px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-dark " +
+                                    "hover:text-zinc-800 dark:hover:text-white cursor-pointer",
+                                    { "bg-zinc-200 dark:bg-dark text-zinc-800 dark:text-white": filters.some(f => f.name === subMenuOpen.name && f.value === value) })}
                                      key={index}
                                      onClick={() => handleSubMenuClick(value)}
                                 >
@@ -266,11 +272,11 @@ const FilterBadge: React.FC<FilterBadgeProps> = ({ name, value, onClick }) => {
     };
 
     return (
-        <div className={"h-6 flex flex-row items-center space-x-1 pl-2 bg-edge rounded-lg"}>
+        <div className={"h-6 flex flex-row items-center space-x-1 pl-2 bg-zinc-300 dark:bg-edge rounded-lg"}>
             {icons[name]}
-            <span className={"text-xs text-white"}>{name + ":"}</span>
-            <span className={"text-xs text-white-dark"}>{value}</span>
-            <CloseButton className={"dark:bg-edge hover:bg-edge"}
+            <span className={"text-xs text-zinc-800 dark:text-white"}>{name + ":"}</span>
+            <span className={"text-xs text-zinc-600 dark:text-white-dark"}>{value}</span>
+            <CloseButton className={"bg-zinc-300 dark:bg-edge hover:bg-zinc-300 dark:hover:bg-edge"}
                          onClick={onClick}
             />
         </div>

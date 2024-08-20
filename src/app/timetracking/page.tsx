@@ -136,7 +136,7 @@ export default function Timetracking() {
                             />
                         </div>
                     </div>
-                    <div className={"w-full h-full flex flex-col items-stretch bg-black-light border border-edge rounded-lg"}>
+                    <div className={"w-full h-full flex flex-col items-stretch bg-zinc-100 dark:bg-black-light border border-zinc-300 dark:border-edge rounded-lg"}>
                         {(entries && entries.length > 0) || (absences && absences.length > 0) ?
                             <TimetrackTable entries={entries} absences={absences}/>
                         :

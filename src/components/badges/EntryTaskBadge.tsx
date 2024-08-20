@@ -15,7 +15,7 @@ export const EntryTaskBadge: React.FC<Props> = ({ title, textClassName, classNam
     return (
         <Badge
             text={title}
-            className={cn("bg-marcador bg-opacity-20 text-white text-xs rounded-md font-normal", className)}
+            className={cn("bg-zinc-400 dark:bg-marcador bg-opacity-20 text-zinc-800 dark:text-white text-xs rounded-md font-normal", className)}
             textClassName={textClassName}
             {...props}>
             <ClipboardList size={16}/>

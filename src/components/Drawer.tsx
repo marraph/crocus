@@ -49,15 +49,15 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
         <>
             <JoinTeamDialog ref={joinTeamDialogRef}/>
 
-            <div className={cn("w-max h-screen flex flex-col justify-between bg-black-light border-r border-edge py-4")} {...props}>
+            <div className={cn("w-max h-screen flex flex-col justify-between bg-zinc-100 dark:bg-black-light border-r border-zinc-300 dark:border-edge py-4")} {...props}>
                 <div className={"space-y-2"}>
-                    <div className={"flex flex-row space-x-4 items-center mb-7 border-b border-edge px-4 pb-3"}>
-                        <Flower size={30}/>
-                        <span className={"text-3xl"}>calla</span>
+                    <div className={"flex flex-row space-x-4 items-center mb-7 border-b border-zinc-300 dark:border-edge px-4 pb-3"}>
+                        <Flower size={30} className={"text-zinc-800 dark:text-white"}/>
+                        <span className={"text-zinc-800 dark:text-white text-3xl"}>calla</span>
                     </div>
 
                     <div className={"space-y-1 pt-4 px-4"}>
-                        <span className={cn("text-marcador text-xs px-1")}>{"MENU"}</span>
+                        <span className={cn("text-zinc-400 dark:text-marcador text-xs px-1")}>{"MENU"}</span>
                         <NavigationItem selected={selectedItem === "Dashboard"}
                                         title={"Dashboard"}
                                         onClick={() => router.push("/dashboard")}
@@ -82,8 +82,8 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
 
                     <div className={"py-10 pl-2 pr-4 space-y-1"}>
                         <div className={"w-full flex flex-row items-center"}>
-                            <div
-                                className={"w-full flex flex-row items-center justify-between p-2 pr-4 text-marcador rounded-lg hover:text-white hover:bg-dark cursor-pointer"}
+                            <div className={"w-full flex flex-row items-center justify-between p-2 pr-4 text-zinc-400 dark:text-marcador rounded-lg " +
+                                "hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-dark cursor-pointer"}
                                 onClick={() => setOpenTeamMenu(!openTeamMenu)}
                             >
                                 <div className={"flex flex-row space-x-2"}>
@@ -91,7 +91,7 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
                                     {openTeamMenu ? <ChevronDown size={14}/> : <ChevronRight size={14}/>}
                                 </div>
                             </div>
-                            <div className={"p-2 text-marcador hover:text-white hover:bg-dark rounded-lg cursor-pointer"}
+                            <div className={"p-2 text-zinc-400 dark:text-marcador hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-dark rounded-lg cursor-pointer"}
                                  onClick={() => joinTeamDialogRef.current?.show()}
                                  onMouseEnter={(e) => {
                                      addTooltip({
@@ -107,10 +107,11 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
                         </div>
 
                         {openTeamMenu &&
-                            <div className={"ml-6 pl-4 border-l border-edge border-opacity-50"}>
+                            <div className={"ml-6 pl-4 border-l border-zinc-300 dark:border-edge border-opacity-50"}>
                                 {user.teams.map((team) => (
                                     <div key={team.id}
-                                         className={cn("w-full text-gray px-2 py-2 text-sm hover:bg-dark hover:text-white rounded-lg cursor-pointer truncate")}
+                                         className={cn("w-full text-zinc-500 dark:text-gray px-2 py-2 text-sm rounded-lg cursor-pointer truncate " +
+                                             "hover:bg-zinc-200 dark:hover:bg-dark hover:text-zinc-800 dark:hover:text-white")}
                                     >
                                         <span>{team.name}</span>
                                     </div>

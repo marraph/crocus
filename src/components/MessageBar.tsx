@@ -37,7 +37,7 @@ export const MessageBar: React.FC<MessageBarProps> = ({ className, ...props }) =
         <div className={"w-full h-12 flex flex-row items-center mx-4 my-2 space-x-2 pr-8 "} {...props}>
             <div className={"w-full"}>
                 <Input placeholder={"Write a message..."}
-                       className={"flex-grow bg-dark-light"}
+                       className={"flex-grow bg-zinc-100 dark:bg-dark-light"}
                        value={message}
                        onChange={(e) => setMessage(e.target.value)}
                 />

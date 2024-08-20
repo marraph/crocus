@@ -113,12 +113,13 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
             )}
 
             <div className={"h-full flex flex-col"}>
-                <Table className={"bg-dark w-full no-scrollbar border-none rounded-b-none text-xs border-b-0"}>
+                <Table className={"w-full no-scrollbar border-none rounded-b-none text-xs border-b-0"}>
                     <TableHeader>
                         <TableRow
-                            className={cn("hover:bg-black", entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
+                            className={cn("hover:bg-zinc-200 dark:hover:bg-black",
+                                entries?.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-zinc-300 dark:border-b-edge" : "border-none")}>
                             {header.map((header) => (
-                                <TableHead className={"text-marcador text-sm w-max min-w-28"} key={header.key}>
+                                <TableHead className={"w-max min-w-28"} key={header.key}>
                                     <span className={"flex flex-row items-center"}>
                                         {header.label}
                                     </span>
@@ -129,7 +130,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                     <TableBody className={"text-sm"}>
                         {absences?.map((absence, index) => (
                             <TableRow key={index}
-                                      className={"h-min last:border-b last:border-b-edge"}
+                                      className={"h-min last:border-b last:border-b-zinc-300 dark:last:border-b-edge"}
                                       onContextMenu={(e) => handleAbsenceContextMenu(e, absence)}
                                       onClick={() => handleAbsenceOnClick(absence)}
                             >
@@ -155,7 +156,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                         ))}
                         {entries?.map((entry, index) => (
                             <TableRow key={index}
-                                      className={index === entries?.length - 1 ? " border-b border-b-edge" : ""}
+                                      className={index === entries?.length - 1 ? " border-b border-b-zinc-300 dark:border-b-edge" : ""}
                                       onContextMenu={(e) => handleEntryContextMenu(e, entry)}
                                       onClick={() => handleTimeEntryOnClick(entry)}
                             >
@@ -214,7 +215,7 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                         ))}
                     </TableBody>
                 </Table>
-                <div className={"flex-grow bg-black-light"}></div>
+                <div className={"flex-grow bg-zinc-100 dark:bg-black-light"}></div>
                 <TimeEntryDaySummary entries={entries}/>
             </div>
         </>
