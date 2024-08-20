@@ -205,7 +205,8 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
                               onChange={(e) => setValues((prevValues) => ({...prevValues, description: e.target.value}))}
                               spellCheck={false}
                               value={values.description ?? ""}
-                              className={"h-20 py-2 text-sm bg-dark placeholder-marcador border-1 border-edge focus:text-gray"}
+                              className={"h-20 py-2 text-sm bg-zinc-200 dark:bg-dark placeholder-zinc-400 dark:placeholder-marcador " +
+                                  "border-1 border-zinc-300 dark:border-edge text-zinc-500 dark:text-gray focus:text-zinc-500 dark:focus:text-gray"}
                     />
                 </div>
                 <div className={"flex flex-row space-x-2 pt-2 z-50"}>

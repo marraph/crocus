@@ -12,11 +12,11 @@ export const LogOutDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
     const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    if (!dialogRef || user === undefined) return null;
-
     const handleLogOutClick = useCallback(() => {
         dialogRef?.current?.close();
-    }, []);
+    }, [dialogRef]);
+
+    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={600}
@@ -24,7 +24,7 @@ export const LogOutDialog = forwardRef<DialogRef>(({}, ref) => {
         >
             <DialogHeader title={"Log out"}/>
             <DialogContent>
-                <div className={"flex flex-col space-y-4 text-sm text-gray"}>
+                <div className={"flex flex-col space-y-4 text-sm text-zinc-500 dark:text-gray"}>
                     <span>
                        Are u sure you want to log out?
                     </span>

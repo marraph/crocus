@@ -15,7 +15,7 @@ export const TopicBadge: React.FC<Props> = ({ title, color, className, ...props 
     return (
         <Badge
             text={title}
-            className={cn("w-max bg-marcador text-gray text-xs font-mono font-normal px-2 py-0.5 bg-opacity-20 rounded-lg", className)}
+            className={cn("w-max bg-zinc-400 dark:bg-marcador text-zinc-500 dark:text-gray text-xs font-mono font-normal px-2 py-0.5 bg-opacity-20 rounded-lg", className)}
             {...props}>
         </Badge>
 

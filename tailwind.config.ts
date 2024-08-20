@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
 
 const config: Config = {
+  darkMode: 'selector',
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -31,7 +32,7 @@ const config: Config = {
       "topicblue": "#5752EB",
       "topicred": "#ED4C4C",
       "topicgreen": "#328f32",
-      "topicyellow": "#EDE240",
+      "topicyellow": "#C2B932",
       "topicpurple": "#793ec2",
     },
     extend: {

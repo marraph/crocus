@@ -40,7 +40,7 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, { timeEntry?: TimeEnt
         >
             <DialogHeader title={"Delete " + (timeEntry ? "entry" : "absence")}/>
             <DialogContent>
-                <span className={cn("text-white")}>
+                <span>
                     {"Are you sure you want to delete this " + (timeEntry ? "TimeEntry" : "Absence") + "?"}
                 </span>
             </DialogContent>

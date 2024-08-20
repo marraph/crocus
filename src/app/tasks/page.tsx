@@ -12,7 +12,6 @@ import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
 import {getAllProjects, getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
-import {useToast} from "griller/src/component/toaster";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
 
@@ -25,7 +24,6 @@ export default function Tasks() {
     const [update, setUpdate] = useState(0);
     const { data:user, isLoading:userLoading, error:userError } = useUser();
     const { addTooltip, removeTooltip } = useTooltip();
-    const {addToast} = useToast();
 
     useHotkeys('t', () => dialogRef.current?.show());
 
@@ -44,20 +42,7 @@ export default function Tasks() {
                 project.tasks?.forEach((task: Task) => {
                     if (task.isArchived) return;
                     taskElements.push({
-                        id: task.id,
-                        name: task.name,
-                        description: task.description,
-                        topic: task.topic,
-                        isArchived: task.isArchived,
-                        duration: task.duration,
-                        bookedDuration: task.bookedDuration,
-                        deadline: task.deadline,
-                        status: task.status,
-                        priority: task.priority,
-                        createdBy: task.createdBy,
-                        createdDate: task.createdDate,
-                        lastModifiedBy: task.lastModifiedBy,
-                        lastModifiedDate: task.lastModifiedDate,
+                        ...task,
                         team: team,
                         project: project
                     });
@@ -127,14 +112,14 @@ export default function Tasks() {
                                 ref={filterRef}
                                 onChange={() => setUpdate(update + 1)}
                         />
-                        <div className={"flex flex-row space-x-1"}>
-                            <LoaderCircle size={14} className={"text-marcador"}/>
-                            <span className={"text-xs text-marcador"}>{taskElements.length + " OPEN"}</span>
+                        <div className={"flex flex-row space-x-1 text-zinc-400 dark:text-marcador"}>
+                            <LoaderCircle size={14}/>
+                            <span className={"text-xs"}>{taskElements.length + " OPEN"}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className={"h-screen rounded-lg bg-black-light overflow-auto no-scrollbar border border-edge"}>
+                <div className={"h-screen rounded-lg bg-zinc-100 dark:bg-black-light overflow-auto no-scrollbar border border-zinc-300 dark:border-edge"}>
                     {taskElements.length > 0 ?
                         <TaskTable taskElements={taskElements}/>
                         :

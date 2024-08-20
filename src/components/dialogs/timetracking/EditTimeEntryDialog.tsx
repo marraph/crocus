@@ -181,7 +181,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           label={"Comment"}
-                          className={"h-12 px-1 w-full bg-black placeholder-placeholder focus:text-gray"}
+                          className={"h-12 px-1 w-full bg-zinc-200 dark:bg-black placeholder-zinc-400 dark:placeholder-marcador focus:text-gray"}
                           spellCheck={false}
                           onChange={(e) => setValues((prevValues) => ({ ...prevValues, comment: e.target.value }))}
                           value={values.comment ?? ""}

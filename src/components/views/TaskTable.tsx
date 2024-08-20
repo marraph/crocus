@@ -87,7 +87,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
 
             <Table className={"w-full text-xs border-0 rounded-b-none"}>
                 <TableHeader>
-                    <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-edge" : "border-none")}>
+                    <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-zinc-300 dark:border-b-edge" : "border-none")}>
                         {header.map((header) => (
                             <TableHead className={"min-w-28 max-w-32 overflow-hidden"}
                                        key={header.key}
@@ -105,7 +105,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 <TableBody className={"text-sm"}>
                     {getSortedTaskTable(taskElements, sort).map((taskElement, index) => (
                         <TableRow key={taskElement.id}
-                                  className={cn({"border-b border-b-edge": index === getSortedTaskTable(taskElements, sort).length - 1})}
+                                  className={cn("last:border-b last:border-b-zinc-300 dark:last:border-b-edge")}
                                   onClick={() => router.push(`/tasks/${taskElement.id}`)}
                                   onContextMenu={(e) => {
                                       handleContextMenu(e, taskElement);
@@ -157,11 +157,11 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                     }
                                 </div>
                             </TableCell>
-                            <TableCell className={"text-white truncate"}>
+                            <TableCell className={"text-zinc-800 dark:text-white truncate"}>
                                 {taskElement.name}
                             </TableCell>
                             <TableCell>
-                                <StatusBadge title={taskElement.status?.toString()} color={"warning"}/>
+                                <StatusBadge title={taskElement.status?.toString()}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
                                 {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}

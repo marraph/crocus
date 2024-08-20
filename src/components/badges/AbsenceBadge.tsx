@@ -14,7 +14,7 @@ export const AbsenceBadge: React.FC<Props> = ({ title, className, ...props }) =>
     return (
         <Badge
             text={title}
-            className={"bg-marcador bg-opacity-20 text-white rounded-md font-normal px-3 text-xs"}
+            className={"bg-zinc-400 dark:bg-marcador bg-opacity-20 text-zinc-800 dark:text-white rounded-md font-normal px-3 text-xs"}
             {...props}>
             <TreePalm size={16}/>
         </Badge>

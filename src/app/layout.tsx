@@ -24,7 +24,7 @@ export default function RootLayout({children}: Readonly<{ children: ReactNode }>
                         <UserProvider id={9}>
                             <Toaster>
                                 <TooltipProvider>
-                                    <div className={"w-full h-full flex flex-row bg-black-light"}>
+                                    <div className={"w-full h-full flex flex-row bg-zinc-100 dark:bg-black-light text-zinc-800 dark:text-white"}>
                                         <Drawer/>
                                         {children}
                                     </div>

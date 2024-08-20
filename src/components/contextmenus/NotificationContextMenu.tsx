@@ -39,7 +39,7 @@ export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextP
             />
 
             {showMenu &&
-                <div className={"absolute z-50 h-max w-max right-0 bg-black-light rounded-lg overflow-hidden border border-edge"}>
+                <div className={"absolute z-50 h-max w-max right-0 bg-zinc-100 dark:bg-black-light rounded-lg overflow-hidden border border-zinc-300 dark:border-edge"}>
                     <CustomScroll>
                         <div className={"h-[300px] py-1"}>
                             {notifications.map((n, index) => (

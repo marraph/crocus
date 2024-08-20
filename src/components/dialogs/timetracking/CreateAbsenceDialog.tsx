@@ -1,6 +1,6 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useState} from "react";
+import React, {forwardRef, useCallback, useEffect, useMemo, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
@@ -80,7 +80,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
             <DialogHeader title={"New absence"}/>
             <DialogContent>
                 <Textarea placeholder={"Comment"}
-                          className={"h-12 w-full bg-black placeholder-marcador focus:text-gray"}
+                          className={"h-12 w-full bg-zinc-100 dark:bg-black placeholder-zinc-400 dark:placeholder-marcador focus:text-zinc-800 dark:focus:text-white"}
                           spellCheck={false}
                           onChange={(e) => setValues((prevValues) => ({ ...prevValues, comment: e.target.value }))}
                           value={values.comment ?? ""}

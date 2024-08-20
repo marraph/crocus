@@ -37,11 +37,12 @@ export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) 
         <>
             <SearchDialog ref={searchDialogRef}/>
 
-            <div className={cn("w-full flex flex-row items-center justify-between p-4 border-b border-edge", className)}>
+            <div className={cn("w-full flex flex-row items-center justify-between p-4 border-b border-zinc-300 dark:border-edge", className)}>
                 {title && <span className={"text-xl font-normal"}>{title}</span>}
                 {props.children}
                 <div className={"flex flex-row space-x-4 items-center"}>
-                    <div className={"h-8 w-56 group flex flex-row justify-between items-center rounded-lg bg-black-light border border-edge cursor-pointer pr-1"}
+                    <div className={"h-8 w-56 group flex flex-row justify-between items-center rounded-lg bg-zinc-100 dark:bg-black-light border " +
+                        "border-zinc-300 dark:border-edge cursor-pointer pr-1"}
                          onClick={() => searchDialogRef.current?.showModal()}
                          onMouseEnter={(e) => {
                              addTooltip({
@@ -52,8 +53,8 @@ export const Headbar: React.FC<HeadbarProps> = ({ title, className, ...props }) 
                          }}
                          onMouseLeave={() => removeTooltip()}
                     >
-                        <div className={"flex flex-row items-center text-marcador text-sm space-x-2"}>
-                            <Search size={18} className={"group-focus:text-white ml-2"}/>
+                        <div className={"flex flex-row items-center text-zinc-400 dark:text-marcador text-sm space-x-2"}>
+                            <Search size={18} className={"group-focus:text-zinc-800 dark:group-focus:text-white ml-2"}/>
                             <span>{"Search"}</span>
                         </div>
                         <Shortcut text={"⌘ K"}/>

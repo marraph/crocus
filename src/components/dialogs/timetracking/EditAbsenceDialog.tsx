@@ -82,7 +82,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
             <DialogContent>
                 <Textarea placeholder={"Comment"}
                           label={"Comment"}
-                          className={"px-2 h-12 w-full bg-black placeholder-placeholder focus:text-gray"}
+                          className={"px-2 h-12 w-full bg-zinc-200 dark:bg-black placeholder-zinc-400 dark:placeholder-marcador focus:text-gray"}
                           spellCheck={false}
                           onChange={(e) => setValues((prevValues) => ({ ...prevValues, comment: e.target.value }))}
                           value={values.comment ?? ""}
