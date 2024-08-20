@@ -2,7 +2,7 @@
 
 import React, {useCallback, useMemo, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {AlarmClockPlus, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
+import {AlarmClockPlus, BellOff, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
 import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
 import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
@@ -78,9 +78,8 @@ export default function Timetracking() {
                                     }}
                                     onMouseLeave={() => removeTooltip()}
                             />
-                            <Button text={"New Absence"}
+                            <Button text={"Add Absence"}
                                     onClick={() => absenceDialogRef.current?.show()}
-                                    icon={<TreePalm size={20} className={"mr-2"}/>}
                                     onMouseEnter={(e) => {
                                         addTooltip({
                                             message: "Create a new absence",

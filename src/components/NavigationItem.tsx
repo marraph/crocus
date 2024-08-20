@@ -13,9 +13,8 @@ const NavigationItem: React.FC<NavigationItemProps> = ({ title, icon, selected, 
     return (
         <div className={
             cn("w-full h-10 flex flex-row items-center text-sm text-zinc-500 dark:text-gray rounded-lg font-normal cursor-pointer " +
-                "border border-zinc-300 dark:border-edge border-opacity-0 bg-zinc-100 dark:bg-black-light hover:bg-zinc-200 dark:hover:bg-dark-light " +
-                "hover:text-zinc-800 dark:hover:text-white truncate ",
-            {"bg-zinc-200 dark:bg-dark-light text-zinc-800 dark:text-white border-opacity-100": selected})
+                "bg-zinc-100 dark:bg-black-light hover:bg-zinc-200 dark:hover:bg-dark-light hover:text-zinc-800 dark:hover:text-white truncate",
+            {"bg-zinc-200 dark:bg-dark-light text-zinc-800 dark:text-white border border-zinc-300 dark:border-edge": selected})
         }
             {...props}
         >

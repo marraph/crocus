@@ -14,15 +14,15 @@ const data = [
 ];
 
 export const TasksGraphCard = () => {
-    const [selectedRange, setSelectedRange] = useState<string | null>("Last 7d");
+    const [selectedRange, setSelectedRange] = useState<string | null>("Last 7 days");
 
     const calculateData = useCallback(() => {
         switch (selectedRange) {
-            case "Last 7d":
+            case "Last 7 days":
                 return data.slice(0, 7);
-            case "Last 30d":
+            case "Last 30 days":
                 return data.slice(0, 30);
-            case "Last 365d":
+            case "Last 365 days":
                 return data;
             default:
                 return data;
@@ -30,17 +30,18 @@ export const TasksGraphCard = () => {
     }, [selectedRange]);
 
     return (
-        <div className={"flex-grow h-80 flex flex-col rounded-lg border border-edge mx-4 mb-4"}>
-            <div className={"flex flex-row items-center justify-between p-4 bg-dark rounded-lg"}>
+        <div className={"flex-grow h-80 flex flex-col rounded-lg border border-zinc-300 dark:border-edge mx-4 mb-4"}>
+            <div className={"flex flex-row items-center justify-between p-4 bg-zinc-200 dark:bg-dark rounded-lg"}>
                 <span>Task's completed</span>
                 <Combobox buttonTitle={"Select a range"}
-                          preSelectedValue={"Last 7d"}
+                          preSelectedValue={selectedRange}
                           icon={<CalendarSearch size={16} className={"mr-2"}/>}
-                          onValueChange={(value) => setSelectedRange(value)}
+                          getItemTitle={(item) => item as string}
+                          onValueChange={(value) => setSelectedRange(value as string || null)}
                 >
-                    <ComboboxItem title={"Last 7 d"}/>
-                    <ComboboxItem title={"Last 30d"}/>
-                    <ComboboxItem title={"Last 365d"}/>
+                    <ComboboxItem title={"Last 7 days"} value={"Last 7 days"}/>
+                    <ComboboxItem title={"Last 30 days"} value={"Last 30 days"}/>
+                    <ComboboxItem title={"Last 365 days"} value={"Last 365 days"}/>
                 </Combobox>
             </div>
             <Seperator/>
