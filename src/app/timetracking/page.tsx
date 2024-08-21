@@ -2,8 +2,8 @@
 
 import React, {useCallback, useMemo, useRef, useState} from "react";
 import {Button} from "@marraph/daisy/components/button/Button";
-import {AlarmClockPlus, BellOff, ChevronLeft, ChevronRight, TreePalm} from "lucide-react";
-import {DatePicker, DatepickerRef} from "@marraph/daisy/components/datepicker/DatePicker";
+import {AlarmClockPlus, ChevronLeft, ChevronRight} from "lucide-react";
+import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {CreateTimeEntryDialog} from "@/components/dialogs/timetracking/CreateTimeEntryDialog";
 import {TimetrackTable} from "@/components/views/TimetrackTable";
 import {useUser} from "@/context/UserContext";
@@ -16,7 +16,6 @@ import {useHotkeys} from "react-hotkeys-hook";
 import {EntryPlaceholder} from "@/components/placeholder/EntryPlaceholder";
 
 export default function Timetracking() {
-    const datepickerRef = useRef<DatepickerRef>(null);
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
     
@@ -42,12 +41,10 @@ export default function Timetracking() {
 
     const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());
-        datepickerRef.current?.setValue(moment(day).subtract(1, 'days').toDate());
     }, [day]);
 
     const handleDayAfter = useCallback(() => {
         setDay(moment(day).add(1, 'days').toDate());
-        datepickerRef.current?.setValue(moment(day).add(1, 'days').toDate());
     }, [day]);
 
     if (!user) return null;
@@ -120,7 +117,6 @@ export default function Timetracking() {
                                         size={"medium"}
                                         className={"min-w-56"}
                                         preSelectedValue={day}
-                                        ref={datepickerRef}
                                         closeButton={false}
                                         onValueChange={(day) => day ? setDay(day) : setDay(new Date())}
                                         dayFormat={"long"}

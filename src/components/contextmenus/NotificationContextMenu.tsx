@@ -2,12 +2,12 @@
 
 import React, {useState} from "react";
 import {useUser} from "@/context/UserContext";
-import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Notification} from "@/components/Notification";
 import {Bell} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {CustomScroll} from "react-custom-scroll";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 interface ContextProps extends React.HTMLAttributes<HTMLDivElement> {
     notifications: { sender: string, task: string, date: Date, type: string}[];

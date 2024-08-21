@@ -3,7 +3,6 @@
 import React, {useRef, useState} from "react";
 import {Briefcase, ChevronsUpDown, LogOut, Settings} from "lucide-react";
 import {cn} from "@/utils/cn";
-import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
 import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
 import {useUser} from "@/context/UserContext";
@@ -11,6 +10,7 @@ import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {LogOutDialog} from "@/components/dialogs/LogOutDialog";
 import {useRouter} from "next/navigation";
+import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 const path = "/image.png";
 

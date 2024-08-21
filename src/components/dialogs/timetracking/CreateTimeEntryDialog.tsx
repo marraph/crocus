@@ -1,20 +1,20 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {AlarmClockPlus, BookCopy, ClipboardList, Clock2, Clock8} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import {Project, Task, TimeEntry} from "@/types/types";
-import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {createTimeEntry} from "@/service/hooks/timeentryHook";
 import {mutateRef} from "@/utils/mutateRef";
 import {updateTask} from "@/service/hooks/taskHook";
-import moment, {duration} from "moment";
+import moment from "moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useToast} from "griller/src/component/toaster";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 
 type CreateProps = Pick<TimeEntry, "comment" | "project" | "task" | "startDate" | "endDate">;
 
@@ -126,31 +126,33 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
     }, [user, values.comment, values.project, values.task, values.startDate, values.endDate, handleCloseClick, addToast, getDuration]);
 
     const projectSelect = useMemo(() => (
-        <SearchSelect
+        <Combobox
             buttonTitle={"Project"}
             icon={<BookCopy size={16} />}
             size={"medium"}
+            searchField={true}
             getItemTitle={(item) => (item as Project).name}
             onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, project: value as Project || null }))}
         >
             {projects?.map((project) =>
-                <SearchSelectItem key={project.id} title={project.name} value={project}/>
+                <ComboboxItem key={project.id} title={project.name} value={project}/>
             )}
-        </SearchSelect>
+        </Combobox>
     ), [projects]);
 
     const taskSelect = useMemo(() => (
-        <SearchSelect
+        <Combobox
             buttonTitle={"Task"}
             icon={<ClipboardList size={16} />}
             size={"medium"}
+            searchField={true}
             getItemTitle={(item) => (item as Task).name}
             onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, task: value as Task || null }))}
         >
             {tasks.map((task) =>
-                <SearchSelectItem key={task.id} title={task.name} value={task}/>
+                <ComboboxItem key={task.id} title={task.name} value={task}/>
             )}
-        </SearchSelect>
+        </Combobox>
     ), [tasks]);
 
     const handleDateChange = useCallback((date: Date | null) => {
@@ -198,30 +200,32 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
                         className={"z-40"}
                         onValueChange={handleDateChange}
                     />
-                    <SearchSelect
+                    <Combobox
                         buttonTitle={"From"}
                         preSelectedValue={moment(values.startDate).format('HH:mm')}
                         icon={<Clock2 size={16}/>}
                         size={"medium"}
+                        searchField={true}
                         getItemTitle={(item) => item as string}
                         onValueChange={(value) => handleTimeChange('startDate', value as string)}
                     >
                         {times.map((time) =>
-                            <SearchSelectItem key={time} title={time} value={time}/>
+                            <ComboboxItem key={time} title={time} value={time}/>
                         )}
-                    </SearchSelect>
-                    <SearchSelect
+                    </Combobox>
+                    <Combobox
                         buttonTitle={"To"}
                         preSelectedValue={moment(values.endDate).format('HH:mm')}
                         icon={<Clock8 size={16}/>}
                         size={"medium"}
+                        searchField={true}
                         getItemTitle={(item) => item as string}
                         onValueChange={(value) => handleTimeChange('endDate', value as string)}
                     >
                         {times.map((time) =>
-                            <SearchSelectItem key={time} title={time} value={time}/>
+                            <ComboboxItem key={time} title={time} value={time}/>
                         )}
-                    </SearchSelect>
+                    </Combobox>
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Create"}

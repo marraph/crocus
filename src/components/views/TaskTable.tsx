@@ -25,7 +25,7 @@ import {getSortedTaskTable, SortState} from "@/utils/sort";
 import moment from "moment";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useContextMenu} from "@/hooks/useContextMenu";
-import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
+import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 interface TaskProps {
     taskElements: TaskElement[];

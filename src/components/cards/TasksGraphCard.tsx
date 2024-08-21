@@ -30,8 +30,8 @@ export const TasksGraphCard = () => {
     }, [selectedRange]);
 
     return (
-        <div className={"flex-grow h-80 flex flex-col rounded-lg border border-zinc-300 dark:border-edge mx-4 mb-4"}>
-            <div className={"flex flex-row items-center justify-between p-4 bg-zinc-200 dark:bg-dark rounded-lg"}>
+        <div className={"flex-grow h-80 flex flex-col rounded-lg border border-zinc-300 dark:border-edge mb-4"}>
+            <div className={"flex flex-row items-center justify-between p-4 bg-zinc-200 dark:bg-dark rounded-t-lg"}>
                 <span>Task's completed</span>
                 <Combobox buttonTitle={"Select a range"}
                           preSelectedValue={selectedRange}

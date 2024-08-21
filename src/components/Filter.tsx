@@ -10,7 +10,6 @@ import React, {
     useMemo,
     useState
 } from "react";
-import {ContextMenu, ContextMenuContainer, ContextMenuItem} from "@marraph/daisy/components/contextmenu/ContextMenu";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {
     Box,
@@ -18,19 +17,19 @@ import {
     CircleAlert,
     LineChart,
     ListFilter,
-    Search, SignalHigh,
+    Search,
+    SignalHigh,
     SignalLow,
     SignalMedium,
     Tag,
     Users
 } from "lucide-react";
-import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {TaskElement} from "@/types/types";
 import {cn} from "@/utils/cn";
 import {CustomScroll} from "react-custom-scroll";
-import {Input} from "@marraph/daisy/components/input/Input";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 type FilterItem = {
     name: string;

@@ -14,10 +14,10 @@ import {
     Timer
 } from "lucide-react";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {useOutsideClick} from "@marraph/daisy/utils/clickOutside";
 import {Shortcut} from "@marraph/daisy/components/shortcut/Shortcut";
 import {Seperator} from "@marraph/daisy/components/seperator/Seperator";
 import {mutateRef} from "@/utils/mutateRef";
+import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 
 export const SearchDialog = forwardRef<DialogRef>(({}, ref) => {

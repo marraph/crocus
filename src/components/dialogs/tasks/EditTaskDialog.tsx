@@ -100,6 +100,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             buttonTitle={"Team"}
             label={"Team"}
             size={"medium"}
+            searchField={true}
             icon={<Users size={16} className={"mr-2"}/>}
             preSelectedValue={values.team}
             getItemTitle={(item) => (item as Team).name}
@@ -123,6 +124,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             buttonTitle={"Project"}
             label={"Project"}
             size={"medium"}
+            searchField={true}
             icon={<BookCopy size={16} className={"mr-2"} />}
             preSelectedValue={values.project}
             getItemTitle={(item) => (item as Project).name}
@@ -139,6 +141,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             buttonTitle={"Topic"}
             label={"Topic"}
             size={"medium"}
+            searchField={true}
             icon={<Tag size={16} className={"mr-2"} />}
             preSelectedValue={values.topic}
             getItemTitle={(item) => (item as Topic).title}

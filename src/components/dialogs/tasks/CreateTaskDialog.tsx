@@ -95,18 +95,12 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
 
         handleCloseClick();
     }, [addToast, handleCloseClick, values.deadline, values.description, values.duration, values.priority, values.project, values.status, values.name, values.topic]);
-
-    const handleNumberInput = useCallback((e: React.KeyboardEvent) => {
-        if (!/\d/.test(e.key) && e.key !== 'Backspace') {
-            e.preventDefault();
-        }
-    }, []);
-    
     
     const teamCombobox = useMemo(() => (
         <Combobox 
             buttonTitle={"Team"}
             size={"small"}
+            searchField={true}
             icon={<Users size={12} className={"mr-1"} />}
             getItemTitle={(item) => (item as Team).name}
             onValueChange={(value) => {
@@ -128,6 +122,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
         <Combobox
             buttonTitle={"Project"}
             size={"small"}
+            searchField={true}
             icon={<BookCopy size={12} className={"mr-1"} />}
             getItemTitle={(item) => (item as Project).name}
             onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, project: value as Project || null}))}
@@ -142,6 +137,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
         <Combobox
             buttonTitle={"Topic"}
             size={"small"}
+            searchField={true}
             icon={<Tag size={12} className={"mr-1"} />}
             getItemTitle={(item) => (item as Topic).title}
             onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, topic: value as Topic || null }))}

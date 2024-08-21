@@ -1,19 +1,19 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {forwardRef, useCallback, useEffect, useMemo, useState} from "react";
 import {BookCopy, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Priority, Project, State, Task, TimeEntry} from "@/types/types";
+import {Project, Task, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {mutateRef} from "@/utils/mutateRef";
-import {SearchSelect, SearchSelectItem} from "@marraph/daisy/components/searchselect/SearchSelect";
-import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject, getTopicItem} from "@/utils/getTypes";
+import {getAllProjects, getAllTasks, getProjectFromTask, getTasksFromProject} from "@/utils/getTypes";
 import {updateTimEntry} from "@/service/hooks/timeentryHook";
 import moment from "moment/moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useToast} from "griller/src/component/toaster";
 import {updateTask} from "@/service/hooks/taskHook";
+import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 
 type InitialValues = {
     comment: string,
@@ -140,33 +140,35 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
     }, []);
 
     const projectSelect = useMemo(() => (
-        <SearchSelect buttonTitle={"Project"}
-                      label={"Project"}
-                      preSelectedValue={values?.project?.name}
-                      icon={<BookCopy size={16}/>}
-                      size={"medium"}
-                      getItemTitle={(item) => (item as Project).name}
-                      onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, project: value as Project || null }))}
+        <Combobox buttonTitle={"Project"}
+                  label={"Project"}
+                  preSelectedValue={values?.project?.name}
+                  icon={<BookCopy size={16}/>}
+                  size={"medium"}
+                  searchField={true}
+                  getItemTitle={(item) => (item as Project).name}
+                  onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, project: value as Project || null }))}
         >
             {projects.map((project) => ( project &&
-                <SearchSelectItem key={project.id} title={project.name} value={project}/>
+                <ComboboxItem key={project.id} title={project.name} value={project}/>
             ))}
-        </SearchSelect>
+        </Combobox>
     ), [projects, values?.project?.name]);
 
     const taskSelect = useMemo(() => (
-        <SearchSelect buttonTitle={"Task"}
-                      label={"Task"}
-                      preSelectedValue={values.task?.name}
-                      icon={<ClipboardList size={16}/>}
-                      size={"medium"}
-                      getItemTitle={(item) => (item as Task).name}
-                      onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, task: value as Task || null }))}
+        <Combobox buttonTitle={"Task"}
+                  label={"Task"}
+                  preSelectedValue={values.task?.name}
+                  icon={<ClipboardList size={16}/>}
+                  size={"medium"}
+                  searchField={true}
+                  getItemTitle={(item) => (item as Task).name}
+                  onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, task: value as Task || null }))}
         >
             {tasks.map((task) => (
-                <SearchSelectItem key={task.id} title={task.name} value={task}/>
+                <ComboboxItem key={task.id} title={task.name} value={task}/>
             ))}
-        </SearchSelect>
+        </Combobox>
     ), [tasks, values.task?.name]);
 
     if (!dialogRef || user === undefined) return null;
@@ -199,30 +201,32 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                                 className={"z-40"}
                                 onValueChange={handleDateChange}
                     />
-                    <SearchSelect buttonTitle={"From"}
-                                  preSelectedValue={moment(values.startDate).format('HH:mm')}
-                                  icon={<Clock2 size={16}/>}
-                                  label={"Date From"}
-                                  size={"medium"}
-                                  getItemTitle={(item) => item as string}
-                                  onValueChange={(value) => handleTimeChange('startDate', value as string)}
+                    <Combobox buttonTitle={"From"}
+                              preSelectedValue={moment(values.startDate).format('HH:mm')}
+                              icon={<Clock2 size={16}/>}
+                              label={"Date From"}
+                              size={"medium"}
+                              searchField={true}
+                              getItemTitle={(item) => item as string}
+                              onValueChange={(value) => handleTimeChange('startDate', value as string)}
                     >
                         {times.map((time) => (
-                            <SearchSelectItem key={time} title={time} value={time}/>
+                            <ComboboxItem key={time} title={time} value={time}/>
                         ))}
-                    </SearchSelect>
-                    <SearchSelect buttonTitle={"To"}
-                                  preSelectedValue={moment(values.endDate).format('HH:mm')}
-                                  icon={<Clock8 size={16}/>}
-                                  label={"Date To"}
-                                  size={"medium"}
-                                  getItemTitle={(item) => item as string}
-                                  onValueChange={(value) => handleTimeChange('endDate', value as string)}
+                    </Combobox>
+                    <Combobox buttonTitle={"To"}
+                              preSelectedValue={moment(values.endDate).format('HH:mm')}
+                              icon={<Clock8 size={16}/>}
+                              label={"Date To"}
+                              size={"medium"}
+                              searchField={true}
+                              getItemTitle={(item) => item as string}
+                              onValueChange={(value) => handleTimeChange('endDate', value as string)}
                     >
                         {times.map((time) => (
-                            <SearchSelectItem key={time} title={time} value={time}/>
+                            <ComboboxItem key={time} title={time} value={time}/>
                         ))}
-                    </SearchSelect>
+                    </Combobox>
                 </div>
 
             </DialogContent>
