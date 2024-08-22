@@ -1,4 +1,4 @@
-import {team} from "@/schema";
+import {members, team} from "@/schema";
 import {createEntry, deleteEntity, Entity, NewEntity, queryEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
 type Team = Entity<typeof team>
@@ -6,7 +6,11 @@ type NewTeam = NewEntity<typeof team>
 type UpdateTeam = UpdateEntity<typeof team>
 
 const createTeam = async (newTeam: NewTeam) => createEntry(team, newTeam)
-const deleteTeam = async (id: number) => deleteEntity(team, id, team.id)
+
+const deleteTeam = async (id: number) => {
+    await deleteEntity(members, id, members.teamId)
+    return await deleteEntity(team, id, team.id)
+}
 
 const updateTeam = async (
     id: number,
