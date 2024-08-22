@@ -131,7 +131,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
         <div className={"relative flex flex-col space-y-10"} ref={menuRef}>
             <div className={"flex flex-row space-x-2 items-center"}>
                 <Button text={title}
-                        icon={<ListFilter size={16} className={"mr-2"}/>}
+                        icon={<ListFilter size={16}/>}
                         onClick={() => {
                             setMenuOpen(!menuOpen);
                             setSubMenuOpen(null);

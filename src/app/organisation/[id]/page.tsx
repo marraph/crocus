@@ -28,7 +28,7 @@ export default function Page() {
                     <span className={"text-xl font-medium"}>Acme Inc.</span>
                     <Button text={"Settings"}
                             theme={"primary"}
-                            icon={<Settings size={20} className={"mr-2"}/>}
+                            icon={<Settings size={20}/>}
                     />
                 </div>
 

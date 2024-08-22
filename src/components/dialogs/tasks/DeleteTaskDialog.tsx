@@ -10,11 +10,11 @@ import {TaskElement} from "@/context/TaskContext";
 import {deleteTask} from "@/action/task";
 
 export const DeleteTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
-
     const dialogRef = mutateRef(ref);
     const { user } = useUser();
     const {addToast} = useToast();
 
+    if (!user || !dialogRef) return null;
 
     const handleDeleteClick = useCallback(async () => {
         await deleteTask(taskElement.id);
@@ -27,8 +27,6 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement
 
         onClose && onClose();
     }, [addToast, onClose, taskElement.id]);
-
-    if (!dialogRef || !user) return null;
 
     return (
         <Dialog width={600}

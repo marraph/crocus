@@ -80,7 +80,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                         </div>
                     }
 
-                    <ChevronsUpDown className={cn("m-4 text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white")}></ChevronsUpDown>
+                    <ChevronsUpDown className={cn("m-4 text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white")}/>
                 </div>
             </div>
         </>

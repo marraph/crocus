@@ -42,6 +42,8 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     const { actions } = useTasks();
     const { addToast } = useToast();
 
+    if (!user || !dialogRef) return null;
+
     const statuses = useMemo(() => ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"], []);
     const priorities = useMemo(() => ["LOW", "MEDIUM", "HIGH"], []);
 
@@ -185,8 +187,6 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             ))}
         </Combobox>
     ), [priorities]);
-
-    if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={800}

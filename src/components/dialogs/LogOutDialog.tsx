@@ -10,7 +10,7 @@ import {useToast} from "griller/src/component/toaster";
 
 export const LogOutDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const { user } = useUser();
 
     const handleLogOutClick = useCallback(() => {
         dialogRef?.current?.close();

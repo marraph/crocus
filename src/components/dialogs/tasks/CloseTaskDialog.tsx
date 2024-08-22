@@ -14,6 +14,8 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
     const { actions } = useTasks();
     const { addToast } = useToast();
 
+    if (!user || !dialogRef) return null;
+
     const handleCloseTaskClick = useCallback(async () => {
         const result = await actions.updateTask(taskElement.id, {
             ...taskElement,
@@ -39,7 +41,6 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
         onClose && onClose();
     }, [actions, addToast, onClose, taskElement, user.email, user.id, user.name]);
 
-    if (!dialogRef || !user) return null;
 
     return (
         <Dialog width={600}

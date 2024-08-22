@@ -101,7 +101,7 @@ export default function Dashboard() {
                         <Button text={"Open"}
                                 className={"m-1 font-normal bg-zinc-200 dark:bg-dark-light hover:bg-zinc-200 dark:hover:bg-dark border-none"}
                                 onClick={() => router.push("/tasks")}
-                                icon={<ExternalLink size={16} className={"mr-2"}/>}
+                                icon={<ExternalLink size={16}/>}
                                 onMouseEnter={(e) => {
                                     addTooltip({
                                         message: "Open full view",
