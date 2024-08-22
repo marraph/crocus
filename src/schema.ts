@@ -101,6 +101,15 @@ export const entry = pgTable("entries", {
     end: timestamp("end")
 })
 
+export const members = pgTable('members', {
+    userId: integer('user_id')
+        .notNull()
+        .references(() => user.id),
+    teamId: integer('team_id')
+        .notNull()
+        .references(() => team.id)
+})
+
 /*
     Relations
  */
