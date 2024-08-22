@@ -128,13 +128,13 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                         />
 
                                     }
-                                    {taskElement.topic &&
+                                    {taskElement.topicItem &&
                                         <TopicBadge
-                                            title={taskElement.topic.title}
+                                            title={taskElement.topicItem.name}
                                             color={"error"}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Topic: " + taskElement.topic?.title,
+                                                    message: "Topic: " + taskElement.topicItem?.name,
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
@@ -161,7 +161,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 {taskElement.name}
                             </TableCell>
                             <TableCell>
-                                <StatusBadge title={taskElement.status?.toString()}/>
+                                <StatusBadge title={taskElement.state?.toString()}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
                                 {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}

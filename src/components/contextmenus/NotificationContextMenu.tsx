@@ -16,7 +16,7 @@ interface ContextProps extends React.HTMLAttributes<HTMLDivElement> {
 export const NotificationContextMenu = React.forwardRef<HTMLDivElement, ContextProps>(({notifications, className, ...props}, ref) => {
     const [showMenu, setShowMenu] = useState(false);
     const {addTooltip, removeTooltip} = useTooltip();
-    const {data, isLoading, error} = useUser();
+    const { user } = useUser();
 
     const menuRef = useOutsideClick(() => {
         setShowMenu(false);

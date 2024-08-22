@@ -1,4 +1,4 @@
-import {TaskElement} from "@/types/types";
+import {TaskElement} from "@/context/TaskContext";
 
 export type SortOrder = "asc" | "desc";
 export type SortState = { key: string; order: SortOrder; };

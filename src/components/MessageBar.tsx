@@ -11,7 +11,7 @@ export const MessageBar: React.FC<MessageBarProps> = ({ className, ...props }) =
     const [message, setMessage] = useState<string>("");
     const [isClicked, setIsClicked] = useState(false);
     const [valid, setValid] = useState<boolean>(false);
-    const { data:user, isLoading:userLoading, error:userError } = useUser();
+    const { user } = useUser();
 
     useEffect(() => {
         const timer = setTimeout(() => setIsClicked(false), 2000);

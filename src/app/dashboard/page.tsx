@@ -3,37 +3,47 @@
 import React, {useCallback, useMemo} from "react";
 import {ExternalLink, Moon, SunMedium} from "lucide-react";
 import {useUser} from "@/context/UserContext";
-import {getDashboardTasks} from "@/utils/getTypes";
 import {StatusBadge} from "@/components/badges/StatusBadge";
 import {ProfileBadge} from "@/components/badges/ProfileBadge";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {useRouter} from "next/navigation";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
-import {CustomScroll} from "react-custom-scroll";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
-import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {TaskElement, useTasks} from "@/context/TaskContext";
 
 export default function Dashboard() {
     const router = useRouter();
+    const { user } = useUser();
+    const { tasks } = useTasks();
     const {addTooltip, removeTooltip} = useTooltip();
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
 
-    const parseDate = useCallback((date: Date): string => {
-        const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString('en-US', options);
-    }, []);
+    const dashboardTasks = useMemo(() => {
+        let taskList: TaskElement[] = [];
+        tasks.forEach((task: TaskElement) => {
+            if (task.state !== "finished") {
+                taskList.push(task);
+            }
+        });
+        return taskList.filter((task: TaskElement) => task.state !== "finished")
+            .sort((a: TaskElement, b: TaskElement) => {
+                const priorityOrder = {LOW: 1, MEDIUM: 2, HIGH: 3};
+                const aPriority = a.priority ? priorityOrder[a.priority as keyof typeof priorityOrder] : 0;
+                const bPriority = b.priority ? priorityOrder[b.priority as keyof typeof priorityOrder] : 0;
+                return bPriority - aPriority;
+            });
+    }, [tasks]);
 
-    const getDayText = useCallback((): string => {
-        let date = new Date();
-        if (date.getHours() > 5 && date.getHours() < 11)  return "Good morning, ";
-        if (date.getHours() > 11 && date.getHours() < 14)  return "Good noon, ";
-        if (date.getHours() > 14 && date.getHours() < 18) return "Good afternoon, ";
-        if (date.getHours() > 18 && date.getHours() < 22) return "Good evening, ";
-        if (date.getHours() > 22 && date.getHours() < 5) return "Good night, ";
-        else return "Welcome back, "
-    }, []);
+    const greeting = useMemo(() => {
+            const hour = new Date().getHours();
+            if (hour > 5 && hour < 11) return "Good morning";
+            if (hour >= 11 && hour < 14) return "Good noon";
+            if (hour >= 14 && hour < 18) return "Good afternoon";
+            if (hour >= 18 && hour < 22) return "Good evening";
+            return "Good night";
+        }, []);
 
     const timeStats = useMemo(() => [
         { name: "40 Hours", description: "worked this week" },
@@ -42,8 +52,12 @@ export default function Dashboard() {
         { name: "20%", description: "spend on fixing bugs" },
     ], []);
 
+    const parseDate = useCallback((date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}, []);
+    
     if (!user) return null;
-    const { tasks, count } = getDashboardTasks(user);
 
     return (
         <div className={"h-screen w-screen flex flex-col"}>
@@ -52,7 +66,7 @@ export default function Dashboard() {
             <div className={"flex-grow flex flex-col p-4 overflow-hidden"}>
                 <div className={"flex flex-row justify-between items-center"}>
                     <div className={"pt-4"}>
-                        <span className={"text-xl"}>{getDayText() + user?.name.split(' ')[0]}</span>
+                        <span className={"text-xl"}>{greeting + user.name.split(' ')[0]}</span>
                         <div className={"flex flex-row items-center space-x-2"}>
                             {new Date().getHours() < 18 && <SunMedium size={18} color={"#bfb439"}/>}
                             {new Date().getHours() >= 18 && <Moon size={18} color={"#c9c9c9"}/>}
@@ -79,7 +93,7 @@ export default function Dashboard() {
                     <div className={"flex flex-row justify-between items-center bg-zinc-200 dark:bg-dark-light border-y border-zinc-300 dark:border-edge rounded-t-lg"}>
                         <div className={"flex flex-row items-center"}>
                             <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
-                            <Badge text={count.toString() + " OPEN"}
+                            <Badge text={dashboardTasks.length.toString() + " OPEN"}
                                    size={"small"}
                                    className={"rounded-md bg-zinc-700 dark:bg-white-dark text-zinc-200 dark:text-dark py-0.5 px-1.5"}>
                             </Badge>
@@ -121,7 +135,7 @@ export default function Dashboard() {
                                     <span className={"text-zinc-500 dark:text-gray text-sm group-hover:text-zinc-800 dark:group-hover:text-white"}>{task.name}</span>
                                 </div>
                                 <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                                    {task.status && <StatusBadge title={task.status?.toString()}/>}
+                                    {task.state && <StatusBadge title={task.state?.toString()}/>}
                                     {task.deadline &&
                                         <span className={"text-xs text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white"}
                                             onMouseEnter={(e) => {
