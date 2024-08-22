@@ -1,13 +1,15 @@
 "use client";
 
 import React, {createContext, ReactNode, useContext} from 'react';
-import {getUser} from "@/service/hooks/userHook";
-import {User} from "@/types/types";
+import {getUser, User} from "@/action/user";
+import {getTeamsFromUser} from "@/action/member";
+import {getOrganisationsFromUser, Organisation} from "@/action/organisation";
+import {Team} from "@/action/team";
 
 interface UserContextType {
-    data: User | undefined;
-    isLoading: boolean;
-    error: string | null;
+    user: User;
+    organisations: Organisation[];
+    teams: Team[];
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -25,11 +27,45 @@ interface UserProviderProps {
     id: number;
 }
 
-export const UserProvider: React.FC<UserProviderProps> = ({ children, id }) => {
-    const { data, isLoading, error } = getUser(id);
+export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) => {
+    const userResult = await getUser(id);
+    const organisationResult = await getOrganisationsFromUser(id);
+    const teamResult = await getTeamsFromUser(id);
+
+    if (!userResult.success)  {
+        return (
+            <div>
+                <h1>Something went wrong</h1>
+                <p>{userResult.error}</p>
+            </div>
+        );
+    }
+
+    if (!organisationResult.success)  {
+        return (
+            <div>
+                <h1>Something went wrong</h1>
+                <p>{organisationResult.error}</p>
+            </div>
+        );
+    }
+
+    if (!teamResult.success)  {
+        return (
+            <div>
+                <h1>Something went wrong</h1>
+                <p>{teamResult.error}</p>
+            </div>
+        );
+    }
 
     return (
-        <UserContext.Provider value={{data, isLoading, error}}>
+        <UserContext.Provider value={{
+            user: userResult.data,
+            organisations: organisationResult.data,
+            teams: teamResult.data
+        }}
+        >
             {children}
         </UserContext.Provider>
     );

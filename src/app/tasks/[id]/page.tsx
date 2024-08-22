@@ -6,7 +6,7 @@ import {useParams, useRouter} from "next/navigation";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {findTaskProps} from "@/utils/findTaskProps";
 import {
@@ -27,20 +27,35 @@ import {cn} from "@/utils/cn";
 import {MessageBar} from "@/components/MessageBar";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
-import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
+import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
+import {getTask, Task} from "@/action/task";
 
 export default function Page() {
     const closeRef = useRef<DialogRef>(null);
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
+    const [enabled, setEnabled] = useState(true);
     const router = useRouter();
     const id = Number(useParams().id);
     const { addTooltip, removeTooltip } = useTooltip();
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const {taskElement} = findTaskProps(user, id);
+    const { user } = useUser();
 
-    const [enabled, setEnabled] = useState(true);
+    const [task, setTask] = useState<Task | null>(null);
+
+    useEffect(() => {
+        async function fetchTask() {
+            const result = await getTask(id);
+            if (result.success) {
+                setTask(result.data);
+            } else {
+                setTask(null);
+            }
+        }
+
+        fetchTask().then();
+    }, [id]);
+
 
     useHotkeys('e', () => {
         editRef.current?.show();
@@ -55,16 +70,20 @@ export default function Page() {
         setEnabled(false);
     }, { enabled });
 
+    if (task === null) {
+        return <div>Loading Task...</div>;
+    }
+
     return (
         <>
-            <DeleteTaskDialog ref={deleteRef} taskElement={taskElement} onClose={() => setEnabled(true)}/>
-            <CloseTaskDialog ref={closeRef} taskElement={taskElement} onClose={() => setEnabled(true)}/>
-            <EditTaskDialog ref={editRef} taskElement={taskElement} onClose={() => setEnabled(true)}/>
+            <DeleteTaskDialog ref={deleteRef} taskElement={task} onClose={() => setEnabled(true)}/>
+            <CloseTaskDialog ref={closeRef} taskElement={task} onClose={() => setEnabled(true)}/>
+            <EditTaskDialog ref={editRef} taskElement={task} onClose={() => setEnabled(true)}/>
 
             <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
                 <Headbar>
                     <Breadcrumb pastText={"Tasks"}
-                                nowText={taskElement.name}
+                                nowText={task.name}
                                 onClick={() => router.push("/tasks/")}
                     />
                 </Headbar>
@@ -131,12 +150,12 @@ export default function Page() {
                         <div className={"border-l border-zinc-300 dark:border-edge w-1/4 min-h-full bg-zinc-100 dark:bg-black-light rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
                             <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                                 <div className={"w-16 text-zinc-500 dark:text-gray"}>Title</div>
-                                <span>{taskElement.name}</span>
+                                <span>{task.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <div className={"flex flex-row space-x-4 px-4 py-2 h-20"}>
                                 <div className={"w-16 text-zinc-500 dark:text-gray"}>Description</div>
-                                <span className={"flex-1 break-words"}>{taskElement.description}</span>
+                                <span className={"flex-1 break-words"}>{task.description}</span>
                             </div>
                             <Seperator className={"w-full"}/>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
@@ -144,42 +163,42 @@ export default function Page() {
                                     <Users size={16}/>
                                     <span className={"w-16"}>Team</span>
                                 </div>
-                                <span>{taskElement.team?.name}</span>
+                                <span>{task.team?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Box size={16}/>
                                     <span className={"w-16"}>Project</span>
                                 </div>
-                                <span>{taskElement.project?.name}</span>
+                                <span>{task.project?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <LineChart size={16}/>
                                     <span className={"w-16"}>Priority</span>
                                 </div>
-                                <span>{taskElement.priority}</span>
+                                <span>{task.priority}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Tag size={16}/>
                                     <span className={"w-16"}>Topic</span>
                                 </div>
-                                <span>{taskElement.topic?.title}</span>
+                                <span>{task.topic?.title}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CircleAlert size={16}/>
                                     <span className={"w-16"}>Status</span>
                                 </div>
-                                <span>{taskElement.status}</span>
+                                <span>{task.status}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CalendarDays size={16}/>
                                     <span className={"w-16"}>Deadline</span>
                                 </div>
-                                <span>{moment(taskElement.deadline?.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.deadline?.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
@@ -187,8 +206,8 @@ export default function Page() {
                                     <span className={"w-16"}>Duration</span>
                                 </div>
                                 <span>{
-                                    !taskElement.bookedDuration ? 0 : taskElement.bookedDuration?.toString()
-                                    + " / " + taskElement.duration?.toString() + " hours"}
+                                    !task.bookedDuration ? 0 : task.bookedDuration?.toString()
+                                    + " / " + task.duration?.toString() + " hours"}
                                 </span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
@@ -199,21 +218,21 @@ export default function Page() {
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Changed</div>
-                                <span>{moment(taskElement.lastModifiedDate.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.lastModifiedDate.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Changed By</div>
-                                <span>{taskElement.lastModifiedBy.name}</span>
+                                <span>{task.lastModifiedBy.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <span className={"text-xs text-zinc-400 dark:text-marcador px-4 py-2"}>CREATION</span>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Created</div>
-                                <span>{moment(taskElement.createdDate.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.createdDate.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Created By</div>
-                                <span>{taskElement.createdBy.name}</span>
+                                <span>{task.createdBy.name}</span>
                             </div>
                         </div>
                     </div>

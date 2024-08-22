@@ -27,7 +27,7 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
     const joinTeamDialogRef = useRef<DialogRef>(null);
     const { selectedItem, setSelectedItem } = useNavigation();
     const { addTooltip, removeTooltip } = useTooltip();
-    const { data:user, error:userError, isLoading:userLoading } = useUser();
+    const { user, organisations, teams } = useUser();
 
     useEffect(() => {
         if (pathSegments.includes('dashboard')) {
@@ -108,7 +108,7 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
 
                         {openTeamMenu &&
                             <div className={"ml-6 pl-4 border-l border-zinc-300 dark:border-edge border-opacity-50"}>
-                                {user.teams.map((team) => (
+                                {teams.map((team) => (
                                     <div key={team.id}
                                          className={cn("w-full text-zinc-500 dark:text-gray px-2 py-2 text-sm rounded-lg cursor-pointer truncate " +
                                              "hover:bg-zinc-200 dark:hover:bg-dark hover:text-zinc-800 dark:hover:text-white")}

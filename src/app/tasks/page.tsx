@@ -1,77 +1,62 @@
 "use client";
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {TaskTable} from "@/components/views/TaskTable";
 import {CreateTaskDialog} from "@/components/dialogs/tasks/CreateTaskDialog";
-import {Box, CircleAlert, LineChart, LoaderCircle, SquarePen, Tag, Users} from "lucide-react";
+import {CircleAlert, LineChart, LoaderCircle, SquarePen, Tag} from "lucide-react";
 import {useUser} from "@/context/UserContext";
-import {Project, Task, TaskElement, Team} from "@/types/types";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
-import {getAllProjects, getAllTopics} from "@/utils/getTypes";
+import {getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
+import {Task} from "@/action/task";
+import {TaskElement, useTasks} from "@/context/TaskContext";
 
 
 export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
-    const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
+    const [taskElements, setTaskElements] = useState<Task[]>([]);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
-    const { data:user, isLoading:userLoading, error:userError } = useUser();
+
+    const { user, organisations, teams } = useUser();
+    const { tasks } = useTasks();
+
     const { addTooltip, removeTooltip } = useTooltip();
 
     useHotkeys('t', () => dialogRef.current?.show());
 
     const filterItems = useMemo(() => [
-        { name: "Team", values: user?.teams?.map(team => team.name) || [], icon: <Users size={16}/> },
-        { name: "Project", values: user && getAllProjects(user).map(project => project.name) || [], icon: <Box size={16}/> },
         { name: "Topic", values:  user && getAllTopics(user).map(topic => topic.title) || [], icon: <Tag size={16}/> },
         { name: "Status", values: ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"] || [], icon: <CircleAlert size={16}/> },
         { name: "Priority", values: ["LOW", "MEDIUM", "HIGH"]  || [], icon: <LineChart size={16}/> },
     ], [user]);
-
-    const getTaskElements = useCallback((): TaskElement[] => {
-        let taskElements: TaskElement[] = [];
-        user?.teams?.forEach((team: Team) => {
-            team.projects?.forEach((project: Project) => {
-                project.tasks?.forEach((task: Task) => {
-                    if (task.isArchived) return;
-                    taskElements.push({
-                        ...task,
-                        team: team,
-                        project: project
-                    });
-                });
-            });
-        });
-        return taskElements;
-    }, [user]);
 
     useEffect(() => {
         setFilters(filterRef.current?.getFilters() || []);
     }, [update]);
 
     useEffect(() => {
-        let elements = getTaskElements();
+        let elements = tasks;
         if (filters.length > 0) {
-            elements = elements.filter(element => {
+            elements = tasks.filter(task => {
                 return filters.every(filter => {
                     switch (filter.name) {
                         case 'Team' as keyof TaskElement:
-                            return element.team?.name === filter.value;
+                            return task.team?.name === filter.value;
                         case 'Project' as keyof TaskElement:
-                            return element.project?.name === filter.value;
+                            return task.project?.name === filter.value;
                         case 'Topic' as keyof TaskElement:
-                            return element.topic?.title === filter.value;
+                            return task.topic?.title === filter.value;
                         case 'Status' as keyof TaskElement:
-                            return element.status === filter.value;
+                            return task.state === filter.value;
                         case 'Priority' as keyof TaskElement:
-                            return element.priority === filter.value;
+                            return task.priority === filter.value;
                         default:
                             return false;
                     }
@@ -80,7 +65,7 @@ export default function Tasks() {
         }
 
         setTaskElements(elements);
-    }, [filters, getTaskElements]);
+    }, [filters, tasks]);
 
     if (!user) return null;
 

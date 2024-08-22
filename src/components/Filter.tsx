@@ -25,11 +25,11 @@ import {
     Users
 } from "lucide-react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {TaskElement} from "@/types/types";
 import {cn} from "@/utils/cn";
 import {CustomScroll} from "react-custom-scroll";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
+import {TaskElement} from "@/context/TaskContext";
 
 type FilterItem = {
     name: string;

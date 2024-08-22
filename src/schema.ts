@@ -55,6 +55,7 @@ export const task = pgTable('tasks', {
     duration: doublePrecision('duration').default(0),
     bookedDuration: doublePrecision('booked_duration').default(0),
     deadline: timestamp('deadline'),
+    topic: integer('topic_id'),
     state: state('state').default('planing'),
     priority: priority('priority').default('low'),
     projectId: integer("project_id")
