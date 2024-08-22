@@ -6,9 +6,8 @@ import {useParams, useRouter} from "next/navigation";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useUser} from "@/context/UserContext";
-import {findTaskProps} from "@/utils/findTaskProps";
 import {
     Box,
     CalendarDays,
@@ -29,33 +28,18 @@ import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {getTask, Task} from "@/action/task";
+import {TaskElement, useTasks} from "@/context/TaskContext";
 
 export default function Page() {
     const closeRef = useRef<DialogRef>(null);
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
     const [enabled, setEnabled] = useState(true);
+    const [task, setTask] = useState<TaskElement | null>(null);
     const router = useRouter();
     const id = Number(useParams().id);
+    const { tasks, loading, error } = useTasks();
     const { addTooltip, removeTooltip } = useTooltip();
-    const { user } = useUser();
-
-    const [task, setTask] = useState<Task | null>(null);
-
-    useEffect(() => {
-        async function fetchTask() {
-            const result = await getTask(id);
-            if (result.success) {
-                setTask(result.data);
-            } else {
-                setTask(null);
-            }
-        }
-
-        fetchTask().then();
-    }, [id]);
-
 
     useHotkeys('e', () => {
         editRef.current?.show();
@@ -70,7 +54,11 @@ export default function Page() {
         setEnabled(false);
     }, { enabled });
 
-    if (task === null) {
+    useEffect(() => {
+        setTask(tasks.find(task => task.id === id) || null);
+    }, [id, tasks]);
+
+    if (loading || !task) {
         return <div>Loading Task...</div>;
     }
 
@@ -184,14 +172,14 @@ export default function Page() {
                                     <Tag size={16}/>
                                     <span className={"w-16"}>Topic</span>
                                 </div>
-                                <span>{task.topic?.title}</span>
+                                <span>{task.topicItem?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CircleAlert size={16}/>
                                     <span className={"w-16"}>Status</span>
                                 </div>
-                                <span>{task.status}</span>
+                                <span>{task.state}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>

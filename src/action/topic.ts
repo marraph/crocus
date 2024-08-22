@@ -1,9 +1,20 @@
 import {topic} from "@/schema";
-import {createEntry, deleteEntity, Entity, NewEntity, queryEntity, UpdateEntity, updateEntry} from "@/action/actions";
+import {
+    createEntry,
+    deleteEntity,
+    Entity,
+    getEntity,
+    NewEntity,
+    queryEntity,
+    UpdateEntity,
+    updateEntry
+} from "@/action/actions";
 
 type Topic = Entity<typeof topic>
 type NewTopic = NewEntity<typeof topic>
 type UpdateTopic = UpdateEntity<typeof topic>
+
+const getTopic = async (id: number) => getEntity(topic, id, topic.id)
 
 const createTopic = async (newTopic: NewTopic) => createEntry(topic, newTopic)
 const deleteTopic = async (id: number) => deleteEntity(topic, id, topic.id)
@@ -25,6 +36,7 @@ export type {
 }
 
 export {
+    getTopic,
     createTopic,
     deleteTopic,
     updateTopic,

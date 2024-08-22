@@ -13,19 +13,18 @@ import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {Task} from "@/action/task";
 import {TaskElement, useTasks} from "@/context/TaskContext";
 
 
 export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
-    const [taskElements, setTaskElements] = useState<Task[]>([]);
+    const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
 
     const { user, organisations, teams } = useUser();
-    const { tasks } = useTasks();
+    const { tasks, loading, error, actions } = useTasks();
 
     const { addTooltip, removeTooltip } = useTooltip();
 
@@ -52,7 +51,7 @@ export default function Tasks() {
                         case 'Project' as keyof TaskElement:
                             return task.project?.name === filter.value;
                         case 'Topic' as keyof TaskElement:
-                            return task.topic?.title === filter.value;
+                            return task.topicItem?.name === filter.value;
                         case 'Status' as keyof TaskElement:
                             return task.state === filter.value;
                         case 'Priority' as keyof TaskElement:

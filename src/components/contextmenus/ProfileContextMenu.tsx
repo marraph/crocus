@@ -10,6 +10,7 @@ import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {LogOutDialog} from "@/components/dialogs/LogOutDialog";
 import {useRouter} from "next/navigation";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
+import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/components/skeleton/Skeleton";
 
 const path = "/image.png";
 
@@ -17,7 +18,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
     const [showProfile, setShowProfile] = useState(false);
     const logoutDialogRef = useRef<DialogRef>(null);
     const router = useRouter();
-    const { user, organisations, teams } = useUser();
+    const { user, organisations, teams, loading, error, actions } = useUser();
 
     const menuRef = useOutsideClick(() => {
         setShowProfile(false);
@@ -61,13 +62,24 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                 <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-zinc-100 dark:bg-black-light " +
                     "border border-zinc-300 dark:border-edge rounded-lg hover:bg-zinc-200 dark:hover:bg-dark-light")}
                     onClick={() => setShowProfile(!showProfile)}>
-                    <div className={cn("flex flex-row items-center space-x-2")}>
-                        <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
-                        <div className={cn("flex flex-col items-start overflow-hidden")}>
-                            <span className={"text-sm truncate w-full"}>{user?.name}</span>
-                            <span className={cn("text-zinc-500 dark:text-gray text-xs truncate w-full")}>{organisations[0].name}</span>
+                    {loading.user ?
+                        <Skeleton className={"w-max"}>
+                            <SkeletonElement className={"m-2"} width={43} height={43}/>
+                            <SkeletonColumn className={"items-start space-y-2 mr-0"}>
+                                <SkeletonElement width={110} height={10}/>
+                                <SkeletonElement width={80} height={10}/>
+                            </SkeletonColumn>
+                        </Skeleton>
+                        :
+                        <div className={cn("flex flex-row items-center space-x-2")}>
+                            <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
+                            <div className={cn("flex flex-col items-start overflow-hidden")}>
+                                <span className={"text-sm truncate w-full"}>{user?.name}</span>
+                                <span className={cn("text-zinc-500 dark:text-gray text-xs truncate w-full")}>{organisations[0].name}</span>
+                            </div>
                         </div>
-                    </div>
+                    }
+
                     <ChevronsUpDown className={cn("m-4 text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white")}></ChevronsUpDown>
                 </div>
             </div>

@@ -11,13 +11,13 @@ import {Input} from "@marraph/daisy/components/input/Input";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 import {getProjectsFromTeam, Project} from "@/action/projects";
-import {TaskElement} from "@/context/TaskContext";
+import {TaskElement, useTasks} from "@/context/TaskContext";
 import {Team} from "@/action/team";
 import {getTopicsFromTeam, Topic} from "@/action/topic";
 import {Task, updateTask} from "@/action/task";
 
 
-type EditProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topic' | 'state' | 'priority' | 'deadline' | 'duration'>;
+type EditProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topicItem' | 'state' | 'priority' | 'deadline' | 'duration'>;
 
 export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
@@ -26,29 +26,33 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
         description: taskElement.description ?? null,
         team: taskElement.team ?? null,
         project: taskElement.project ?? null,
-        topic: taskElement.topic ?? null,
+        topicItem: taskElement.topicItem ?? null,
         state: taskElement.state ?? null,
         priority: taskElement.priority ?? null,
         deadline: taskElement.deadline ?? null,
         duration: taskElement.duration ?? null,
     });
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [topics, setTopics] = useState<Topic[]>([]);
     const [valid, setValid] = useState(true);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const { user, teams } = useUser();
+    const { actions } = useTasks();
     const { addToast } = useToast();
     
     const initialValues = values;
     const statuses = useMemo(() => ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"], []);
     const priorities = useMemo(() => ["LOW", "MEDIUM", "HIGH"], []);
-    const projects = useMemo(async () => {
-        if (!values.team) return [];
-        const result = await getProjectsFromTeam(values.team.id);
-        if (result.success) return result.data;
-    }, [values.team]);
-    const topics = useMemo(async () => {
-        if (!values.team) return [];
-        const result = await getTopicsFromTeam(values.team.id);
-        if (result.success) return result.data;
+
+    useEffect(() => {
+        if (values.team) {
+            getProjectsFromTeam(values.team.id).then(result => {
+                if (result.success) setProjects(result.data);
+            });
+            getTopicsFromTeam(values.team.id).then(result => {
+                if (result.success) setTopics(result.data);
+            });
+        }
     }, [values.team]);
 
     const validateInput = useCallback(() => {
@@ -73,28 +77,37 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
     }, [initialValues, onClose, taskElement.team]);
 
     const handleEditClick = useCallback(async () => {
-        if (!user || !taskElement) return
-        const task: Omit<Task, 'id' | 'isArchived' | 'bookedDuration' | 'createdBy' | 'createdDate'> = {
+        if (!user || !taskElement) return;
+        
+        const result = await actions.updateTask(taskElement.id, {
+            ...taskElement,
             name: values.name,
             description: values.description,
-            topic: values.topic ?? null,
+            topic: values.topicItem?.id ?? null,
             state: values.state as State ?? null,
             priority: values.priority as Priority ?? null,
             deadline: values.deadline ?? null,
             duration: Number(values.duration) ?? null,
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
             lastModifiedDate: new Date(),
-        };
-        await updateTask(taskElement.id, {...taskElement, ...task});
-
-        addToast({
-            title: "Task saved",
-            secondTitle: "You successfully saved your task changes.",
-            icon: <Save/>
         });
 
+        if (result.success) {
+            addToast({
+                title: "Task saved",
+                secondTitle: "You successfully saved your task changes.",
+                icon: <Save/>
+            });
+        } else {
+            addToast({
+                title: "Task not saved",
+                secondTitle: "An error occurred while saving your task changes.",
+                icon: <CircleAlert/>
+            });
+        }
+
         handleCloseClick();
-    }, [user, taskElement, values.name, values.description, values.topic, values.state, values.priority, values.deadline, values.duration, addToast, handleCloseClick]);
+    }, [user, taskElement, values, actions, handleCloseClick, addToast]);
 
     const teamCombobox = useMemo(() => (
         <Combobox
@@ -144,15 +157,15 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             size={"medium"}
             searchField={true}
             icon={<Tag size={16} className={"mr-2"} />}
-            preSelectedValue={values.topic}
-            getItemTitle={(item) => (item as Topic).title}
-            onValueChange={(value) => setValues((prevValues) => ({...prevValues, topic: value as Topic || null }))}
+            preSelectedValue={values.topicItem}
+            getItemTitle={(item) => (item as Topic).name}
+            onValueChange={(value) => setValues((prevValues) => ({...prevValues, topicItem: value as Topic || null }))}
         >
             {topics.map((topic) => (
-                <ComboboxItem key={topic.title} title={topic.title} value={topic}/>
+                <ComboboxItem key={topic.name} title={topic.name} value={topic}/>
             ))}
         </Combobox>
-    ), [values.team, values.topic, topics]);
+    ), [values.team, values.topicItem, topics]);
 
     const statusCombobox = useMemo(() => (
         <Combobox

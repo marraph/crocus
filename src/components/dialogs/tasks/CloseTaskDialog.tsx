@@ -1,36 +1,43 @@
 "use client";
 
-import React, {forwardRef, useCallback, useState} from "react";
-import {CheckCheck} from "lucide-react";
+import React, {forwardRef, useCallback} from "react";
+import {CheckCheck, CircleX} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {TaskElement} from "@/context/TaskContext";
-import {Task, updateTask} from "@/action/task";
+import {TaskElement, useTasks} from "@/context/TaskContext";
 
 export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const { user } = useUser();
-    const {addToast} = useToast();
+    const { actions } = useTasks();
+    const { addToast } = useToast();
 
     const handleCloseTaskClick = useCallback(async () => {
-        const updatedTask: Partial<Task> = {
+        const result = await actions.updateTask(taskElement.id, {
+            ...taskElement,
             isArchived: true,
             lastModifiedBy: {id: user.id, name: user.name, email: user.email},
             lastModifiedDate: new Date()
-        };
-
-        await updateTask(taskElement.id, {...taskElement, ...updatedTask});
-
-        addToast({
-            title: "Task closed successfully!",
-            secondTitle: "You can no longer interact with this task.",
-            icon: <CheckCheck/>
         });
 
+        if (result.success) {
+            addToast({
+                title: "Task closed successfully!",
+                secondTitle: "You can no longer interact with this task.",
+                icon: <CheckCheck/>
+            });
+        } else {
+            addToast({
+                title: "Failed to close task.",
+                secondTitle: result.error,
+                icon: <CircleX />
+            });
+        }
+
         onClose && onClose();
-    }, [addToast, onClose, taskElement, user]);
+    }, [actions, addToast, onClose, taskElement, user.email, user.id, user.name]);
 
     if (!dialogRef || !user) return null;
 

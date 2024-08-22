@@ -5,15 +5,19 @@ import React, {createContext, ReactNode, useContext, useEffect, useState} from "
 import {getTeamsFromUser} from "@/action/member";
 import {createTask, deleteTask, getTasksFromProject, NewTask, Task, updateTask, UpdateTask} from "@/action/task";
 import {getProject, getProjectsFromTeam, Project} from "@/action/projects";
+import {ActionResult} from "@/action/actions";
+import {getTopic, getTopicsFromTeam, Topic} from "@/action/topic";
 
 export type TaskElement = Task & {
     team: Team | null;
     project: Project | null;
+    topicItem: Topic | null;
 };
 
 interface ErrorState {
     teams?: string;
     projects?: { [teamId: number]: string };
+    topics?: { [teamId: number]: string };
     tasks?: { [projectId: number]: string };
     general?: string;
 }
@@ -24,8 +28,8 @@ interface TaskContextType {
     error: ErrorState;
 
     actions: {
-        createTask: (newTask: NewTask) => Promise<void>;
-        updateTask: (id: number, updateTask: UpdateTask) => Promise<void>;
+        createTask: (newTask: NewTask) => Promise<ActionResult<Task>>;
+        updateTask: (id: number, updateTask: UpdateTask) => Promise<ActionResult<Task>>;
         deleteTask: (id: number) => Promise<void>;
     };
 }
@@ -65,6 +69,18 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
                 }
 
                 for (const team of teamResult.data) {
+                    const topicResult = await getTopicsFromTeam(team.id);
+
+                    if (!topicResult.success) {
+                        setError(prev => ({
+                            ...prev,
+                            topics: { ...prev.topics, [team.id]: topicResult.error }
+                        }));
+                        continue;
+                    }
+
+                    const topics = topicResult.data;
+
                     const projectResult = await getProjectsFromTeam(team.id);
 
                     if (!projectResult.success) {
@@ -87,11 +103,15 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
                         }
 
                         tasks.push(
-                            ...taskResult.data.map(task => ({
-                                ...task,
-                                team,
-                                project
-                            }))
+                            ...taskResult.data.map(task => {
+                                const taskTopic = task.topic ? topics.find(t => t.id === task.topic) || null : null;
+                                return {
+                                    ...task,
+                                    team: team,
+                                    project: project,
+                                    topicItem: taskTopic
+                                };
+                            })
                         );
                     }
                 }
@@ -112,8 +132,15 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
             const result = await createTask(newTask);
             let project: Project;
             let team: Team;
+            let topicItem: Topic;
 
             if (result.success) {
+                const topicId = result.data.topic;
+                if (topicId) {
+                    const topicResult = await getTopic(topicId);
+                    if (topicResult.success) topicItem = topicResult.data;
+                }
+
                 const projectId = result.data.projectId;
                 const projectResult = await getProject(projectId);
 
@@ -126,10 +153,11 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
                         team = teamResult.data;
                     }
                 }
-                setTasks(prev => [...prev, { ...result.data, project: project, team: team }]);
+                setTasks(prev => [...prev, { ...result.data, project: project, team: team, topicItem: topicItem }]);
             } else {
                 setError(prev => ({ ...prev, tasks: result.error }));
             }
+            return result;
         },
         updateTask: async (id: number, newTask: UpdateTask) => {
             const result = await updateTask(id, newTask);
@@ -138,6 +166,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
             } else {
                 setError(prev => ({ ...prev, tasks: result.error }));
             }
+            return result;
         },
         deleteTask: async (id: number) => {
             const result = await deleteTask(id);

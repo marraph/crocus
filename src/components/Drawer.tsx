@@ -27,7 +27,7 @@ export const Drawer: React.FC<HTMLAttributes<HTMLDivElement>> = ({className, ...
     const joinTeamDialogRef = useRef<DialogRef>(null);
     const { selectedItem, setSelectedItem } = useNavigation();
     const { addTooltip, removeTooltip } = useTooltip();
-    const { user, organisations, teams } = useUser();
+    const { user, organisations, teams, loading, error, actions } = useUser();
 
     useEffect(() => {
         if (pathSegments.includes('dashboard')) {
