@@ -1,37 +1,37 @@
-import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
 import {project} from "@/schema";
-import {db} from "@/database/drizzle";
+import {createEntry, deleteEntity, Entity, NewEntity, queryEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
-export type Project = InferSelectModel<typeof project>
-export type NewProject = InferInsertModel<typeof project>
-export type UpdateProject = Partial<NewProject>
+type Project = Entity<typeof project>
+type NewProject = NewEntity<typeof project>
+type UpdateProject = UpdateEntity<typeof project>
 
-export const createProject = async (newProject: NewProject): Promise<Project> => {
-    const [createdProject] = await db
-        .insert(project)
-        .values(newProject)
-        .returning();
+const createProject = async (
+    newProject: NewProject
+) => createEntry(project, newProject)
 
-    return createdProject
+const updateProject = async (
+    id: number,
+    updateProject: UpdateProject
+) => updateEntry(project, updateProject, id, project.id)
+
+const deleteProject = async (
+    id: number
+) => deleteEntity(project, id, project.id)
+
+const getProjectsFromTeam = async (
+    teamId: number,
+    limit: number = 100
+) => queryEntity(project, teamId, project.teamId, limit)
+
+export type {
+    Project,
+    NewProject,
+    UpdateProject
 }
 
-export const updateProject = async (id: number, updateProject: UpdateProject): Promise<Project> => {
-    const [updatedProject] = await db
-        .update(project)
-        .set(updateProject)
-        .where(eq(project.id, id))
-        .returning()
-
-    return updatedProject
-}
-
-export const deleteProject = async (id: number) => {
-    await db.delete(project).where(eq(project.id, id))
-}
-
-export const getProjectsFromTeam = async (teamId: number): Promise<Project[]> => {
-    return db
-        .select()
-        .from(project)
-        .where(eq(project.teamId, teamId));
+export {
+    createProject,
+    updateProject,
+    deleteProject,
+    getProjectsFromTeam
 }

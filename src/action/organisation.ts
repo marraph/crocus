@@ -1,39 +1,36 @@
-import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
 import {organisation} from "@/schema";
-import {db} from "@/database/drizzle";
+import {createEntry, deleteEntity, Entity, getEntity, NewEntity, UpdateEntity, updateEntry} from "@/action/actions";
 
-export type Organisation = InferSelectModel<typeof organisation>
-export type NewOrganisation = InferInsertModel<typeof organisation>
-export type UpdateOrganisation = Partial<NewOrganisation>
+type Organisation = Entity<typeof organisation>
+type NewOrganisation = NewEntity<typeof organisation>
+type UpdateOrganisation = UpdateEntity<typeof organisation>
 
-export const createOrganisation = async (newOrganisation: NewOrganisation): Promise<Organisation> => {
-    const [createdOrganisation] = await db
-        .insert(organisation)
-        .values(newOrganisation)
-        .returning();
+const createOrganisation = async (
+    newOrganisation: NewOrganisation
+) => createEntry(organisation, newOrganisation)
 
-    return createdOrganisation
+const updateOrganisation = async (
+    id: number,
+    updateOrganisation: UpdateOrganisation
+) => updateEntry(organisation, updateOrganisation, id, organisation.id)
+
+const deleteOrganisation = async (
+    id: number
+) => deleteEntity(organisation, id, organisation.id)
+
+const getOrganisation = async (
+    id: number
+) => getEntity(organisation, id, organisation.id)
+
+export type {
+    Organisation,
+    NewOrganisation,
+    UpdateOrganisation
 }
 
-export const updateOrganisation = async (id: number, updateOrganisation: UpdateOrganisation): Promise<Organisation> => {
-    const [updatedOrganisation] = await db
-        .update(organisation)
-        .set(updateOrganisation)
-        .where(eq(organisation.id, id))
-        .returning()
-
-    return updatedOrganisation
-}
-
-export const deleteOrganisation = async (id: number) => {
-    await db.delete(organisation).where(eq(organisation.id, id))
-}
-
-export const getOrganisation = async (organisationId: number): Promise<Organisation> => {
-    const [foundOrganisation] = await db
-        .select()
-        .from(organisation)
-        .where(eq(organisation.id, organisationId))
-
-    return foundOrganisation
+export {
+    createOrganisation,
+    updateOrganisation,
+    deleteOrganisation,
+    getOrganisation,
 }
