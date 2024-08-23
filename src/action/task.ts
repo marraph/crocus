@@ -28,8 +28,13 @@ const updateTask = async (
 
 const getTasksFromProject = async (
     projectId: number,
-    limit?: number
+    limit: number = 100
 ) => queryEntity(task, projectId, task.projectId, limit)
+
+const getTasksFromUser = async (
+    userId: number,
+    limit: number = 100
+) => queryEntity(task, userId, task.createdBy, limit)
 
 const getTasksFromTeam = async (
     teamId: number,
@@ -82,5 +87,6 @@ export {
     updateTask,
     deleteTask,
     getTasksFromProject,
-    getTasksFromTeam
+    getTasksFromTeam,
+    getTasksFromUser
 }
