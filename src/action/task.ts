@@ -37,7 +37,7 @@ const getTasksFromUser = async (
 ) => queryEntity(task, userId, task.createdBy, limit)
 
 const getTasksFromTeam = async (
-    teamId: number,
+    taskId: number,
     projectLimit: number,
     taskPerProjectLimit: number
 ): Promise<ActionResult<Task[]>> => {
@@ -46,7 +46,7 @@ const getTasksFromTeam = async (
         const projects = await db
             .select()
             .from(team)
-            .where(eq(team.id, teamId))
+            .where(eq(team.id, taskId))
             .limit(projectLimit);
 
         if (projects.length == 0) {
