@@ -15,6 +15,7 @@ import {TaskElement, useTasks} from "@/context/TaskContext";
 import {Team} from "@/action/team";
 import {getTopicsFromTeam, Topic} from "@/action/topic";
 import {Task, updateTask} from "@/action/task";
+import {Priority, State} from "@/types/types";
 
 
 type EditProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topicItem' | 'state' | 'priority' | 'deadline' | 'duration'>;
@@ -84,12 +85,12 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             name: values.name,
             description: values.description,
             topic: values.topicItem?.id ?? null,
-            state: values.state as State ?? null,
-            priority: values.priority as Priority ?? null,
+            state: values.state ?? null,
+            priority: values.priority ?? null,
             deadline: values.deadline ?? null,
             duration: Number(values.duration) ?? null,
-            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
-            lastModifiedDate: new Date(),
+            updatedBy: user.id,
+            updatedAt: new Date(),
         });
 
         if (result.success) {

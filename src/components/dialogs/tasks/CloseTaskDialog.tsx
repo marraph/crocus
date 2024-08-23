@@ -20,8 +20,8 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
         const result = await actions.updateTask(taskElement.id, {
             ...taskElement,
             isArchived: true,
-            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
-            lastModifiedDate: new Date()
+            updatedBy: user.id,
+            updatedAt: new Date()
         });
 
         if (result.success) {

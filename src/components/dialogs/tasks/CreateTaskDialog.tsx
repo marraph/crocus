@@ -9,14 +9,13 @@ import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useUser} from "@/context/UserContext";
 import {Input} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
-import {getProject, getProjectItemsFromTeam, getTeamItems, getTopicItem, getTopicItemsFromTeam} from "@/utils/getTypes";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 import {TaskElement, useTasks} from "@/context/TaskContext";
 import {Team} from "@/action/team";
 import {getProjectsFromTeam, Project} from "@/action/projects";
 import {getTopicsFromTeam, Topic} from "@/action/topic";
-import {createTask, NewTask, Task} from "@/action/task";
+import {Priority, State} from "@/types/types";
 
 type CreateProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topicItem' | 'state' | 'priority' | 'deadline' | 'duration'>;
 
@@ -84,11 +83,11 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             isArchived: false,
             duration: Number(values.duration) ?? null,
             bookedDuration: 0,
-            createdBy: {id: user.id, name: user.name, email: user.email},
-            createdDate: new Date(),
-            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
-            lastModifiedDate: new Date(),
-            project: values.project ?? null
+            createdBy: user.id,
+            createdAt: new Date(),
+            updatedBy: user.id,
+            updatedAt: new Date(),
+            projectId: values.project?.id ?? null
         });
         
         if (result.success) {

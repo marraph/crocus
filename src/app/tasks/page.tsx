@@ -8,12 +8,13 @@ import {useUser} from "@/context/UserContext";
 import {Button} from "@marraph/daisy/components/button/Button";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Filter, FilterRef, SelectedFilter} from "@/components/Filter";
-import {getAllTopics} from "@/utils/getTypes";
 import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
 import {TaskElement, useTasks} from "@/context/TaskContext";
+import {getTopicsFromUser, Topic} from "@/action/topic";
+import {getProjectsFromTeam, Project} from "@/action/projects";
 
 
 export default function Tasks() {
@@ -22,6 +23,8 @@ export default function Tasks() {
     const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
+    const [topics, setTopics] = useState<Topic[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
 
     const { user, organisations, teams } = useUser();
     const { tasks, loading, error, actions } = useTasks();
@@ -31,10 +34,23 @@ export default function Tasks() {
     useHotkeys('t', () => dialogRef.current?.show());
 
     const filterItems = useMemo(() => [
-        { name: "Topic", values:  user && getAllTopics(user).map(topic => topic.title) || [], icon: <Tag size={16}/> },
+        { name: "Team", values: teams.map(team => team.name) || [], icon: <Tag size={16}/> },
+        { name: "Project", values: projects.map(project => project.name) || [], icon: <Tag size={16}/> },
+        { name: "Topic", values:  topics.map(topic => topic.name) || [], icon: <Tag size={16}/> },
         { name: "Status", values: ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"] || [], icon: <CircleAlert size={16}/> },
         { name: "Priority", values: ["LOW", "MEDIUM", "HIGH"]  || [], icon: <LineChart size={16}/> },
     ], [user]);
+
+    useEffect(() => {
+        if (user) {
+            getTopicsFromUser(user.id).then(result => {
+                if (result.success) setTopics(result.data);
+            });
+            getProjectsFromUser(user.id).then(result => {
+                if (result.success) setProjects(result.data);
+            })
+        }
+    }, []);
 
     useEffect(() => {
         setFilters(filterRef.current?.getFilters() || []);

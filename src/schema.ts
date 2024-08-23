@@ -75,7 +75,6 @@ export const task = pgTable('tasks', {
         .notNull()
         .references(() => user.id),
     projectId: integer("project_id")
-        .notNull()
         .references(() => project.id)
 })
 

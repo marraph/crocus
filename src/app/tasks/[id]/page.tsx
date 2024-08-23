@@ -206,17 +206,17 @@ export default function Page() {
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Changed</div>
-                                <span>{moment(task.lastModifiedDate.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.updatedAt.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Changed By</div>
-                                <span>{task.lastModifiedBy.name}</span>
+                                <span>{task.updatedBy.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <span className={"text-xs text-zinc-400 dark:text-marcador px-4 py-2"}>CREATION</span>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Created</div>
-                                <span>{moment(task.createdDate.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.createdAt.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Created By</div>
