@@ -35,7 +35,37 @@ const getTopicsFromTeam = async (
 const getTopicsFromUser = async (
     userId: number,
     limit: number = 100
-) => queryEntity(topic, userId, topic.createdBy, limit)
+): Promise<ActionResult<Topic[]>> => {
+    try {
+
+        const rawTopics = await db
+            .select({
+                id: topic.id,
+                name: topic.name,
+                hexCode: topic.hexCode,
+                teamId: topic.teamId,
+                createdBy: topic.createdBy,
+                createdAt: topic.createdAt,
+                updatedBy: topic.updatedBy,
+                updatedAt: topic.updatedAt
+            })
+            .from(members)
+            .fullJoin(topic, eq(topic.teamId, members.teamId))
+            .where(eq(members.userId, userId))
+            .limit(limit)
+
+        if (!rawTopics || rawTopics.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        const topics = rawTopics.filter((t): t is Topic => !t.id && !t.name && !t.hexCode && !t.teamId && !t.updatedBy && !t.updatedAt && !t.createdBy && !t.createdAt)
+        return {success: true, data: topics}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
 
 const getTopicsFromOrganisation = async (
     organisationId: number,
