@@ -1,11 +1,11 @@
 import {db} from "@/database/drizzle";
-import {task, team} from "@/schema";
+import {task, team, user} from "@/schema";
 import {eq} from "drizzle-orm";
 import {
     ActionResult,
     createEntry,
     deleteEntity,
-    Entity,
+    Entity, getEntity,
     NewEntity,
     queryEntity,
     UpdateEntity,
@@ -15,6 +15,8 @@ import {
 type Task = Entity<typeof task>
 type NewTask = NewEntity<typeof task>
 type UpdateTask = UpdateEntity<typeof task>
+
+const getTask = async (id: number) => getEntity(task, id, task.id)
 
 const createTask = async (newTask: NewTask) => createEntry(task, newTask)
 const deleteTask = async (id: number) => deleteEntity(task, id, task.id)
@@ -26,8 +28,13 @@ const updateTask = async (
 
 const getTasksFromProject = async (
     projectId: number,
-    limit: number
+    limit: number = 100
 ) => queryEntity(task, projectId, task.projectId, limit)
+
+const getTasksFromUser = async (
+    userId: number,
+    limit: number = 100
+) => queryEntity(task, userId, task.createdBy, limit)
 
 const getTasksFromTeam = async (
     teamId: number,
@@ -75,9 +82,11 @@ export type {
 }
 
 export {
+    getTask,
     createTask,
     updateTask,
     deleteTask,
     getTasksFromProject,
-    getTasksFromTeam
+    getTasksFromTeam,
+    getTasksFromUser
 }

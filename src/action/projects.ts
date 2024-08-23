@@ -1,9 +1,20 @@
-import {project} from "@/schema";
-import {createEntry, deleteEntity, Entity, NewEntity, queryEntity, UpdateEntity, updateEntry} from "@/action/actions";
+import {project, task} from "@/schema";
+import {
+    createEntry,
+    deleteEntity,
+    Entity,
+    getEntity,
+    NewEntity,
+    queryEntity,
+    UpdateEntity,
+    updateEntry
+} from "@/action/actions";
 
 type Project = Entity<typeof project>
 type NewProject = NewEntity<typeof project>
 type UpdateProject = UpdateEntity<typeof project>
+
+const getProject = async (id: number) => getEntity(project, id, project.id)
 
 const createProject = async (
     newProject: NewProject
@@ -30,6 +41,7 @@ export type {
 }
 
 export {
+    getProject,
     createProject,
     updateProject,
     deleteProject,

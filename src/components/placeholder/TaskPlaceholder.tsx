@@ -39,7 +39,7 @@ export const TaskPlaceholder: React.FC<{ dialogRef: RefObject<DialogRef>}> = ({ 
                 <span className={"text-sm text-zinc-500 dark:text-gray font-normal"}>Create your first task to get started with your workflow</span>
                 <Button text={"Create task"}
                         onClick={() => dialogRef.current?.show()}
-                        icon={<SquarePen size={20} className={"mr-2"}/>}
+                        icon={<SquarePen size={20}/>}
                         className={"hover:bg-zinc-200 dark:hover:bg-dark-light"}
                 />
             </div>

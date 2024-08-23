@@ -1,40 +1,46 @@
 "use client";
 
-import React, {forwardRef, useCallback, useState} from "react";
-import {CheckCheck} from "lucide-react";
+import React, {forwardRef, useCallback} from "react";
+import {CheckCheck, CircleX} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {updateTask} from "@/service/hooks/taskHook";
-import {Task, TaskElement} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
+import {TaskElement, useTasks} from "@/context/TaskContext";
 
 export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const {addToast} = useToast();
+    const { user } = useUser();
+    const { actions } = useTasks();
+    const { addToast } = useToast();
 
-    const handleCloseTaskClick = useCallback(() => {
-        if (!user || !taskElement) return;
+    if (!user || !dialogRef) return null;
 
-        const task: Partial<Task> = {
+    const handleCloseTaskClick = useCallback(async () => {
+        const result = await actions.updateTask(taskElement.id, {
+            ...taskElement,
             isArchived: true,
-            lastModifiedBy: { id: user.id, name: user.name, email: user.email },
+            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
             lastModifiedDate: new Date()
-        };
-
-        const {data, isLoading, error} = updateTask(taskElement.id, { ...taskElement, ...task });
-
-        addToast({
-            title: "Task closed successfully!",
-            secondTitle: "You can no longer interact with this task.",
-            icon: <CheckCheck />
         });
 
-        onClose && onClose();
-    }, [addToast, onClose, taskElement, user]);
+        if (result.success) {
+            addToast({
+                title: "Task closed successfully!",
+                secondTitle: "You can no longer interact with this task.",
+                icon: <CheckCheck/>
+            });
+        } else {
+            addToast({
+                title: "Failed to close task.",
+                secondTitle: result.error,
+                icon: <CircleX />
+            });
+        }
 
-    if (!dialogRef || !user) return null;
+        onClose && onClose();
+    }, [actions, addToast, onClose, taskElement, user.email, user.id, user.name]);
+
 
     return (
         <Dialog width={600}

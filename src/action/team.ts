@@ -1,9 +1,20 @@
-import {members, team} from "@/schema";
-import {createEntry, deleteEntity, Entity, NewEntity, queryEntity, UpdateEntity, updateEntry} from "@/action/actions";
+import {members, project, team} from "@/schema";
+import {
+    createEntry,
+    deleteEntity,
+    Entity,
+    getEntity,
+    NewEntity,
+    queryEntity,
+    UpdateEntity,
+    updateEntry
+} from "@/action/actions";
 
 type Team = Entity<typeof team>
 type NewTeam = NewEntity<typeof team>
 type UpdateTeam = UpdateEntity<typeof team>
+
+const getTeam = async (id: number) => getEntity(team, id, team.id)
 
 const createTeam = async (newTeam: NewTeam) => createEntry(team, newTeam)
 
@@ -29,6 +40,7 @@ export type {
 }
 
 export {
+    getTeam,
     createTeam,
     updateTeam,
     deleteTeam,

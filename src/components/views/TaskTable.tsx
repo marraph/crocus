@@ -17,7 +17,6 @@ import {Caret} from "@/components/badges/Caret";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
-import {Absence, Task, TaskElement} from "@/types/types";
 import {cn} from "@/utils/cn";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
@@ -26,6 +25,7 @@ import moment from "moment";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useContextMenu} from "@/hooks/useContextMenu";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
+import {TaskElement} from "@/context/TaskContext";
 
 interface TaskProps {
     taskElements: TaskElement[];
@@ -128,13 +128,13 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                         />
 
                                     }
-                                    {taskElement.topic &&
+                                    {taskElement.topicItem &&
                                         <TopicBadge
-                                            title={taskElement.topic.title}
+                                            title={taskElement.topicItem.name}
                                             color={"error"}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Topic: " + taskElement.topic?.title,
+                                                    message: "Topic: " + taskElement.topicItem?.name,
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
@@ -161,7 +161,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 {taskElement.name}
                             </TableCell>
                             <TableCell>
-                                <StatusBadge title={taskElement.status?.toString()}/>
+                                <StatusBadge title={taskElement.state?.toString()}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
                                 {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}

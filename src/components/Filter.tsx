@@ -25,11 +25,11 @@ import {
     Users
 } from "lucide-react";
 import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
-import {TaskElement} from "@/types/types";
 import {cn} from "@/utils/cn";
 import {CustomScroll} from "react-custom-scroll";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
+import {TaskElement} from "@/context/TaskContext";
 
 type FilterItem = {
     name: string;
@@ -131,7 +131,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
         <div className={"relative flex flex-col space-y-10"} ref={menuRef}>
             <div className={"flex flex-row space-x-2 items-center"}>
                 <Button text={title}
-                        icon={<ListFilter size={16} className={"mr-2"}/>}
+                        icon={<ListFilter size={16}/>}
                         onClick={() => {
                             setMenuOpen(!menuOpen);
                             setSubMenuOpen(null);
