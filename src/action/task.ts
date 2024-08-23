@@ -1,5 +1,5 @@
 import {db} from "@/database/drizzle";
-import {task, team, user} from "@/schema";
+import {project, task, team, topic, user} from "@/schema";
 import {eq} from "drizzle-orm";
 import {
     ActionResult,
@@ -35,6 +35,33 @@ const getTasksFromUser = async (
     userId: number,
     limit: number = 100
 ) => queryEntity(task, userId, task.createdBy, limit)
+
+const getTaskFromId = async (
+    taskId: number
+) => {
+
+    try {
+        const [currentTask] = await db
+            .select()
+            .from(task)
+            .fullJoin(project, eq(task.projectId, project.id))
+            .fullJoin(team, eq(project.teamId, team.id))
+            .fullJoin(topic, eq(task.topic, topic.id))
+            .fullJoin(user, eq(task.createdBy, user.id))
+            .fullJoin(user, eq(task.updatedBy, user.id))
+            .where(eq(task.id, taskId))
+            .limit(1)
+
+        if (!currentTask) {
+            return {success: false, error: 'Found no task with this Id'}
+        }
+
+        return {success: true, data: currentTask}
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
 
 const getTasksFromTeam = async (
     taskId: number,
@@ -86,6 +113,7 @@ export {
     createTask,
     updateTask,
     deleteTask,
+    getTaskFromId,
     getTasksFromProject,
     getTasksFromTeam,
     getTasksFromUser
