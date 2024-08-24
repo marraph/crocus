@@ -155,6 +155,10 @@ export const entry = pgTable("entries", {
     updatedBy: integer('updated_by')
         .notNull()
         .references(() => user.id),
+    projectId: integer('project_id')
+        .references(() => project.id),
+    taskId: integer('task_id')
+        .references(() => task.id)
 })
 
 export const members = pgTable('members', {

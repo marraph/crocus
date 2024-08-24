@@ -1,5 +1,5 @@
 import {db} from "@/database/drizzle";
-import {project, task, team, topic, user} from "@/schema";
+import {priority, project, state, task, team, topic, user} from "@/schema";
 import {eq} from "drizzle-orm";
 import {
     ActionResult,
@@ -11,6 +11,7 @@ import {
     UpdateEntity,
     updateEntry
 } from "@/action/actions";
+import {boolean, doublePrecision, integer, serial, text, timestamp} from "drizzle-orm/pg-core";
 
 type Task = Entity<typeof task>
 type NewTask = NewEntity<typeof task>

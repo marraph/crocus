@@ -10,8 +10,8 @@ import {
     UpdateEntity,
     updateEntry
 } from "@/action/actions";
-import {eq} from "drizzle-orm";
 import {db} from "@/database/drizzle";
+import {eq} from "drizzle-orm";
 
 type Project = Entity<typeof project>
 type NewProject = NewEntity<typeof project>
@@ -36,7 +36,6 @@ const getProjectsFromTeam = async (
     teamId: number,
     limit: number = 100
 ) => queryEntity(project, teamId, project.teamId, limit)
-
 
 const getProjectsFromUser = async (
     userId: number,
@@ -73,7 +72,6 @@ const getProjectsFromUser = async (
     }
 
 }
-
 
 export type {
     Project,
