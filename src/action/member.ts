@@ -13,23 +13,24 @@ const leaveTeam = async (userId: number) => deleteEntity(members, userId, member
 
 const getTeamsFromUser = async (userId: number, limit: number = 100): Promise<ActionResult<Team[]>> => {
     try {
-        const rawTeams = await db
+        const teams = await db
             .select({
                 id: team.id,
                 name: team.name,
-                organisationId: team.organisationId
+                organisationId: team.organisationId,
+                updatedBy: team.updatedBy,
+                updatedAt: team.updatedAt,
+                createdBy: team.createdBy,
+                createdAt: team.createdAt
             })
-            .from(members)
-            .fullJoin(team, eq(members.teamId, team.id))
+            .from(team)
+            .innerJoin(members, eq(team.id, members.teamId))
             .where(eq(members.userId, userId))
             .limit(limit)
 
-        if (!rawTeams || rawTeams.length == 0) {
+        if (!teams || teams.length == 0) {
             return {success: false, error: 'Cannot find any teams with this id'}
         }
-
-        const teams: Team[] = rawTeams
-            .filter((t): t is Team => !t.id && !t.name && !t.organisationId);
 
         return {success: true, data: teams}
     } catch (err) {
@@ -40,7 +41,7 @@ const getTeamsFromUser = async (userId: number, limit: number = 100): Promise<Ac
 
 const getUsersFromTeam = async (teamId: number, limit: number = 100): Promise<ActionResult<User[]>> => {
     try {
-        const rawUsers = await db
+        const users = await db
             .select({
                 id: user.id,
                 name: user.name,
@@ -49,17 +50,14 @@ const getUsersFromTeam = async (teamId: number, limit: number = 100): Promise<Ac
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             })
-            .from(members)
-            .fullJoin(user, eq(members.userId, user.id))
+            .from(user)
+            .innerJoin(members, eq(user.id, members.userId))
             .where(eq(members.teamId, teamId))
             .limit(limit)
 
-        if (!rawUsers || rawUsers.length == 0) {
+        if (!users || users.length == 0) {
             return {success: false, error: 'Cannot find any teams with this id'}
         }
-
-        const users: User[] = rawUsers
-            .filter((u): u is User => !u.id && !u.name && !u.email && !u.password && !u.createdAt && !u.updatedAt);
 
         return {success: true, data: users}
     } catch (err) {

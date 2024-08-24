@@ -38,7 +38,7 @@ const getTopicsFromUser = async (
 ): Promise<ActionResult<Topic[]>> => {
     try {
 
-        const rawTopics = await db
+        const topics = await db
             .select({
                 id: topic.id,
                 name: topic.name,
@@ -49,16 +49,15 @@ const getTopicsFromUser = async (
                 updatedBy: topic.updatedBy,
                 updatedAt: topic.updatedAt
             })
-            .from(members)
-            .fullJoin(topic, eq(topic.teamId, members.teamId))
+            .from(topic)
+            .innerJoin(members, eq(topic.teamId, members.teamId))
             .where(eq(members.userId, userId))
             .limit(limit)
 
-        if (!rawTopics || rawTopics.length == 0) {
+        if (!topics || topics.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        const topics = rawTopics.filter((t): t is Topic => !t.id && !t.name && !t.hexCode && !t.teamId && !t.updatedBy && !t.updatedAt && !t.createdBy && !t.createdAt)
         return {success: true, data: topics}
 
     } catch (err) {
@@ -73,7 +72,7 @@ const getTopicsFromOrganisation = async (
 ): Promise<ActionResult<Topic[]>> => {
     try {
 
-        const rawTopics = await db
+        const topics = await db
             .select({
                 id: topic.id,
                 name: topic.name,
@@ -84,16 +83,15 @@ const getTopicsFromOrganisation = async (
                 updatedBy: topic.updatedBy,
                 updatedAt: topic.updatedAt
             })
-            .from(team)
-            .fullJoin(topic, eq(topic.teamId, team.id))
+            .from(topic)
+            .innerJoin(team, eq(topic.teamId, team.id))
             .where(eq(team.organisationId, organisationId))
             .limit(limit)
 
-        if (!rawTopics || rawTopics.length == 0) {
+        if (!topics || topics.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        const topics = rawTopics.filter((t): t is Topic => !t.id && !t.name && !t.hexCode && !t.teamId && !t.updatedBy && !t.updatedAt && !t.createdBy && !t.createdAt)
         return {success: true, data: topics}
 
     } catch (err) {
