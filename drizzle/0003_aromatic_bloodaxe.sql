@@ -1,3 +1,5 @@
+ALTER TABLE "absences" ALTER COLUMN "name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "entries" ALTER COLUMN "comment" DROP NOT NULL;--> statement-breakpoint
 ALTER TABLE "tasks" ALTER COLUMN "project_id" DROP NOT NULL;--> statement-breakpoint
 ALTER TABLE "entries" ADD COLUMN "project_id" integer;--> statement-breakpoint
 ALTER TABLE "entries" ADD COLUMN "task_id" integer;--> statement-breakpoint

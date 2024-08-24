@@ -1,1 +1,0 @@
-ALTER TABLE "tasks" ALTER COLUMN "project_id" DROP NOT NULL;

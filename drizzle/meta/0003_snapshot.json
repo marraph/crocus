@@ -1,5 +1,5 @@
 {
-  "id": "bbf1770c-a822-4ea6-9204-aae3dcf45c25",
+  "id": "a63b4421-c1d2-4762-a159-551700eda4cb",
   "prevId": "3ad9f62c-da00-4940-9bfa-759afdb032ba",
   "version": "7",
   "dialect": "postgresql",
@@ -18,7 +18,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "reason": {
           "name": "reason",
@@ -110,7 +110,7 @@
           "name": "comment",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "start": {
           "name": "start",
