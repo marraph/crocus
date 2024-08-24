@@ -64,37 +64,40 @@ const getTaskFromId = async (
 }
 
 const getTasksFromTeam = async (
-    taskId: number,
-    projectLimit: number,
-    taskPerProjectLimit: number
+    teamId: number,
+    limit: number = 100
 ): Promise<ActionResult<Task[]>> => {
     try {
-        const results: Task[] = []
-        const projects = await db
-            .select()
-            .from(team)
-            .where(eq(team.id, taskId))
-            .limit(projectLimit);
 
-        if (projects.length == 0) {
-            return {success: false, error: 'Found no projects with this id'}
+        const tasks = await db
+            .select({
+                id: task.id,
+                name: task.name,
+                description: task.description,
+                isArchived: task.isArchived,
+                duration: task.duration,
+                bookedDuration: task.bookedDuration,
+                deadline: task.deadline,
+                topic: task.topic,
+                state: task.state,
+                priority: task.priority,
+                createdAt: task.createdAt,
+                updatedAt: task.updatedAt,
+                createdBy: task.createdBy,
+                updatedBy: task.updatedBy,
+                projectId: task.projectId
+            })
+            .from(task)
+            .innerJoin(project, eq(task.projectId, project.id))
+            .innerJoin(team, eq(project.teamId, team.id))
+            .where(eq(team.id, teamId))
+            .limit(limit)
+
+        if (!tasks || tasks.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        for (const project of projects) {
-            const tasks = await getTasksFromProject(project.id, taskPerProjectLimit)
-
-            if (!tasks.success) {
-                return {success: false, error: tasks.error}
-            }
-
-            results.push(...tasks.data)
-        }
-
-        if (results.length == 0) {
-            return {success: false, error: 'Found no tasks'}
-        }
-
-        return {success: true, data: results}
+        return {success: true, data: tasks}
 
     } catch (err) {
         const error = err as Error

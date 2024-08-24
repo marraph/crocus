@@ -33,7 +33,6 @@ const getOrganisation = async (
     id: number
 ) => getEntity(organisation, id, organisation.id)
 
-
 const getOrganisationsFromUser = async (
     userId: number,
     limit: number = 100
@@ -41,22 +40,23 @@ const getOrganisationsFromUser = async (
 
     try {
 
-        const rawOrganisations = await db
+        const organisations = await db
             .select({
                 id: organisation.id,
-                name: organisation.name
+                name: organisation.name,
+                updatedBy: team.updatedBy,
+                updatedAt: team.updatedAt,
+                createdBy: team.createdBy,
+                createdAt: team.createdAt
             })
-            .from(members)
-            .fullJoin(team, eq(members.teamId, team.id))
-            .fullJoin(organisation, eq(team.organisationId, organisation.id))
-            .where(eq(members.userId, userId))
+            .from(organisation)
+            .innerJoin(team, eq(organisation.id, team.organisationId))
+            .innerJoin(members, eq(team.id, members.teamId))
             .limit(limit)
 
-        if (!rawOrganisations || rawOrganisations.length == 0) {
+        if (!organisations || organisations.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
-
-        const organisations = rawOrganisations.filter((orga): orga is Organisation => !orga.name && !orga.id)
 
         return {success: true, data: organisations}
 
@@ -64,9 +64,7 @@ const getOrganisationsFromUser = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
-
 }
-
 
 export type {
     Organisation,
