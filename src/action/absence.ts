@@ -43,7 +43,7 @@ const getAbsencesFromUser = async (
         const absences = await db
             .select({
                 id: absence.id,
-                name: absence.name,
+                comment: absence.comment,
                 reason: absence.reason,
                 start: absence.start,
                 end: absence.end,
@@ -78,7 +78,7 @@ const getAbsencesFromTeam = async (
         const absences = await db
             .select({
                 id: absence.id,
-                name: absence.name,
+                comment: absence.comment,
                 reason: absence.reason,
                 start: absence.start,
                 end: absence.end,
@@ -115,7 +115,7 @@ const getAbsencesFromOrganisation = async (
         const absences = await db
             .select({
                 id: absence.id,
-                name: absence.name,
+                comment: absence.comment,
                 reason: absence.reason,
                 start: absence.start,
                 end: absence.end,
@@ -141,4 +141,20 @@ const getAbsencesFromOrganisation = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
+}
+
+export type {
+    Absence,
+    NewAbsence,
+    UpdateAbsence
+}
+
+export {
+    createAbsence,
+    updateAbsence,
+    deleteAbsence,
+    getAbsence,
+    getAbsencesFromUser,
+    getAbsencesFromOrganisation,
+    getAbsencesFromTeam
 }

@@ -30,7 +30,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
 
             <div className={"space-y-2 px-4 pt-4"} ref={menuRef}>
                 {showProfile &&
-                    <div className={"flex flex-col space-y-1 py-1 bg-zinc-100 dark:bg-black-light border border-zinc-300 dark:border-edge rounded-lg"}>
+                    <div className={"flex flex-col space-y-1 py-1 bg-zinc-100 dark:bg-black-light border border-zinc-300 dark:border-edge rounded-lg shadow-xl"}>
                         <div className={"flex flex-row items-center space-x-2 px-3 py-2 mx-1 text-sm text-zinc-500 dark:text-gray rounded-lg " +
                             "hover:bg-zinc-200 dark:hover:bg-dark-light hover:text-zinc-800 dark:hover:text-white cursor-pointer"}
                              onClick={() => {

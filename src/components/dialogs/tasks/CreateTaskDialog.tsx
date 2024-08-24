@@ -11,13 +11,23 @@ import {Input} from "@marraph/daisy/components/input/Input";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {TaskElement, useTasks} from "@/context/TaskContext";
+import {ComplexTask, useTasks} from "@/context/TaskContext";
 import {Team} from "@/action/team";
 import {getProjectsFromTeam, Project} from "@/action/projects";
 import {getTopicsFromTeam, Topic} from "@/action/topic";
 import {Priority, State} from "@/types/types";
 
-type CreateProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topicItem' | 'state' | 'priority' | 'deadline' | 'duration'>;
+type CreateProps = {
+    name: string,
+    description: string | null,
+    team: Team | null,
+    project: Project | null,
+    topic: Topic | null,
+    state: State | null,
+    priority: Priority | null,
+    deadline: Date | null,
+    duration: number | null
+}
 
 export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
@@ -27,7 +37,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
         description: null,
         team: null,
         project: null,
-        topicItem: null,
+        topic: null,
         state: null,
         priority: null,
         deadline: null,
@@ -41,7 +51,6 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     const { actions } = useTasks();
     const { addToast } = useToast();
 
-    if (!user || !dialogRef) return null;
 
     const statuses = useMemo(() => ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"], []);
     const priorities = useMemo(() => ["LOW", "MEDIUM", "HIGH"], []);
@@ -58,7 +67,7 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     }, [values.team]);
 
     const validateInput = useCallback(() => {
-        setValid(values.name.trim() !== "");
+        setValid(values.name?.trim() !== "");
     }, [values.name]);
 
     useEffect(() => {
@@ -66,17 +75,18 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
     }, [validateInput, values.name]);
 
     const handleCloseClick = useCallback(() => {
-        setValues({ name: "", description: null, team: null, project: null, topicItem: null, state: null, priority: null, deadline: null, duration: null });
+        setValues({ name: "", description: null, team: null, project: null, topic: null, state: null, priority: null, deadline: null, duration: null });
         setValid(false);
         setDialogKey(Date.now());
     }, []);
 
     const handleCreateClick = useCallback(async () => {
+        if (!user) return null;
 
         const result = await actions.createTask({
             name: values.name,
             description: values.description,
-            topic: values.topicItem?.id ?? null,
+            topic: values.topic?.id ?? null,
             state: values.state ?? null,
             priority: values.priority ?? null,
             deadline: values.deadline ?? null,
@@ -106,7 +116,8 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
 
         handleCloseClick();
     }, [values, user, actions, handleCloseClick, addToast]);
-    
+
+
     const teamCombobox = useMemo(() => (
         <Combobox 
             buttonTitle={"Team"}
@@ -186,6 +197,8 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
             ))}
         </Combobox>
     ), [priorities]);
+
+    if (!user || !dialogRef) return null;
 
     return (
         <Dialog width={800}

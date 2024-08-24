@@ -1,40 +1,50 @@
 "use client";
 
-import {getTeam, Team} from "@/action/team";
+import {Team} from "@/action/team";
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {getTeamsFromUser} from "@/action/member";
-import {createTask, deleteTask, getTasksFromProject, NewTask, Task, updateTask, UpdateTask} from "@/action/task";
-import {getProject, getProjectsFromTeam, Project} from "@/action/projects";
+import {
+    createTask,
+    deleteTask,
+    getTaskFromId,
+    getTasksFromTeam,
+    NewTask,
+    Task,
+    updateTask,
+    UpdateTask
+} from "@/action/task";
+import {Project} from "@/action/projects";
 import {ActionResult} from "@/action/actions";
-import {getTopic, getTopicsFromTeam, Topic} from "@/action/topic";
+import {Topic} from "@/action/topic";
+import {User} from "@/action/user";
 
-export type TaskElement = Task & {
+export type ComplexTask = {
+    task: Task | null;
     team: Team | null;
     project: Project | null;
-    topicItem: Topic | null;
+    topic: Topic | null;
+    user: User | null;
 };
 
 interface ErrorState {
     teams?: string;
-    projects?: { [teamId: number]: string };
-    topics?: { [teamId: number]: string };
-    tasks?: { [projectId: number]: string };
+    tasks?: { [teamId: number]: string };
     general?: string;
 }
 
 interface TaskContextType {
-    tasks: TaskElement[];
+    tasks: ComplexTask[];
     loading: boolean;
     error: ErrorState;
 
     actions: {
-        createTask: (newTask: NewTask) => Promise<ActionResult<Task>>;
-        updateTask: (id: number, updateTask: UpdateTask) => Promise<ActionResult<Task>>;
+        createTask: (newTask: NewTask) => Promise<ActionResult<NewTask>>;
+        updateTask: (id: number, updateTask: UpdateTask) => Promise<ActionResult<UpdateTask>>;
         deleteTask: (id: number) => Promise<void>;
     };
 }
 
-const TaskContext = createContext<TaskContextType | undefined>(undefined);
+export const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const useTasks = (): TaskContextType => {
     const context = useContext(TaskContext);
@@ -50,7 +60,7 @@ interface TaskProviderProps {
 }
 
 export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) => {
-    const [tasks, setTasks] = useState<TaskElement[]>([]);
+    const [tasks, setTasks] = useState<ComplexTask[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<ErrorState>({});
 
@@ -58,7 +68,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
         const fetchData = async () => {
             setLoading(true);
             setError({});
-            let tasks: TaskElement[] = [];
+            let tasks: ComplexTask[] = [];
 
             try {
                 const teamResult = await getTeamsFromUser(id);
@@ -69,51 +79,21 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
                 }
 
                 for (const team of teamResult.data) {
-                    const topicResult = await getTopicsFromTeam(team.id);
 
-                    if (!topicResult.success) {
-                        setError(prev => ({
-                            ...prev,
-                            topics: { ...prev.topics, [team.id]: topicResult.error }
-                        }));
+                    const taskResult = await getTasksFromTeam(team.id);
+
+                    if (!taskResult.success) {
+                        setError(prev => ({ ...prev, tasks: taskResult.error }));
                         continue;
                     }
 
-                    const topics = topicResult.data;
-
-                    const projectResult = await getProjectsFromTeam(team.id);
-
-                    if (!projectResult.success) {
-                        setError(prev => ({
-                            ...prev,
-                            projects: { ...prev.projects, [team.id]: projectResult.error }
-                        }));
-                        continue;
+                    for (const task of taskResult.data) {
+                        tasks.push({
+                            task: task,
+                            project:
+                        })
                     }
 
-                    for (const project of projectResult.data) {
-                        const taskResult = await getTasksFromProject(project.id);
-
-                        if (!taskResult.success) {
-                            setError(prev => ({
-                                ...prev,
-                                tasks: { ...prev.tasks, [project.id]: taskResult.error }
-                            }));
-                            continue;
-                        }
-
-                        tasks.push(
-                            ...taskResult.data.map(task => {
-                                const taskTopic = task.topic ? topics.find(t => t.id === task.topic) || null : null;
-                                return {
-                                    ...task,
-                                    team: team,
-                                    project: project,
-                                    topicItem: taskTopic
-                                };
-                            })
-                        );
-                    }
                 }
 
                 setTasks(tasks);
@@ -128,49 +108,75 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
     }, [id]);
 
     const actions = {
-        createTask: async (newTask: NewTask) => {
-            const result = await createTask(newTask);
-            let project: Project;
-            let team: Team;
-            let topicItem: Topic;
-
-            if (result.success) {
-                const topicId = result.data.topic;
-                if (topicId) {
-                    const topicResult = await getTopic(topicId);
-                    if (topicResult.success) topicItem = topicResult.data;
+        createTask: async (newTask: NewTask): Promise<ActionResult<NewTask>> => {
+            try {
+                const createResult = await createTask(newTask);
+                if (!createResult.success) {
+                    throw new Error(createResult.error || 'Failed to create task');
                 }
 
-                const projectId = result.data.projectId;
-                const projectResult = await getProject(projectId);
-
-                if (projectResult.success) {
-                    project = projectResult.data;
-                    const teamId = project.teamId;
-                    const teamResult = await getTeam(teamId);
-
-                    if (teamResult.success) {
-                        team = teamResult.data;
-                    }
+                const getResult = await getTaskFromId(createResult.data.id);
+                if (!getResult.success || !getResult.data) {
+                    throw new Error(getResult.error || 'Failed to fetch created task');
                 }
-                setTasks(prev => [...prev, { ...result.data, project: project, team: team, topicItem: topicItem }]);
-            } else {
-                setError(prev => ({ ...prev, tasks: result.error }));
+
+                const complexTask: ComplexTask = {
+                    task: getResult.data.tasks ?? null,
+                    team: getResult.data.teams ?? null,
+                    project: getResult.data.projects ?? null,
+                    topic: getResult.data.topics ?? null,
+                    user: getResult.data.users ?? null
+                };
+
+                setTasks(prev => [...prev, complexTask]);
+                return { success: true, data: createResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, tasks: errorMessage }));
+                return { success: false, error: errorMessage };
             }
-            return result;
         },
-        updateTask: async (id: number, newTask: UpdateTask) => {
-            const result = await updateTask(id, newTask);
-            if (result.success) {
-                setTasks(prev => prev.map(task => task.id === id ? { ...task, ...newTask } : task));
-            } else {
-                setError(prev => ({ ...prev, tasks: result.error }));
+        updateTask: async (id: number, newTask: UpdateTask): Promise<ActionResult<UpdateTask>> => {
+            try {
+                const updateResult = await updateTask(id, newTask);
+                if (!updateResult.success) {
+                    throw new Error(updateResult.error || 'Failed to update task');
+                }
+
+                const getResult = await getTaskFromId(updateResult.data.id);
+                if (!getResult.success || !getResult.data) {
+                    throw new Error(getResult.error || 'Failed to fetch updated task');
+                }
+
+                const complexTask: ComplexTask = {
+                    task: getResult.data.tasks ?? null,
+                    team: getResult.data.teams ?? null,
+                    project: getResult.data.projects ?? null,
+                    topic: getResult.data.topics ?? null,
+                    user: getResult.data.users ?? null
+                };
+
+                setTasks(prev => prev.map(task => task.task?.id === id ? { ...task, ...complexTask } : task));
+                return { success: true, data: updateResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, tasks: errorMessage }));
+                return { success: false, error: errorMessage };
             }
-            return result;
         },
-        deleteTask: async (id: number) => {
-            const result = await deleteTask(id);
-            setTasks(prev => prev.filter(task => task.id !== id));
+        deleteTask: async (id: number): Promise<void> => {
+            try {
+                const result = await deleteTask(id);
+                setTasks(prev => prev.filter(task => task.task?.id !== id));
+                return result;
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, tasks: errorMessage }));
+                return;
+            }
         }
     };
 

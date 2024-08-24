@@ -229,3 +229,15 @@ export type {
     NewTimeEntry,
     UpdateTimeEntry
 }
+
+export {
+    createTimeEntry,
+    updateTimeEntry,
+    deleteTimeEntry,
+    getTimeEntry,
+    getTimeEntriesFromUser,
+    getTimeEntriesFromOrganisation,
+    getTimeEntriesFromTeam,
+    getTimeEntriesFromProject,
+    getTimeEntriesFromTask
+}

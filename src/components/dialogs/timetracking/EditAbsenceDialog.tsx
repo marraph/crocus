@@ -1,34 +1,35 @@
 "use client";
 
-import React, {ChangeEvent, forwardRef, useCallback, useEffect, useMemo, useState} from "react";
-import {Absence, AbsenceType} from "@/types/types";
+import React, {forwardRef, useCallback, useEffect, useMemo, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
-import {Save, TreePalm} from "lucide-react";
+import {CircleAlert, Save, TreePalm} from "lucide-react";
 import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
-import {DateRange} from "react-day-picker";
-import {updateAbsence} from "@/service/hooks/absenceHook";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {useToast} from "griller/src/component/toaster";
+import {Absence} from "@/action/absence";
+import { useTime } from "@/context/TimeContext";
+import {AbsenceReason} from "@/types/types";
 
-type EditProps = Pick<Absence, "comment" | "absenceType" | "startDate" | "endDate">;
+type EditProps = Pick<Absence, "comment" | "reason" | "start" | "end">;
 
 export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ absence }, ref) => {
     const dialogRef = mutateRef(ref);
     const [values, setValues] = useState<EditProps>({
         comment: absence.comment ?? "",
-        absenceType: absence.absenceType,
-        startDate: absence.startDate,
-        endDate: absence.endDate,
+        reason: absence.reason,
+        start: absence.start,
+        end: absence.end,
     });
     const initialValues = values;
     const [dialogKey, setDialogKey] = useState(Date.now());
     const [valid, setValid] = useState<boolean>(true);
-    const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const {addToast} = useToast();
+    const absenceTypes = useMemo(() => ["vacation", "sick"], []);
+    const { absences, actions } = useTime();
+    const { user } = useUser();
+    const { addToast } = useToast();
 
     const validate = useCallback(() => {
         if (values === initialValues) {
@@ -36,39 +37,49 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
             return;
         }
         
-        setValid(values.absenceType === "SICK" || values.absenceType === "VACATION");
+        setValid(values.reason === "sick" || values.reason === "vacation");
     }, [initialValues, values]);
 
     useEffect(() => {
         validate();
-    }, [validate, values.absenceType]);
-
-    const handleEditClick = useCallback(() => {
-        if (!user) return;
-        
-        const newAbsence: Partial<Absence> = {
-            startDate: values.startDate ?? new Date(),
-            endDate: values.endDate ?? new Date(),
-            comment: values.comment,
-            absenceType: values.absenceType as AbsenceType,
-            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
-            lastModifiedDate: new Date(),
-        };
-        
-        const { data, isLoading, error } = updateAbsence(absence.id, { ...absence, ...newAbsence });
-
-        addToast({
-            title: "Saved changes",
-            secondTitle: "You successfully saved your absence changes.",
-            icon: <Save/>,
-        });
-    }, [user, values.startDate, values.endDate, values.comment, values.absenceType, absence, addToast]);
+    }, [validate, values.reason]);
 
     const handleCloseClick = useCallback(() => {
         setValid(true);
         setDialogKey(Date.now());
         setValues(initialValues);
     }, [initialValues]);
+
+    const handleEditClick = useCallback(async () => {
+        if (!user) return;
+        
+        const newAbsence: Partial<Absence> = {
+            start: values.start ?? new Date(),
+            end: values.end ?? new Date(),
+            comment: values.comment,
+            reason: values.reason,
+            updatedBy: user.id,
+            updatedAt: new Date(),
+        };
+        
+        const result = await actions.updateAbsence(absence.id, { ...absence, ...newAbsence });
+        
+        if (result.success) {
+            addToast({
+                title: "Saved changes",
+                secondTitle: "You successfully saved your absence changes.",
+                icon: <Save/>,
+            });
+        } else {
+            addToast({
+                title: "An error occurred!",
+                secondTitle: "The absence could not be saved. Please try again later.",
+                icon: <CircleAlert/>
+            });
+        }
+
+        handleCloseClick();
+    }, [user, values.start, values.end, values.comment, values.reason, actions, absence, handleCloseClick, addToast]);
 
     if (!dialogRef || user === undefined) return null;
 
@@ -95,15 +106,15 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
                         size={"medium"}
                         closeButton={false}
                         dayFormat={"long"}
-                        preSelectedRange={{ from: values.startDate ?? null, to: values.endDate ?? null }}
+                        preSelectedRange={{ from: values.start ?? undefined, to: values.end ?? undefined }}
                         onRangeChange={(range) => setValues((prevValues) => ({ ...prevValues, dateRange: range ?? { from: new Date(), to: new Date() } }))}
                     />
                     <Combobox buttonTitle={"Absence Type"}
                               label={"Absence Type"}
                               icon={<TreePalm size={16} className={"mr-2"}/>}
-                              preSelectedValue={values.absenceType}
+                              preSelectedValue={values.reason}
                               getItemTitle={(item) => item as string}
-                              onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, absenceType: value as AbsenceType }))}
+                              onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, absenceType: value as AbsenceReason }))}
                     >
                         {absenceTypes.map((type) => (
                             <ComboboxItem key={type} title={type} value={type}/>

@@ -7,7 +7,6 @@ import {DeleteTaskDialog} from "@/components/dialogs/tasks/DeleteTaskDialog";
 import {CloseTaskDialog} from "@/components/dialogs/tasks/CloseTaskDialog";
 import {EditTaskDialog} from "@/components/dialogs/tasks/EditTaskDialog";
 import React, {useEffect, useRef, useState} from "react";
-import {useUser} from "@/context/UserContext";
 import {
     Box,
     CalendarDays,
@@ -28,14 +27,15 @@ import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {TaskElement, useTasks} from "@/context/TaskContext";
+import {ComplexTask, useTasks} from "@/context/TaskContext";
+
 
 export default function Page() {
     const closeRef = useRef<DialogRef>(null);
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
     const [enabled, setEnabled] = useState(true);
-    const [task, setTask] = useState<TaskElement | null>(null);
+    const [task, setTask] = useState<ComplexTask | null>(null);
     const router = useRouter();
     const id = Number(useParams().id);
     const { tasks, loading, error } = useTasks();
@@ -55,23 +55,31 @@ export default function Page() {
     }, { enabled });
 
     useEffect(() => {
-        setTask(tasks.find(task => task.id === id) || null);
-    }, [id, tasks]);
+        if (task?.task) {
+            const task = tasks.find(t => t.task?.id === id) ?? null;
+            setTask(task);
+        }
+    }, [id, task?.task, tasks]);
 
-    if (loading || !task) {
+
+    if (!task?.task) {
+        return <div>Not found</div>
+    }
+
+    if (loading) {
         return <div>Loading Task...</div>;
     }
 
     return (
         <>
-            <DeleteTaskDialog ref={deleteRef} taskElement={task} onClose={() => setEnabled(true)}/>
-            <CloseTaskDialog ref={closeRef} taskElement={task} onClose={() => setEnabled(true)}/>
-            <EditTaskDialog ref={editRef} taskElement={task} onClose={() => setEnabled(true)}/>
+            <DeleteTaskDialog ref={deleteRef} task={task.task} onClose={() => setEnabled(true)}/>
+            <CloseTaskDialog ref={closeRef} task={task.task} onClose={() => setEnabled(true)}/>
+            <EditTaskDialog ref={editRef} task={task} onClose={() => setEnabled(true)}/>
 
             <div className={"h-screen w-screen flex flex-col overflow-hidden"}>
                 <Headbar>
                     <Breadcrumb pastText={"Tasks"}
-                                nowText={task.name}
+                                nowText={task.task?.name}
                                 onClick={() => router.push("/tasks/")}
                     />
                 </Headbar>
@@ -138,12 +146,12 @@ export default function Page() {
                         <div className={"border-l border-zinc-300 dark:border-edge w-1/4 min-h-full bg-zinc-100 dark:bg-black-light rounded-lg rounded-l-none h-min flex flex-col text-sm"}>
                             <div className={"flex flex-row space-x-4 px-4 pt-4 pb-2"}>
                                 <div className={"w-16 text-zinc-500 dark:text-gray"}>Title</div>
-                                <span>{task.name}</span>
+                                <span>{task.task?.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <div className={"flex flex-row space-x-4 px-4 py-2 h-20"}>
                                 <div className={"w-16 text-zinc-500 dark:text-gray"}>Description</div>
-                                <span className={"flex-1 break-words"}>{task.description}</span>
+                                <span className={"flex-1 break-words"}>{task.task?.description}</span>
                             </div>
                             <Seperator className={"w-full"}/>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
@@ -165,28 +173,28 @@ export default function Page() {
                                     <LineChart size={16}/>
                                     <span className={"w-16"}>Priority</span>
                                 </div>
-                                <span>{task.priority}</span>
+                                <span>{task.task?.priority}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <Tag size={16}/>
                                     <span className={"w-16"}>Topic</span>
                                 </div>
-                                <span>{task.topicItem?.name}</span>
+                                <span>{task.topic?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CircleAlert size={16}/>
                                     <span className={"w-16"}>Status</span>
                                 </div>
-                                <span>{task.state}</span>
+                                <span>{task.task?.state}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
                                     <CalendarDays size={16}/>
                                     <span className={"w-16"}>Deadline</span>
                                 </div>
-                                <span>{moment(task.deadline?.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.task?.deadline?.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
@@ -194,8 +202,8 @@ export default function Page() {
                                     <span className={"w-16"}>Duration</span>
                                 </div>
                                 <span>{
-                                    !task.bookedDuration ? 0 : task.bookedDuration?.toString()
-                                    + " / " + task.duration?.toString() + " hours"}
+                                    !task.task?.bookedDuration ? 0 : task.task.bookedDuration?.toString()
+                                    + " / " + task.task.duration?.toString() + " hours"}
                                 </span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
@@ -206,21 +214,21 @@ export default function Page() {
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Changed</div>
-                                <span>{moment(task.updatedAt.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.task?.updatedAt?.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Changed By</div>
-                                <span>{task.updatedBy.name}</span>
+                                <span>{task.task?.updatedBy}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <span className={"text-xs text-zinc-400 dark:text-marcador px-4 py-2"}>CREATION</span>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Time Created</div>
-                                <span>{moment(task.createdAt.toString()).format('MMM D YYYY')}</span>
+                                <span>{moment(task.task?.createdAt?.toString()).format('MMM D YYYY')}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Created By</div>
-                                <span>{task.createdBy.name}</span>
+                                <span>{task.task?.createdBy}</span>
                             </div>
                         </div>
                     </div>

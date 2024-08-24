@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useCallback } from "react";
-import {TimeEntry} from "@/types/types";
+import React, {useCallback} from "react";
 import {Badge} from "@marraph/daisy/components/badge/Badge";
 import moment from "moment";
+import {TimeEntry} from "@/action/timeEntry";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
     entries: TimeEntry[] | undefined;
@@ -16,8 +16,8 @@ export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...pr
         let totalDuration = 0.0;
 
         for (const entry of entries) {
-            const startDate = moment(entry.startDate);
-            const endDate = moment(entry.endDate);
+            const startDate = moment(entry.start);
+            const endDate = moment(entry.end);
 
             const hours = moment.duration(endDate.diff(startDate)).asHours();
             totalDuration += hours;

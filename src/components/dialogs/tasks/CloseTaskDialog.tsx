@@ -6,19 +6,20 @@ import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@mar
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {TaskElement, useTasks} from "@/context/TaskContext";
+import {useTasks} from "@/context/TaskContext";
+import {Task} from "@/action/task";
 
-export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
+export const CloseTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const { user } = useUser();
     const { actions } = useTasks();
     const { addToast } = useToast();
-
-    if (!user || !dialogRef) return null;
-
+    
     const handleCloseTaskClick = useCallback(async () => {
-        const result = await actions.updateTask(taskElement.id, {
-            ...taskElement,
+        if (!user) return;
+
+        const result = await actions.updateTask(task.id, {
+            ...task,
             isArchived: true,
             updatedBy: user.id,
             updatedAt: new Date()
@@ -39,8 +40,9 @@ export const CloseTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement,
         }
 
         onClose && onClose();
-    }, [actions, addToast, onClose, taskElement, user.email, user.id, user.name]);
+    }, [actions, addToast, onClose, task, user]);
 
+    if (!user || !dialogRef) return null;
 
     return (
         <Dialog width={600}

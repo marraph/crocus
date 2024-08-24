@@ -12,26 +12,26 @@ import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {TaskElement, useTasks} from "@/context/TaskContext";
+import {ComplexTask, useTasks} from "@/context/TaskContext";
 
 export default function Dashboard() {
     const router = useRouter();
     const { user } = useUser();
-    const { tasks } = useTasks();
+    const { tasks, loading, error } = useTasks();
     const {addTooltip, removeTooltip} = useTooltip();
 
     const dashboardTasks = useMemo(() => {
-        let taskList: TaskElement[] = [];
-        tasks.forEach((task: TaskElement) => {
-            if (task.state !== "finished") {
+        let taskList: ComplexTask[] = [];
+        tasks.forEach((task: ComplexTask) => {
+            if (task.task?.state !== "finished") {
                 taskList.push(task);
             }
         });
-        return taskList.filter((task: TaskElement) => task.state !== "finished")
-            .sort((a: TaskElement, b: TaskElement) => {
+        return taskList.filter((task: ComplexTask) => task.task?.state !== "finished")
+            .sort((a: ComplexTask, b: ComplexTask) => {
                 const priorityOrder = {LOW: 1, MEDIUM: 2, HIGH: 3};
-                const aPriority = a.priority ? priorityOrder[a.priority as keyof typeof priorityOrder] : 0;
-                const bPriority = b.priority ? priorityOrder[b.priority as keyof typeof priorityOrder] : 0;
+                const aPriority = a.task?.priority ? priorityOrder[a.task?.priority as keyof typeof priorityOrder] : 0;
+                const bPriority = b.task?.priority ? priorityOrder[b.task?.priority as keyof typeof priorityOrder] : 0;
                 return bPriority - aPriority;
             });
     }, [tasks]);
@@ -53,9 +53,9 @@ export default function Dashboard() {
     ], []);
 
     const parseDate = useCallback((date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
-}, []);
+        const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }, []);
     
     if (!user) return null;
 
@@ -113,11 +113,18 @@ export default function Dashboard() {
                         />
                     </div>
                     <div className={"flex-grow overflow-auto no-scrollbar rounded-b-lg"}>
-                        {tasks.map((task, index) => (
+                        {loading &&
+                            <div></div>
+                        }
+                        {error &&
+                            <div></div>
+                        }
+
+                        {!loading && !error && tasks.map((task, index) => (
                             <div key={index}
                                  className={"group flex flex-row justify-between items-center p-2 border-b border-zinc-300 dark:border-edge " +
                                      "hover:bg-zinc-200 dark:hover:bg-dark hover:cursor-pointer"}
-                                 onClick={() => router.push(`/tasks/${task.id}`)}>
+                                 onClick={() => router.push(`/tasks/${task.task?.id}`)}>
                                 <div className={"flex flex-row space-x-8 items-center pl-4"}>
                                     {task.project &&
                                         <ProjectBadge
@@ -132,25 +139,25 @@ export default function Dashboard() {
                                             onMouseLeave={() => removeTooltip()}
                                         />
                                     }
-                                    <span className={"text-zinc-500 dark:text-gray text-sm group-hover:text-zinc-800 dark:group-hover:text-white"}>{task.name}</span>
+                                    <span className={"text-zinc-500 dark:text-gray text-sm group-hover:text-zinc-800 dark:group-hover:text-white"}>{task.task?.name}</span>
                                 </div>
                                 <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                                    {task.state && <StatusBadge title={task.state?.toString()}/>}
-                                    {task.deadline &&
+                                    {task.task?.state && <StatusBadge title={task.task?.state?.toString()}/>}
+                                    {task.task?.deadline &&
                                         <span className={"text-xs text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white"}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Deadline: " + moment(task.deadline?.toString()).format('MMM D YYYY'),
+                                                    message: "Deadline: " + moment(task.task?.deadline?.toString()).format('MMM D YYYY'),
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
                                             }}
                                             onMouseLeave={() => removeTooltip()}
                                         >
-                                            {moment(task.deadline?.toString()).format('MMM D YYYY')}
+                                            {moment(task.task?.deadline?.toString()).format('MMM D YYYY')}
                                         </span>
                                     }
-                                    <ProfileBadge name={task.createdBy?.name}/>
+                                    <ProfileBadge name={task.task?.createdBy.toString()}/>
                                 </div>
                             </div>
                         ))}

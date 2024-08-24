@@ -14,16 +14,17 @@ import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
 import {EntryPlaceholder} from "@/components/placeholder/EntryPlaceholder";
+import {useTime} from "@/context/TimeContext";
 
 export default function Timetracking() {
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
-    
-    const [day, setDay] = useState<Date>(new Date());
-    const {addTooltip, removeTooltip} = useTooltip();
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
-
     const [enabled, setEnabled] = useState(true);
+    const [day, setDay] = useState<Date>(new Date());
+    const { user } = useUser();
+    const { entries, absences, loading, error } = useTime();
+    const {addTooltip, removeTooltip} = useTooltip();
+
 
     useHotkeys('t', () => {
         entryDialogRef.current?.show();
@@ -34,10 +35,10 @@ export default function Timetracking() {
         setEnabled(false);
     }, { enabled });
 
-    const { entries, absences } = useMemo(() => ({
-        entries: user?.timeEntries?.filter(entry => moment(entry.startDate).isSame(day, 'day')),
-        absences: user?.absences?.filter(absence => moment(absence.startDate).isSame(day, 'day')),
-    }), [user, day]);
+    const { todayEntries, todayAbsences } = useMemo(() => ({
+        todayEntries: entries?.filter(entry => moment(entry.start).isSame(day, 'day')),
+        todayAbsences: absences?.filter(absence => moment(absence.start).isSame(day, 'day')),
+    }), [entries, absences, day]);
 
     const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());
@@ -132,8 +133,15 @@ export default function Timetracking() {
                         </div>
                     </div>
                     <div className={"w-full h-full flex flex-col items-stretch bg-zinc-100 dark:bg-black-light border border-zinc-300 dark:border-edge rounded-lg"}>
-                        {(entries && entries.length > 0) || (absences && absences.length > 0) ?
-                            <TimetrackTable entries={entries} absences={absences}/>
+                        {loading &&
+                            <div></div>
+                        }
+                        {error &&
+                            <div></div>
+                        }
+
+                        {!loading && !error && (todayEntries && todayEntries.length > 0) || (todayAbsences && todayAbsences.length > 0) ?
+                            <TimetrackTable entries={todayEntries} absences={todayAbsences}/>
                         :
                             <div className={"h-full flex flex-row items-center justify-center"}>
                                 <EntryPlaceholder dialogRef={entryDialogRef}/>

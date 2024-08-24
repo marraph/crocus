@@ -11,27 +11,35 @@ import {Input} from "@marraph/daisy/components/input/Input";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 import {getProjectsFromTeam, Project} from "@/action/projects";
-import {TaskElement, useTasks} from "@/context/TaskContext";
+import {ComplexTask, useTasks} from "@/context/TaskContext";
 import {Team} from "@/action/team";
 import {getTopicsFromTeam, Topic} from "@/action/topic";
-import {Task, updateTask} from "@/action/task";
 import {Priority, State} from "@/types/types";
 
+type EditProps = {
+    name: string | undefined,
+    description: string | null,
+    team: Team | null,
+    project: Project | null,
+    topic: Topic | null,
+    state: State | null,
+    priority: Priority | null,
+    deadline: Date | null,
+    duration: number | null
+}
 
-type EditProps = Pick<TaskElement, 'name' | 'description' | 'team' | 'project' | 'topicItem' | 'state' | 'priority' | 'deadline' | 'duration'>;
-
-export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
+export const EditTaskDialog = forwardRef<DialogRef, { task: ComplexTask, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const [values, setValues] = useState<EditProps>({
-        name: taskElement.name,
-        description: taskElement.description ?? null,
-        team: taskElement.team ?? null,
-        project: taskElement.project ?? null,
-        topicItem: taskElement.topicItem ?? null,
-        state: taskElement.state ?? null,
-        priority: taskElement.priority ?? null,
-        deadline: taskElement.deadline ?? null,
-        duration: taskElement.duration ?? null,
+        name: task.task?.name,
+        description: task.task?.description ?? null,
+        team: task.team ?? null,
+        project: task.project ?? null,
+        topic: task.topic ?? null,
+        state: task.task?.state ?? null,
+        priority: task.task?.priority ?? null,
+        deadline: task.task?.deadline ?? null,
+        duration: task.task?.duration ?? null,
     });
     const [projects, setProjects] = useState<Project[]>([]);
     const [topics, setTopics] = useState<Topic[]>([]);
@@ -62,7 +70,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             return;
         }
         
-        setValid(values.name.trim() !== "");
+        setValid(values.name?.trim() !== "");
     }, [initialValues, values]);
     
     useEffect(() => {
@@ -73,18 +81,18 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
         setDialogKey(Date.now());
         setValid(true);
         setValues(initialValues);
-        setValues((prevValues) => ({...prevValues, team: taskElement.team ?? null}));
+        setValues((prevValues) => ({...prevValues, team: task.team ?? null}));
         onClose && onClose();
-    }, [initialValues, onClose, taskElement.team]);
+    }, [initialValues, onClose, task.team]);
 
     const handleEditClick = useCallback(async () => {
-        if (!user || !taskElement) return;
+        if (!user || !task?.task) return;
         
-        const result = await actions.updateTask(taskElement.id, {
-            ...taskElement,
+        const result = await actions.updateTask(task.task.id, {
+            ...task,
             name: values.name,
             description: values.description,
-            topic: values.topicItem?.id ?? null,
+            topic: values.topic?.id ?? null,
             state: values.state ?? null,
             priority: values.priority ?? null,
             deadline: values.deadline ?? null,
@@ -108,7 +116,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
         }
 
         handleCloseClick();
-    }, [user, taskElement, values, actions, handleCloseClick, addToast]);
+    }, [user, task, values, actions, handleCloseClick, addToast]);
 
     const teamCombobox = useMemo(() => (
         <Combobox
@@ -158,7 +166,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
             size={"medium"}
             searchField={true}
             icon={<Tag size={16} className={"mr-2"} />}
-            preSelectedValue={values.topicItem}
+            preSelectedValue={values.topic}
             getItemTitle={(item) => (item as Topic).name}
             onValueChange={(value) => setValues((prevValues) => ({...prevValues, topicItem: value as Topic || null }))}
         >
@@ -166,7 +174,7 @@ export const EditTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, 
                 <ComboboxItem key={topic.name} title={topic.name} value={topic}/>
             ))}
         </Combobox>
-    ), [values.team, values.topicItem, topics]);
+    ), [values.team, values.topic, topics]);
 
     const statusCombobox = useMemo(() => (
         <Combobox

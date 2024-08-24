@@ -28,7 +28,7 @@ import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
 import {CustomScroll} from "react-custom-scroll";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {TaskElement} from "@/context/TaskContext";
+import {ComplexTask} from "@/context/TaskContext";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 type FilterItem = {
@@ -38,7 +38,7 @@ type FilterItem = {
 }
 
 type SelectedFilter = {
-    name: keyof TaskElement;
+    name: keyof ComplexTask;
     value: string;
 }
 
@@ -92,7 +92,7 @@ const Filter = forwardRef<FilterRef, FilterProps>(({ title, items, onChange }, r
 
     const handleSubMenuClick = (value: string) => {
         if (subMenuOpen) {
-            const newFilter = { name: subMenuOpen.name as keyof TaskElement, value: value };
+            const newFilter = { name: subMenuOpen.name as keyof ComplexTask, value: value };
             if (filters.some(f => f.name === newFilter.name && f.value === newFilter.value)) {
                 const updatedFilters = filters.filter(f => f.name !== newFilter.name || f.value !== newFilter.value);
                 setFilters(updatedFilters);

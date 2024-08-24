@@ -128,7 +128,7 @@ export const organisation = pgTable("organisations", {
 
 export const absence = pgTable("absences", {
     id: serial('id').primaryKey(),
-    name: text('name').notNull(),
+    comment: text('name'),
     reason: absenceReason("reason").notNull(),
     start: timestamp("start"),
     end: timestamp("end"),
@@ -144,7 +144,7 @@ export const absence = pgTable("absences", {
 
 export const entry = pgTable("entries", {
     id: serial('id').primaryKey(),
-    comment: text('comment').notNull(),
+    comment: text('comment'),
     start: timestamp("start"),
     end: timestamp("end"),
     createdAt: timestamp('created_at'),

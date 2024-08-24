@@ -13,7 +13,7 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
     const [link, setLink] = useState<string>("");
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
+    const { user } = useUser();
     const {addToast} = useToast();
 
     const validate = useCallback(() => {

@@ -2,37 +2,37 @@
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Trash2} from "lucide-react";
-import {cn} from "@/utils/cn";
 import React, {forwardRef, useCallback} from "react";
-import {Absence, TimeEntry} from "@/types/types";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
-import {deleteTimeEntry} from "@/service/hooks/timeentryHook";
-import {deleteAbsence} from "@/service/hooks/absenceHook";
 import {useToast} from "griller/src/component/toaster";
+import {TimeEntry} from "@/action/timeEntry";
+import {Absence} from "@/action/absence";
+import { useTime } from "@/context/TimeContext";
 
 
 export const DeleteTimeEntryDialog = forwardRef<DialogRef, { timeEntry?: TimeEntry, absence?: Absence }>(({ timeEntry, absence }, ref) => {
     const dialogRef = mutateRef(ref);
-    const { data:user, isLoading:userLoading, error:userError } = useUser();
+    const { actions } = useTime();
     const {addToast} = useToast();
 
-    const handleDeleteClick = useCallback(() => {
+    const handleDeleteClick = useCallback(async () => {
         if (timeEntry)  {
-            const {wasSuccessful, isLoading, error} = deleteTimeEntry(timeEntry.id);
+            await actions.deleteTimeEntry(timeEntry.id);
         }
         if (absence) {
-            const {wasSuccessful, isLoading, error} = deleteAbsence(absence.id);
+            await actions.deleteAbsence(absence.id);
         }
+        
         addToast({
             title: "Delete",
             secondTitle: "Deleting " + (timeEntry ? "TimeEntry" : "Absence") + "...",
             icon: <Trash2 color="#F55050" />
         })
-    }, [timeEntry, absence, addToast]);
+    }, [timeEntry, absence, addToast, actions]);
 
     if (!timeEntry && !absence) return null;
-    if (!dialogRef || user === undefined) return null;
+    if (!dialogRef) return null;
 
     return (
         <Dialog width={600}

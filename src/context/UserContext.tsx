@@ -4,15 +4,16 @@ import React, {createContext, ReactNode, useContext, useEffect, useState} from '
 import {getUser, updateUser, UpdateUser, User} from "@/action/user";
 import {getTeamsFromUser} from "@/action/member";
 import {
-    createOrganisation, deleteOrganisation,
+    createOrganisation,
+    deleteOrganisation,
     getOrganisationsFromUser,
     NewOrganisation,
-    Organisation, updateOrganisation,
+    Organisation,
+    updateOrganisation,
     UpdateOrganisation
 } from "@/action/organisation";
 import {createTeam, deleteTeam, NewTeam, Team, updateTeam, UpdateTeam} from "@/action/team";
 import {ActionResult} from "@/action/actions";
-import {TaskElement} from "@/context/TaskContext";
 
 interface UserContextType {
     user: User | null;
@@ -32,15 +33,15 @@ interface UserContextType {
     };
 
     actions: {
-        createOrganisation: (newOrganisation: NewOrganisation) => Promise<ActionResult<Organisation>>;
-        updateOrganisation: (id: number, updateOrganisation: UpdateOrganisation) => Promise<ActionResult<Organisation>>;
+        createOrganisation: (newOrganisation: NewOrganisation) => Promise<ActionResult<NewOrganisation>>;
+        updateOrganisation: (id: number, updateOrganisation: UpdateOrganisation) => Promise<ActionResult<UpdateOrganisation>>;
         deleteOrganisation: (id: number) => Promise<void>;
         
-        createTeam: (newTeam: NewTeam) => Promise<ActionResult<Team>>;
-        updateTeam: (id: number, updateTeam: UpdateTeam) => Promise<ActionResult<Team>>;
+        createTeam: (newTeam: NewTeam) => Promise<ActionResult<NewTeam>>;
+        updateTeam: (id: number, updateTeam: UpdateTeam) => Promise<ActionResult<UpdateTeam>>;
         deleteTeam: (id: number) => Promise<void>;
         
-        updateUser: (id: number, updateUser: UpdateUser) => Promise<ActionResult<User>>;
+        updateUser: (id: number, updateUser: UpdateUser) => Promise<ActionResult<UpdateUser>>;
     };
 }
 
@@ -127,50 +128,111 @@ export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) 
     }, [error.organisations, error.teams, error.user, id, loading.organisations, loading.teams, loading.user]);
 
     const actions = {
-        createOrganisation: async (newOrganisation: NewOrganisation) => {
-            const result = await createOrganisation(newOrganisation);
-            if (result.success) {
-                setOrganisations(prev => [...prev, result.data]);
+        createOrganisation: async (newOrganisation: NewOrganisation): Promise<ActionResult<NewOrganisation>> => {
+            try {
+                const createResult = await createOrganisation(newOrganisation);
+                if (!createResult.success) {
+                    throw new Error(createResult.error || 'Failed to create organisation');
+                }
+
+                setOrganisations(prev => [...prev, createResult.data]);
+                return { success: true, data: createResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, organisations: errorMessage }));
+                return { success: false, error: errorMessage };
             }
-            return result;
         },
-        updateOrganisation: async (id: number, newOrganisation: UpdateOrganisation) => {
-            const result = await updateOrganisation(id, newOrganisation);
-            if (result.success) {
-                setOrganisations(prev => prev.map(o => o.id === id ? result.data : o));
+        updateOrganisation: async (id: number, newOrganisation: UpdateOrganisation): Promise<ActionResult<UpdateOrganisation>> => {
+            try {
+                const updateResult = await updateOrganisation(id, newOrganisation);
+                if (!updateResult.success) {
+                    throw new Error(updateResult.error || 'Failed to update organisation');
+                }
+
+                setOrganisations(prev => prev.map(o => o.id === id ? updateResult.data : o));
+                return { success: true, data: updateResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, organisations: errorMessage }));
+                return { success: false, error: errorMessage };
             }
-            return result;
         },
-        deleteOrganisation: async (id: number) => {
-            await deleteOrganisation(id);
-            setOrganisations(prev => prev.filter(o => o.id !== id));
-        },
-        createTeam: async (newTeam: NewTeam) => {
-            const result = await createTeam(newTeam);
-            if (result.success) {
-                setTeams(prev => [...prev, result.data]);
+        deleteOrganisation: async (id: number): Promise<void> => {
+            try {
+                const deleteResult = await deleteOrganisation(id);
+                setOrganisations(prev => prev.filter(o => o.id !== id));
+                return deleteResult;
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, organisations: errorMessage }));
+                return;
             }
-            return result;
         },
-        updateTeam: async (id: number, newTeam: UpdateTeam) => {
-            const result = await updateTeam(id, newTeam);
-            if (result.success) {
-                setTeams(prev => prev.map(t => t.id === id ? result.data : t));
+        createTeam: async (newTeam: NewTeam): Promise<ActionResult<NewTeam>> => {
+            try {
+                const createResult = await createTeam(newTeam);
+                if (!createResult.success) {
+                    throw new Error(createResult.error || 'Failed to create team');
+                }
+
+                setTeams(prev => [...prev, createResult.data]);
+                return { success: true, data: createResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, teams: errorMessage }));
+                return { success: false, error: errorMessage };
             }
-            return result;
         },
-        deleteTeam: async (id: number) => {
-            await deleteTeam(id);
-            setTeams(prev => prev.filter(t => t.id !== id));
-        },
-        updateUser: async (id: number, newUser: UpdateUser) => {
-            const result = await updateUser(id, newUser);
-            if (result.success) {
-                setUser(result.data);
+        updateTeam: async (id: number, newTeam: UpdateTeam): Promise<ActionResult<UpdateTeam>> => {
+            try {
+                const updateResult = await updateTeam(id, newTeam);
+                if (!updateResult.success) {
+                    throw new Error(updateResult.error || 'Failed to update team');
+                }
+
+                setTeams(prev => prev.map(t => t.id === id ? updateResult.data : t));
+                return { success: true, data: updateResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, teams: errorMessage }));
+                return { success: false, error: errorMessage };
             }
-            return result;
+        },
+        deleteTeam: async (id: number): Promise<void> => {
+            try {
+                const deleteResult = await deleteTeam(id);
+                setTeams(prev => prev.filter(t => t.id !== id));
+                return deleteResult;
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, teams: errorMessage }));
+                return;
+            }
+        },
+        updateUser: async (id: number, newUser: UpdateUser): Promise<ActionResult<UpdateUser>> => {
+            try {
+                const updateResult = await updateUser(id, newUser);
+                if (!updateResult.success) {
+                    throw new Error(updateResult.error || 'Failed to update user');
+                }
+
+                setUser(updateResult.data);
+                return { success: true, data: updateResult.data };
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+                setError(prev => ({ ...prev, user: errorMessage }));
+                return { success: false, error: errorMessage };
+            }
         }
-    }
+    };
 
     return (
         <UserContext.Provider value={{ user, organisations, teams, loading, error, actions }}>

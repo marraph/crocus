@@ -12,15 +12,14 @@ import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {TaskElement, useTasks} from "@/context/TaskContext";
+import {ComplexTask, useTasks} from "@/context/TaskContext";
 import {getTopicsFromUser, Topic} from "@/action/topic";
-import {getProjectsFromTeam, Project} from "@/action/projects";
-
+import {getProjectsFromUser, Project} from "@/action/projects";
 
 export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
-    const [taskElements, setTaskElements] = useState<TaskElement[]>([]);
+    const [taskElements, setTaskElements] = useState<ComplexTask[]>([]);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
     const [topics, setTopics] = useState<Topic[]>([]);
@@ -39,7 +38,7 @@ export default function Tasks() {
         { name: "Topic", values:  topics.map(topic => topic.name) || [], icon: <Tag size={16}/> },
         { name: "Status", values: ["PENDING", "PLANING", "STARTED", "TESTED", "FINISHED"] || [], icon: <CircleAlert size={16}/> },
         { name: "Priority", values: ["LOW", "MEDIUM", "HIGH"]  || [], icon: <LineChart size={16}/> },
-    ], [user]);
+    ], [projects, teams, topics]);
 
     useEffect(() => {
         if (user) {
@@ -50,7 +49,7 @@ export default function Tasks() {
                 if (result.success) setProjects(result.data);
             })
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         setFilters(filterRef.current?.getFilters() || []);
@@ -62,16 +61,16 @@ export default function Tasks() {
             elements = tasks.filter(task => {
                 return filters.every(filter => {
                     switch (filter.name) {
-                        case 'Team' as keyof TaskElement:
+                        case 'Team' as keyof ComplexTask:
                             return task.team?.name === filter.value;
-                        case 'Project' as keyof TaskElement:
+                        case 'Project' as keyof ComplexTask:
                             return task.project?.name === filter.value;
-                        case 'Topic' as keyof TaskElement:
-                            return task.topicItem?.name === filter.value;
-                        case 'Status' as keyof TaskElement:
-                            return task.state === filter.value;
-                        case 'Priority' as keyof TaskElement:
-                            return task.priority === filter.value;
+                        case 'Topic' as keyof ComplexTask:
+                            return task.topic?.name === filter.value;
+                        case 'Status' as keyof ComplexTask:
+                            return task.task?.state === filter.value;
+                        case 'Priority' as keyof ComplexTask:
+                            return task.task?.priority === filter.value;
                         default:
                             return false;
                     }
@@ -120,7 +119,14 @@ export default function Tasks() {
                 </div>
 
                 <div className={"h-screen rounded-lg bg-zinc-100 dark:bg-black-light overflow-auto no-scrollbar border border-zinc-300 dark:border-edge"}>
-                    {taskElements.length > 0 ?
+                    {loading &&
+                        <div></div>
+                    }
+                    {error &&
+                        <div></div>
+                    }
+
+                    {!error && !loading && taskElements.length > 0 ?
                         <TaskTable taskElements={taskElements}/>
                         :
                         <div className={"h-full flex flex-row items-center justify-center"}>

@@ -4,70 +4,77 @@ import React, {forwardRef, useCallback, useEffect, useMemo, useState} from "reac
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
-import {CircleOff, TreePalm} from "lucide-react";
+import {CircleAlert, CircleOff, TreePalm} from "lucide-react";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
-import {Absence, AbsenceType} from "@/types/types";
-import {createAbsence} from "@/service/hooks/absenceHook";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
+import {Absence} from "@/action/absence";
+import {useTime} from "@/context/TimeContext";
+import {AbsenceReason} from "@/types/types";
 
-type CreateProps = Pick<Absence, 'comment' | 'absenceType' | 'startDate' | 'endDate'>;
+type CreateProps = Pick<Absence, 'comment' | 'reason' | 'start' | 'end'>;
 
 export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }>(({onClose}, ref) => {
     const dialogRef = mutateRef(ref);
     const [values, setValues] = useState<CreateProps>({
         comment: "",
-        absenceType: "VACATION",
-        startDate: new Date(),
-        endDate: new Date()
+        reason: "sick",
+        start: new Date(),
+        end: new Date()
     });
     const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
-    const {data:user, isLoading:userLoading, error:userError} = useUser();
-    const {addToast} = useToast();
+    const { user } = useUser();
+    const { absences, loading, error, actions } = useTime();
+    const { addToast } = useToast();
 
-    const absenceTypes = useMemo(() => ["VACATION", "SICK"], []);
+    const absenceTypes = useMemo(() => ["vacation", "sick"], []);
 
     const validateInput = useCallback(() => {
-        setValid(values.absenceType === "VACATION" || values.absenceType === "SICK");
-    }, [values.absenceType]);
+        setValid(values.reason === "vacation" || values.reason === "sick");
+    }, [values.reason]);
 
     useEffect(() => {
         validateInput();
-    }, [validateInput, values.absenceType]);
+    }, [validateInput, values.reason]);
 
     const handleCloseClick = useCallback(() => {
-        setValues({comment: "", absenceType: "VACATION", startDate: new Date(), endDate: new Date()});
+        setValues({comment: "", reason: "vacation", start: new Date(), end: new Date()});
         setValid(false);
         setDialogKey(Date.now());
         onClose();
     }, [onClose]);
 
-    const handleCreateClick = useCallback(() => {
+    const handleCreateClick = useCallback(async () => {
         if (!user) return;
 
-        const newAbsence: Absence = {
-            id: 0,
-            startDate: values.startDate ?? new Date(),
-            endDate: values.endDate ?? new Date(),
+        const result = await actions.createAbsence({
+            start: values.start ?? new Date(),
+            end: values.end ?? new Date(),
             comment: values.comment,
-            absenceType: values.absenceType as AbsenceType,
-            createdBy: {id: user.id, name: user.name, email: user.email},
-            createdDate: new Date(),
-            lastModifiedBy: {id: user.id, name: user.name, email: user.email},
-            lastModifiedDate: new Date(),
-        }
-
-        const { data, isLoading, error } = createAbsence(newAbsence);
-
-        addToast({
-            title: "Absence created successfully!",
-            icon: <TreePalm/>,
+            reason: values.reason,
+            createdBy: user.id,
+            createdAt: new Date(),
+            updatedBy: user.id,
+            updatedAt: new Date(),
         })
 
+        if (result.success) {
+            addToast({
+                title: "Absence created successfully!",
+                icon: <TreePalm/>,
+            });
+        } else {
+            addToast({
+                title: "An error occurred!",
+                secondTitle: "The absence could not be created. Please try again later.",
+                icon: <CircleAlert/>
+            });
+        }
+
         handleCloseClick();
-    }, [user, values.startDate, values.endDate, values.comment, values.absenceType, handleCloseClick, addToast]);
+    }, [user, actions, values.start, values.end, values.comment, values.reason, handleCloseClick, addToast]);
 
     if (!dialogRef || user === undefined) return null;
 
@@ -91,7 +98,7 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
                         buttonTitle={"Absence Type"}
                         icon={<CircleOff size={14} className={"mr-2"}/>}
                         getItemTitle={(item) => item as string}
-                        onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, absenceType: value as AbsenceType }))}
+                        onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, reason: value as AbsenceReason }))}
                     >
                         {absenceTypes.map(((absence, index) =>
                                 <ComboboxItem key={index} title={absence} value={absence}/>
@@ -102,8 +109,8 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
                                      dayFormat={"long"}
                                      onRangeChange={(value) =>
                                          setValues((prevValues) => ({ ...prevValues,
-                                             startDate: value?.from ?? new Date(),
-                                             endDate: value?.to ?? new Date()
+                                             start: value?.from ?? new Date(),
+                                             end: value?.to ?? new Date()
                                          }))}
                     />
                 </div>

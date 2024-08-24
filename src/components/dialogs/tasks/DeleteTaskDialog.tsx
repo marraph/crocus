@@ -6,18 +6,19 @@ import React, {forwardRef, useCallback} from "react";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {TaskElement} from "@/context/TaskContext";
-import {deleteTask} from "@/action/task";
+import {useTasks} from "@/context/TaskContext";
+import {deleteTask, Task} from "@/action/task";
 
-export const DeleteTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement, onClose?: () => void }>(({ taskElement, onClose }, ref) => {
+export const DeleteTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const { user } = useUser();
+    const { actions } = useTasks();
     const {addToast} = useToast();
-
-    if (!user || !dialogRef) return null;
-
+    
     const handleDeleteClick = useCallback(async () => {
-        await deleteTask(taskElement.id);
+        if (!user) return null;
+        
+        const result = await deleteTask(task.id);
 
         addToast({
             title: "Task deleted successfully!",
@@ -26,7 +27,9 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { taskElement: TaskElement
         });
 
         onClose && onClose();
-    }, [addToast, onClose, taskElement.id]);
+    }, [addToast, onClose, task.id, user]);
+
+    if (!user || !dialogRef) return null;
 
     return (
         <Dialog width={600}
