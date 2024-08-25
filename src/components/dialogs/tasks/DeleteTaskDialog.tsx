@@ -1,7 +1,7 @@
 "use client";
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {Trash2} from "lucide-react";
+import {CircleAlert, Trash2} from "lucide-react";
 import React, {forwardRef, useCallback} from "react";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
@@ -13,21 +13,29 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: ()
     const dialogRef = mutateRef(ref);
     const { user } = useUser();
     const { actions } = useTasks();
-    const {addToast} = useToast();
+    const { addToast } = useToast();
     
     const handleDeleteClick = useCallback(async () => {
         if (!user) return null;
         
-        const result = await deleteTask(task.id);
+        const result = await actions.deleteTask(task.id);
+        
+        if (result.success) {
+            addToast({
+                title: "Task deleted successfully!",
+                secondTitle: "You can no longer interact with this task.",
+                icon: <Trash2 color="#F55050"/>
+            });
+        } else {
+            addToast({
+                title: "An error occurred!",
+                secondTitle: "The task could not be deleted. Please try again later.",
+                icon: <CircleAlert/>
+            });
+        }
 
-        addToast({
-            title: "Task deleted successfully!",
-            secondTitle: "You can no longer interact with this task.",
-            icon: <Trash2 color="#F55050"/>
-        });
-
-        onClose && onClose();
-    }, [addToast, onClose, task.id, user]);
+        onClose?.();
+    }, [actions, addToast, onClose, task.id, user]);
 
     if (!user || !dialogRef) return null;
 

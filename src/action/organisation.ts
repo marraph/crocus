@@ -1,4 +1,4 @@
-import {members, organisation, team} from "@/schema";
+import {members, organisation, team, user} from "@/schema";
 import {
     ActionResult,
     createEntry,

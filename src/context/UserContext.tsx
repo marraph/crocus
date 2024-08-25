@@ -5,8 +5,7 @@ import {getUser, updateUser, UpdateUser, User} from "@/action/user";
 import {getTeamsFromUser} from "@/action/member";
 import {
     createOrganisation,
-    deleteOrganisation,
-    getOrganisationsFromUser,
+    deleteOrganisation, getOrganisationsFromUser,
     NewOrganisation,
     Organisation,
     updateOrganisation,
@@ -35,11 +34,11 @@ interface UserContextType {
     actions: {
         createOrganisation: (newOrganisation: NewOrganisation) => Promise<ActionResult<NewOrganisation>>;
         updateOrganisation: (id: number, updateOrganisation: UpdateOrganisation) => Promise<ActionResult<UpdateOrganisation>>;
-        deleteOrganisation: (id: number) => Promise<void>;
+        deleteOrganisation: (id: number) => Promise<ActionResult<boolean>>;
         
         createTeam: (newTeam: NewTeam) => Promise<ActionResult<NewTeam>>;
         updateTeam: (id: number, updateTeam: UpdateTeam) => Promise<ActionResult<UpdateTeam>>;
-        deleteTeam: (id: number) => Promise<void>;
+        deleteTeam: (id: number) => Promise<ActionResult<boolean>>;
         
         updateUser: (id: number, updateUser: UpdateUser) => Promise<ActionResult<UpdateUser>>;
     };
@@ -160,16 +159,20 @@ export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) 
                 return { success: false, error: errorMessage };
             }
         },
-        deleteOrganisation: async (id: number): Promise<void> => {
+        deleteOrganisation: async (id: number): Promise<ActionResult<boolean>> => {
             try {
                 const deleteResult = await deleteOrganisation(id);
+                if (!deleteResult.success) {
+                    throw new Error(deleteResult.error || 'Failed to delete organisation');
+                }
+
                 setOrganisations(prev => prev.filter(o => o.id !== id));
-                return deleteResult;
+                return { success: true, data: true };
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
                 setError(prev => ({ ...prev, organisations: errorMessage }));
-                return;
+                return { success: false, error: errorMessage };
             }
         },
         createTeam: async (newTeam: NewTeam): Promise<ActionResult<NewTeam>> => {
@@ -204,16 +207,20 @@ export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) 
                 return { success: false, error: errorMessage };
             }
         },
-        deleteTeam: async (id: number): Promise<void> => {
+        deleteTeam: async (id: number): Promise<ActionResult<boolean>> => {
             try {
                 const deleteResult = await deleteTeam(id);
+                if (!deleteResult.success) {
+                    throw new Error(deleteResult.error || 'Failed to delete team');
+                }
+
                 setTeams(prev => prev.filter(t => t.id !== id));
-                return deleteResult;
+                return { success: true, data: true };
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
                 setError(prev => ({ ...prev, teams: errorMessage }));
-                return;
+                return { success: false, error: errorMessage };
             }
         },
         updateUser: async (id: number, newUser: UpdateUser): Promise<ActionResult<UpdateUser>> => {

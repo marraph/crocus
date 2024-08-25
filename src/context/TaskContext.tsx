@@ -40,7 +40,7 @@ interface TaskContextType {
     actions: {
         createTask: (newTask: NewTask) => Promise<ActionResult<NewTask>>;
         updateTask: (id: number, updateTask: UpdateTask) => Promise<ActionResult<UpdateTask>>;
-        deleteTask: (id: number) => Promise<void>;
+        deleteTask: (id: number) => Promise<ActionResult<boolean>>;
     };
 }
 
@@ -90,7 +90,10 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
                     for (const task of taskResult.data) {
                         tasks.push({
                             task: task,
-                            project:
+                            team: team,
+                            project: task.projects ?? null,
+                            topic: task.topics ?? null,
+                            user: task.users ?? null
                         })
                     }
 
@@ -166,16 +169,20 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
                 return { success: false, error: errorMessage };
             }
         },
-        deleteTask: async (id: number): Promise<void> => {
+        deleteTask: async (id: number): Promise<ActionResult<boolean>> => {
             try {
                 const result = await deleteTask(id);
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to delete task');
+                }
+
                 setTasks(prev => prev.filter(task => task.task?.id !== id));
-                return result;
+                return { success: true, data: true };
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
                 setError(prev => ({ ...prev, tasks: errorMessage }));
-                return;
+                return { success: false, error: errorMessage };
             }
         }
     };

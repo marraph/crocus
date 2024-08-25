@@ -38,11 +38,11 @@ interface TimeContextType {
     actions: {
         createAbsence: (newAbsence: NewAbsence) => Promise<ActionResult<NewAbsence>>;
         updateAbsence: (id: number, updateAbsence: UpdateAbsence) => Promise<ActionResult<UpdateAbsence>>;
-        deleteAbsence: (id: number) => Promise<void>;
+        deleteAbsence: (id: number) => Promise<ActionResult<boolean>>;
 
         createTimeEntry: (newTimeEntry: NewTimeEntry) => Promise<ActionResult<NewTimeEntry>>;
         updateTimeEntry: (id: number, updateTimeEntry: UpdateTimeEntry) => Promise<ActionResult<UpdateTimeEntry>>;
-        deleteTimeEntry: (id: number) => Promise<void>;
+        deleteTimeEntry: (id: number) => Promise<ActionResult<boolean>>;
     };
 }
 
@@ -141,16 +141,20 @@ export const TimeProvider: React.FC<TimeProviderProps> = async ({children, id}) 
                 return { success: false, error: errorMessage };
             }
         },
-        deleteAbsence: async (id: number): Promise<void> => {
+        deleteAbsence: async (id: number): Promise<ActionResult<boolean>> => {
             try {
                 const deleteResult = await deleteAbsence(id);
+                if (!deleteResult.success) {
+                    throw new Error(deleteResult.error || 'Failed to delete absence');
+                }
+
                 setAbsences(prev => prev.filter(t => t.id !== id));
-                return deleteResult;
+                return { success: true, data: true };
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
                 setError(prev => ({ ...prev, absences: errorMessage }));
-                return;
+                return { success: false, error: errorMessage };
             }
         },
         createTimeEntry: async (newTimeEntry: NewTimeEntry): Promise<ActionResult<NewTimeEntry>> => {
@@ -185,16 +189,20 @@ export const TimeProvider: React.FC<TimeProviderProps> = async ({children, id}) 
                 return { success: false, error: errorMessage };
             }
         },
-        deleteTimeEntry: async (id: number): Promise<void> => {
+        deleteTimeEntry: async (id: number): Promise<ActionResult<boolean>> => {
             try {
                 const deleteResult = await deleteTimeEntry(id);
+                if (!deleteResult.success) {
+                    throw new Error(deleteResult.error || 'Failed to delete time-entry');
+                }
+
                 setEntries(prev => prev.filter(t => t.id !== id));
-                return deleteResult;
+                return { success: true, data: true };
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
                 setError(prev => ({ ...prev, entries: errorMessage }));
-                return;
+                return { success: false, error: errorMessage };
             }
         },
     }
