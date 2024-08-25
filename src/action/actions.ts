@@ -59,8 +59,24 @@ const deleteEntity = async <Table extends PgTable>(
     table: Table,
     id: number,
     idField: PgColumn
-) => {
-    await db.delete(table).where(eq(idField, id))
+): Promise<ActionResult<boolean>> => {
+    try {
+
+        const [deletedId] = await db
+            .delete(table)
+            .where(eq(idField, id))
+            .returning({id: idField})
+
+        if (!deletedId) {
+            return {success: false, error: 'Didnt found any entry to delete'}
+        }
+
+        return {success: true, data: true}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
 }
 
 const getEntity = async <Table extends PgTable>(

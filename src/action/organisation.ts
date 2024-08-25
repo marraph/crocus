@@ -33,7 +33,6 @@ const getOrganisation = async (
     id: number
 ) => getEntity(organisation, id, organisation.id)
 
-
 const getOrganisationsFromUser = async (
     userId: number,
     limit: number = 100
@@ -65,9 +64,7 @@ const getOrganisationsFromUser = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
-
 }
-
 
 export type {
     Organisation,
