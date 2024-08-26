@@ -1,8 +1,17 @@
-import {boolean, doublePrecision, integer, pgEnum, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
+import {
+    boolean,
+    doublePrecision,
+    integer,
+    pgEnum,
+    pgTable,
+    serial,
+    text,
+    timestamp
+} from 'drizzle-orm/pg-core';
 import {relations} from "drizzle-orm/relations";
 
 /*
-    Data
+    Enums
  */
 
 export const priority = pgEnum('priority', [
@@ -185,31 +194,90 @@ export const organisationMembers = pgTable('organisation_members', {
     Relations
  */
 
-export const organisationRelation = relations(organisations, ({many}) => ({
-    teams: many(teams)
+export const organisationRelations = relations(organisations, ({one, many}) => ({
+    createdBy: one(users, {
+        fields: [organisations.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [organisations.updatedBy],
+        references: [users.id]
+    }),
+    teams: many(teams),
+    users: many(organisationMembers)
 }))
 
-export const teamRelation = relations(teams, ({one, many}) => ({
+export const organisationMemberRelations = relations(organisationMembers, ({one}) => ({
+    organisation: one(organisations, {
+        fields: [organisationMembers.organisationId],
+        references: [organisations.id]
+    }),
+    user: one(users, {
+        fields: [organisationMembers.userId],
+        references: [users.id]
+    })
+}))
+
+export const teamMemberRelations = relations(teamMembers, ({one}) => ({
+    team: one(teams, {
+        fields: [teamMembers.teamId],
+        references: [teams.id]
+    }),
+    user: one(users, {
+        fields: [teamMembers.userId],
+        references: [users.id]
+    })
+}))
+
+export const teamRelations = relations(teams, ({one, many}) => ({
     organisation: one(organisations, {
         fields: [teams.organisationId],
         references: [organisations.id]
+    }),
+    createdBy: one(users, {
+        fields: [teams.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [teams.updatedBy],
+        references: [users.id]
     }),
     topics: many(topics),
     projects: many(projects),
     users: many(users)
 }))
 
-export const projectRelation = relations(projects, ({one, many}) => ({
+export const projectRelations = relations(projects, ({one, many}) => ({
     team: one(teams, {
         fields: [projects.teamId],
         references: [teams.id]
     }),
+    createdBy: one(users, {
+        fields: [projects.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [projects.updatedBy],
+        references: [users.id]
+    }),
     tasks: many(tasks)
 }))
 
-export const taskRelation = relations(tasks, ({one}) => ({
+export const taskRelations = relations(tasks, ({one}) => ({
     project: one(projects, {
         fields: [tasks.projectId],
         references: [projects.id]
+    }),
+    topic: one(topics, {
+        fields: [tasks.topic],
+        references: [topics.id]
+    }),
+    createdBy: one(users, {
+        fields: [tasks.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [tasks.updatedBy],
+        references: [users.id]
     })
 }))
