@@ -168,7 +168,17 @@ export const members = pgTable('members', {
         .references(() => user.id),
     teamId: integer('team_id')
         .notNull()
-        .references(() => team.id)
+        .references(() => teams.id)
+})
+
+export const organisationMembers = pgTable('organisation_members', {
+    createdAt: timestamp('created_at'),
+    userId: integer('user_id')
+        .notNull()
+        .references(() => users.id),
+    organisationId: integer('organisation_id')
+        .notNull()
+        .references(() => organisations.id)
 })
 
 /*
