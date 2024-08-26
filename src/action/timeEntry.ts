@@ -1,12 +1,12 @@
 import {
     ActionResult,
-    createEntry,
+    createEntity,
     deleteEntity,
     Entity,
     getEntity,
     NewEntity,
     UpdateEntity,
-    updateEntry
+    updateEntity
 } from "@/action/actions";
 import {entries, teamMembers, organisations, projects, tasks, teams, users} from "@/schema";
 import {db} from "@/database/drizzle";
@@ -18,12 +18,12 @@ type UpdateTimeEntry = UpdateEntity<typeof entries>
 
 const createTimeEntry = async (
     newTimeEntry: NewTimeEntry
-) => createEntry(entries, newTimeEntry)
+) => createEntity(entries, newTimeEntry)
 
 const updateTimeEntry = async (
     id: number,
     updateTimeEntry: UpdateTimeEntry
-) => updateEntry(entries, updateTimeEntry, id, entries.id)
+) => updateEntity(entries, updateTimeEntry, id, entries.id)
 
 const deleteTimeEntry = async (
     id: number

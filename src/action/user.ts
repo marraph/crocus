@@ -1,12 +1,12 @@
 import {users} from "@/schema";
-import {createEntry, deleteEntity, Entity, getEntity, NewEntity, UpdateEntity, updateEntry} from "@/action/actions";
+import {createEntity, deleteEntity, Entity, getEntity, NewEntity, UpdateEntity, updateEntity} from "@/action/actions";
 import {leaveTeam} from "@/action/member";
 
 type User = Entity<typeof users>
 type NewUser = NewEntity<typeof users>
 type UpdateUser = UpdateEntity<typeof users>
 
-const createUser = async (newUser: NewUser) => createEntry(users, newUser)
+const createUser = async (newUser: NewUser) => createEntity(users, newUser)
 const getUser = async (id: number) => getEntity(users, id, users.id)
 
 const deleteUser = async (id: number) => {
@@ -17,7 +17,7 @@ const deleteUser = async (id: number) => {
 const updateUser = async (
     id: number, 
     updateUser: UpdateUser
-) => updateEntry(users, updateUser, id, users.id)
+) => updateEntity(users, updateUser, id, users.id)
 
 export type {
     User,

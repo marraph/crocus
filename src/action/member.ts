@@ -1,4 +1,4 @@
-import {ActionResult, createEntry, deleteEntity, Entity, NewEntity} from "@/action/actions";
+import {ActionResult, createEntity, deleteEntity, Entity, NewEntity} from "@/action/actions";
 import {teamMembers, projects, teams, users} from "@/schema";
 import {Team} from "@/action/team";
 import {db} from "@/database/drizzle";
@@ -8,7 +8,7 @@ import {User} from "@/action/user";
 type Member = Entity<typeof teamMembers>
 type NewMember = NewEntity<typeof teamMembers>
 
-const joinTeam = async (newMember: NewMember) => createEntry(teamMembers, newMember)
+const joinTeam = async (newMember: NewMember) => createEntity(teamMembers, newMember)
 const leaveTeam = async (userId: number) => deleteEntity(teamMembers, userId, teamMembers.userId)
 
 const getTeamsFromUser = async (userId: number, limit: number = 100): Promise<ActionResult<Team[]>> => {

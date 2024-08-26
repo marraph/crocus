@@ -1,14 +1,16 @@
-import {teamMembers, projects, teams} from "@/schema";
+import {teamMembers, teams} from "@/schema";
 import {
-    createEntry,
+    ActionResult,
+    createEntity,
     deleteEntity,
     Entity,
     getEntity,
     NewEntity,
-    queryEntity,
     UpdateEntity,
-    updateEntry
+    updateEntity
 } from "@/action/actions";
+import type {DBQueryConfig} from "drizzle-orm/relations";
+import {db} from "@/database/drizzle";
 
 type Team = Entity<typeof teams>
 type NewTeam = NewEntity<typeof teams>
@@ -16,7 +18,7 @@ type UpdateTeam = UpdateEntity<typeof teams>
 
 const getTeam = async (id: number) => getEntity(teams, id, teams.id)
 
-const createTeam = async (newTeam: NewTeam) => createEntry(teams, newTeam)
+const createTeam = async (newTeam: NewTeam) => createEntity(teams, newTeam)
 
 const deleteTeam = async (id: number) => {
     await deleteEntity(teamMembers, id, teamMembers.teamId)
@@ -26,13 +28,45 @@ const deleteTeam = async (id: number) => {
 const updateTeam = async (
     id: number,
     updateTeam: UpdateTeam
-) => updateEntry(teams, updateTeam, id, teams.id)
+) => updateEntity(teams, updateTeam, id, teams.id)
 
-const getTeamsFromOrganisation = async (
-    organisationId: number,
-    limit: number
-) => queryEntity(teams, organisationId, teams.organisationId, limit)
+const queryTeam = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Team>> => {
+    try {
 
+        const queryTeam = await db.query.teams.findFirst(config)
+
+        if (!queryTeam) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        return {success: true, data: queryTeam}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
+
+const queryTeams = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Team[]>> => {
+    try {
+
+        const queryTeams = await db.query.teams.findMany(config)
+
+        if (!queryTeams || queryTeams.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        return {success: true, data: queryTeams}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
 export type {
     Team,
     NewTeam,
@@ -44,5 +78,6 @@ export {
     createTeam,
     updateTeam,
     deleteTeam,
-    getTeamsFromOrganisation
+    queryTeam,
+    queryTeams
 }
