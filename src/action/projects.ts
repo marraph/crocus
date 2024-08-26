@@ -1,4 +1,4 @@
-import {members, project, task} from "@/schema";
+import {teamMembers, projects, tasks} from "@/schema";
 import {
     ActionResult,
     createEntry,
@@ -13,29 +13,29 @@ import {
 import {db} from "@/database/drizzle";
 import {eq} from "drizzle-orm";
 
-type Project = Entity<typeof project>
-type NewProject = NewEntity<typeof project>
-type UpdateProject = UpdateEntity<typeof project>
+type Project = Entity<typeof projects>
+type NewProject = NewEntity<typeof projects>
+type UpdateProject = UpdateEntity<typeof projects>
 
-const getProject = async (id: number) => getEntity(project, id, project.id)
+const getProject = async (id: number) => getEntity(projects, id, projects.id)
 
 const createProject = async (
     newProject: NewProject
-) => createEntry(project, newProject)
+) => createEntry(projects, newProject)
 
 const updateProject = async (
     id: number,
     updateProject: UpdateProject
-) => updateEntry(project, updateProject, id, project.id)
+) => updateEntry(projects, updateProject, id, projects.id)
 
 const deleteProject = async (
     id: number
-) => deleteEntity(project, id, project.id)
+) => deleteEntity(projects, id, projects.id)
 
 const getProjectsFromTeam = async (
     teamId: number,
     limit: number = 100
-) => queryEntity(project, teamId, project.teamId, limit)
+) => queryEntity(projects, teamId, projects.teamId, limit)
 
 const getProjectsFromUser = async (
     userId: number,
@@ -43,29 +43,29 @@ const getProjectsFromUser = async (
 ): Promise<ActionResult<Project[]>> => {
     try {
 
-        const projects = await db
+        const queryProjects = await db
             .select({
-                id: project.id,
-                name: project.name,
-                description: project.description,
-                priority: project.priority,
-                isArchived: project.isArchived,
-                createdAt: project.createdAt,
-                updatedAt: project.updatedAt,
-                createdBy: project.createdBy,
-                updatedBy: project.updatedBy,
-                teamId: project.teamId
+                id: projects.id,
+                name: projects.name,
+                description: projects.description,
+                priority: projects.priority,
+                isArchived: projects.isArchived,
+                createdAt: projects.createdAt,
+                updatedAt: projects.updatedAt,
+                createdBy: projects.createdBy,
+                updatedBy: projects.updatedBy,
+                teamId: projects.teamId
             })
-            .from(project)
-            .innerJoin(members, eq(project.teamId, members.teamId))
-            .where(eq(members.userId, userId))
+            .from(projects)
+            .innerJoin(teamMembers, eq(projects.teamId, teamMembers.teamId))
+            .where(eq(teamMembers.userId, userId))
             .limit(limit)
 
-        if (!projects || projects.length == 0) {
+        if (!queryProjects || queryProjects.length == 0) {
             return {success: false, error: 'No projects found!'}
         }
 
-        return {success: true, data: projects}
+        return {success: true, data: queryProjects}
     } catch (err) {
         const error = err as Error
         return {success: false, error: error.message}

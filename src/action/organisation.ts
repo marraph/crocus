@@ -1,4 +1,4 @@
-import {members, organisation, team, user} from "@/schema";
+import {teamMembers, organisations, teams, users} from "@/schema";
 import {
     ActionResult,
     createEntry,
@@ -12,26 +12,26 @@ import {
 import {db} from "@/database/drizzle";
 import {eq} from "drizzle-orm";
 
-type Organisation = Entity<typeof organisation>
-type NewOrganisation = NewEntity<typeof organisation>
-type UpdateOrganisation = UpdateEntity<typeof organisation>
+type Organisation = Entity<typeof organisations>
+type NewOrganisation = NewEntity<typeof organisations>
+type UpdateOrganisation = UpdateEntity<typeof organisations>
 
 const createOrganisation = async (
     newOrganisation: NewOrganisation
-) => createEntry(organisation, newOrganisation)
+) => createEntry(organisations, newOrganisation)
 
 const updateOrganisation = async (
     id: number,
     updateOrganisation: UpdateOrganisation
-) => updateEntry(organisation, updateOrganisation, id, organisation.id)
+) => updateEntry(organisations, updateOrganisation, id, organisations.id)
 
 const deleteOrganisation = async (
     id: number
-) => deleteEntity(organisation, id, organisation.id)
+) => deleteEntity(organisations, id, organisations.id)
 
 const getOrganisation = async (
     id: number
-) => getEntity(organisation, id, organisation.id)
+) => getEntity(organisations, id, organisations.id)
 
 const getOrganisationsFromUser = async (
     userId: number,
@@ -40,25 +40,25 @@ const getOrganisationsFromUser = async (
 
     try {
 
-        const organisations = await db
+        const queryOrganisations = await db
             .select({
-                id: organisation.id,
-                name: organisation.name,
-                updatedBy: team.updatedBy,
-                updatedAt: team.updatedAt,
-                createdBy: team.createdBy,
-                createdAt: team.createdAt
+                id: organisations.id,
+                name: organisations.name,
+                updatedBy: teams.updatedBy,
+                updatedAt: teams.updatedAt,
+                createdBy: teams.createdBy,
+                createdAt: teams.createdAt
             })
-            .from(organisation)
-            .innerJoin(team, eq(organisation.id, team.organisationId))
-            .innerJoin(members, eq(team.id, members.teamId))
+            .from(organisations)
+            .innerJoin(teams, eq(organisations.id, teams.organisationId))
+            .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
             .limit(limit)
 
-        if (!organisations || organisations.length == 0) {
+        if (!queryOrganisations || queryOrganisations.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: organisations}
+        return {success: true, data: queryOrganisations}
 
     } catch (err) {
         const error = err as Error

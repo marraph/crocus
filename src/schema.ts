@@ -28,7 +28,7 @@ export const absenceReason = pgEnum('absence_reason', [
     Objects
  */
 
-export const user = pgTable('users', {
+export const users = pgTable('users', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     email: text('email').unique().notNull(),
@@ -37,7 +37,7 @@ export const user = pgTable('users', {
     updatedAt: timestamp('updated_at')
 })
 
-export const topic = pgTable('topics', {
+export const topics = pgTable('topics', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     hexCode: text('hex_code').notNull(),
@@ -45,17 +45,17 @@ export const topic = pgTable('topics', {
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     teamId: integer("team_id")
         .notNull()
-        .references(() => team.id)
+        .references(() => teams.id)
 })
 
 
-export const task = pgTable('tasks', {
+export const tasks = pgTable('tasks', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     description: text('description'),
@@ -70,15 +70,15 @@ export const task = pgTable('tasks', {
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     projectId: integer("project_id")
-        .references(() => project.id)
+        .references(() => projects.id)
 })
 
-export const project = pgTable('projects', {
+export const projects = pgTable('projects', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     description: text('description'),
@@ -88,45 +88,45 @@ export const project = pgTable('projects', {
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     teamId: integer("team_id")
         .notNull()
-        .references(() => team.id)
+        .references(() => teams.id)
 })
 
-export const team = pgTable("teams", {
+export const teams = pgTable("teams", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     createdAt: timestamp('created_at'),
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     organisationId: integer("organisation_id")
         .notNull()
-        .references(() => organisation.id)
+        .references(() => organisations.id)
 })
 
-export const organisation = pgTable("organisations", {
+export const organisations = pgTable("organisations", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     createdAt: timestamp('created_at'),
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
 })
 
-export const absence = pgTable("absences", {
+export const absences = pgTable("absences", {
     id: serial('id').primaryKey(),
     comment: text('name'),
     reason: absenceReason("reason").notNull(),
@@ -136,13 +136,13 @@ export const absence = pgTable("absences", {
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
 })
 
-export const entry = pgTable("entries", {
+export const entries = pgTable("entries", {
     id: serial('id').primaryKey(),
     comment: text('comment'),
     start: timestamp("start"),
@@ -151,21 +151,21 @@ export const entry = pgTable("entries", {
     updatedAt: timestamp('updated_at'),
     createdBy: integer('created_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     updatedBy: integer('updated_by')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     projectId: integer('project_id')
-        .references(() => project.id),
+        .references(() => projects.id),
     taskId: integer('task_id')
-        .references(() => task.id)
+        .references(() => tasks.id)
 })
 
-export const members = pgTable('members', {
+export const teamMembers = pgTable('team_members', {
     createdAt: timestamp('created_at'),
     userId: integer('user_id')
         .notNull()
-        .references(() => user.id),
+        .references(() => users.id),
     teamId: integer('team_id')
         .notNull()
         .references(() => teams.id)
@@ -185,31 +185,31 @@ export const organisationMembers = pgTable('organisation_members', {
     Relations
  */
 
-export const organisationRelation = relations(organisation, ({many}) => ({
-    teams: many(team)
+export const organisationRelation = relations(organisations, ({many}) => ({
+    teams: many(teams)
 }))
 
-export const teamRelation = relations(team, ({one, many}) => ({
-    organisation: one(organisation, {
-        fields: [team.organisationId],
-        references: [organisation.id]
+export const teamRelation = relations(teams, ({one, many}) => ({
+    organisation: one(organisations, {
+        fields: [teams.organisationId],
+        references: [organisations.id]
     }),
-    topics: many(topic),
-    projects: many(project),
-    users: many(user)
+    topics: many(topics),
+    projects: many(projects),
+    users: many(users)
 }))
 
-export const projectRelation = relations(project, ({one, many}) => ({
-    team: one(team, {
-        fields: [project.teamId],
-        references: [team.id]
+export const projectRelation = relations(projects, ({one, many}) => ({
+    team: one(teams, {
+        fields: [projects.teamId],
+        references: [teams.id]
     }),
-    tasks: many(task)
+    tasks: many(tasks)
 }))
 
-export const taskRelation = relations(task, ({one}) => ({
-    project: one(project, {
-        fields: [task.projectId],
-        references: [project.id]
+export const taskRelation = relations(tasks, ({one}) => ({
+    project: one(projects, {
+        fields: [tasks.projectId],
+        references: [projects.id]
     })
 }))

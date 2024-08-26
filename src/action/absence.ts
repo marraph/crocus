@@ -8,30 +8,30 @@ import {
     UpdateEntity,
     updateEntry
 } from "@/action/actions";
-import {absence, absenceReason, entry, members, organisation, task, team, user} from "@/schema";
+import {absences, absenceReason, entries, teamMembers, organisations, tasks, teams, users} from "@/schema";
 import {db} from "@/database/drizzle";
 import {eq} from "drizzle-orm";
 
-type Absence = Entity<typeof absence>
-type NewAbsence = NewEntity<typeof absence>
-type UpdateAbsence = UpdateEntity<typeof absence>
+type Absence = Entity<typeof absences>
+type NewAbsence = NewEntity<typeof absences>
+type UpdateAbsence = UpdateEntity<typeof absences>
 
 const createAbsence = async (
     newAbsence: NewAbsence
-) => createEntry(absence, newAbsence)
+) => createEntry(absences, newAbsence)
 
 const updateAbsence = async (
     id: number,
     updateAbsence: UpdateAbsence
-) => updateEntry(absence, updateAbsence, id, absence.id)
+) => updateEntry(absences, updateAbsence, id, absences.id)
 
 const deleteAbsence = async (
     id: number
-) => deleteEntity(absence, id, absence.id)
+) => deleteEntity(absences, id, absences.id)
 
 const getAbsence = async (
     id: number
-) => getEntity(absence, id, absence.id)
+) => getEntity(absences, id, absences.id)
 
 const getAbsencesFromUser = async (
     userId: number,
@@ -42,18 +42,18 @@ const getAbsencesFromUser = async (
 
         const absences = await db
             .select({
-                id: absence.id,
-                comment: absence.comment,
-                reason: absence.reason,
-                start: absence.start,
-                end: absence.end,
-                createdAt: absence.createdAt,
-                updatedAt: absence.updatedAt,
-                createdBy: absence.createdBy,
-                updatedBy: absence.updatedBy
+                id: absences.id,
+                comment: absences.comment,
+                reason: absences.reason,
+                start: absences.start,
+                end: absences.end,
+                createdAt: absences.createdAt,
+                updatedAt: absences.updatedAt,
+                createdBy: absences.createdBy,
+                updatedBy: absences.updatedBy
             })
-            .from(entry)
-            .where(eq(entry.createdBy, userId))
+            .from(entries)
+            .where(eq(entries.createdBy, userId))
             .limit(limit)
 
         if (!absences || absences.length == 0) {
@@ -77,20 +77,20 @@ const getAbsencesFromTeam = async (
 
         const absences = await db
             .select({
-                id: absence.id,
-                comment: absence.comment,
-                reason: absence.reason,
-                start: absence.start,
-                end: absence.end,
-                createdAt: absence.createdAt,
-                updatedAt: absence.updatedAt,
-                createdBy: absence.createdBy,
-                updatedBy: absence.updatedBy
+                id: absences.id,
+                comment: absences.comment,
+                reason: absences.reason,
+                start: absences.start,
+                end: absences.end,
+                createdAt: absences.createdAt,
+                updatedAt: absences.updatedAt,
+                createdBy: absences.createdBy,
+                updatedBy: absences.updatedBy
             })
-            .from(entry)
-            .innerJoin(members, eq(entry.createdBy, members.userId))
-            .innerJoin(team, eq(members.teamId, team.id))
-            .where(eq(team.id, teamId))
+            .from(entries)
+            .innerJoin(teamMembers, eq(entries.createdBy, teamMembers.userId))
+            .innerJoin(teams, eq(teamMembers.teamId, teams.id))
+            .where(eq(teams.id, teamId))
             .limit(limit)
 
         if (!absences || absences.length == 0) {
@@ -114,21 +114,21 @@ const getAbsencesFromOrganisation = async (
 
         const absences = await db
             .select({
-                id: absence.id,
-                comment: absence.comment,
-                reason: absence.reason,
-                start: absence.start,
-                end: absence.end,
-                createdAt: absence.createdAt,
-                updatedAt: absence.updatedAt,
-                createdBy: absence.createdBy,
-                updatedBy: absence.updatedBy
+                id: absences.id,
+                comment: absences.comment,
+                reason: absences.reason,
+                start: absences.start,
+                end: absences.end,
+                createdAt: absences.createdAt,
+                updatedAt: absences.updatedAt,
+                createdBy: absences.createdBy,
+                updatedBy: absences.updatedBy
             })
-            .from(entry)
-            .innerJoin(members, eq(entry.createdBy, members.userId))
-            .innerJoin(team, eq(members.teamId, team.id))
-            .innerJoin(organisation, eq(team.organisationId, organisation.id))
-            .where(eq(organisation.id, organisationId))
+            .from(entries)
+            .innerJoin(teamMembers, eq(entries.createdBy, teamMembers.userId))
+            .innerJoin(teams, eq(teamMembers.teamId, teams.id))
+            .innerJoin(organisations, eq(teams.organisationId, organisations.id))
+            .where(eq(organisations.id, organisationId))
             .limit(limit)
 
         if (!absences || absences.length == 0) {

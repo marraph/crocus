@@ -1,4 +1,4 @@
-import {members, project, team} from "@/schema";
+import {teamMembers, projects, teams} from "@/schema";
 import {
     createEntry,
     deleteEntity,
@@ -10,28 +10,28 @@ import {
     updateEntry
 } from "@/action/actions";
 
-type Team = Entity<typeof team>
-type NewTeam = NewEntity<typeof team>
-type UpdateTeam = UpdateEntity<typeof team>
+type Team = Entity<typeof teams>
+type NewTeam = NewEntity<typeof teams>
+type UpdateTeam = UpdateEntity<typeof teams>
 
-const getTeam = async (id: number) => getEntity(team, id, team.id)
+const getTeam = async (id: number) => getEntity(teams, id, teams.id)
 
-const createTeam = async (newTeam: NewTeam) => createEntry(team, newTeam)
+const createTeam = async (newTeam: NewTeam) => createEntry(teams, newTeam)
 
 const deleteTeam = async (id: number) => {
-    await deleteEntity(members, id, members.teamId)
-    return await deleteEntity(team, id, team.id)
+    await deleteEntity(teamMembers, id, teamMembers.teamId)
+    return await deleteEntity(teams, id, teams.id)
 }
 
 const updateTeam = async (
     id: number,
     updateTeam: UpdateTeam
-) => updateEntry(team, updateTeam, id, team.id)
+) => updateEntry(teams, updateTeam, id, teams.id)
 
 const getTeamsFromOrganisation = async (
     organisationId: number,
     limit: number
-) => queryEntity(team, organisationId, team.organisationId, limit)
+) => queryEntity(teams, organisationId, teams.organisationId, limit)
 
 export type {
     Team,

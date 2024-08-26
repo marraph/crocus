@@ -1,4 +1,4 @@
-import {members, team, topic} from "@/schema";
+import {teamMembers, teams, topics} from "@/schema";
 import {
     ActionResult,
     createEntry,
@@ -13,24 +13,24 @@ import {
 import {db} from "@/database/drizzle";
 import {eq} from "drizzle-orm";
 
-type Topic = Entity<typeof topic>
-type NewTopic = NewEntity<typeof topic>
-type UpdateTopic = UpdateEntity<typeof topic>
+type Topic = Entity<typeof topics>
+type NewTopic = NewEntity<typeof topics>
+type UpdateTopic = UpdateEntity<typeof topics>
 
-const getTopic = async (id: number) => getEntity(topic, id, topic.id)
+const getTopic = async (id: number) => getEntity(topics, id, topics.id)
 
-const createTopic = async (newTopic: NewTopic) => createEntry(topic, newTopic)
-const deleteTopic = async (id: number) => deleteEntity(topic, id, topic.id)
+const createTopic = async (newTopic: NewTopic) => createEntry(topics, newTopic)
+const deleteTopic = async (id: number) => deleteEntity(topics, id, topics.id)
 
 const updateTopic = async (
     id: number,
     updateTopic: UpdateTopic
-) => updateEntry(topic, updateTopic, id, topic.id)
+) => updateEntry(topics, updateTopic, id, topics.id)
 
 const getTopicsFromTeam = async (
     teamId: number,
     limit: number = 100
-) => queryEntity(topic, teamId, topic.teamId, limit)
+) => queryEntity(topics, teamId, topics.teamId, limit)
 
 const getTopicsFromUser = async (
     userId: number,
@@ -38,27 +38,27 @@ const getTopicsFromUser = async (
 ): Promise<ActionResult<Topic[]>> => {
     try {
 
-        const topics = await db
+        const queryTopics = await db
             .select({
-                id: topic.id,
-                name: topic.name,
-                hexCode: topic.hexCode,
-                teamId: topic.teamId,
-                createdBy: topic.createdBy,
-                createdAt: topic.createdAt,
-                updatedBy: topic.updatedBy,
-                updatedAt: topic.updatedAt
+                id: topics.id,
+                name: topics.name,
+                hexCode: topics.hexCode,
+                teamId: topics.teamId,
+                createdBy: topics.createdBy,
+                createdAt: topics.createdAt,
+                updatedBy: topics.updatedBy,
+                updatedAt: topics.updatedAt
             })
-            .from(topic)
-            .innerJoin(members, eq(topic.teamId, members.teamId))
-            .where(eq(members.userId, userId))
+            .from(topics)
+            .innerJoin(teamMembers, eq(topics.teamId, teamMembers.teamId))
+            .where(eq(teamMembers.userId, userId))
             .limit(limit)
 
-        if (!topics || topics.length == 0) {
+        if (!queryTopics || queryTopics.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: topics}
+        return {success: true, data: queryTopics}
 
     } catch (err) {
         const error = err as Error
@@ -72,27 +72,27 @@ const getTopicsFromOrganisation = async (
 ): Promise<ActionResult<Topic[]>> => {
     try {
 
-        const topics = await db
+        const queryTopics = await db
             .select({
-                id: topic.id,
-                name: topic.name,
-                hexCode: topic.hexCode,
-                teamId: topic.teamId,
-                createdBy: topic.createdBy,
-                createdAt: topic.createdAt,
-                updatedBy: topic.updatedBy,
-                updatedAt: topic.updatedAt
+                id: topics.id,
+                name: topics.name,
+                hexCode: topics.hexCode,
+                teamId: topics.teamId,
+                createdBy: topics.createdBy,
+                createdAt: topics.createdAt,
+                updatedBy: topics.updatedBy,
+                updatedAt: topics.updatedAt
             })
-            .from(topic)
-            .innerJoin(team, eq(topic.teamId, team.id))
-            .where(eq(team.organisationId, organisationId))
+            .from(topics)
+            .innerJoin(teams, eq(topics.teamId, teams.id))
+            .where(eq(teams.organisationId, organisationId))
             .limit(limit)
 
-        if (!topics || topics.length == 0) {
+        if (!queryTopics || queryTopics.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: topics}
+        return {success: true, data: queryTopics}
 
     } catch (err) {
         const error = err as Error

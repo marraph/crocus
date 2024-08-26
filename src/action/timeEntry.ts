@@ -8,30 +8,30 @@ import {
     UpdateEntity,
     updateEntry
 } from "@/action/actions";
-import {entry, members, organisation, project, task, team, user} from "@/schema";
+import {entries, teamMembers, organisations, projects, tasks, teams, users} from "@/schema";
 import {db} from "@/database/drizzle";
 import {eq} from "drizzle-orm";
 
-type TimeEntry = Entity<typeof entry>
-type NewTimeEntry = NewEntity<typeof entry>
-type UpdateTimeEntry = UpdateEntity<typeof entry>
+type TimeEntry = Entity<typeof entries>
+type NewTimeEntry = NewEntity<typeof entries>
+type UpdateTimeEntry = UpdateEntity<typeof entries>
 
 const createTimeEntry = async (
     newTimeEntry: NewTimeEntry
-) => createEntry(entry, newTimeEntry)
+) => createEntry(entries, newTimeEntry)
 
 const updateTimeEntry = async (
     id: number,
     updateTimeEntry: UpdateTimeEntry
-) => updateEntry(entry, updateTimeEntry, id, entry.id)
+) => updateEntry(entries, updateTimeEntry, id, entries.id)
 
 const deleteTimeEntry = async (
     id: number
-) => deleteEntity(entry, id, entry.id)
+) => deleteEntity(entries, id, entries.id)
 
 const getTimeEntry = async (
     id: number
-) => getEntity(entry, id, entry.id)
+) => getEntity(entries, id, entries.id)
 
 const getTimeEntriesFromUser = async (
     userId: number,
@@ -42,22 +42,22 @@ const getTimeEntriesFromUser = async (
 
         const timeEntries = await db
             .select({
-                id: entry.id,
-                comment: entry.comment,
-                start: entry.start,
-                end: entry.end,
-                createdAt: entry.createdAt,
-                updatedAt: entry.updatedAt,
-                createdBy: entry.createdBy,
-                updatedBy: entry.updatedBy,
-                projectId: entry.projectId,
-                taskId: entry.taskId
+                id: entries.id,
+                comment: entries.comment,
+                start: entries.start,
+                end: entries.end,
+                createdAt: entries.createdAt,
+                updatedAt: entries.updatedAt,
+                createdBy: entries.createdBy,
+                updatedBy: entries.updatedBy,
+                projectId: entries.projectId,
+                taskId: entries.taskId
             })
-            .from(entry)
-            .innerJoin(project, eq(entry.projectId, project.id))
-            .innerJoin(team, eq(project.teamId, team.id))
-            .innerJoin(members, eq(team.id, members.teamId))
-            .where(eq(members.userId, userId))
+            .from(entries)
+            .innerJoin(projects, eq(entries.projectId, projects.id))
+            .innerJoin(teams, eq(projects.teamId, teams.id))
+            .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
+            .where(eq(teamMembers.userId, userId))
             .limit(limit)
 
         if (!timeEntries || timeEntries.length == 0) {
@@ -81,22 +81,22 @@ const getTimeEntriesFromOrganisation = async (
 
         const timeEntries = await db
             .select({
-                id: entry.id,
-                comment: entry.comment,
-                start: entry.start,
-                end: entry.end,
-                createdAt: entry.createdAt,
-                updatedAt: entry.updatedAt,
-                createdBy: entry.createdBy,
-                updatedBy: entry.updatedBy,
-                projectId: entry.projectId,
-                taskId: entry.taskId
+                id: entries.id,
+                comment: entries.comment,
+                start: entries.start,
+                end: entries.end,
+                createdAt: entries.createdAt,
+                updatedAt: entries.updatedAt,
+                createdBy: entries.createdBy,
+                updatedBy: entries.updatedBy,
+                projectId: entries.projectId,
+                taskId: entries.taskId
             })
-            .from(entry)
-            .innerJoin(project, eq(entry.projectId, project.id))
-            .innerJoin(team, eq(project.teamId, team.id))
-            .innerJoin(organisation, eq(team.organisationId, organisation.id))
-            .where(eq(organisation.id, organisationId))
+            .from(entries)
+            .innerJoin(projects, eq(entries.projectId, projects.id))
+            .innerJoin(teams, eq(projects.teamId, teams.id))
+            .innerJoin(organisations, eq(teams.organisationId, organisations.id))
+            .where(eq(organisations.id, organisationId))
             .limit(limit)
 
         if (!timeEntries || timeEntries.length == 0) {
@@ -120,21 +120,21 @@ const getTimeEntriesFromTeam = async (
 
         const timeEntries = await db
             .select({
-                id: entry.id,
-                comment: entry.comment,
-                start: entry.start,
-                end: entry.end,
-                createdAt: entry.createdAt,
-                updatedAt: entry.updatedAt,
-                createdBy: entry.createdBy,
-                updatedBy: entry.updatedBy,
-                projectId: entry.projectId,
-                taskId: entry.taskId
+                id: entries.id,
+                comment: entries.comment,
+                start: entries.start,
+                end: entries.end,
+                createdAt: entries.createdAt,
+                updatedAt: entries.updatedAt,
+                createdBy: entries.createdBy,
+                updatedBy: entries.updatedBy,
+                projectId: entries.projectId,
+                taskId: entries.taskId
             })
-            .from(entry)
-            .innerJoin(project, eq(entry.projectId, project.id))
-            .innerJoin(team, eq(project.teamId, team.id))
-            .where(eq(team.id, teamId))
+            .from(entries)
+            .innerJoin(projects, eq(entries.projectId, projects.id))
+            .innerJoin(teams, eq(projects.teamId, teams.id))
+            .where(eq(teams.id, teamId))
             .limit(limit)
 
         if (!timeEntries || timeEntries.length == 0) {
@@ -159,20 +159,20 @@ const getTimeEntriesFromProject = async (
 
         const timeEntries = await db
             .select({
-                id: entry.id,
-                comment: entry.comment,
-                start: entry.start,
-                end: entry.end,
-                createdAt: entry.createdAt,
-                updatedAt: entry.updatedAt,
-                createdBy: entry.createdBy,
-                updatedBy: entry.updatedBy,
-                projectId: entry.projectId,
-                taskId: entry.taskId
+                id: entries.id,
+                comment: entries.comment,
+                start: entries.start,
+                end: entries.end,
+                createdAt: entries.createdAt,
+                updatedAt: entries.updatedAt,
+                createdBy: entries.createdBy,
+                updatedBy: entries.updatedBy,
+                projectId: entries.projectId,
+                taskId: entries.taskId
             })
-            .from(entry)
-            .innerJoin(project, eq(entry.projectId, project.id))
-            .where(eq(project.id, projectId))
+            .from(entries)
+            .innerJoin(projects, eq(entries.projectId, projects.id))
+            .where(eq(projects.id, projectId))
             .limit(limit)
 
         if (!timeEntries || timeEntries.length == 0) {
@@ -196,20 +196,20 @@ const getTimeEntriesFromTask = async (
 
         const timeEntries = await db
             .select({
-                id: entry.id,
-                comment: entry.comment,
-                start: entry.start,
-                end: entry.end,
-                createdAt: entry.createdAt,
-                updatedAt: entry.updatedAt,
-                createdBy: entry.createdBy,
-                updatedBy: entry.updatedBy,
-                projectId: entry.projectId,
-                taskId: entry.taskId
+                id: entries.id,
+                comment: entries.comment,
+                start: entries.start,
+                end: entries.end,
+                createdAt: entries.createdAt,
+                updatedAt: entries.updatedAt,
+                createdBy: entries.createdBy,
+                updatedBy: entries.updatedBy,
+                projectId: entries.projectId,
+                taskId: entries.taskId
             })
-            .from(entry)
-            .innerJoin(task, eq(entry.taskId, task.id))
-            .where(eq(task.id, taskId))
+            .from(entries)
+            .innerJoin(tasks, eq(entries.taskId, tasks.id))
+            .where(eq(tasks.id, taskId))
             .limit(limit)
 
         if (!timeEntries || timeEntries.length == 0) {

@@ -1,5 +1,5 @@
 import {db} from "@/database/drizzle";
-import {priority, project, state, task, team, topic, user} from "@/schema";
+import {projects, tasks, teams, topics, users} from "@/schema";
 import {eq} from "drizzle-orm";
 import {
     ActionResult,
@@ -11,31 +11,30 @@ import {
     UpdateEntity,
     updateEntry
 } from "@/action/actions";
-import {boolean, doublePrecision, integer, serial, text, timestamp} from "drizzle-orm/pg-core";
 
-type Task = Entity<typeof task>
-type NewTask = NewEntity<typeof task>
-type UpdateTask = UpdateEntity<typeof task>
+type Task = Entity<typeof tasks>
+type NewTask = NewEntity<typeof tasks>
+type UpdateTask = UpdateEntity<typeof tasks>
 
-const getTask = async (id: number) => getEntity(task, id, task.id)
+const getTask = async (id: number) => getEntity(tasks, id, tasks.id)
 
-const createTask = async (newTask: NewTask) => createEntry(task, newTask)
-const deleteTask = async (id: number) => deleteEntity(task, id, task.id)
+const createTask = async (newTask: NewTask) => createEntry(tasks, newTask)
+const deleteTask = async (id: number) => deleteEntity(tasks, id, tasks.id)
 
 const updateTask = async (
     id: number,
     updateTask: UpdateTask
-) => updateEntry(task, updateTask, id, task.id)
+) => updateEntry(tasks, updateTask, id, tasks.id)
 
 const getTasksFromProject = async (
     projectId: number,
     limit: number = 100
-) => queryEntity(task, projectId, task.projectId, limit)
+) => queryEntity(tasks, projectId, tasks.projectId, limit)
 
 const getTasksFromUser = async (
     userId: number,
     limit: number = 100
-) => queryEntity(task, userId, task.createdBy, limit)
+) => queryEntity(tasks, userId, tasks.createdBy, limit)
 
 const getTaskFromId = async (
     taskId: number
@@ -44,13 +43,13 @@ const getTaskFromId = async (
     try {
         const [currentTask] = await db
             .select()
-            .from(task)
-            .fullJoin(project, eq(task.projectId, project.id))
-            .fullJoin(team, eq(project.teamId, team.id))
-            .fullJoin(topic, eq(task.topic, topic.id))
-            .fullJoin(user, eq(task.createdBy, user.id))
-            .fullJoin(user, eq(task.updatedBy, user.id))
-            .where(eq(task.id, taskId))
+            .from(tasks)
+            .fullJoin(projects, eq(tasks.projectId, projects.id))
+            .fullJoin(teams, eq(projects.teamId, teams.id))
+            .fullJoin(topics, eq(tasks.topic, topics.id))
+            .fullJoin(users, eq(tasks.createdBy, users.id))
+            .fullJoin(users, eq(tasks.updatedBy, users.id))
+            .where(eq(tasks.id, taskId))
             .limit(1)
 
         if (!currentTask) {
@@ -70,35 +69,35 @@ const getTasksFromTeam = async (
 ): Promise<ActionResult<Task[]>> => {
     try {
 
-        const tasks = await db
+        const queryTasks = await db
             .select({
-                id: task.id,
-                name: task.name,
-                description: task.description,
-                isArchived: task.isArchived,
-                duration: task.duration,
-                bookedDuration: task.bookedDuration,
-                deadline: task.deadline,
-                topic: task.topic,
-                state: task.state,
-                priority: task.priority,
-                createdAt: task.createdAt,
-                updatedAt: task.updatedAt,
-                createdBy: task.createdBy,
-                updatedBy: task.updatedBy,
-                projectId: task.projectId
+                id: tasks.id,
+                name: tasks.name,
+                description: tasks.description,
+                isArchived: tasks.isArchived,
+                duration: tasks.duration,
+                bookedDuration: tasks.bookedDuration,
+                deadline: tasks.deadline,
+                topic: tasks.topic,
+                state: tasks.state,
+                priority: tasks.priority,
+                createdAt: tasks.createdAt,
+                updatedAt: tasks.updatedAt,
+                createdBy: tasks.createdBy,
+                updatedBy: tasks.updatedBy,
+                projectId: tasks.projectId
             })
-            .from(task)
-            .innerJoin(project, eq(task.projectId, project.id))
-            .innerJoin(team, eq(project.teamId, team.id))
-            .where(eq(team.id, teamId))
+            .from(tasks)
+            .innerJoin(projects, eq(tasks.projectId, projects.id))
+            .innerJoin(teams, eq(projects.teamId, teams.id))
+            .where(eq(teams.id, teamId))
             .limit(limit)
 
-        if (!tasks || tasks.length == 0) {
+        if (!queryTasks || queryTasks.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: tasks}
+        return {success: true, data: queryTasks}
 
     } catch (err) {
         const error = err as Error
