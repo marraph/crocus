@@ -14,10 +14,11 @@ import {createTeam, deleteTeam, NewTeam, Team, updateTeam, UpdateTeam} from "@/a
 import {ActionResult} from "@/action/actions";
 import {eq} from "drizzle-orm";
 import {organisationMembers, teamMembers} from "@/schema";
+import {DBQueryConfig} from "drizzle-orm/relations";
 
 interface UserContextType {
     user: User | null;
-    userData: any[];
+    userData: Organisation[];
 
     loading: {
         user: boolean;
@@ -57,6 +58,23 @@ interface UserProviderProps {
     id: number;
 }
 
+const queryOrganisationTeamConfig = (id: number): DBQueryConfig => ({
+    with: {
+        organisationMembers: {
+            where: eq(organisationMembers.userId, id),
+        },
+        createdBy: true,
+        updatedBy: true,
+        teams: {
+            with: {
+                teamMembers: {
+                    where: eq(teamMembers.userId, id)
+                }
+            }
+        }
+    }
+})
+
 export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) => {
     const [user, setUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<Organisation[]>([]);
@@ -76,17 +94,7 @@ export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) 
 
             const [user, userData] = await Promise.all([
                 getUser(id),
-                queryOrganisations({
-                    where: eq(organisationMembers.userId, id),
-                    with: {
-                        organisationMembers: true,
-                        createdBy: true,
-                        updatedBy: true,
-                        teams: {
-                            where: eq(teamMembers.userId, id)
-                        }
-                    }
-                })
+                queryOrganisations(queryOrganisationTeamConfig(id))
             ])
 
             if (user.success) setUser(user.data);

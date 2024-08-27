@@ -12,6 +12,7 @@ import {
 import {ActionResult} from "@/action/actions";
 import {eq} from "drizzle-orm";
 import {teamMembers} from "@/schema";
+import {DBQueryConfig} from "drizzle-orm/relations";
 
 interface ErrorState {
     teams?: string;
@@ -46,6 +47,25 @@ interface TaskProviderProps {
     id: number;
 }
 
+const queryTaskConfig = (id: number): DBQueryConfig => ({
+    with: {
+        topics: true,
+        createdBy: true,
+        updatedBy: true,
+        project: {
+            with: {
+                team: {
+                    with: {
+                        teamMembers: {
+                            where: eq(teamMembers.userId, id),
+                        }
+                    }
+                }
+            }
+        }
+    }
+})
+
 export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -56,20 +76,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = async ({children, id}) 
             setLoading(true);
             setError({});
 
-            const resultTasks = await queryTasks({
-                where: eq(teamMembers.userId, id),
-                with: {
-                    topics: true,
-                    createdBy: true,
-                    updatedBy: true,
-                    project: {
-                        with: {
-                            team: true
-                        }
-                    }
-                }
-            })
-
+            const resultTasks = await queryTasks(queryTaskConfig(id))
             if (!resultTasks.success) {
                 setError(prev => ({...prev, tasks: resultTasks.error}));
                 setLoading(false)
