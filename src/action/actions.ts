@@ -1,8 +1,6 @@
 import {eq, InferInsertModel, InferSelectModel} from "drizzle-orm";
 import {PgColumn, PgTable} from "drizzle-orm/pg-core";
 import {db} from "@/database/drizzle";
-import {DBQueryConfig} from "drizzle-orm/relations";
-import {RelationalQueryBuilder} from "drizzle-orm/pg-core/query-builders/query";
 
 type Entity<Table extends PgTable> = InferSelectModel<Table>
 type NewEntity<Table extends PgTable> = InferInsertModel<Table>
