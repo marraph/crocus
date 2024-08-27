@@ -1,104 +1,61 @@
 import {db} from "@/database/drizzle";
-import {priority, project, state, task, team, topic, user} from "@/schema";
-import {eq} from "drizzle-orm";
+import {tasks} from "@/schema";
 import {
     ActionResult,
-    createEntry,
+    createEntity,
     deleteEntity,
     Entity, getEntity,
     NewEntity,
-    queryEntity,
     UpdateEntity,
-    updateEntry
+    updateEntity
 } from "@/action/actions";
-import {boolean, doublePrecision, integer, serial, text, timestamp} from "drizzle-orm/pg-core";
+import type {DBQueryConfig} from "drizzle-orm/relations";
 
-type Task = Entity<typeof task>
-type NewTask = NewEntity<typeof task>
-type UpdateTask = UpdateEntity<typeof task>
+type Task = Entity<typeof tasks>
+type NewTask = NewEntity<typeof tasks>
+type UpdateTask = UpdateEntity<typeof tasks>
 
-const getTask = async (id: number) => getEntity(task, id, task.id)
+const getTask = async (id: number) => getEntity(tasks, id, tasks.id)
 
-const createTask = async (newTask: NewTask) => createEntry(task, newTask)
-const deleteTask = async (id: number) => deleteEntity(task, id, task.id)
+const createTask = async (newTask: NewTask) => createEntity(tasks, newTask)
+const deleteTask = async (id: number) => deleteEntity(tasks, id, tasks.id)
 
 const updateTask = async (
     id: number,
     updateTask: UpdateTask
-) => updateEntry(task, updateTask, id, task.id)
+) => updateEntity(tasks, updateTask, id, tasks.id)
 
-const getTasksFromProject = async (
-    projectId: number,
-    limit: number = 100
-) => queryEntity(task, projectId, task.projectId, limit)
-
-const getTasksFromUser = async (
-    userId: number,
-    limit: number = 100
-) => queryEntity(task, userId, task.createdBy, limit)
-
-const getTaskFromId = async (
-    taskId: number
-) => {
-
+const queryTask = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Task>> => {
     try {
-        const [currentTask] = await db
-            .select()
-            .from(task)
-            .fullJoin(project, eq(task.projectId, project.id))
-            .fullJoin(team, eq(project.teamId, team.id))
-            .fullJoin(topic, eq(task.topic, topic.id))
-            .fullJoin(user, eq(task.createdBy, user.id))
-            .fullJoin(user, eq(task.updatedBy, user.id))
-            .where(eq(task.id, taskId))
-            .limit(1)
 
-        if (!currentTask) {
-            return {success: false, error: 'Found no task with this Id'}
+        const queryTask = await db.query.tasks.findFirst(config)
+
+        if (!queryTask) {
+            return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: currentTask}
+        return {success: true, data: queryTask}
+
     } catch (err) {
         const error = err as Error
         return {success: false, error: error.message}
     }
 }
 
-const getTasksFromTeam = async (
-    teamId: number,
-    limit: number = 100
+const queryTasks = async (
+    config: DBQueryConfig = {},
 ): Promise<ActionResult<Task[]>> => {
     try {
 
-        const tasks = await db
-            .select({
-                id: task.id,
-                name: task.name,
-                description: task.description,
-                isArchived: task.isArchived,
-                duration: task.duration,
-                bookedDuration: task.bookedDuration,
-                deadline: task.deadline,
-                topic: task.topic,
-                state: task.state,
-                priority: task.priority,
-                createdAt: task.createdAt,
-                updatedAt: task.updatedAt,
-                createdBy: task.createdBy,
-                updatedBy: task.updatedBy,
-                projectId: task.projectId
-            })
-            .from(task)
-            .innerJoin(project, eq(task.projectId, project.id))
-            .innerJoin(team, eq(project.teamId, team.id))
-            .where(eq(team.id, teamId))
-            .limit(limit)
+        const queryTasks = await db.query.tasks.findMany(config)
 
-        if (!tasks || tasks.length == 0) {
+        if (!queryTasks || queryTasks.length == 0) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: tasks}
+        return {success: true, data: queryTasks}
 
     } catch (err) {
         const error = err as Error
@@ -117,8 +74,6 @@ export {
     createTask,
     updateTask,
     deleteTask,
-    getTaskFromId,
-    getTasksFromProject,
-    getTasksFromTeam,
-    getTasksFromUser
+    queryTask,
+    queryTasks
 }

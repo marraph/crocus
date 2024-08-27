@@ -1,64 +1,69 @@
-import {members, organisation, team, user} from "@/schema";
+import {organisations} from "@/schema";
 import {
     ActionResult,
-    createEntry,
+    createEntity,
     deleteEntity,
     Entity,
     getEntity,
     NewEntity,
     UpdateEntity,
-    updateEntry
+    updateEntity
 } from "@/action/actions";
 import {db} from "@/database/drizzle";
-import {eq} from "drizzle-orm";
+import type {DBQueryConfig} from "drizzle-orm/relations";
 
-type Organisation = Entity<typeof organisation>
-type NewOrganisation = NewEntity<typeof organisation>
-type UpdateOrganisation = UpdateEntity<typeof organisation>
+type Organisation = Entity<typeof organisations>
+type NewOrganisation = NewEntity<typeof organisations>
+type UpdateOrganisation = UpdateEntity<typeof organisations>
 
 const createOrganisation = async (
     newOrganisation: NewOrganisation
-) => createEntry(organisation, newOrganisation)
+) => createEntity(organisations, newOrganisation)
 
 const updateOrganisation = async (
     id: number,
     updateOrganisation: UpdateOrganisation
-) => updateEntry(organisation, updateOrganisation, id, organisation.id)
+) => updateEntity(organisations, updateOrganisation, id, organisations.id)
 
 const deleteOrganisation = async (
     id: number
-) => deleteEntity(organisation, id, organisation.id)
+) => deleteEntity(organisations, id, organisations.id)
 
 const getOrganisation = async (
     id: number
-) => getEntity(organisation, id, organisation.id)
+) => getEntity(organisations, id, organisations.id)
 
-const getOrganisationsFromUser = async (
-    userId: number,
-    limit: number = 100
-): Promise<ActionResult<Organisation[]>> => {
-
+const queryOrganisation = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Organisation>> => {
     try {
 
-        const organisations = await db
-            .select({
-                id: organisation.id,
-                name: organisation.name,
-                updatedBy: team.updatedBy,
-                updatedAt: team.updatedAt,
-                createdBy: team.createdBy,
-                createdAt: team.createdAt
-            })
-            .from(organisation)
-            .innerJoin(team, eq(organisation.id, team.organisationId))
-            .innerJoin(members, eq(team.id, members.teamId))
-            .limit(limit)
+        const queryOrganisation = await db.query.organisations.findFirst(config)
 
-        if (!organisations || organisations.length == 0) {
+        if (!queryOrganisation) {
             return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: organisations}
+        return {success: true, data: queryOrganisation}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
+
+const queryOrganisations = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Organisation[]>> => {
+    try {
+
+        const queryOrganisations = await db.query.organisations.findMany(config)
+
+        if (!queryOrganisations || queryOrganisations.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        return {success: true, data: queryOrganisations}
 
     } catch (err) {
         const error = err as Error
@@ -77,5 +82,6 @@ export {
     updateOrganisation,
     deleteOrganisation,
     getOrganisation,
-    getOrganisationsFromUser
+    queryOrganisation,
+    queryOrganisations
 }

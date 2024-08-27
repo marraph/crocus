@@ -2,45 +2,44 @@
 
 import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import {getUser, updateUser, UpdateUser, User} from "@/action/user";
-import {getTeamsFromUser} from "@/action/member";
 import {
     createOrganisation,
-    deleteOrganisation, getOrganisationsFromUser,
+    deleteOrganisation,
     NewOrganisation,
-    Organisation,
+    Organisation, queryOrganisations,
     updateOrganisation,
     UpdateOrganisation
 } from "@/action/organisation";
 import {createTeam, deleteTeam, NewTeam, Team, updateTeam, UpdateTeam} from "@/action/team";
 import {ActionResult} from "@/action/actions";
+import {eq} from "drizzle-orm";
+import {organisationMembers, teamMembers} from "@/schema";
+import {DBQueryConfig} from "drizzle-orm/relations";
 
 interface UserContextType {
     user: User | null;
-    organisations: Organisation[];
-    teams: Team[];
-    
-    loading: { 
+    userData: Organisation[];
+
+    loading: {
         user: boolean;
-        organisations: boolean;
-        teams: boolean;
+        userData: boolean;
     };
-    
-    error: { 
+
+    error: {
         user?: string | null;
-        organisations?: string | null;
-        teams?: string | null;
+        userData?: string | null;
     };
 
     actions: {
-        createOrganisation: (newOrganisation: NewOrganisation) => Promise<ActionResult<NewOrganisation>>;
-        updateOrganisation: (id: number, updateOrganisation: UpdateOrganisation) => Promise<ActionResult<UpdateOrganisation>>;
-        deleteOrganisation: (id: number) => Promise<ActionResult<boolean>>;
-        
-        createTeam: (newTeam: NewTeam) => Promise<ActionResult<NewTeam>>;
-        updateTeam: (id: number, updateTeam: UpdateTeam) => Promise<ActionResult<UpdateTeam>>;
-        deleteTeam: (id: number) => Promise<ActionResult<boolean>>;
-        
-        updateUser: (id: number, updateUser: UpdateUser) => Promise<ActionResult<UpdateUser>>;
+        createOrganisation: typeof createOrganisation
+        updateOrganisation: typeof updateOrganisation
+        deleteOrganisation: typeof deleteOrganisation
+
+        createTeam: typeof createTeam
+        updateTeam: typeof updateTeam
+        deleteTeam: typeof deleteTeam
+
+        updateUser: typeof updateUser
     };
 }
 
@@ -59,190 +58,132 @@ interface UserProviderProps {
     id: number;
 }
 
+const queryOrganisationTeamConfig = (id: number): DBQueryConfig => ({
+    with: {
+        organisationMembers: {
+            where: eq(organisationMembers.userId, id),
+        },
+        createdBy: true,
+        updatedBy: true,
+        teams: {
+            with: {
+                teamMembers: {
+                    where: eq(teamMembers.userId, id)
+                }
+            }
+        }
+    }
+})
+
 export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) => {
     const [user, setUser] = useState<User | null>(null);
-    const [organisations, setOrganisations] = useState<Organisation[]>([]);
-    const [teams, setTeams] = useState<Team[]>([]);
-    const [loading, setLoading] = useState<{user: boolean, organisations: boolean, teams: boolean}>({user: true, organisations: true, teams: true});
-    const [error, setError] = useState<{user: string | null, organisations: string | null, teams: string | null}>({user: null, organisations: null, teams: null});
+    const [userData, setUserData] = useState<Organisation[]>([]);
+    const [loading, setLoading] = useState<{ user: boolean, userData: boolean }>({
+        user: true,
+        userData: true,
+    });
+    const [error, setError] = useState<{
+        user: string | null,
+        userData: string | null,
+    }>({user: null, userData: null});
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading({user: true, organisations: true, teams: true});
-            setError({user: null, organisations: null, teams: null});
+            setLoading({user: true, userData: true});
+            setError({user: null, userData: null});
 
-            try {
-                const user = await getUser(id);
-                if (user.success) {
-                    setUser(user.data);
-                } else {
-                    setError({user: user.error, organisations: error.organisations, teams: error.teams});
-                }
-            } catch (err) {
-                setError({
-                    user: 'An unexpected error occurred while fetching data',
-                    organisations: error.organisations,
-                    teams: error.teams
-                });
-            } finally {
-                setLoading({user: false, organisations: loading.organisations, teams: loading.teams});
-            }
+            const [user, userData] = await Promise.all([
+                getUser(id),
+                queryOrganisations(queryOrganisationTeamConfig(id))
+            ])
 
-            try {
-                const organisations = await getOrganisationsFromUser(id);
-                if (organisations.success) {
-                    setOrganisations(organisations.data);
-                } else {
-                    setError({user: error.user, organisations: organisations.error, teams: error.teams});
-                }
-            } catch (err) {
-                setError({
-                    user: error.user,
-                    organisations: 'An unexpected error occurred while fetching data',
-                    teams: error.teams
-                });
-            } finally {
-                setLoading({user: loading.user, organisations: false, teams: loading.teams});
-            }
+            if (user.success) setUser(user.data);
+            else setError(prev => ({...prev, user: user.error}));
+            setLoading(prev => ({...prev, user: false}));
 
-            try {
-                const teams = await getTeamsFromUser(id);
-                if (teams.success) {
-                    setTeams(teams.data);
-                } else {
-                    setError({user: error.user, organisations: error.organisations, teams: teams.error});
-                }
-            } catch (err) {
-                setError({
-                    user: error.user,
-                    organisations: error.organisations,
-                    teams: 'An unexpected error occurred while fetching data'
-                });
-            } finally {
-                setLoading({user: loading.user, organisations: loading.organisations, teams: false});
-            }
+            if (userData.success) setUserData(userData.data);
+            else setError(prev => ({...prev, userData: error.userData}));
+            setLoading(prev => ({...prev, userData: false}));
         };
 
         fetchData();
-    }, [error.organisations, error.teams, error.user, id, loading.organisations, loading.teams, loading.user]);
+    }, [id, error.user, error.userData, loading.user, loading.userData]);
 
     const actions = {
-        createOrganisation: async (newOrganisation: NewOrganisation): Promise<ActionResult<NewOrganisation>> => {
-            try {
-                const createResult = await createOrganisation(newOrganisation);
-                if (!createResult.success) {
-                    throw new Error(createResult.error || 'Failed to create organisation');
-                }
+        createOrganisation: async (newOrganisation: NewOrganisation): Promise<ActionResult<Organisation>> => {
+            const createResult = await createOrganisation(newOrganisation);
 
-                setOrganisations(prev => [...prev, createResult.data]);
-                return { success: true, data: createResult.data };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, organisations: errorMessage }));
-                return { success: false, error: errorMessage };
+            if (!createResult.success) {
+                setError(prev => ({...prev, organisations: createResult.error}));
+                return {success: false, error: createResult.error};
             }
+
+            setUserData(prev => [...prev, createResult.data]);
+            return {success: true, data: createResult.data};
         },
-        updateOrganisation: async (id: number, newOrganisation: UpdateOrganisation): Promise<ActionResult<UpdateOrganisation>> => {
-            try {
-                const updateResult = await updateOrganisation(id, newOrganisation);
-                if (!updateResult.success) {
-                    throw new Error(updateResult.error || 'Failed to update organisation');
-                }
-
-                setOrganisations(prev => prev.map(o => o.id === id ? updateResult.data : o));
-                return { success: true, data: updateResult.data };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, organisations: errorMessage }));
-                return { success: false, error: errorMessage };
+        updateOrganisation: async (id: number, newOrganisation: UpdateOrganisation): Promise<ActionResult<Organisation>> => {
+            const updateResult = await updateOrganisation(id, newOrganisation);
+            if (!updateResult.success) {
+                setError(prev => ({...prev, organisations: updateResult.error}));
+                return {success: false, error: updateResult.error};
             }
+
+            setUserData(prev => prev.map(o => o.id === id ? updateResult.data : o));
+            return {success: true, data: updateResult.data};
         },
         deleteOrganisation: async (id: number): Promise<ActionResult<boolean>> => {
-            try {
-                const deleteResult = await deleteOrganisation(id);
-                if (!deleteResult.success) {
-                    throw new Error(deleteResult.error || 'Failed to delete organisation');
-                }
-
-                setOrganisations(prev => prev.filter(o => o.id !== id));
-                return { success: true, data: true };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, organisations: errorMessage }));
-                return { success: false, error: errorMessage };
+            const deleteResult = await deleteOrganisation(id);
+            if (!deleteResult.success) {
+                setError(prev => ({...prev, organisations: deleteResult.error}));
+                return {success: false, error: deleteResult.error};
             }
+
+            setUserData(prev => prev.filter(o => o.id !== id));
+            return {success: true, data: true};
         },
-        createTeam: async (newTeam: NewTeam): Promise<ActionResult<NewTeam>> => {
-            try {
-                const createResult = await createTeam(newTeam);
-                if (!createResult.success) {
-                    throw new Error(createResult.error || 'Failed to create team');
-                }
-
-                setTeams(prev => [...prev, createResult.data]);
-                return { success: true, data: createResult.data };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, teams: errorMessage }));
-                return { success: false, error: errorMessage };
+        createTeam: async (newTeam: NewTeam): Promise<ActionResult<Team>> => {
+            const createResult = await createTeam(newTeam);
+            if (!createResult.success) {
+                setError(prev => ({...prev, teams: createResult.error}));
+                return {success: false, error: createResult.error};
             }
+
+            setUserData(prev => [...prev, createResult.data]);
+            return {success: true, data: createResult.data};
         },
-        updateTeam: async (id: number, newTeam: UpdateTeam): Promise<ActionResult<UpdateTeam>> => {
-            try {
-                const updateResult = await updateTeam(id, newTeam);
-                if (!updateResult.success) {
-                    throw new Error(updateResult.error || 'Failed to update team');
-                }
-
-                setTeams(prev => prev.map(t => t.id === id ? updateResult.data : t));
-                return { success: true, data: updateResult.data };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, teams: errorMessage }));
-                return { success: false, error: errorMessage };
+        updateTeam: async (id: number, newTeam: UpdateTeam): Promise<ActionResult<Team>> => {
+            const updateResult = await updateTeam(id, newTeam);
+            if (!updateResult.success) {
+                setError(prev => ({...prev, teams: updateResult.error}));
+                return {success: false, error: updateResult.error};
             }
+
+            setUserData(prev => prev.map(t => t.id === id ? updateResult.data : t));
+            return {success: true, data: updateResult.data};
         },
         deleteTeam: async (id: number): Promise<ActionResult<boolean>> => {
-            try {
-                const deleteResult = await deleteTeam(id);
-                if (!deleteResult.success) {
-                    throw new Error(deleteResult.error || 'Failed to delete team');
-                }
-
-                setTeams(prev => prev.filter(t => t.id !== id));
-                return { success: true, data: true };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, teams: errorMessage }));
-                return { success: false, error: errorMessage };
+            const deleteResult = await deleteTeam(id);
+            if (!deleteResult.success) {
+                setError(prev => ({...prev, teams: deleteResult.error}));
+                return {success: false, error: deleteResult.error};
             }
+            setUserData(prev => prev.filter(t => t.id !== id));
+            return {success: true, data: true};
         },
-        updateUser: async (id: number, newUser: UpdateUser): Promise<ActionResult<UpdateUser>> => {
-            try {
-                const updateResult = await updateUser(id, newUser);
-                if (!updateResult.success) {
-                    throw new Error(updateResult.error || 'Failed to update user');
-                }
-
-                setUser(updateResult.data);
-                return { success: true, data: updateResult.data };
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                setError(prev => ({ ...prev, user: errorMessage }));
-                return { success: false, error: errorMessage };
+        updateUser: async (id: number, newUser: UpdateUser): Promise<ActionResult<User>> => {
+            const updateResult = await updateUser(id, newUser);
+            if (!updateResult.success) {
+                setError(prev => ({...prev, user: updateResult.error}));
+                return {success: false, error: updateResult.error};
             }
+
+            setUser(updateResult.data);
+            return {success: true, data: updateResult.data};
         }
     };
 
     return (
-        <UserContext.Provider value={{ user, organisations, teams, loading, error, actions }}>
+        <UserContext.Provider value={{user, userData, loading, error, actions}}>
             {children}
         </UserContext.Provider>
     );

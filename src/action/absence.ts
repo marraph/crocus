@@ -1,66 +1,50 @@
 import {
     ActionResult,
-    createEntry,
+    createEntity,
     deleteEntity,
     Entity,
     getEntity,
     NewEntity,
     UpdateEntity,
-    updateEntry
+    updateEntity
 } from "@/action/actions";
-import {absence, absenceReason, entry, members, organisation, task, team, user} from "@/schema";
+import {absences} from "@/schema";
 import {db} from "@/database/drizzle";
-import {eq} from "drizzle-orm";
+import type {DBQueryConfig} from "drizzle-orm/relations";
 
-type Absence = Entity<typeof absence>
-type NewAbsence = NewEntity<typeof absence>
-type UpdateAbsence = UpdateEntity<typeof absence>
+type Absence = Entity<typeof absences>
+type NewAbsence = NewEntity<typeof absences>
+type UpdateAbsence = UpdateEntity<typeof absences>
 
 const createAbsence = async (
     newAbsence: NewAbsence
-) => createEntry(absence, newAbsence)
+) => createEntity(absences, newAbsence)
 
 const updateAbsence = async (
     id: number,
     updateAbsence: UpdateAbsence
-) => updateEntry(absence, updateAbsence, id, absence.id)
+) => updateEntity(absences, updateAbsence, id, absences.id)
 
 const deleteAbsence = async (
     id: number
-) => deleteEntity(absence, id, absence.id)
+) => deleteEntity(absences, id, absences.id)
 
 const getAbsence = async (
     id: number
-) => getEntity(absence, id, absence.id)
+) => getEntity(absences, id, absences.id)
 
-const getAbsencesFromUser = async (
-    userId: number,
-    limit: number = 100
-): Promise<ActionResult<Absence[]>> => {
-
+const queryAbsence = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Absence>> => {
     try {
 
-        const absences = await db
-            .select({
-                id: absence.id,
-                comment: absence.comment,
-                reason: absence.reason,
-                start: absence.start,
-                end: absence.end,
-                createdAt: absence.createdAt,
-                updatedAt: absence.updatedAt,
-                createdBy: absence.createdBy,
-                updatedBy: absence.updatedBy
-            })
-            .from(entry)
-            .where(eq(entry.createdBy, userId))
-            .limit(limit)
+        const result = await db.query.absences.findFirst(config)
 
-        if (!absences || absences.length == 0) {
-            return {success: false, error: 'Can not find any time entries with this id'}
+        if (!result) {
+            return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: absences}
+        return {success: true, data: result}
 
     } catch (err) {
         const error = err as Error
@@ -68,74 +52,18 @@ const getAbsencesFromUser = async (
     }
 }
 
-const getAbsencesFromTeam = async (
-    teamId: number,
-    limit: number = 100
+const queryAbsences = async (
+    config: DBQueryConfig = {},
 ): Promise<ActionResult<Absence[]>> => {
-
     try {
 
-        const absences = await db
-            .select({
-                id: absence.id,
-                comment: absence.comment,
-                reason: absence.reason,
-                start: absence.start,
-                end: absence.end,
-                createdAt: absence.createdAt,
-                updatedAt: absence.updatedAt,
-                createdBy: absence.createdBy,
-                updatedBy: absence.updatedBy
-            })
-            .from(entry)
-            .innerJoin(members, eq(entry.createdBy, members.userId))
-            .innerJoin(team, eq(members.teamId, team.id))
-            .where(eq(team.id, teamId))
-            .limit(limit)
+        const result = await db.query.absences.findMany(config)
 
-        if (!absences || absences.length == 0) {
-            return {success: false, error: 'Can not find any time entries with this id'}
+        if (!result || result.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: absences}
-
-    } catch (err) {
-        const error = err as Error
-        return {success: false, error: error.message}
-    }
-}
-
-const getAbsencesFromOrganisation = async (
-    organisationId: number,
-    limit: number = 100
-): Promise<ActionResult<Absence[]>> => {
-
-    try {
-
-        const absences = await db
-            .select({
-                id: absence.id,
-                comment: absence.comment,
-                reason: absence.reason,
-                start: absence.start,
-                end: absence.end,
-                createdAt: absence.createdAt,
-                updatedAt: absence.updatedAt,
-                createdBy: absence.createdBy,
-                updatedBy: absence.updatedBy
-            })
-            .from(entry)
-            .innerJoin(members, eq(entry.createdBy, members.userId))
-            .innerJoin(team, eq(members.teamId, team.id))
-            .innerJoin(organisation, eq(team.organisationId, organisation.id))
-            .where(eq(organisation.id, organisationId))
-            .limit(limit)
-
-        if (!absences || absences.length == 0) {
-            return {success: false, error: 'Can not find any time entries with this id'}
-        }
-
-        return {success: true, data: absences}
+        return {success: true, data: result}
 
     } catch (err) {
         const error = err as Error
@@ -154,7 +82,6 @@ export {
     updateAbsence,
     deleteAbsence,
     getAbsence,
-    getAbsencesFromUser,
-    getAbsencesFromOrganisation,
-    getAbsencesFromTeam
+    queryAbsence,
+    queryAbsences
 }

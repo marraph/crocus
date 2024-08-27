@@ -1,76 +1,72 @@
-import {members, project, task} from "@/schema";
+import {projects} from "@/schema";
 import {
     ActionResult,
-    createEntry,
+    createEntity,
     deleteEntity,
     Entity,
     getEntity,
     NewEntity,
-    queryEntity,
     UpdateEntity,
-    updateEntry
+    updateEntity
 } from "@/action/actions";
 import {db} from "@/database/drizzle";
-import {eq} from "drizzle-orm";
+import type {DBQueryConfig} from "drizzle-orm/relations";
 
-type Project = Entity<typeof project>
-type NewProject = NewEntity<typeof project>
-type UpdateProject = UpdateEntity<typeof project>
+type Project = Entity<typeof projects>
+type NewProject = NewEntity<typeof projects>
+type UpdateProject = UpdateEntity<typeof projects>
 
-const getProject = async (id: number) => getEntity(project, id, project.id)
+const getProject = async (id: number) => getEntity(projects, id, projects.id)
 
 const createProject = async (
     newProject: NewProject
-) => createEntry(project, newProject)
+) => createEntity(projects, newProject)
 
 const updateProject = async (
     id: number,
     updateProject: UpdateProject
-) => updateEntry(project, updateProject, id, project.id)
+) => updateEntity(projects, updateProject, id, projects.id)
 
 const deleteProject = async (
     id: number
-) => deleteEntity(project, id, project.id)
+) => deleteEntity(projects, id, projects.id)
 
-const getProjectsFromTeam = async (
-    teamId: number,
-    limit: number = 100
-) => queryEntity(project, teamId, project.teamId, limit)
-
-const getProjectsFromUser = async (
-    userId: number,
-    limit: number = 100
-): Promise<ActionResult<Project[]>> => {
+const queryProject = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Project>> => {
     try {
 
-        const projects = await db
-            .select({
-                id: project.id,
-                name: project.name,
-                description: project.description,
-                priority: project.priority,
-                isArchived: project.isArchived,
-                createdAt: project.createdAt,
-                updatedAt: project.updatedAt,
-                createdBy: project.createdBy,
-                updatedBy: project.updatedBy,
-                teamId: project.teamId
-            })
-            .from(project)
-            .innerJoin(members, eq(project.teamId, members.teamId))
-            .where(eq(members.userId, userId))
-            .limit(limit)
+        const queryTasks = await db.query.projects.findFirst(config)
 
-        if (!projects || projects.length == 0) {
-            return {success: false, error: 'No projects found!'}
+        if (!queryTasks) {
+            return {success: false, error: 'Can not select organisations with this ID'}
         }
 
-        return {success: true, data: projects}
+        return {success: true, data: queryTasks}
+
     } catch (err) {
         const error = err as Error
         return {success: false, error: error.message}
     }
+}
 
+const queryProjects = async (
+    config: DBQueryConfig = {},
+): Promise<ActionResult<Project[]>> => {
+    try {
+
+        const queryTasks = await db.query.projects.findMany(config)
+
+        if (!queryTasks || queryTasks.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        return {success: true, data: queryTasks}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
 }
 
 export type {
@@ -84,6 +80,6 @@ export {
     createProject,
     updateProject,
     deleteProject,
-    getProjectsFromTeam,
-    getProjectsFromUser
+    queryProject,
+    queryProjects
 }
