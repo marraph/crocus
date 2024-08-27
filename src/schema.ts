@@ -260,10 +260,11 @@ export const projectRelations = relations(projects, ({one, many}) => ({
         fields: [projects.updatedBy],
         references: [users.id]
     }),
-    tasks: many(tasks)
+    tasks: many(tasks),
+    entries: many(entries)
 }))
 
-export const taskRelations = relations(tasks, ({one}) => ({
+export const taskRelations = relations(tasks, ({one, many}) => ({
     project: one(projects, {
         fields: [tasks.projectId],
         references: [projects.id]
@@ -278,6 +279,38 @@ export const taskRelations = relations(tasks, ({one}) => ({
     }),
     updatedBy: one(users, {
         fields: [tasks.updatedBy],
+        references: [users.id]
+    }),
+    entries: many(entries)
+}))
+
+
+export const absenceRelations = relations(absences, ({one}) => ({
+    createdBy: one(users, {
+        fields: [absences.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [absences.updatedBy],
+        references: [users.id]
+    })
+}))
+
+export const entryRelations = relations(entries, ({one}) => ({
+    project: one(projects, {
+        fields: [entries.projectId],
+        references: [projects.id]
+    }),
+    task: one(tasks, {
+        fields: [entries.taskId],
+        references: [tasks.id]
+    }),
+    createdBy: one(users, {
+        fields: [entries.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [entries.updatedBy],
         references: [users.id]
     })
 }))

@@ -1,7 +1,8 @@
 import {drizzle} from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import {
-    absences, entries, organisationMemberRelations,
+    absenceRelations,
+    absences, entries, entryRelations, organisationMemberRelations,
     organisationMembers, organisationRelations,
     organisations, projectRelations,
     projects, taskRelations,
@@ -31,6 +32,8 @@ export const db = drizzle(queryClient, {
         projectRelations,
         taskRelations,
         organisationMemberRelations,
-        teamMemberRelations
+        teamMemberRelations,
+        absenceRelations,
+        entryRelations
     }
 });
