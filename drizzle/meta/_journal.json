@@ -5,29 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1722876533223,
-      "tag": "0000_magical_silver_sable",
+      "when": 1724843665789,
+      "tag": "0000_yellow_prodigy",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1724309444525,
-      "tag": "0001_flashy_hawkeye",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1724403473860,
-      "tag": "0002_dear_boomerang",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1724528456178,
-      "tag": "0003_aromatic_bloodaxe",
+      "when": 1724849016771,
+      "tag": "0001_glossy_nick_fury",
       "breakpoints": true
     }
   ]
