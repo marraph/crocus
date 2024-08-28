@@ -1,6 +1,5 @@
 import {organisations} from "@/schema";
 import {
-    ActionResult,
     createEntity,
     deleteEntity,
     Entity,
@@ -35,7 +34,7 @@ const getOrganisation = async (
 
 const queryOrganisation = async (
     config: DBQueryConfig = {},
-): Promise<ActionResult<Organisation>> => {
+) => {
     try {
 
         const queryOrganisation = await db.query.organisations.findFirst(config)
@@ -54,7 +53,7 @@ const queryOrganisation = async (
 
 const queryOrganisations = async (
     config: DBQueryConfig = {},
-): Promise<ActionResult<Organisation[]>> => {
+) => {
     try {
 
         const queryOrganisations = await db.query.organisations.findMany(config)
