@@ -8,8 +8,8 @@ import {
     projects, taskRelations,
     tasks, teamMemberRelations,
     teamMembers, teamRelations,
-    teams,
-    topics,
+    teams, topicRelations,
+    topics, userRelations,
     users
 } from "@/schema";
 
@@ -34,6 +34,8 @@ export const db = drizzle(queryClient, {
         organisationMemberRelations,
         teamMemberRelations,
         absenceRelations,
-        entryRelations
+        entryRelations,
+        userRelations,
+        topicRelations
     }
 });

@@ -194,6 +194,13 @@ export const organisationMembers = pgTable('organisation_members', {
     Relations
  */
 
+export const userRelations = relations(users, ({many}) => ({
+    organisationMemberships: many(organisationMembers),
+    teamMemberships: many(teamMembers),
+    absence: many(absences),
+    entry: many(entries)
+}))
+
 export const organisationRelations = relations(organisations, ({one, many}) => ({
     createdBy: one(users, {
         fields: [organisations.createdBy],
@@ -203,8 +210,8 @@ export const organisationRelations = relations(organisations, ({one, many}) => (
         fields: [organisations.updatedBy],
         references: [users.id]
     }),
-    teams: many(teams),
-    users: many(organisationMembers)
+    team: many(teams),
+    members: many(organisationMembers)
 }))
 
 export const organisationMemberRelations = relations(organisationMembers, ({one}) => ({
@@ -229,6 +236,21 @@ export const teamMemberRelations = relations(teamMembers, ({one}) => ({
     })
 }))
 
+export const topicRelations = relations(topics, ({one}) => ({
+    team: one(teams, {
+        fields: [topics.teamId],
+        references: [teams.id]
+    }),
+    createdBy: one(users, {
+        fields: [topics.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [topics.updatedBy],
+        references: [users.id]
+    })
+}))
+
 export const teamRelations = relations(teams, ({one, many}) => ({
     organisation: one(organisations, {
         fields: [teams.organisationId],
@@ -242,9 +264,9 @@ export const teamRelations = relations(teams, ({one, many}) => ({
         fields: [teams.updatedBy],
         references: [users.id]
     }),
-    topics: many(topics),
-    projects: many(projects),
-    users: many(users)
+    topic: many(topics),
+    project: many(projects),
+    members: many(teamMembers)
 }))
 
 export const projectRelations = relations(projects, ({one, many}) => ({
@@ -260,8 +282,8 @@ export const projectRelations = relations(projects, ({one, many}) => ({
         fields: [projects.updatedBy],
         references: [users.id]
     }),
-    tasks: many(tasks),
-    entries: many(entries)
+    task: many(tasks),
+    entry: many(entries)
 }))
 
 export const taskRelations = relations(tasks, ({one, many}) => ({
@@ -281,17 +303,13 @@ export const taskRelations = relations(tasks, ({one, many}) => ({
         fields: [tasks.updatedBy],
         references: [users.id]
     }),
-    entries: many(entries)
+    entry: many(entries)
 }))
 
 
 export const absenceRelations = relations(absences, ({one}) => ({
     createdBy: one(users, {
         fields: [absences.createdBy],
-        references: [users.id]
-    }),
-    updatedBy: one(users, {
-        fields: [absences.updatedBy],
         references: [users.id]
     })
 }))
@@ -307,10 +325,6 @@ export const entryRelations = relations(entries, ({one}) => ({
     }),
     createdBy: one(users, {
         fields: [entries.createdBy],
-        references: [users.id]
-    }),
-    updatedBy: one(users, {
-        fields: [entries.updatedBy],
         references: [users.id]
     })
 }))
