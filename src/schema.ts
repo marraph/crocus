@@ -41,17 +41,17 @@ export const users = pgTable('users', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     email: text('email').unique().notNull(),
-    password: text('password'),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at')
+    password: text('password').notNull(),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull()
 })
 
 export const topics = pgTable('topics', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     hexCode: text('hex_code').notNull(),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -75,8 +75,8 @@ export const tasks = pgTable('tasks', {
     topic: integer('topic_id'),
     state: state('state').default('planing'),
     priority: priority('priority').default('low'),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -93,8 +93,8 @@ export const projects = pgTable('projects', {
     description: text('description'),
     priority: priority('priority').default('low'),
     isArchived: boolean('is_archived').default(false),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -109,8 +109,8 @@ export const projects = pgTable('projects', {
 export const teams = pgTable("teams", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -125,8 +125,8 @@ export const teams = pgTable("teams", {
 export const organisations = pgTable("organisations", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -141,12 +141,9 @@ export const absences = pgTable("absences", {
     reason: absenceReason("reason").notNull(),
     start: timestamp("start"),
     end: timestamp("end"),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
-        .notNull()
-        .references(() => users.id),
-    updatedBy: integer('updated_by')
         .notNull()
         .references(() => users.id),
 })
@@ -161,9 +158,6 @@ export const entries = pgTable("entries", {
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
-    updatedBy: integer('updated_by')
-        .notNull()
-        .references(() => users.id),
     projectId: integer('project_id')
         .references(() => projects.id),
     taskId: integer('task_id')
@@ -171,7 +165,7 @@ export const entries = pgTable("entries", {
 })
 
 export const teamMembers = pgTable('team_members', {
-    createdAt: timestamp('created_at'),
+    createdAt: timestamp('created_at').notNull(),
     userId: integer('user_id')
         .notNull()
         .references(() => users.id),
@@ -181,7 +175,7 @@ export const teamMembers = pgTable('team_members', {
 })
 
 export const organisationMembers = pgTable('organisation_members', {
-    createdAt: timestamp('created_at'),
+    createdAt: timestamp('created_at').notNull(),
     userId: integer('user_id')
         .notNull()
         .references(() => users.id),
