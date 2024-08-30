@@ -1,10 +1,17 @@
 import {Topic} from "@/action/topic";
 import {Absence} from "@/action/absence";
 import {TimeEntry} from "@/action/timeEntry";
+import {Team} from "@/action/team";
+import {Organisation} from "@/action/organisation";
+import {Task} from "@/action/task";
+import {Project} from "@/action/projects";
+import {User} from "@/action/user";
 
 type Priority = 'low' | 'medium' | 'high';
 type State = 'pending' | 'planing' | 'started' | 'tested' | 'finished';
 type AbsenceReason = 'sick' | 'vacation';
+
+type ActionConsumerType = Team | Organisation | Absence | Task | Project | TimeEntry | Topic | User
 
 type CompletedUser = {
     id: number
@@ -140,6 +147,7 @@ type CompletedTask = {
 }
 
 export type {
+    ActionConsumerType,
     CompletedUser,
     Priority,
     State,
