@@ -6,7 +6,7 @@ import moment from "moment";
 import {TimeEntry} from "@/action/timeEntry";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-    entries: TimeEntry[] | undefined;
+    entries: TimeEntry[] | null;
 }
 
 export const TimeEntryDaySummary: React.FC<Props> = ({ entries, className, ...props }) => {

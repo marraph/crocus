@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useRef, useState} from "react";
+import React, {forwardRef, useRef, useState} from "react";
 import {Briefcase, ChevronsUpDown, LogOut, Settings} from "lucide-react";
 import {cn} from "@/utils/cn";
 import {Avatar} from "@marraph/daisy/components/avatar/Avatar";
@@ -14,7 +14,7 @@ import {Skeleton, SkeletonColumn, SkeletonElement} from "@marraph/daisy/componen
 
 const path = "/image.png";
 
-export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
+export const ProfileContextMenu = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({className, ...props}, ref) => {
     const [showProfile, setShowProfile] = useState(false);
     const logoutDialogRef = useRef<DialogRef>(null);
     const router = useRouter();

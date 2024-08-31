@@ -27,7 +27,7 @@ import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {ComplexTask, getTaskById} from "@/utils/object-helpers";
+import {ComplexTask, getTaskFromId} from "@/utils/object-helpers";
 import {useUser} from "@/context/UserContext";
 
 export default function Page() {
@@ -56,7 +56,7 @@ export default function Page() {
 
     useEffect(() => {
         if (task?.task && user) {
-            const task = getTaskById(user, id);
+            const task = getTaskFromId(user, id);
             setTask(task);
         }
     }, [id, task?.task, user]);

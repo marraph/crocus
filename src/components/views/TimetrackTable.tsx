@@ -10,7 +10,6 @@ import {
 } from "@marraph/daisy/components/table/Table";
 import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {EntryTaskBadge} from "@/components/badges/EntryTaskBadge";
-import {Absence, TimeEntry} from "@/types/types";
 import {TimeEntryContextMenu} from "@/components/contextmenus/TimeEntryContextMenu";
 import {DeleteTimeEntryDialog} from "@/components/dialogs/timetracking/DeleteTimeEntryDialog";
 import {EditTimeEntryDialog} from "@/components/dialogs/timetracking/EditTimeEntryDialog";
@@ -21,8 +20,12 @@ import {EditAbsenceDialog} from "@/components/dialogs/timetracking/EditAbsenceDi
 import moment from "moment";
 import {TimeEntryDaySummary} from "@/components/cards/TimeEntryDaySummary";
 import { useTooltip } from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {useContextMenu} from "@/hooks/useContextMenu";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
+import {TimeEntry} from "@/action/timeEntry";
+import {Absence} from "@/action/absence";
+import {useContextMenu} from "@marraph/daisy/hooks/useContextMenu";
+import {getProjectFromId, getTaskFromId} from "@/utils/object-helpers";
+import {useUser} from "@/context/UserContext";
 
 
 interface TimetrackProps {
@@ -39,13 +42,12 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
 
     const [focusItem, setFocusItem] = useState<FocusItem>(null);
     const {addTooltip, removeTooltip} = useTooltip();
-    const {contextMenu: entryContextMenu, handleContextMenu: handleEntryContextMenu, closeContextMenu: closeEntryContextMenu} = useContextMenu<TimeEntry>();
-    const {contextMenu: absenceContextMenu, handleContextMenu: handleAbsenceContextMenu, closeContextMenu: closeAbsenceContextMenu} = useContextMenu<Absence>();
+    const {contextMenu: entryContextMenu, handleContextMenu: handleEntryContextMenu, closeContextMenu: closeEntryContextMenu} = useContextMenu();
+    const {contextMenu: absenceContextMenu, handleContextMenu: handleAbsenceContextMenu, closeContextMenu: closeAbsenceContextMenu} = useContextMenu();
+
+    const { user, loading, error } = useUser();
 
     const contextRef = useOutsideClick((e) => {
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            return;
-        }
         closeEntryContextMenu();
         closeAbsenceContextMenu();
         setFocusItem(null);
@@ -56,17 +58,6 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
         { key: "time", label: "Time" },
         { key: "duration", label: "Duration" },
     ], []);
-
-    useEffect(() => {
-        if (entryContextMenu.visible) {
-            closeAbsenceContextMenu();
-            setFocusItem(entryContextMenu.item ? { type: 'timeEntry', item: entryContextMenu.item } : null);
-        }
-        if (absenceContextMenu.visible) {
-            closeEntryContextMenu();
-            setFocusItem(absenceContextMenu.item ? { type: 'absence', item: absenceContextMenu.item } : null);
-        }
-    }, [entryContextMenu.visible, closeAbsenceContextMenu, entryContextMenu.item, absenceContextMenu.visible, absenceContextMenu.item, closeEntryContextMenu]);
 
     const handleTimeEntryOnClick = useCallback((timeEntry: TimeEntry) => {
         setFocusItem({ type: 'timeEntry', item: timeEntry });
@@ -79,11 +70,13 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
     }, []);
 
     const calculateDifference = useCallback((entry: TimeEntry) => {
-        const startDate = moment(entry.startDate);
-        const endDate = moment(entry.endDate);
+        const startDate = moment(entry.start);
+        const endDate = moment(entry.end);
 
         return moment.duration(endDate.diff(startDate)).asHours();
     }, []);
+
+    if (!user) return;
 
     return (
         <>
@@ -131,85 +124,101 @@ export const TimetrackTable: React.FC<TimetrackProps> = ({ entries, absences }) 
                         {absences?.map((absence, index) => (
                             <TableRow key={index}
                                       className={"h-min last:border-b last:border-b-zinc-300 dark:last:border-b-edge"}
-                                      onContextMenu={(e) => handleAbsenceContextMenu(e, absence)}
+                                      onContextMenu={(e) => handleAbsenceContextMenu(e)}
                                       onClick={() => handleAbsenceOnClick(absence)}
                             >
                                 <TableCell>
                                     <div className={"flex flex-row items-center space-x-2"}>
-                                        <AbsenceBadge title={"Absence: " + absence.absenceType.toString()}/>
+                                        <AbsenceBadge title={"Absence: " + absence.reason.toString()}/>
                                         <span>{absence.comment}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
-                                <TableAction onClick={(e) => {
-                                    if (!absenceContextMenu.visible) {
-                                        setFocusItem({type: "absence", item:absence});
-                                        handleAbsenceContextMenu(e, absence);
-                                    } else {
+                                <TableAction
+                                    actionMenu={
+                                        <TimeEntryContextMenu
+                                            contextRef={contextRef}
+                                            editRef={editAbsenceRef}
+                                            deleteRef={deleteRef}
+                                            x={absenceContextMenu.x}
+                                            y={absenceContextMenu.y}
+                                        />
+                                    }
+                                    onClose={() => {
                                         closeAbsenceContextMenu();
                                         setFocusItem(null);
-                                    }
-                                }}
+                                    }}
                                 />
                             </TableRow>
                         ))}
                         {entries?.map((entry, index) => (
                             <TableRow key={index}
                                       className={index === entries?.length - 1 ? " border-b border-b-zinc-300 dark:border-b-edge" : ""}
-                                      onContextMenu={(e) => handleEntryContextMenu(e, entry)}
+                                      onContextMenu={(e) => handleEntryContextMenu(e)}
                                       onClick={() => handleTimeEntryOnClick(entry)}
                             >
                                 <TableCell>
                                     <div className={"flex flex-row items-center space-x-2"}>
-                                        {entry.project &&
-                                            <ProjectBadge
-                                                title={entry.project.name}
-                                                textClassName={"truncate"}
-                                                onMouseEnter={(e) => {
-                                                    addTooltip({
-                                                        message: "Project: " + entry.project?.name,
-                                                        anchor: "tl",
-                                                        trigger: e.currentTarget.getBoundingClientRect()
-                                                    });
-                                                }}
-                                                onMouseLeave={() => removeTooltip()}
-                                            />
-                                        }
-                                        {entry.task &&
-                                            <EntryTaskBadge
-                                                title={entry.task.name}
-                                                textClassName={"truncate"}
-                                                onMouseEnter={(e) => {
-                                                    addTooltip({
-                                                        message: "Task: " + entry.task?.name,
-                                                        anchor: "tl",
-                                                        trigger: e.currentTarget.getBoundingClientRect()
-                                                    });
-                                                }}
-                                                onMouseLeave={() => removeTooltip()}
-                                            />
-                                        }
+                                        {entry.projectId && (() => {
+                                            const projectName = getProjectFromId(user, entry.projectId).name;
+                                            return (
+                                                <ProjectBadge
+                                                    title={projectName}
+                                                    textClassName={"truncate"}
+                                                    onMouseEnter={(e) => {
+                                                        addTooltip({
+                                                            message: "Project: " + projectName,
+                                                            anchor: "tl",
+                                                            trigger: e.currentTarget.getBoundingClientRect()
+                                                        });
+                                                    }}
+                                                    onMouseLeave={() => removeTooltip()}
+                                                />
+                                            );
+                                        })()}
+                                        {entry.taskId && (() => {
+                                            const taskName = getTaskFromId(user, entry.taskId).task.name;
+                                            return (
+                                                <EntryTaskBadge
+                                                    title={taskName}
+                                                    textClassName={"truncate"}
+                                                    onMouseEnter={(e) => {
+                                                        addTooltip({
+                                                            message: "Task: " + taskName,
+                                                            anchor: "tl",
+                                                            trigger: e.currentTarget.getBoundingClientRect()
+                                                        });
+                                                    }}
+                                                    onMouseLeave={() => removeTooltip()}
+                                                />
+                                            );
+                                        })()}
                                         <span className={"text-nowrap"}>{entry.comment}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell>
                                     <span className={"text-nowrap"}>
-                                        {moment(entry.startDate).format('HH:mm') + " - " + moment(entry.endDate).format('HH:mm')}
+                                        {moment(entry.start).format('HH:mm') + " - " + moment(entry.end).format('HH:mm')}
                                     </span>
                                 </TableCell>
                                 <TableCell className={"flex flex-row space-x-4 items-center justify-between"}>
                                     <span>{calculateDifference(entry) + "h"}</span>
                                 </TableCell>
-                                <TableAction onClick={(e) => {
-                                    if (!entryContextMenu.visible) {
-                                        setFocusItem({type: "timeEntry", item:entry});
-                                        handleEntryContextMenu(e, entry);
-                                    } else {
+                                <TableAction 
+                                    actionMenu={
+                                        <TimeEntryContextMenu
+                                            contextRef={contextRef}
+                                            editRef={editEntryRef}
+                                            deleteRef={deleteRef}
+                                            x={entryContextMenu.x}
+                                            y={entryContextMenu.y}
+                                        />
+                                    }
+                                    onClose={() => {
                                         closeEntryContextMenu();
                                         setFocusItem(null);
-                                    }
-                                }}
+                                    }}
                                 />
                             </TableRow>
                         ))}

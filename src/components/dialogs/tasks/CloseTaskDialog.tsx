@@ -6,24 +6,30 @@ import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@mar
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {useTasks} from "@/context/TaskContext";
-import {Task} from "@/action/task";
-import {CompletedTask} from "@/types/types";
+import {ActionConsumerType, CompletedUser} from "@/types/types";
+import {Task, updateTask} from "@/action/task";
+import {updateTaskWithId} from "@/utils/object-helpers";
 
-export const CloseTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onClose?: () => void }>(({ task, onClose }, ref) => {
+export const CloseTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
-    const { user } = useUser();
-    const { actions } = useTasks();
+    const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
-    
+
     const handleCloseTaskClick = useCallback(async () => {
         if (!user) return;
 
-        const result = await actions.updateTask(task.id, {
-            ...task,
-            isArchived: true,
-            updatedBy: user.id,
-            updatedAt: new Date()
+        actionConsumer({
+            consumer: async () => {
+                return await updateTask(task.id, {
+                    ...task,
+                    isArchived: true,
+                    updatedBy: user.id,
+                    updatedAt: new Date
+                });
+            },
+            handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
+                return updateTaskWithId(currentUser, task.id, input as Task);
+            }
         });
 
         if (result.success) {
@@ -40,8 +46,8 @@ export const CloseTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onCl
             });
         }
 
-        onClose && onClose();
-    }, [actions, addToast, onClose, task, user]);
+        onClose?.();
+    }, [actionConsumer, addToast, onClose, task, user]);
 
     if (!user || !dialogRef) return null;
 
@@ -49,6 +55,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onCl
         <Dialog width={600}
                 ref={dialogRef}
                 onClose={onClose}
+                onSubmit={handleCloseTaskClick}
         >
             <DialogHeader title={"Close Task"}/>
             <DialogContent>
@@ -56,9 +63,7 @@ export const CloseTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onCl
                     Are you sure you want to close this task?
                 </span>
             </DialogContent>
-            <DialogFooter saveButtonTitle={"Close"}
-                          onClick={handleCloseTaskClick}
-            />
+            <DialogFooter saveButtonTitle={"Close"}/>
         </Dialog>
     );
 })

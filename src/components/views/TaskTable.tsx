@@ -23,29 +23,25 @@ import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import {getSortedTaskTable, SortState} from "@/utils/sort";
 import moment from "moment";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {useContextMenu} from "@/hooks/useContextMenu";
+import {ComplexTask} from "@/utils/object-helpers";
+import {useContextMenu} from "@marraph/daisy/hooks/useContextMenu";
+import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 interface TaskProps {
-    taskElements: TaskElement[];
+    tasks: ComplexTask[];
 }
 
-export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
+export const TaskTable: React.FC<TaskProps> = ({ tasks }) => {
     const router = useRouter();
     const deleteRef = useRef<DialogRef>(null);
     const editRef = useRef<DialogRef>(null);
     const closeRef = useRef<DialogRef>(null);
-    const [focusTaskElement, setFocusTaskElement] = useState<TaskElement | null>(null);
+
+    const [focusTaskElement, setFocusTaskElement] = useState<ComplexTask | null>(null);
     const [sort, setSort] = useState<SortState>({ key: "id", order: "asc" });
     const {addTooltip, removeTooltip} = useTooltip();
-    const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu<TaskElement>();
-
-    const contextRef = useOutsideClick((e) => {
-        if (e.target instanceof HTMLButtonElement || e.target instanceof SVGElement) {
-            return;
-        }
-        closeContextMenu();
-        setFocusTaskElement(null);
-    });
+    const {contextMenu, handleContextMenu, closeContextMenu } = useContextMenu();
+    const contextRef = useOutsideClick(() => closeContextMenu());
 
     const header = useMemo(() => [
         { key: 'project', label: 'Project' },
@@ -71,9 +67,9 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                 </>
             }
 
-            {contextMenu.visible && contextMenu.item &&
+            {contextMenu.visible && focusTaskElement?.task.id &&
                 <TaskContextMenu
-                    taskId={contextMenu.item.id}
+                    taskId={focusTaskElement.task.id}
                     x={contextMenu.x}
                     y={contextMenu.y}
                     contextRef={contextRef}
@@ -85,7 +81,7 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
 
             <Table className={"w-full text-xs border-0 rounded-b-none"}>
                 <TableHeader>
-                    <TableRow className={cn("", taskElements.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-zinc-300 dark:border-b-edge" : "border-none")}>
+                    <TableRow className={cn("", tasks.length === 0 ? "border-x-0 border-t-0 border-1 border-b border-b-zinc-300 dark:border-b-edge" : "border-none")}>
                         {header.map((header) => (
                             <TableHead className={"min-w-28 max-w-32 overflow-hidden"}
                                        key={header.key}
@@ -101,23 +97,23 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody className={"text-sm"}>
-                    {getSortedTaskTable(taskElements, sort).map((taskElement, index) => (
-                        <TableRow key={taskElement.id}
+                    {getSortedTaskTable(tasks, sort).map((task) => (
+                        <TableRow key={task.id}
                                   className={cn("last:border-b last:border-b-zinc-300 dark:last:border-b-edge")}
-                                  onClick={() => router.push(`/tasks/${taskElement.id}`)}
+                                  onClick={() => router.push(`/tasks/${task.id}`)}
                                   onContextMenu={(e) => {
-                                      handleContextMenu(e, taskElement);
-                                      setFocusTaskElement(taskElement);
+                                      handleContextMenu(e);
+                                      setFocusTaskElement(task);
                                   }}
                         >
                             <TableCell>
                                 <div className={"flex flex-row items-center space-x-2"}>
-                                    {taskElement.project &&
+                                    {task.project &&
                                         <ProjectBadge
-                                            title={taskElement.project.name}
+                                            title={task.project.name}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Project: " + taskElement.project?.name,
+                                                    message: "Project: " + task.project?.name,
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
@@ -126,13 +122,13 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                         />
 
                                     }
-                                    {taskElement.topicItem &&
+                                    {task.topicItem &&
                                         <TopicBadge
-                                            title={taskElement.topicItem.name}
+                                            title={task.topicItem.name}
                                             color={"error"}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Topic: " + taskElement.topicItem?.name,
+                                                    message: "Topic: " + task.topicItem?.name,
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
@@ -140,12 +136,12 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                             onMouseLeave={() => removeTooltip()}
                                         />
                                     }
-                                    {taskElement.priority &&
+                                    {task.priority &&
                                         <PriorityBadge
-                                            priority={taskElement.priority}
+                                            priority={task.priority}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Priority: " + taskElement.priority,
+                                                    message: "Priority: " + task.priority,
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
@@ -156,23 +152,27 @@ export const TaskTable: React.FC<TaskProps> = ({ taskElements }) => {
                                 </div>
                             </TableCell>
                             <TableCell className={"text-zinc-800 dark:text-white truncate"}>
-                                {taskElement.name}
+                                {task.name}
                             </TableCell>
                             <TableCell>
-                                <StatusBadge title={taskElement.state?.toString()}/>
+                                <StatusBadge title={task.state?.toString()}/>
                             </TableCell>
                             <TableCell className={"text-xs"}>
-                                {moment(taskElement.deadline?.toString()).format('MMM D YYYY')}
+                                {moment(task.deadline?.toString()).format('MMM D YYYY')}
                             </TableCell>
-                            <TableAction onClick={(e) => {
-                                if (!contextMenu.visible) {
-                                    setFocusTaskElement(taskElement);
-                                    handleContextMenu(e, taskElement);
-                                } else {
-                                    closeContextMenu();
-                                    setFocusTaskElement(null);
+                            <TableAction
+                                 actionMenu={
+                                    <TaskContextMenu
+                                        taskId={task.task.id}
+                                        x={contextMenu.x}
+                                        y={contextMenu.y}
+                                        contextRef={contextRef}
+                                        deleteRef={deleteRef}
+                                        closeRef={closeRef}
+                                        editRef={editRef}
+                                    />
                                 }
-                            }}
+                                 onClose={() => setFocusTaskElement(null)}
                             />
                         </TableRow>
                     ))}

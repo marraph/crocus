@@ -3,6 +3,7 @@ import {CompletedProject, CompletedTask, CompletedTeam, CompletedUser} from "@/t
 import {TimeEntry} from "@/action/timeEntry";
 import {Absence} from "@/action/absence";
 import moment from "moment/moment";
+import {Task} from "@/action/task";
 
 export function getDashboardTasks(user: CompletedUser): CompletedTask[] {
     let taskList: CompletedTask[] = [];
@@ -54,6 +55,18 @@ export function getProjectsFromUser(user: CompletedUser): CompletedProject[] {
     return projectList;
 }
 
+export function getProjectFromId(user: CompletedUser, projectId: number): CompletedProject {
+    let project = {} as CompletedProject;
+    user.teamMemberships.forEach((team) => {
+        team.team.project.forEach((proj) => {
+            if (proj.id === projectId) {
+                project = proj;
+            }
+        });
+    });
+    return project;
+}
+
 export function getTopicsFromUser(user: CompletedUser): Topic[] {
     let topicList = [] as Topic[];
     user.teamMemberships.forEach((team) => {
@@ -90,7 +103,7 @@ export function getTasksFromUser(user: CompletedUser): ComplexTask[] {
     return taskList;
 }
 
-export function getTaskById(user: CompletedUser, taskId: number): ComplexTask {
+export function getTaskFromId(user: CompletedUser, taskId: number): ComplexTask {
     let task = {} as ComplexTask;
     user.teamMemberships.forEach((team) => {
         team.team.project.forEach((project) => {
@@ -108,6 +121,35 @@ export function getTaskById(user: CompletedUser, taskId: number): ComplexTask {
     return task;
 }
 
+export function updateTaskWithId(user: CompletedUser, taskId: number, task: Task): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.teamMemberships.forEach((team) => {
+        team.team.project.forEach((project) => {
+            project.task.forEach((t) => {
+                if (t.id === taskId) {
+                    const task: Task = {
+                        id: t.id,
+                        name: t.name,
+                        description: t.description,
+                        state: t.state,
+                        priority: t.priority,
+                        topic: t.topic?.id ?? null,
+                        duration: t.duration,
+                        bookedDuration: t.bookedDuration,
+                        deadline: t.deadline,
+                        isArchived: t.isArchived,
+                        createdBy: t.createdBy.id,
+                        createdAt: t.createdAt,
+                        updatedBy: t.updatedBy.id,
+                        updatedAt: t.updatedAt,
+                        projectId: project.id
+                    }
+                }
+            });
+        });
+    });
+    return updatedUser;
+}
 
 //TimeTracking
 

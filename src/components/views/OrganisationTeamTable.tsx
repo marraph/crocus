@@ -90,7 +90,9 @@ export const OrganisationTeamTable: React.FC<{}> = () => {
                             <MembersBadge title={team.members.toString() + " Members"}/>
                         </TableCell>
 
-                        <TableAction onClick={() => console.log("")}/>
+                        <TableAction
+                            actionMenu={<></>}
+                        />
                     </TableRow>
                 ))}
             </TableBody>
