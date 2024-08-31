@@ -29,22 +29,22 @@ export const CloseTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () 
             },
             handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
                 return updateTaskWithId(currentUser, task.id, input as Task);
+            },
+            onSuccess: () => {
+                addToast({
+                    title: "Task closed successfully!",
+                    secondTitle: "You can no longer interact with this task.",
+                    icon: <CheckCheck/>
+                });
+            },
+            onError: (error: string) => {
+                addToast({
+                    title: "Failed to close task.",
+                    secondTitle: error,
+                    icon: <CircleX />
+                });
             }
         });
-
-        if (result.success) {
-            addToast({
-                title: "Task closed successfully!",
-                secondTitle: "You can no longer interact with this task.",
-                icon: <CheckCheck/>
-            });
-        } else {
-            addToast({
-                title: "Failed to close task.",
-                secondTitle: result.error,
-                icon: <CircleX />
-            });
-        }
 
         onClose?.();
     }, [actionConsumer, addToast, onClose, task, user]);

@@ -22,6 +22,8 @@ interface UserProviderProps {
 interface ActionConsumer {
     consumer: () => Promise<ActionResult<ActionConsumerType>>
     handler: (currentUser: CompletedUser, input: ActionConsumerType) => CompletedUser
+    onSuccess?: (data: ActionConsumerType) => void
+    onError?: (error: string) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -57,11 +59,13 @@ export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) 
 
         if (!actionResult.success) {
             setError(actionResult.error)
+            action.onError?.(actionResult.error)
             return
         }
 
         const completedUser = action.handler(user, actionResult.data)
         setUser(completedUser)
+        action.onSuccess?.(actionResult.data)
     }
 
     return (
