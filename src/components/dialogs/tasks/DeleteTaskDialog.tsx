@@ -8,8 +8,9 @@ import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 import {useTasks} from "@/context/TaskContext";
 import {deleteTask, Task} from "@/action/task";
+import {CompletedTask} from "@/types/types";
 
-export const DeleteTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () => void }>(({ task, onClose }, ref) => {
+export const DeleteTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const { user } = useUser();
     const { actions } = useTasks();

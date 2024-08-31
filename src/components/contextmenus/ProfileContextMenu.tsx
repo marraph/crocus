@@ -18,7 +18,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
     const [showProfile, setShowProfile] = useState(false);
     const logoutDialogRef = useRef<DialogRef>(null);
     const router = useRouter();
-    const { user, organisations, teams, loading, error, actions } = useUser();
+    const { user, loading, error } = useUser();
 
     const menuRef = useOutsideClick(() => {
         setShowProfile(false);
@@ -35,7 +35,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                             "hover:bg-zinc-200 dark:hover:bg-dark-light hover:text-zinc-800 dark:hover:text-white cursor-pointer"}
                              onClick={() => {
                                  setShowProfile(false);
-                                 router.push(`/organisation/${organisations[0].id}`);
+                                 router.push(`/organisation/${user?.organisationMemberships[0].organisation.id}`);
                              }}
                         >
                             <Briefcase size={18}/>
@@ -62,7 +62,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                 <div className={cn("group w-64 flex flex-row items-center justify-between cursor-pointer bg-zinc-100 dark:bg-black-light " +
                     "border border-zinc-300 dark:border-edge rounded-lg hover:bg-zinc-200 dark:hover:bg-dark-light")}
                     onClick={() => setShowProfile(!showProfile)}>
-                    {loading.user ?
+                    {loading ?
                         <Skeleton className={"w-max"}>
                             <SkeletonElement className={"m-2"} width={43} height={43}/>
                             <SkeletonColumn className={"items-start space-y-2 mr-0"}>
@@ -75,7 +75,7 @@ export const ProfileContextMenu = React.forwardRef<HTMLDivElement, React.HTMLAtt
                             <Avatar className={cn("p-2")} img_url={path} size={60} shape={"box"}></Avatar>
                             <div className={cn("flex flex-col items-start overflow-hidden")}>
                                 <span className={"text-sm truncate w-full"}>{user?.name}</span>
-                                <span className={cn("text-zinc-500 dark:text-gray text-xs truncate w-full")}>{organisations[0].name}</span>
+                                <span className={cn("text-zinc-500 dark:text-gray text-xs truncate w-full")}>{user?.organisationMemberships[0].organisation.name}</span>
                             </div>
                         </div>
                     }

@@ -26,8 +26,8 @@ import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
 
 interface TimetrackProps {
-    entries: TimeEntry[] | undefined;
-    absences: Absence[] | undefined;
+    entries: TimeEntry[] | null;
+    absences: Absence[] | null;
 }
 
 type FocusItem = { type: 'timeEntry', item: TimeEntry } | { type: 'absence', item: Absence } | null;

@@ -20,6 +20,7 @@ export const LogOutDialog = forwardRef<DialogRef>(({}, ref) => {
 
     return (
         <Dialog width={600}
+                onSubmit={handleLogOutClick}
                 ref={dialogRef}
         >
             <DialogHeader title={"Log out"}/>
@@ -33,7 +34,6 @@ export const LogOutDialog = forwardRef<DialogRef>(({}, ref) => {
             <DialogFooter saveButtonTitle={"Log out"}
                           cancelButton={true}
                           cancelButtonTitle={"Stay here"}
-                          onClick={handleLogOutClick}
             />
         </Dialog>
     )

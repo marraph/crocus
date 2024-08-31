@@ -149,6 +149,9 @@ type CompletedTask = {
 export type {
     ActionConsumerType,
     CompletedUser,
+    CompletedTeam,
+    CompletedProject,
+    CompletedTask,
     Priority,
     State,
     AbsenceReason

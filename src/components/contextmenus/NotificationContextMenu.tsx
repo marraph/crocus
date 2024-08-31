@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {HTMLAttributes, useState} from "react";
 import {useUser} from "@/context/UserContext";
 import {Notification} from "@/components/Notification";
 import {Bell} from "lucide-react";
@@ -9,7 +9,7 @@ import {CustomScroll} from "react-custom-scroll";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
 
-interface ContextProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ContextProps extends HTMLAttributes<HTMLDivElement> {
     notifications: { sender: string, task: string, date: Date, type: string}[];
 }
 

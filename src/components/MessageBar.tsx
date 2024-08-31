@@ -4,6 +4,7 @@ import {Button} from "@marraph/daisy/components/button/Button";
 import {Check, Send} from "lucide-react";
 import {useUser} from "@/context/UserContext";
 import { AnimatePresence, motion } from "framer-motion";
+import {useInputValidation} from "@marraph/daisy/hooks/useInputValidation";
 
 interface MessageBarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -22,7 +23,7 @@ export const MessageBar: React.FC<MessageBarProps> = ({ className, ...props }) =
         if (message.trim() === "") setValid(false);
         else setValid(true);
     }, [message]);
-    
+
     useEffect(() => {
         validate();
     }, [user, message, validate]);

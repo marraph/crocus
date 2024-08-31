@@ -27,8 +27,8 @@ import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {ComplexTask, useTasks} from "@/context/TaskContext";
-
+import {ComplexTask, getTaskById} from "@/utils/object-helpers";
+import {useUser} from "@/context/UserContext";
 
 export default function Page() {
     const closeRef = useRef<DialogRef>(null);
@@ -38,7 +38,7 @@ export default function Page() {
     const [task, setTask] = useState<ComplexTask | null>(null);
     const router = useRouter();
     const id = Number(useParams().id);
-    const { tasks, loading, error } = useTasks();
+    const {user, loading, error} = useUser();
     const { addTooltip, removeTooltip } = useTooltip();
 
     useHotkeys('e', () => {
@@ -55,11 +55,11 @@ export default function Page() {
     }, { enabled });
 
     useEffect(() => {
-        if (task?.task) {
-            const task = tasks.find(t => t.task?.id === id) ?? null;
+        if (task?.task && user) {
+            const task = getTaskById(user, id);
             setTask(task);
         }
-    }, [id, task?.task, tasks]);
+    }, [id, task?.task, user]);
 
 
     if (!task?.task) {
@@ -180,7 +180,7 @@ export default function Page() {
                                     <Tag size={16}/>
                                     <span className={"w-16"}>Topic</span>
                                 </div>
-                                <span>{task.topic?.name}</span>
+                                <span>{task.task.topic?.name}</span>
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"flex flex-row items-center space-x-2 text-zinc-500 dark:text-gray"}>
@@ -218,7 +218,7 @@ export default function Page() {
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 py-2"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Changed By</div>
-                                <span>{task.task?.updatedBy}</span>
+                                <span>{task.task?.updatedBy.name}</span>
                             </div>
                             <Seperator className={"w-full py-4"}/>
                             <span className={"text-xs text-zinc-400 dark:text-marcador px-4 py-2"}>CREATION</span>
@@ -228,7 +228,7 @@ export default function Page() {
                             </div>
                             <div className={"flex flex-row space-x-4 px-4 pt-2 pb-4"}>
                                 <div className={"w-24 text-zinc-500 dark:text-gray"}>Created By</div>
-                                <span>{task.task?.createdBy}</span>
+                                <span>{task.task?.createdBy.name}</span>
                             </div>
                         </div>
                     </div>

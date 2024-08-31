@@ -12,22 +12,28 @@ import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {ComplexTask, useTasks} from "@/context/TaskContext";
-import {getTopicsFromUser, Topic} from "@/action/topic";
-import {getProjectsFromUser, Project} from "@/action/projects";
+import {CompletedProject, CompletedTask, CompletedTeam} from "@/types/types";
+import {Topic} from "@/action/topic";
+import {Project} from "@/action/projects";
+import {Team} from "@/action/team";
+import {
+    ComplexTask,
+    getProjectsFromUser,
+    getTasksFromUser,
+    getTeamsFromUser,
+    getTopicsFromUser
+} from "@/utils/object-helpers";
 
 export default function Tasks() {
     const dialogRef = useRef<DialogRef>(null);
     const filterRef = useRef<FilterRef>(null);
-    const [taskElements, setTaskElements] = useState<ComplexTask[]>([]);
+    const [tasks, setTasks] = useState<ComplexTask[]>([]);
     const [filters, setFilters] = useState<SelectedFilter[]>([]);
     const [update, setUpdate] = useState(0);
     const [topics, setTopics] = useState<Topic[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
-
-    const { user, organisations, teams } = useUser();
-    const { tasks, loading, error, actions } = useTasks();
-
+    const [projects, setProjects] = useState<CompletedProject[]>([]);
+    const [teams, setTeams] = useState<CompletedTeam[]>([]);
+    const { user, loading, error } = useUser();
     const { addTooltip, removeTooltip } = useTooltip();
 
     useHotkeys('t', () => dialogRef.current?.show());
@@ -42,12 +48,9 @@ export default function Tasks() {
 
     useEffect(() => {
         if (user) {
-            getTopicsFromUser(user.id).then(result => {
-                if (result.success) setTopics(result.data);
-            });
-            getProjectsFromUser(user.id).then(result => {
-                if (result.success) setProjects(result.data);
-            })
+            setTeams(getTeamsFromUser(user));
+            setProjects(getProjectsFromUser(user));
+            setTopics(getTopicsFromUser(user));
         }
     }, [user]);
 
@@ -56,9 +59,10 @@ export default function Tasks() {
     }, [update]);
 
     useEffect(() => {
-        let elements = tasks;
+        if (!user) return;
+        let elements = getTasksFromUser(user);
         if (filters.length > 0) {
-            elements = tasks.filter(task => {
+            elements = getTasksFromUser(user).filter(task => {
                 return filters.every(filter => {
                     switch (filter.name) {
                         case 'Team' as keyof ComplexTask:
@@ -66,7 +70,7 @@ export default function Tasks() {
                         case 'Project' as keyof ComplexTask:
                             return task.project?.name === filter.value;
                         case 'Topic' as keyof ComplexTask:
-                            return task.topic?.name === filter.value;
+                            return task.task.topic?.name === filter.value;
                         case 'Status' as keyof ComplexTask:
                             return task.task?.state === filter.value;
                         case 'Priority' as keyof ComplexTask:
@@ -78,8 +82,8 @@ export default function Tasks() {
             });
         }
 
-        setTaskElements(elements);
-    }, [filters, tasks]);
+        setTasks(elements);
+    }, [filters, tasks, user]);
 
     if (!user) return null;
 
@@ -113,7 +117,7 @@ export default function Tasks() {
                         />
                         <div className={"flex flex-row space-x-1 text-zinc-400 dark:text-marcador"}>
                             <LoaderCircle size={14}/>
-                            <span className={"text-xs"}>{taskElements.length + " OPEN"}</span>
+                            <span className={"text-xs"}>{tasks.length + " OPEN"}</span>
                         </div>
                     </div>
                 </div>
@@ -126,8 +130,8 @@ export default function Tasks() {
                         <div></div>
                     }
 
-                    {!error && !loading && taskElements.length > 0 ?
-                        <TaskTable taskElements={taskElements}/>
+                    {!error && !loading && tasks.length > 0 ?
+                        <TaskTable taskElements={tasks}/>
                         :
                         <div className={"h-full flex flex-row items-center justify-center"}>
                             <TaskPlaceholder dialogRef={dialogRef}/>

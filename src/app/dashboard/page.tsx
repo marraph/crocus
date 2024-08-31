@@ -12,29 +12,14 @@ import {ProjectBadge} from "@/components/badges/ProjectBadge";
 import moment from "moment";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {ComplexTask, useTasks} from "@/context/TaskContext";
+import {getDashboardTasks, getProjectByTaskId} from "@/utils/object-helpers";
 
 export default function Dashboard() {
     const router = useRouter();
-    const { user } = useUser();
-    const { tasks, loading, error } = useTasks();
+    const { user, loading, error } = useUser();
     const {addTooltip, removeTooltip} = useTooltip();
 
-    const dashboardTasks = useMemo(() => {
-        let taskList: ComplexTask[] = [];
-        tasks.forEach((task: ComplexTask) => {
-            if (task.task?.state !== "finished") {
-                taskList.push(task);
-            }
-        });
-        return taskList.filter((task: ComplexTask) => task.task?.state !== "finished")
-            .sort((a: ComplexTask, b: ComplexTask) => {
-                const priorityOrder = {LOW: 1, MEDIUM: 2, HIGH: 3};
-                const aPriority = a.task?.priority ? priorityOrder[a.task?.priority as keyof typeof priorityOrder] : 0;
-                const bPriority = b.task?.priority ? priorityOrder[b.task?.priority as keyof typeof priorityOrder] : 0;
-                return bPriority - aPriority;
-            });
-    }, [tasks]);
+    const dashboardTasks = useMemo(() => user && getDashboardTasks(user), [user]);
 
     const greeting = useMemo(() => {
             const hour = new Date().getHours();
@@ -93,7 +78,7 @@ export default function Dashboard() {
                     <div className={"flex flex-row justify-between items-center bg-zinc-200 dark:bg-dark-light border-y border-zinc-300 dark:border-edge rounded-t-lg"}>
                         <div className={"flex flex-row items-center"}>
                             <span className={"text-md px-4 py-1"}>{"Tasks"}</span>
-                            <Badge text={dashboardTasks.length.toString() + " OPEN"}
+                            <Badge text={dashboardTasks?.length.toString() + " OPEN"}
                                    size={"small"}
                                    className={"rounded-md bg-zinc-700 dark:bg-white-dark text-zinc-200 dark:text-dark py-0.5 px-1.5"}>
                             </Badge>
@@ -120,18 +105,18 @@ export default function Dashboard() {
                             <div></div>
                         }
 
-                        {!loading && !error && tasks.map((task, index) => (
+                        {!loading && !error && dashboardTasks?.map((task, index) => (
                             <div key={index}
                                  className={"group flex flex-row justify-between items-center p-2 border-b border-zinc-300 dark:border-edge " +
                                      "hover:bg-zinc-200 dark:hover:bg-dark hover:cursor-pointer"}
-                                 onClick={() => router.push(`/tasks/${task.task?.id}`)}>
+                                 onClick={() => router.push(`/tasks/${task?.id}`)}>
                                 <div className={"flex flex-row space-x-8 items-center pl-4"}>
-                                    {task.project &&
+                                    {getProjectByTaskId(user, task.id) &&
                                         <ProjectBadge
-                                            title={task.project?.name ?? ""}
+                                            title={getProjectByTaskId(user, task.id).name ?? ""}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Project: " + task.project?.name,
+                                                    message: "Project: " + getProjectByTaskId(user, task.id).name,
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
@@ -139,25 +124,25 @@ export default function Dashboard() {
                                             onMouseLeave={() => removeTooltip()}
                                         />
                                     }
-                                    <span className={"text-zinc-500 dark:text-gray text-sm group-hover:text-zinc-800 dark:group-hover:text-white"}>{task.task?.name}</span>
+                                    <span className={"text-zinc-500 dark:text-gray text-sm group-hover:text-zinc-800 dark:group-hover:text-white"}>{task.name}</span>
                                 </div>
                                 <div className={"flex flex-row space-x-8 items-center pr-4"}>
-                                    {task.task?.state && <StatusBadge title={task.task?.state?.toString()}/>}
-                                    {task.task?.deadline &&
+                                    {task.state && <StatusBadge title={task.state?.toString()}/>}
+                                    {task.deadline &&
                                         <span className={"text-xs text-zinc-500 dark:text-gray group-hover:text-zinc-800 dark:group-hover:text-white"}
                                             onMouseEnter={(e) => {
                                                 addTooltip({
-                                                    message: "Deadline: " + moment(task.task?.deadline?.toString()).format('MMM D YYYY'),
+                                                    message: "Deadline: " + moment(task.deadline?.toString()).format('MMM D YYYY'),
                                                     anchor: "tl",
                                                     trigger: e.currentTarget.getBoundingClientRect()
                                                 });
                                             }}
                                             onMouseLeave={() => removeTooltip()}
                                         >
-                                            {moment(task.task?.deadline?.toString()).format('MMM D YYYY')}
+                                            {moment(task.deadline?.toString()).format('MMM D YYYY')}
                                         </span>
                                     }
-                                    <ProfileBadge name={task.task?.createdBy.toString()}/>
+                                    <ProfileBadge name={task.createdBy.toString()}/>
                                 </div>
                             </div>
                         ))}

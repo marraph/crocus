@@ -14,18 +14,16 @@ import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
 import {EntryPlaceholder} from "@/components/placeholder/EntryPlaceholder";
-import {useTime} from "@/context/TimeContext";
+import {getTodayAbsencesFromUser, getTodayEntriesFromUser} from "@/utils/object-helpers";
 
 export default function Timetracking() {
     const entryDialogRef = useRef<DialogRef>(null);
     const absenceDialogRef = useRef<DialogRef>(null);
     const [enabled, setEnabled] = useState(true);
     const [day, setDay] = useState<Date>(new Date());
-    const { user } = useUser();
-    const { entries, absences, loading, error } = useTime();
-    const {addTooltip, removeTooltip} = useTooltip();
-
-
+    const { user, loading, error } = useUser();
+    const { addTooltip, removeTooltip } = useTooltip();
+    
     useHotkeys('t', () => {
         entryDialogRef.current?.show();
         setEnabled(false);
@@ -36,9 +34,9 @@ export default function Timetracking() {
     }, { enabled });
 
     const { todayEntries, todayAbsences } = useMemo(() => ({
-        todayEntries: entries?.filter(entry => moment(entry.start).isSame(day, 'day')),
-        todayAbsences: absences?.filter(absence => moment(absence.start).isSame(day, 'day')),
-    }), [entries, absences, day]);
+        todayEntries: user && getTodayEntriesFromUser(user),
+        todayAbsences: user && getTodayAbsencesFromUser(user)
+    }), [user]);
 
     const handleDayBefore = useCallback(() => {
         setDay(moment(day).subtract(1, 'days').toDate());

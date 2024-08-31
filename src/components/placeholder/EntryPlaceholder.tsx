@@ -1,16 +1,7 @@
 import React, {RefObject} from "react";
 import {DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {motion} from "framer-motion";
-import {
-    AlarmClockPlus,
-    CalendarFold,
-    FolderCheck,
-    History,
-    Hourglass,
-    LayoutList,
-    SquarePen,
-    StickyNote
-} from "lucide-react";
+import {AlarmClockPlus, CalendarFold, History, Hourglass} from "lucide-react";
 import {Button} from "@marraph/daisy/components/button/Button";
 
 export const EntryPlaceholder: React.FC<{ dialogRef: RefObject<DialogRef>}> = ({ dialogRef }) => {

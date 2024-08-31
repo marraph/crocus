@@ -28,8 +28,8 @@ import {CloseButton} from "@marraph/daisy/components/closebutton/CloseButton";
 import {cn} from "@/utils/cn";
 import {CustomScroll} from "react-custom-scroll";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
-import {ComplexTask} from "@/context/TaskContext";
 import {useOutsideClick} from "@marraph/daisy/hooks/useOutsideClick";
+import {ComplexTask} from "@/utils/object-helpers";
 
 type FilterItem = {
     name: string;

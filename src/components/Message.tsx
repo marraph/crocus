@@ -11,11 +11,10 @@ interface MessageProps extends React.HTMLAttributes<HTMLDivElement> {
     newValue?: string;
     date: string;
     type: "message" | "change";
+    path: string;
 }
 
-const path = "/image.png";
-
-export const Message: React.FC<MessageProps> = ({ change, oldValue, newValue, writer, message, date, className, ...props }) => {
+export const Message: React.FC<MessageProps> = ({ path, change, oldValue, newValue, writer, message, date, className, ...props }) => {
     return (
         (props.type === "message") ?
             <div className={"flex flex-row space-x-2"}>
