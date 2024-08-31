@@ -1,6 +1,16 @@
 import {users} from "@/schema";
-import {createEntity, deleteEntity, Entity, getEntity, NewEntity, UpdateEntity, updateEntity} from "@/action/actions";
+import {
+    createEntity,
+    deleteEntity,
+    Entity,
+    getEntity,
+    NewEntity,
+    UpdateEntity,
+    updateEntity
+} from "@/action/actions";
 import {leaveTeam} from "@/action/member";
+import type {DBQueryConfig} from "drizzle-orm/relations";
+import {db} from "@/database/drizzle";
 
 type User = Entity<typeof users>
 type NewUser = NewEntity<typeof users>
@@ -19,6 +29,44 @@ const updateUser = async (
     updateUser: UpdateUser
 ) => updateEntity(users, updateUser, id, users.id)
 
+const queryUser = async (
+    config: DBQueryConfig = {},
+) => {
+    try {
+
+        const queryUser = await db.query.users.findFirst(config)
+
+        if (!queryUser) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        return {success: true, data: queryUser}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
+
+const queryUsers = async (
+    config: DBQueryConfig = {},
+) => {
+    try {
+
+        const queryUsers = await db.query.users.findMany(config)
+
+        if (!queryUsers || queryUsers.length == 0) {
+            return {success: false, error: 'Can not select organisations with this ID'}
+        }
+
+        return {success: true, data: queryUsers}
+
+    } catch (err) {
+        const error = err as Error
+        return {success: false, error: error.message}
+    }
+}
+
 export type {
     User,
     NewUser,
@@ -29,5 +77,7 @@ export {
     createUser,
     deleteUser,
     getUser,
-    updateUser
+    updateUser,
+    queryUser,
+    queryUsers
 }

@@ -41,17 +41,17 @@ export const users = pgTable('users', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     email: text('email').unique().notNull(),
-    password: text('password'),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at')
+    password: text('password').notNull(),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull()
 })
 
 export const topics = pgTable('topics', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
     hexCode: text('hex_code').notNull(),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -75,8 +75,8 @@ export const tasks = pgTable('tasks', {
     topic: integer('topic_id'),
     state: state('state').default('planing'),
     priority: priority('priority').default('low'),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -93,8 +93,8 @@ export const projects = pgTable('projects', {
     description: text('description'),
     priority: priority('priority').default('low'),
     isArchived: boolean('is_archived').default(false),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -109,8 +109,8 @@ export const projects = pgTable('projects', {
 export const teams = pgTable("teams", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -125,8 +125,8 @@ export const teams = pgTable("teams", {
 export const organisations = pgTable("organisations", {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
@@ -141,12 +141,9 @@ export const absences = pgTable("absences", {
     reason: absenceReason("reason").notNull(),
     start: timestamp("start"),
     end: timestamp("end"),
-    createdAt: timestamp('created_at'),
-    updatedAt: timestamp('updated_at'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
     createdBy: integer('created_by')
-        .notNull()
-        .references(() => users.id),
-    updatedBy: integer('updated_by')
         .notNull()
         .references(() => users.id),
 })
@@ -161,9 +158,6 @@ export const entries = pgTable("entries", {
     createdBy: integer('created_by')
         .notNull()
         .references(() => users.id),
-    updatedBy: integer('updated_by')
-        .notNull()
-        .references(() => users.id),
     projectId: integer('project_id')
         .references(() => projects.id),
     taskId: integer('task_id')
@@ -171,7 +165,7 @@ export const entries = pgTable("entries", {
 })
 
 export const teamMembers = pgTable('team_members', {
-    createdAt: timestamp('created_at'),
+    createdAt: timestamp('created_at').notNull(),
     userId: integer('user_id')
         .notNull()
         .references(() => users.id),
@@ -181,7 +175,7 @@ export const teamMembers = pgTable('team_members', {
 })
 
 export const organisationMembers = pgTable('organisation_members', {
-    createdAt: timestamp('created_at'),
+    createdAt: timestamp('created_at').notNull(),
     userId: integer('user_id')
         .notNull()
         .references(() => users.id),
@@ -194,6 +188,13 @@ export const organisationMembers = pgTable('organisation_members', {
     Relations
  */
 
+export const userRelations = relations(users, ({many}) => ({
+    organisationMemberships: many(organisationMembers),
+    teamMemberships: many(teamMembers),
+    absence: many(absences),
+    entry: many(entries)
+}))
+
 export const organisationRelations = relations(organisations, ({one, many}) => ({
     createdBy: one(users, {
         fields: [organisations.createdBy],
@@ -203,8 +204,8 @@ export const organisationRelations = relations(organisations, ({one, many}) => (
         fields: [organisations.updatedBy],
         references: [users.id]
     }),
-    teams: many(teams),
-    users: many(organisationMembers)
+    team: many(teams),
+    members: many(organisationMembers)
 }))
 
 export const organisationMemberRelations = relations(organisationMembers, ({one}) => ({
@@ -229,6 +230,21 @@ export const teamMemberRelations = relations(teamMembers, ({one}) => ({
     })
 }))
 
+export const topicRelations = relations(topics, ({one}) => ({
+    team: one(teams, {
+        fields: [topics.teamId],
+        references: [teams.id]
+    }),
+    createdBy: one(users, {
+        fields: [topics.createdBy],
+        references: [users.id]
+    }),
+    updatedBy: one(users, {
+        fields: [topics.updatedBy],
+        references: [users.id]
+    })
+}))
+
 export const teamRelations = relations(teams, ({one, many}) => ({
     organisation: one(organisations, {
         fields: [teams.organisationId],
@@ -242,9 +258,9 @@ export const teamRelations = relations(teams, ({one, many}) => ({
         fields: [teams.updatedBy],
         references: [users.id]
     }),
-    topics: many(topics),
-    projects: many(projects),
-    users: many(users)
+    topic: many(topics),
+    project: many(projects),
+    members: many(teamMembers)
 }))
 
 export const projectRelations = relations(projects, ({one, many}) => ({
@@ -260,8 +276,8 @@ export const projectRelations = relations(projects, ({one, many}) => ({
         fields: [projects.updatedBy],
         references: [users.id]
     }),
-    tasks: many(tasks),
-    entries: many(entries)
+    task: many(tasks),
+    entry: many(entries)
 }))
 
 export const taskRelations = relations(tasks, ({one, many}) => ({
@@ -281,17 +297,13 @@ export const taskRelations = relations(tasks, ({one, many}) => ({
         fields: [tasks.updatedBy],
         references: [users.id]
     }),
-    entries: many(entries)
+    entry: many(entries)
 }))
 
 
 export const absenceRelations = relations(absences, ({one}) => ({
     createdBy: one(users, {
         fields: [absences.createdBy],
-        references: [users.id]
-    }),
-    updatedBy: one(users, {
-        fields: [absences.updatedBy],
         references: [users.id]
     })
 }))
@@ -307,10 +319,6 @@ export const entryRelations = relations(entries, ({one}) => ({
     }),
     createdBy: one(users, {
         fields: [entries.createdBy],
-        references: [users.id]
-    }),
-    updatedBy: one(users, {
-        fields: [entries.updatedBy],
         references: [users.id]
     })
 }))
