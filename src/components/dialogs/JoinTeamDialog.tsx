@@ -11,21 +11,21 @@ import {useToast} from "griller/src/component/toaster";
 export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
     const dialogRef = mutateRef(ref);
     const [link, setLink] = useState<string>("");
-    const [valid, setValid] = useState<boolean>(false);
     const [dialogKey, setDialogKey] = useState(Date.now());
     const { user } = useUser();
     const {addToast} = useToast();
 
-    const validate = useCallback(() => {
-        setValid(link.trim() !== "");
-    }, [link]);
-
-    useEffect(() => {
-        validate();
-    }, [link, validate]);
+    const fields = {
+        input: {
+            initialValue: '',
+            validate: (value: string) => ({
+                isValid: value.trim() !== '',
+                message: "Link can't be empty"
+            })
+        }
+    }
 
     const handleCloseClick = useCallback(() => {
-        setValid(false);
         setLink("");
         setDialogKey(Date.now());
     }, []);
@@ -46,6 +46,8 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
         <Dialog width={600}
                 ref={dialogRef}
                 key={dialogKey}
+                fields={fields}
+                onSubmit={handleJoinClick}
                 onClose={handleCloseClick}
         >
             <DialogHeader title={"Join a team"}/>
@@ -54,17 +56,18 @@ export const JoinTeamDialog = forwardRef<DialogRef>(({}, ref) => {
                     <span>
                         You can join a team by inserting a invite link in the correct format.
                     </span>
-                    <Input placeholder={"app.luna.io/invite/xxxx-xxxx-xxxx"}
-                           className={"w-full"}
-                           value={link}
-                           onChange={(e) => setLink(e.target.value)}
+                    <Input
+                        id={"input"}
+                        placeholder={"app.luna.io/invite/xxxx-xxxx-xxxx"}
+                        className={"w-full"}
+                        value={link}
+                        onChange={(e) => setLink(e.target.value)}
+                        validationRules={[fields.input.validate]}
                     />
                 </div>
             </DialogContent>
             <DialogFooter saveButtonTitle={"Join"}
                           cancelButton={false}
-                          onClick={handleJoinClick}
-                          disabledButton={!valid}
             />
         </Dialog>
     )

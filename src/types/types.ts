@@ -11,7 +11,7 @@ type Priority = 'low' | 'medium' | 'high';
 type State = 'pending' | 'planing' | 'started' | 'tested' | 'finished';
 type AbsenceReason = 'sick' | 'vacation';
 
-type ActionConsumerType = Team | Organisation | Absence | Task | Project | TimeEntry | Topic | User
+type ActionConsumerType = Team | Organisation | Absence | Task | Project | TimeEntry | Topic | User | boolean
 
 type CompletedUser = {
     id: number

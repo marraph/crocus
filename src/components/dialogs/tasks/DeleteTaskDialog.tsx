@@ -1,48 +1,55 @@
 "use client";
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {CircleAlert, Trash2} from "lucide-react";
+import {CircleX, Trash2} from "lucide-react";
 import React, {forwardRef, useCallback} from "react";
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {useTasks} from "@/context/TaskContext";
 import {deleteTask, Task} from "@/action/task";
-import {CompletedTask} from "@/types/types";
+import {ActionConsumerType, CompletedTask, CompletedUser} from "@/types/types";
+import {deleteTaskInCompletedUser, updateTaskInCompletedUser} from "@/utils/object-helpers";
 
 export const DeleteTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
-    const { user } = useUser();
-    const { actions } = useTasks();
+    const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
     
     const handleDeleteClick = useCallback(async () => {
         if (!user) return null;
-        
-        const result = await actions.deleteTask(task.id);
-        
-        if (result.success) {
-            addToast({
-                title: "Task deleted successfully!",
-                secondTitle: "You can no longer interact with this task.",
-                icon: <Trash2 color="#F55050"/>
-            });
-        } else {
-            addToast({
-                title: "An error occurred!",
-                secondTitle: "The task could not be deleted. Please try again later.",
-                icon: <CircleAlert/>
-            });
-        }
+
+        actionConsumer({
+            consumer: async () => {
+                return await deleteTask(task.id);
+            },
+            handler: (currentUser: CompletedUser) => {
+                return deleteTaskInCompletedUser(currentUser, task.id);
+            },
+            onSuccess: () => {
+                addToast({
+                    title: "Task deleted successfully!",
+                    secondTitle: "You can no longer interact with this task.",
+                    icon: <Trash2 color="#F55050"/>
+                });
+            },
+            onError: (error: string) => {
+                addToast({
+                    title: "Failed to close task.",
+                    secondTitle: error,
+                    icon: <CircleX />
+                });
+            }
+        });
 
         onClose?.();
-    }, [actions, addToast, onClose, task.id, user]);
+    }, [actionConsumer, addToast, onClose, task.id, user]);
 
     if (!user || !dialogRef) return null;
 
     return (
         <Dialog width={600}
                 ref={dialogRef}
+                onSubmit={handleDeleteClick}
                 onClose={onClose}
 
         >
@@ -52,9 +59,7 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onC
                     Are you sure you want to delete this task?
                 </span>
             </DialogContent>
-            <DialogFooter saveButtonTitle={"Delete"}
-                          onClick={handleDeleteClick}
-            />
+            <DialogFooter saveButtonTitle={"Delete"}/>
         </Dialog>
     )
 })

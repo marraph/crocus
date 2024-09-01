@@ -55,16 +55,39 @@ export function getProjectsFromUser(user: CompletedUser): CompletedProject[] {
     return projectList;
 }
 
-export function getProjectFromId(user: CompletedUser, projectId: number): CompletedProject {
-    let project = {} as CompletedProject;
+export function getProjectFromId(user: CompletedUser, projectId: number): CompletedProject | undefined {
+    for (const membership of user.teamMemberships) {
+        const project = membership.team.project.find((proj) => proj.id === projectId);
+        if (project) return project;
+    }
+}
+
+export function getProjectsFromTeamId(user: CompletedUser, teamId: number): CompletedProject[] {
+    let projectList = [] as CompletedProject[];
     user.teamMemberships.forEach((team) => {
-        team.team.project.forEach((proj) => {
-            if (proj.id === projectId) {
-                project = proj;
-            }
-        });
+        if (team.team.id === teamId) {
+            team.team.project.forEach((project) => {
+                projectList.push(project);
+            });
+        }
     });
-    return project;
+    return projectList;
+}
+
+export function getTopicsFromTeamId(user: CompletedUser, teamId: number): Topic[] {
+    let topicList = [] as Topic[];
+    user.teamMemberships.forEach((team) => {
+        if (team.team.id === teamId) {
+            team.team.project.forEach((project) => {
+                project.task.forEach((task) => {
+                    if (task.topic) {
+                        topicList.push(task.topic);
+                    }
+                });
+            });
+        }
+    });
+    return topicList;
 }
 
 export function getTopicsFromUser(user: CompletedUser): Topic[] {
@@ -121,7 +144,37 @@ export function getTaskFromId(user: CompletedUser, taskId: number): ComplexTask 
     return task;
 }
 
-export function updateTaskWithId(user: CompletedUser, taskId: number, task: Task): CompletedUser {
+
+
+//Update CompletedUser
+export function createTaskInCompletedUser(user: CompletedUser, task: Task): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.teamMemberships.forEach((team) => {
+        team.team.project.forEach((project) => {
+            if (project.id === task.projectId) {
+                project.task.push({
+                    id: task.id,
+                    name: task.name,
+                    description: task.description,
+                    state: task.state,
+                    priority: task.priority,
+                    topic: { } as Topic,
+                    duration: task.duration,
+                    bookedDuration: task.bookedDuration,
+                    deadline: task.deadline,
+                    isArchived: task.isArchived,
+                    createdBy: { } as CompletedUser,
+                    createdAt: task.createdAt,
+                    updatedBy: { } as CompletedUser,
+                    updatedAt: task.updatedAt
+                });
+            }
+        });
+    });
+    return updatedUser;
+}
+
+export function updateTaskInCompletedUser(user: CompletedUser, taskId: number): CompletedUser {
     let updatedUser = {...user};
     updatedUser.teamMemberships.forEach((team) => {
         team.team.project.forEach((project) => {
@@ -151,8 +204,20 @@ export function updateTaskWithId(user: CompletedUser, taskId: number, task: Task
     return updatedUser;
 }
 
-//TimeTracking
+export function deleteTaskInCompletedUser(user: CompletedUser, taskId: number): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.teamMemberships.forEach((team) => {
+        team.team.project.forEach((project) => {
+            project.task = project.task.filter((task) => task.id !== taskId);
+        });
+    });
+    return updatedUser;
+}
 
+
+
+
+//TimeTracking
 export function getTodayEntriesFromUser(user: CompletedUser): TimeEntry[] {
     let entries = [] as TimeEntry[];
     let day = new Date();

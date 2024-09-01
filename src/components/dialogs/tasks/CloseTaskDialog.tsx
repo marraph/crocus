@@ -8,7 +8,7 @@ import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
 import {ActionConsumerType, CompletedUser} from "@/types/types";
 import {Task, updateTask} from "@/action/task";
-import {updateTaskWithId} from "@/utils/object-helpers";
+import {updateTaskInCompletedUser} from "@/utils/object-helpers";
 
 export const CloseTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
@@ -27,8 +27,8 @@ export const CloseTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () 
                     updatedAt: new Date
                 });
             },
-            handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
-                return updateTaskWithId(currentUser, task.id, input as Task);
+            handler: (currentUser: CompletedUser) => {
+                return updateTaskInCompletedUser(currentUser, task.id);
             },
             onSuccess: () => {
                 addToast({
