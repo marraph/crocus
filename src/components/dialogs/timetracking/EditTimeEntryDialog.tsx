@@ -1,7 +1,7 @@
 "use client";
 
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from "react";
-import {BookCopy, CircleAlert, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
+import {AlarmClockPlus, BookCopy, CircleAlert, CircleX, ClipboardList, Clock2, Clock8, Save,} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {useUser} from "@/context/UserContext";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
@@ -10,11 +10,17 @@ import moment from "moment/moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useToast} from "griller/src/component/toaster";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
-import {TimeEntry} from "@/action/timeEntry";
-import {getProjectsFromUser, Project} from "@/action/projects";
-import {getTasksFromProject, getTasksFromUser, Task} from "@/action/task";
-import {useTime} from "@/context/TimeContext";
-import {useTasks} from "@/context/TaskContext";
+import {createTimeEntry, TimeEntry, updateTimeEntry} from "@/action/timeEntry";
+import {
+    ComplexTask,
+    createAbsenceInCompletedUser,
+    getProjectsFromUser, getTaskFromId,
+    getTasksFromProjectId,
+    getTasksFromUser, updateTimeEntryInCompletedUser
+} from "@/utils/object-helpers";
+import {ActionConsumerType, CompletedProject, CompletedUser} from "@/types/types";
+import {Absence} from "@/action/absence";
+import {Task, updateTask} from "@/action/task";
 
 type EditProps = Pick<TimeEntry, "comment" | "projectId" | "taskId" | "start" | "end">;
 
@@ -29,30 +35,19 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
     });
     const initialValues = values;
     const [dialogKey, setDialogKey] = useState(Date.now());
-    const [valid, setValid] = useState<boolean>(true);
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const { user } = useUser();
-    const { tasks:userTasks, actions:taskActions } = useTasks();
-    const { actions:timeActions } = useTime();
+    const [projects, setProjects] = useState<CompletedProject[]>([]);
+    const [tasks, setTasks] = useState<ComplexTask[]>([]);
+    const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
+
+    const fields = {};
 
     useEffect(() => {
         if (!user) return;
+        setProjects(getProjectsFromUser(user));
 
-        getProjectsFromUser(user.id).then(result => {
-            if (result.success) setProjects(result.data);
-        });
-
-        if (values.projectId) {
-            getTasksFromProject(values.projectId).then(result => {
-                if (result.success) setTasks(result.data);
-            })
-        } else {
-            getTasksFromUser(user.id).then(result => {
-                if (result.success) setTasks(result.data);
-            })
-        }
+        if (values.projectId) setTasks(getTasksFromProjectId(user, values.projectId));
+        else setTasks(getTasksFromUser(user));
     }, [user, values.projectId]);
     
     const times = useMemo(() => {
@@ -67,86 +62,67 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
         return timesArray;
     }, []);
 
-    const validateInput = useCallback(() => {
-        let start = moment(values.start).format('HH:mm');
-        let end = moment(values.end).format('HH:mm');
-
-        if (!times.includes(start)) {
-            setValid(false);
-            return;
-        }
-        if (!times.includes(end)) {
-            setValid(false);
-            return;
-        }
-        if (times.indexOf(start) >= times.indexOf(end)) {
-            setValid(false);
-            return;
-        }
-        setValid(true);
-    }, [times, values]);
-
-    useEffect(() => {
-        validateInput();
-    }, [validateInput, values]);
-
     const handleCloseClick = useCallback(() => {
-        setValid(true);
         setValues(initialValues);
         setDialogKey(Date.now());
     }, [initialValues]);
 
     const handleEditClick = useCallback(async () => {
         if (!user) return;
-
+        
         const currentDuration = moment.duration(moment(values.start).diff(moment(values.end))).asHours();
         const oldDuration = moment.duration(moment(timeEntry.start).diff(moment(timeEntry.end))).asHours();
         const durationDifference = currentDuration - oldDuration;
 
-        //update entry
         const entry: Omit<TimeEntry, "id" | "createdBy" | "createdAt"> = {
             comment: values.comment,
             projectId: values.projectId ?? null,
             taskId: values.taskId ?? null,
             start: values.start,
             end: values.end,
-            updatedBy: user.id,
             updatedAt: new Date(),
         }
         
-        const result = await timeActions.updateTimeEntry(timeEntry.id, { ...timeEntry, ...entry });
+        actionConsumer({
+            consumer: async () => {
+                return await updateTimeEntry(timeEntry.id, { ...timeEntry, ...entry });
+            },
+            handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
+                return updateTimeEntryInCompletedUser(currentUser, timeEntry.id, input as TimeEntry);
+            },
+            onSuccess: async () => {
+                addToast({
+                    title: "Saved changes",
+                    secondTitle: "You successfully saved your entry changes.",
+                    icon: <Save/>,
+                });
 
-        //update task duration
-        if (timeEntry.taskId && values.taskId != timeEntry.taskId) {
-            const task = userTasks.find(t => t.task?.id === timeEntry.taskId);
-            
-            if (task?.task?.duration) {
-                const oldTask: Partial<Task> = {
-                    duration: Number(task.task.duration + durationDifference) ?? null,
-                    updatedBy: user.id,
-                    updatedAt: new Date()
+                //update task duration
+                if (timeEntry.taskId && values.taskId != timeEntry.taskId) {
+                    const task = getTaskFromId(user, timeEntry.taskId);
+
+                    if (task?.task?.duration) {
+                        const oldTask: Partial<Task> = {
+                            duration: Number(task.task.duration + durationDifference) ?? null,
+                            updatedBy: user.id,
+                            updatedAt: new Date()
+                        }
+
+                        await updateTask(timeEntry.taskId, { ...oldTask });
+                    }
                 }
-
-                await taskActions.updateTask(timeEntry.taskId, { ...task.task, ...oldTask });
+            },
+            onError: (error: string) => {
+                addToast({
+                    title: "An error occurred!",
+                    secondTitle: error,
+                    icon: <CircleX/>
+                });
             }
-        }
-        
-        if (result.success) {
-            addToast({
-                title: "Saved changes",
-                secondTitle: "You successfully saved your entry changes.",
-                icon: <Save/>,
-            });
-        } else {
-            addToast({
-                title: "An error occurred!",
-                secondTitle: "The entry could not be saved. Please try again later.",
-                icon: <CircleAlert/>
-            });
-        }
+        });
         
         handleCloseClick();
-    }, [user, values.start, values.end, values.comment, values.projectId, values.taskId, timeEntry, timeActions, handleCloseClick, userTasks, taskActions, addToast]);
+    }, [user, values, timeEntry, actionConsumer, handleCloseClick, addToast]);
 
     const handleDateChange = useCallback((date: Date | null) => {
         setValues(prevValues => ({
@@ -170,8 +146,8 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                   icon={<BookCopy size={16}/>}
                   size={"medium"}
                   searchField={true}
-                  getItemTitle={(item) => (item as Project).name}
-                  onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, projectId: (value as Project).id || null }))}
+                  getItemTitle={(item) => (item as CompletedProject).name}
+                  onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, projectId: (value as CompletedProject).id || null }))}
         >
             {projects.map((project) => ( project &&
                 <ComboboxItem key={project.id} title={project.name} value={project}/>
@@ -182,7 +158,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
     const taskSelect = useMemo(() => (
         <Combobox buttonTitle={"Task"}
                   label={"Task"}
-                  preSelectedValue={tasks.find(t => values.taskId = t.id)?.name}
+                  preSelectedValue={tasks.find(t => values.taskId = t.task.id)?.task.name}
                   icon={<ClipboardList size={16}/>}
                   size={"medium"}
                   searchField={true}
@@ -190,7 +166,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                   onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, taskId: (value as Task).id  || null }))}
         >
             {tasks.map((task) => (
-                <ComboboxItem key={task.id} title={task.name} value={task}/>
+                <ComboboxItem key={task.task.id} title={task.task.name} value={task}/>
             ))}
         </Combobox>
     ), [tasks, values]);
@@ -200,6 +176,8 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
     return (
         <Dialog width={800}
                 onClose={handleCloseClick}
+                onSubmit={handleEditClick}
+                fields={fields}
                 ref={dialogRef}
                 key={dialogKey}
         >
@@ -254,10 +232,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                 </div>
 
             </DialogContent>
-            <DialogFooter saveButtonTitle={"Save changes"}
-                          onClick={handleEditClick}
-                          disabledButton={!valid}
-            />
+            <DialogFooter saveButtonTitle={"Save changes"}/>
         </Dialog>
     );
 });

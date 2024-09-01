@@ -1,17 +1,19 @@
 "use client";
 
-import React, {forwardRef, useCallback, useEffect, useMemo, useState} from "react";
+import React, {forwardRef, useCallback, useMemo, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
 import {mutateRef} from "@/utils/mutateRef";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {useUser} from "@/context/UserContext";
-import {CircleAlert, Save, TreePalm} from "lucide-react";
+import {AlarmClockPlus, CircleAlert, CircleX, Save, TreePalm} from "lucide-react";
 import {DateRangePicker} from "@marraph/daisy/components/daterangepicker/DateRangePicker";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
 import {useToast} from "griller/src/component/toaster";
-import {Absence} from "@/action/absence";
-import { useTime } from "@/context/TimeContext";
-import {AbsenceReason} from "@/types/types";
+import {Absence, updateAbsence} from "@/action/absence";
+import {AbsenceReason, ActionConsumerType, CompletedUser} from "@/types/types";
+import {createTimeEntry} from "@/action/timeEntry";
+import {createAbsenceInCompletedUser, getTaskFromId, updateAbsenceInCompletedUser} from "@/utils/object-helpers";
+import {Task, updateTask} from "@/action/task";
 
 type EditProps = Pick<Absence, "comment" | "reason" | "start" | "end">;
 
@@ -25,67 +27,60 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
     });
     const initialValues = values;
     const [dialogKey, setDialogKey] = useState(Date.now());
-    const [valid, setValid] = useState<boolean>(true);
     const absenceTypes = useMemo(() => ["vacation", "sick"], []);
-    const { absences, actions } = useTime();
-    const { user } = useUser();
+    const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
 
-    const validate = useCallback(() => {
-        if (values === initialValues) {
-            setValid(false);
-            return;
-        }
-        
-        setValid(values.reason === "sick" || values.reason === "vacation");
-    }, [initialValues, values]);
-
-    useEffect(() => {
-        validate();
-    }, [validate, values.reason]);
-
+    const fields = {};
+    
     const handleCloseClick = useCallback(() => {
-        setValid(true);
         setDialogKey(Date.now());
         setValues(initialValues);
     }, [initialValues]);
 
     const handleEditClick = useCallback(async () => {
         if (!user) return;
-        
-        const newAbsence: Partial<Absence> = {
-            start: values.start ?? new Date(),
-            end: values.end ?? new Date(),
-            comment: values.comment,
-            reason: values.reason,
-            updatedBy: user.id,
-            updatedAt: new Date(),
-        };
-        
-        const result = await actions.updateAbsence(absence.id, { ...absence, ...newAbsence });
-        
-        if (result.success) {
-            addToast({
-                title: "Saved changes",
-                secondTitle: "You successfully saved your absence changes.",
-                icon: <Save/>,
-            });
-        } else {
-            addToast({
-                title: "An error occurred!",
-                secondTitle: "The absence could not be saved. Please try again later.",
-                icon: <CircleAlert/>
-            });
-        }
+
+        actionConsumer({
+            consumer: async () => {
+                return await updateAbsence(absence.id, {
+                    ...absence,
+                    start: values.start ?? new Date(),
+                    end: values.end ?? new Date(),
+                    comment: values.comment,
+                    reason: values.reason,
+                    updatedAt: new Date(),
+                });
+            },
+            handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
+                return updateAbsenceInCompletedUser(currentUser, absence.id, input as Absence);
+            },
+            onSuccess: async () => {
+                addToast({
+                    title: "Saved changes",
+                    secondTitle: "You successfully saved your absence changes.",
+                    icon: <Save/>,
+                });
+            },
+            onError: (error: string) => {
+                addToast({
+                    title: "An error occurred!",
+                    secondTitle: error,
+                    icon: <CircleX/>
+                });
+            }
+        });
 
         handleCloseClick();
-    }, [user, values.start, values.end, values.comment, values.reason, actions, absence, handleCloseClick, addToast]);
+    }, [user, actionConsumer, handleCloseClick, absence, values, addToast]);
 
     if (!dialogRef || user === undefined) return null;
 
     return (
         <Dialog width={800}
                 onClose={handleCloseClick}
+                onSubmit={handleEditClick}
+                fields={fields}
                 ref={dialogRef}
                 key={dialogKey}
         >
@@ -122,10 +117,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
                     </Combobox>
                 </div>
             </DialogContent>
-            <DialogFooter saveButtonTitle={"Save changes"}
-                          onClick={handleEditClick}
-                          disabledButton={!valid}
-            />
+            <DialogFooter saveButtonTitle={"Save changes"}/>
         </Dialog>
     );
 });

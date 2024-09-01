@@ -2,7 +2,7 @@
 
 import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@marraph/daisy/components/dialog/Dialog";
-import {AlarmClockPlus, BookCopy, CircleAlert, ClipboardList, Clock2, Clock8} from "lucide-react";
+import {AlarmClockPlus, BookCopy, CircleAlert, CircleX, ClipboardList, Clock2, Clock8, TreePalm} from "lucide-react";
 import {Textarea} from "@marraph/daisy/components/textarea/Textarea";
 import {Switch, SwitchRef} from "@marraph/daisy/components/switch/Switch";
 import {mutateRef} from "@/utils/mutateRef";
@@ -10,12 +10,19 @@ import moment from "moment";
 import {DatePicker} from "@marraph/daisy/components/datepicker/DatePicker";
 import {useToast} from "griller/src/component/toaster";
 import {Combobox, ComboboxItem} from "@marraph/daisy/components/combobox/Combobox";
-import {TimeEntry} from "@/action/timeEntry";
+import {createTimeEntry, TimeEntry} from "@/action/timeEntry";
 import { useUser } from "@/context/UserContext";
-import {getProjectsFromUser, Project} from "@/action/projects";
-import {getTasksFromProject, getTasksFromUser, Task} from "@/action/task";
-import { useTime } from "@/context/TimeContext";
-import {useTasks} from "@/context/TaskContext";
+import {Task, updateTask} from "@/action/task";
+import {Project} from "@/action/projects";
+import {ActionConsumerType, CompletedProject, CompletedTask, CompletedUser} from "@/types/types";
+import {
+    ComplexTask,
+    createAbsenceInCompletedUser,
+    getProjectsFromUser, getTaskFromId,
+    getTasksFromProjectId,
+    getTasksFromUser
+} from "@/utils/object-helpers";
+import {Absence, createAbsence} from "@/action/absence";
 
 type CreateProps = Pick<TimeEntry, "comment" | "projectId" | "taskId" | "start" | "end">;
 
@@ -30,31 +37,22 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
         start: moment().hour(9).minute(0).toDate(),
         end:  moment().hour(9).minute(0).toDate()
     });
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [valid, setValid] = useState<boolean>(false);
+    const [projects, setProjects] = useState<CompletedProject[]>([]);
+    const [tasks, setTasks] = useState<ComplexTask[]>([]);
     const [dialogKey, setDialogKey] = useState(Date.now());
-    const { user } = useUser();
-    const { tasks:userTasks, actions:taskActions } = useTasks();
-    const { entries, actions: entryActions } = useTime();
+    const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
+    
+    const fields = {
+        
+    }
 
     useEffect(() => {
         if (!user) return;
+        setProjects(getProjectsFromUser(user));
         
-        getProjectsFromUser(user.id).then(result => {
-            if (result.success) setProjects(result.data);
-        });
-        
-        if (values.projectId) {
-            getTasksFromProject(values.projectId).then(result => {
-                if (result.success) setTasks(result.data);
-            })
-        } else {
-            getTasksFromUser(user.id).then(result => {
-                if (result.success) setTasks(result.data);
-            })
-        }
+        if (values.projectId) setTasks(getTasksFromProjectId(user, values.projectId));
+        else setTasks(getTasksFromUser(user));
     }, [user, values.projectId]);
 
     const times = useMemo(() => {
@@ -68,36 +66,6 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
         }
         return timesArray;
     }, []);
-
-    const validateInput = useCallback(() => {
-        if (values.comment?.trim() === "" && !values.projectId && !values.taskId) {
-            setValid(false);
-            return;
-        }
-
-        let start = moment(values.start).format('HH:mm');
-        let end = moment(values.end).format('HH:mm');
-
-        if (!times.includes(start)) {
-            setValid(false);
-            return;
-        }
-        if (!times.includes(end)) {
-            setValid(false);
-            return;
-        }
-        if (times.indexOf(start) >= times.indexOf(end)) {
-            setValid(false);
-            return;
-        }
-
-        setValid(true);
-        return;
-    }, [times, values]);
-
-    useEffect(() => {
-        validateInput();
-    }, [validateInput, values]);
 
     const getDuration = useCallback(() => {
         return moment.duration(moment(values.start)
@@ -113,7 +81,6 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
             start: moment().hour(9).minute(0).toDate(), 
             end: moment().hour(9).minute(0).toDate()
         });
-        setValid(false);
         setDialogKey(Date.now());
         switchRef.current?.setValue(false);
         onClose();
@@ -122,45 +89,52 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
     const handleCreateClick = useCallback(async () => {
         if (!user) return;
 
-        const result = await entryActions.createTimeEntry({
-            comment: values.comment,
-            projectId: values.projectId ?? null,
-            taskId: values.taskId ?? null,
-            start: values.start,
-            end: values.end,
-            createdBy: user.id,
-            createdAt: new Date(),
-            updatedBy: user.id,
-            updatedAt: new Date(),
+        actionConsumer({
+            consumer: async () => {
+                return await createTimeEntry({
+                    comment: values.comment,
+                    projectId: values.projectId ?? null,
+                    taskId: values.taskId ?? null,
+                    start: values.start,
+                    end: values.end,
+                    createdBy: user.id,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                });
+            },
+            handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
+                return createAbsenceInCompletedUser(currentUser, input as Absence);
+            },
+            onSuccess: async () => {
+                addToast({
+                    title: "Time Entry created successfully!",
+                    icon: <AlarmClockPlus/>,
+                });
+
+                if (values.taskId != null) {
+                    const task = getTaskFromId(user, values.taskId);
+                    if (task.task) {
+                        const taskUpdate: Partial<Task> = {
+                            bookedDuration: task?.task?.bookedDuration ? task?.task?.bookedDuration + getDuration() : null,
+                            updatedBy: user.id,
+                            updatedAt: new Date(),
+                            createdBy: task?.task?.createdBy.id,
+                        }
+                        await updateTask(values.taskId, taskUpdate);
+                    }
+                }
+            },
+            onError: (error: string) => {
+                addToast({
+                    title: "An error occurred!",
+                    secondTitle: error,
+                    icon: <CircleX/>
+                });
+            }
         });
 
-        if (values.taskId != null) {
-            const task = userTasks.find(t => t.task?.id === values.taskId);
-            if (task) {
-                const taskUpdate: Partial<Task> = {
-                    bookedDuration: task?.task?.bookedDuration ? task?.task?.bookedDuration + getDuration() : null,
-                    updatedBy: user.id,
-                    updatedAt: new Date(),
-                }
-                await taskActions.updateTask(values.taskId, {...task.task, ...taskUpdate});
-            }
-        }
-        
-        if (result.success) {
-            addToast({
-                title: "Time Entry created successfully!",
-                icon: <AlarmClockPlus/>,
-            });
-        } else {
-            addToast({
-                title: "An error occurred!",
-                secondTitle: "The entry could not be created. Please try again later.",
-                icon: <CircleAlert/>
-            });
-        }
-
         handleCloseClick();
-    }, [user, entryActions, values.comment, values.projectId, values.taskId, values.start, values.end, handleCloseClick, userTasks, getDuration, taskActions, addToast]);
+    }, [user, actionConsumer, handleCloseClick, values, addToast, getDuration]);
 
     const projectSelect = useMemo(() => (
         <Combobox
@@ -187,7 +161,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
             onValueChange={(value) => setValues((prevValues) => ({ ...prevValues, taskId: (value as Task).id || null }))}
         >
             {tasks.map((task) =>
-                <ComboboxItem key={task.id} title={task.name} value={task}/>
+                <ComboboxItem key={task.task.id} title={task.task.name} value={task}/>
             )}
         </Combobox>
     ), [tasks]);
@@ -212,6 +186,8 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
     return (
         <Dialog width={600}
                 onClose={handleCloseClick}
+                onSubmit={handleCreateClick}
+                fields={fields}
                 ref={dialogRef}
                 key={dialogKey}
         >
@@ -265,10 +241,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
                     </Combobox>
                 </div>
             </DialogContent>
-            <DialogFooter saveButtonTitle={"Create"}
-                          onClick={handleCreateClick}
-                          disabledButton={!valid}
-            >
+            <DialogFooter saveButtonTitle={"Create"}>
                 <div className={"flex flex-row items-center space-x-2 text-zinc-700 dark:text-gray text-xs mr-16"}>
                     <span>{"Create more"}</span>
                     <Switch ref={switchRef}/>

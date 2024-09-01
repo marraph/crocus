@@ -104,6 +104,24 @@ export function getTopicsFromUser(user: CompletedUser): Topic[] {
     return topicList;
 }
 
+export function getTasksFromProjectId(user: CompletedUser, projectId: number): ComplexTask[] {
+    let taskList = [] as ComplexTask[];
+    user.teamMemberships.forEach((team) => {
+        team.team.project.forEach((project) => {
+            if (project.id === projectId) {
+                project.task.forEach((task) => {
+                    taskList.push({
+                        task: task,
+                        project: project,
+                        team: team.team
+                    });
+                });
+            }
+        });
+    });
+    return taskList;
+}
+
 export type ComplexTask = {
     team: CompletedTeam,
     project: CompletedProject,
@@ -214,7 +232,50 @@ export function deleteTaskInCompletedUser(user: CompletedUser, taskId: number): 
     return updatedUser;
 }
 
+export function createAbsenceInCompletedUser(user: CompletedUser, absence: Absence): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.absence.push(absence);
+    return updatedUser;
+}
 
+export function deleteTimeEntryInCompletedUser(user: CompletedUser, timeEntryId: number): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.entry = updatedUser.entry.filter((entry) => entry.id !== timeEntryId);
+    return updatedUser;
+}
+
+export function deleteAbsenceInCompletedUser(user: CompletedUser, absenceId: number): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.absence = updatedUser.absence.filter((absence) => absence.id !== absenceId);
+    return updatedUser;
+}
+
+export function updateAbsenceInCompletedUser(user: CompletedUser, absenceId: number, absence: Absence): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.absence.forEach((abs) => {
+        if (abs.id === absenceId) {
+            abs.start = absence.start;
+            abs.end = absence.end;
+            abs.comment = absence.comment;
+            abs.reason = absence.reason;
+            abs.updatedAt = new Date();
+        }
+    });
+    return updatedUser;
+}
+
+export function updateTimeEntryInCompletedUser(user: CompletedUser, timeEntryId: number, timeEntry: TimeEntry): CompletedUser {
+    let updatedUser = {...user};
+    updatedUser.entry.forEach((entry) => {
+        if (entry.id === timeEntryId) {
+            entry.start = timeEntry.start;
+            entry.end = timeEntry.end;
+            entry.comment = timeEntry.comment;
+            entry.updatedAt = new Date();
+        }
+    });
+    return updatedUser;
+}
 
 
 //TimeTracking
