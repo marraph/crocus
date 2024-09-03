@@ -105,12 +105,12 @@ export const CreateTaskDialog = forwardRef<DialogRef>(({}, ref) => {
         setDialogKey(Date.now());
     }, []);
 
-    const handleCreateClick = useCallback(async () => {
+    const handleCreateClick = useCallback(() => {
         if (!user) return null;
 
         actionConsumer({
-            consumer: async () => {
-                return await createTask({
+            consumer: () => {
+                return createTask({
                     name: values.name,
                     description: values.description,
                     topic: values.topic?.id ?? null,

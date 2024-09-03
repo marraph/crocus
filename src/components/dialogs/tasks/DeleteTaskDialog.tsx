@@ -15,12 +15,12 @@ export const DeleteTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onC
     const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
     
-    const handleDeleteClick = useCallback(async () => {
+    const handleDeleteClick = useCallback(() => {
         if (!user) return null;
 
         actionConsumer({
-            consumer: async () => {
-                return await deleteTask(task.id);
+            consumer: () => {
+                return deleteTask(task.id);
             },
             handler: (currentUser: CompletedUser) => {
                 return deleteTaskInCompletedUser(currentUser, task.id);

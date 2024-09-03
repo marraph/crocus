@@ -38,12 +38,12 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
         setValues(initialValues);
     }, [initialValues]);
 
-    const handleEditClick = useCallback(async () => {
+    const handleEditClick = useCallback(() => {
         if (!user) return;
 
         actionConsumer({
-            consumer: async () => {
-                return await updateAbsence(absence.id, {
+            consumer: () => {
+                return updateAbsence(absence.id, {
                     ...absence,
                     start: values.start ?? new Date(),
                     end: values.end ?? new Date(),
@@ -55,7 +55,7 @@ export const EditAbsenceDialog = forwardRef<DialogRef, { absence: Absence }>(({ 
             handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
                 return updateAbsenceInCompletedUser(currentUser, absence.id, input as Absence);
             },
-            onSuccess: async () => {
+            onSuccess: () => {
                 addToast({
                     title: "Saved changes",
                     secondTitle: "You successfully saved your absence changes.",

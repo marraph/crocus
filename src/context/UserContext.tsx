@@ -36,7 +36,7 @@ export const useUser = (): UserContextType => {
     return context;
 };
 
-export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) => {
+export const UserProvider: React.FC<UserProviderProps> = ({children, id}) => {
     const [user, setUser] = useState<CompletedUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,10 @@ export const UserProvider: React.FC<UserProviderProps> = async ({children, id}) 
     useEffect(() => {
         const fetchData = async () => {
             const result = await queryUser(userConfig(id))
-            if (result.success && result.data) setUser(result.data as CompletedUser)
+            console.log(result)
+            if (result.success && result.data) {
+                setUser(result.data as CompletedUser)
+            }
             else if (!result.success && result.error) setError(result.error)
             setLoading(false)
         };

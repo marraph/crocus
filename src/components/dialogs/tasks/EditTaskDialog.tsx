@@ -95,12 +95,12 @@ export const EditTaskDialog = forwardRef<DialogRef, { task: ComplexTask, onClose
         onClose?.();
     }, [initialValues, onClose, task.team]);
 
-    const handleEditClick = useCallback(async () => {
+    const handleEditClick = useCallback(() => {
         if (!user || !task?.task) return;
 
         actionConsumer({
-            consumer: async () => {
-                return await updateTask(task.task.id, {
+            consumer: () => {
+                return updateTask(task.task.id, {
                     ...task,
                     name: values.name,
                     description: values.description,

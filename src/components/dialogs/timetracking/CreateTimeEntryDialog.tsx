@@ -86,12 +86,12 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
         onClose();
     }, [onClose]);
 
-    const handleCreateClick = useCallback(async () => {
+    const handleCreateClick = useCallback(() => {
         if (!user) return;
 
         actionConsumer({
-            consumer: async () => {
-                return await createTimeEntry({
+            consumer: () => {
+                return createTimeEntry({
                     comment: values.comment,
                     projectId: values.projectId ?? null,
                     taskId: values.taskId ?? null,
@@ -105,7 +105,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
             handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
                 return createAbsenceInCompletedUser(currentUser, input as Absence);
             },
-            onSuccess: async () => {
+            onSuccess: () => {
                 addToast({
                     title: "Time Entry created successfully!",
                     icon: <AlarmClockPlus/>,
@@ -120,7 +120,7 @@ export const CreateTimeEntryDialog = forwardRef<DialogRef, { onClose: () => void
                             updatedAt: new Date(),
                             createdBy: task?.task?.createdBy.id,
                         }
-                        await updateTask(values.taskId, taskUpdate);
+                        updateTask(values.taskId, taskUpdate);
                     }
                 }
             },

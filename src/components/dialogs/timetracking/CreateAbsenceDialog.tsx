@@ -54,12 +54,12 @@ export const CreateAbsenceDialog = forwardRef<DialogRef, { onClose: () => void }
         onClose();
     }, [onClose]);
 
-    const handleCreateClick = useCallback(async () => {
+    const handleCreateClick = useCallback(() => {
         if (!user) return;
 
         actionConsumer({
-            consumer: async () => {
-                return await createAbsence({
+            consumer: () => {
+                return createAbsence({
                     start: values.start ?? new Date(),
                     end: values.end ?? new Date(),
                     comment: values.comment,

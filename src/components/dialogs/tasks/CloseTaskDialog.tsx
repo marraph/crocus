@@ -6,21 +6,21 @@ import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogRef} from "@mar
 import {useUser} from "@/context/UserContext";
 import {mutateRef} from "@/utils/mutateRef";
 import {useToast} from "griller/src/component/toaster";
-import {ActionConsumerType, CompletedUser} from "@/types/types";
+import {ActionConsumerType, CompletedTask, CompletedUser} from "@/types/types";
 import {Task, updateTask} from "@/action/task";
 import {updateTaskInCompletedUser} from "@/utils/object-helpers";
 
-export const CloseTaskDialog = forwardRef<DialogRef, { task: Task, onClose?: () => void }>(({ task, onClose }, ref) => {
+export const CloseTaskDialog = forwardRef<DialogRef, { task: CompletedTask, onClose?: () => void }>(({ task, onClose }, ref) => {
     const dialogRef = mutateRef(ref);
     const { user, loading, error, actionConsumer } = useUser();
     const { addToast } = useToast();
 
-    const handleCloseTaskClick = useCallback(async () => {
+    const handleCloseTaskClick = useCallback(() => {
         if (!user) return;
 
         actionConsumer({
-            consumer: async () => {
-                return await updateTask(task.id, {
+            consumer: () => {
+                return updateTask(task.id, {
                     ...task,
                     isArchived: true,
                     updatedBy: user.id,

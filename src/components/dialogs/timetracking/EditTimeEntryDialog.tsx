@@ -67,7 +67,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
         setDialogKey(Date.now());
     }, [initialValues]);
 
-    const handleEditClick = useCallback(async () => {
+    const handleEditClick = useCallback(() => {
         if (!user) return;
         
         const currentDuration = moment.duration(moment(values.start).diff(moment(values.end))).asHours();
@@ -84,13 +84,13 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
         }
         
         actionConsumer({
-            consumer: async () => {
-                return await updateTimeEntry(timeEntry.id, { ...timeEntry, ...entry });
+            consumer: () => {
+                return updateTimeEntry(timeEntry.id, { ...timeEntry, ...entry });
             },
             handler: (currentUser: CompletedUser, input: ActionConsumerType) => {
                 return updateTimeEntryInCompletedUser(currentUser, timeEntry.id, input as TimeEntry);
             },
-            onSuccess: async () => {
+            onSuccess: () => {
                 addToast({
                     title: "Saved changes",
                     secondTitle: "You successfully saved your entry changes.",
@@ -108,7 +108,7 @@ export const EditTimeEntryDialog = forwardRef<DialogRef, { timeEntry: TimeEntry 
                             updatedAt: new Date()
                         }
 
-                        await updateTask(timeEntry.taskId, { ...oldTask });
+                        updateTask(timeEntry.taskId, { ...oldTask });
                     }
                 }
             },

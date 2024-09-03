@@ -12,10 +12,8 @@ import {TaskPlaceholder} from "@/components/placeholder/TaskPlaceholder";
 import {Headbar} from "@/components/Headbar";
 import {useTooltip} from "@marraph/daisy/components/tooltip/TooltipProvider";
 import {useHotkeys} from "react-hotkeys-hook";
-import {CompletedProject, CompletedTask, CompletedTeam} from "@/types/types";
+import {CompletedProject, CompletedTeam} from "@/types/types";
 import {Topic} from "@/action/topic";
-import {Project} from "@/action/projects";
-import {Team} from "@/action/team";
 import {
     ComplexTask,
     getProjectsFromUser,
@@ -131,7 +129,7 @@ export default function Tasks() {
                     }
 
                     {!error && !loading && tasks.length > 0 ?
-                        <TaskTable taskElements={tasks}/>
+                        <TaskTable tasks={tasks}/>
                         :
                         <div className={"h-full flex flex-row items-center justify-center"}>
                             <TaskPlaceholder dialogRef={dialogRef}/>

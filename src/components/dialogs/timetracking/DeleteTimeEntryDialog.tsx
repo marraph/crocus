@@ -17,18 +17,18 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, { timeEntry?: TimeEnt
     const { addToast } = useToast();
     const { user, loading, error, actionConsumer } = useUser();
 
-    const handleDeleteClick = useCallback(async () => {
+    const handleDeleteClick = useCallback(() => {
         if (!user) return;
 
         if (timeEntry) {
             actionConsumer({
-                consumer: async () => {
-                    return await deleteTimeEntry(timeEntry.id);
+                consumer: () => {
+                    return deleteTimeEntry(timeEntry.id);
                 },
                 handler: (currentUser: CompletedUser) => {
                     return deleteTimeEntryInCompletedUser(currentUser, timeEntry.id);
                 },
-                onSuccess: async () => {
+                onSuccess: () => {
                     addToast({
                         title: "TimeEntry deleted",
                         icon: <Trash2 color="#F55050" />
@@ -45,13 +45,13 @@ export const DeleteTimeEntryDialog = forwardRef<DialogRef, { timeEntry?: TimeEnt
         } 
         if (absence) {
             actionConsumer({
-                consumer: async () => {
-                    return await deleteAbsence(absence.id);
+                consumer: () => {
+                    return deleteAbsence(absence.id);
                 },
                 handler: (currentUser: CompletedUser) => {
                     return deleteAbsenceInCompletedUser(currentUser, absence.id);
                 },
-                onSuccess: async () => {
+                onSuccess: () => {
                     addToast({
                         title: "Absence deleted",
                         icon: <Trash2 color="#F55050" />
