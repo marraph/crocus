@@ -1,19 +1,13 @@
-import {Topic} from "@/action/topic";
-import {Absence} from "@/action/absence";
-import {TimeEntry} from "@/action/timeEntry";
-import {Team} from "@/action/team";
-import {Organisation} from "@/action/organisation";
-import {Task} from "@/action/task";
-import {Project} from "@/action/projects";
-import {User} from "@/action/user";
+import {Entity, NewEntity, UpdateEntity} from "@/action/actions";
+import {absences, entries, organisations, projects, tasks, teamMembers, teams, topics, users} from "@/schema";
 
-type Priority = 'low' | 'medium' | 'high';
-type State = 'pending' | 'planing' | 'started' | 'tested' | 'finished';
-type AbsenceReason = 'sick' | 'vacation';
+export type Priority = 'low' | 'medium' | 'high';
+export type State = 'pending' | 'planing' | 'started' | 'tested' | 'finished';
+export type AbsenceReason = 'sick' | 'vacation';
 
-type ActionConsumerType = Team | Organisation | Absence | Task | Project | TimeEntry | Topic | User | boolean
+export type ActionConsumerType = Team | Organisation | Absence | Task | Project | TimeEntry | Topic | User | boolean
 
-type CompletedUser = {
+export type CompletedUser = {
     id: number
     name: string
     email: string
@@ -26,21 +20,21 @@ type CompletedUser = {
     entry: TimeEntry[]
 }
 
-type TeamMembership = {
+export type TeamMembership = {
     createdAt: Date,
     userId: number,
     teamId: number
     team: CompletedTeam
 }
 
-type OrganisationMembership = {
+export type OrganisationMembership = {
     createdAt: Date
     organisationId: number
     userId: number
     organisation: CompletedOrganisation
 }
 
-type CompletedOrganisation = {
+export type CompletedOrganisation = {
     id: number,
     name: string,
     createdBy: {
@@ -63,7 +57,7 @@ type CompletedOrganisation = {
     updatedAt: Date
 }
 
-type CompletedTeam = {
+export type CompletedTeam = {
     id: number
     name: string
     createdBy: {
@@ -88,7 +82,7 @@ type CompletedTeam = {
     project: CompletedProject[]
 }
 
-type CompletedProject = {
+export type CompletedProject = {
     id: number
     name: string
     description: string | null
@@ -115,7 +109,7 @@ type CompletedProject = {
     task: CompletedTask[]
 }
 
-type CompletedTask = {
+export type CompletedTask = {
     id: number
     name: string
     description: string | null
@@ -146,13 +140,37 @@ type CompletedTask = {
     topic?: Topic
 }
 
-export type {
-    ActionConsumerType,
-    CompletedUser,
-    CompletedTeam,
-    CompletedProject,
-    CompletedTask,
-    Priority,
-    State,
-    AbsenceReason
-}
+export type Absence = Entity<typeof absences>
+export type NewAbsence = NewEntity<typeof absences>
+export type UpdateAbsence = UpdateEntity<typeof absences>
+
+export type Member = Entity<typeof teamMembers>
+export type NewMember = NewEntity<typeof teamMembers>
+
+export type Organisation = Entity<typeof organisations>
+export type NewOrganisation = NewEntity<typeof organisations>
+export type UpdateOrganisation = UpdateEntity<typeof organisations>
+
+export type Project = Entity<typeof projects>
+export type NewProject = NewEntity<typeof projects>
+export type UpdateProject = UpdateEntity<typeof projects>
+
+export type Task = Entity<typeof tasks>
+export type NewTask = NewEntity<typeof tasks>
+export type UpdateTask = UpdateEntity<typeof tasks>
+
+export type Team = Entity<typeof teams>
+export type NewTeam = NewEntity<typeof teams>
+export type UpdateTeam = UpdateEntity<typeof teams>
+
+export type TimeEntry = Entity<typeof entries>
+export type NewTimeEntry = NewEntity<typeof entries>
+export type UpdateTimeEntry = UpdateEntity<typeof entries>
+
+export type Topic = Entity<typeof topics>
+export type NewTopic = NewEntity<typeof topics>
+export type UpdateTopic = UpdateEntity<typeof topics>
+
+export type User = Entity<typeof users>
+export type NewUser = NewEntity<typeof users>
+export type UpdateUser = UpdateEntity<typeof users>

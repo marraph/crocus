@@ -1,3 +1,5 @@
+'use server'
+
 import {
     ActionResult,
     createEntity,
@@ -11,10 +13,7 @@ import {
 import {entries} from "@/schema";
 import {db} from "@/database/drizzle";
 import type {DBQueryConfig} from "drizzle-orm/relations";
-
-type TimeEntry = Entity<typeof entries>
-type NewTimeEntry = NewEntity<typeof entries>
-type UpdateTimeEntry = UpdateEntity<typeof entries>
+import {NewTimeEntry, TimeEntry, UpdateTimeEntry} from "@/types/types";
 
 const createTimeEntry = async (
     newTimeEntry: NewTimeEntry
@@ -69,12 +68,6 @@ const queryTimeEntries = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
-}
-
-export type {
-    TimeEntry,
-    NewTimeEntry,
-    UpdateTimeEntry
 }
 
 export {

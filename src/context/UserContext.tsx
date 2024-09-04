@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import {queryUser} from "@/action/user";
@@ -40,22 +40,49 @@ export const UserProvider: React.FC<UserProviderProps> = ({children, id}) => {
     const [user, setUser] = useState<CompletedUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    console.log("UserProvider rendering");
 
     useEffect(() => {
-        const fetchData = async () => {
-            const result = await queryUser(userConfig(id))
-            console.log(result)
-            if (result.success && result.data) {
-                setUser(result.data as CompletedUser)
+        console.log("useEffect triggered, id:", id);
+    }, [id]);
+
+    useEffect(() => {
+        console.log("useEffect with no dependencies");
+    }, []);
+
+    useEffect(() => {
+        console.log("useEffect triggered, id:", id);
+
+        const fetchUser = async () => {
+            console.log("fetchUser function called");
+            setLoading(true);
+            setError(null);
+            try {
+                console.log("Calling queryUser");
+                const result = await queryUser(userConfig(id));
+                console.log("queryUser result:", result);
+                if (result.success && result.data) {
+                    console.log("Setting user data");
+                    setUser(result.data as CompletedUser);
+                } else {
+                    console.log("Setting error:", result.error);
+                    setError(result.error || "Failed to fetch user");
+                }
+            } catch (err) {
+                console.error("An error occurred:", err);
+                setError("An unexpected error occurred");
+            } finally {
+                console.log("Setting loading to false");
+                setLoading(false);
             }
-            else if (!result.success && result.error) setError(result.error)
-            setLoading(false)
         };
 
-        fetchData();
-    }, [id, error, loading]);
+        fetchUser();
+    }, [id]);
 
     const actionConsumer = async (action: ActionConsumer) => {
+        try {
+
         if (!user) return
 
         const actionResult = await action.consumer()
@@ -69,6 +96,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({children, id}) => {
         const completedUser = action.handler(user, actionResult.data)
         setUser(completedUser)
         action.onSuccess?.(actionResult.data)
+        } catch (err) {
+            console.error("Action consumer error:", err);
+            setError("An error occurred during action execution");
+            action.onError?.("An error occurred during action execution");
+        }
+
     }
 
     return (

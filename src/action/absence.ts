@@ -1,20 +1,16 @@
+'use server'
+
 import {
     ActionResult,
     createEntity,
     deleteEntity,
-    Entity,
     getEntity,
-    NewEntity,
-    UpdateEntity,
     updateEntity
 } from "@/action/actions";
 import {absences} from "@/schema";
 import {db} from "@/database/drizzle";
 import type {DBQueryConfig} from "drizzle-orm/relations";
-
-type Absence = Entity<typeof absences>
-type NewAbsence = NewEntity<typeof absences>
-type UpdateAbsence = UpdateEntity<typeof absences>
+import {Absence, NewAbsence, UpdateAbsence} from "@/types/types";
 
 const createAbsence = async (
     newAbsence: NewAbsence
@@ -69,12 +65,6 @@ const queryAbsences = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
-}
-
-export type {
-    Absence,
-    NewAbsence,
-    UpdateAbsence
 }
 
 export {

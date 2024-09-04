@@ -1,3 +1,5 @@
+'use server'
+
 import {projects} from "@/schema";
 import {
     ActionResult,
@@ -11,10 +13,7 @@ import {
 } from "@/action/actions";
 import {db} from "@/database/drizzle";
 import type {DBQueryConfig} from "drizzle-orm/relations";
-
-type Project = Entity<typeof projects>
-type NewProject = NewEntity<typeof projects>
-type UpdateProject = UpdateEntity<typeof projects>
+import {NewProject, Project, UpdateProject} from "@/types/types";
 
 const getProject = async (id: number) => getEntity(projects, id, projects.id)
 
@@ -67,12 +66,6 @@ const queryProjects = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
-}
-
-export type {
-    Project,
-    NewProject,
-    UpdateProject
 }
 
 export {

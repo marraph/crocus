@@ -1,3 +1,5 @@
+'use server'
+
 import {teamMembers, teams} from "@/schema";
 import {
     ActionResult,
@@ -11,10 +13,7 @@ import {
 } from "@/action/actions";
 import type {DBQueryConfig} from "drizzle-orm/relations";
 import {db} from "@/database/drizzle";
-
-type Team = Entity<typeof teams>
-type NewTeam = NewEntity<typeof teams>
-type UpdateTeam = UpdateEntity<typeof teams>
+import {NewTeam, Team, UpdateTeam} from "@/types/types";
 
 const getTeam = async (id: number) => getEntity(teams, id, teams.id)
 
@@ -66,11 +65,6 @@ const queryTeams = async (
         const error = err as Error
         return {success: false, error: error.message}
     }
-}
-export type {
-    Team,
-    NewTeam,
-    UpdateTeam
 }
 
 export {
